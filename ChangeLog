@@ -1,0 +1,4 @@
+2004-11-19  Øyvind Kolås  <pipipn@freedesktop.org>
+
+	* packages/cairo/ext/*.[ch]: reformatted code.
+	* packages/gtkcairo/ext/*.[ch]: reformatted code.

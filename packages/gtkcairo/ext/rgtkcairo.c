@@ -1,7 +1,7 @@
 /* ruby-cairo - Ruby bindings for Cairo.
  * Copyright (C) 2003 Evan Martin <martine@danga.com>
+ *           (c) 2004 Øyvind Kolås <pippin@freedesktop.org>
  *
- * vim: tabstop=4 shiftwidth=4 noexpandtab :
  */
 
 #include "ruby.h"
@@ -14,7 +14,8 @@
 static VALUE cGtkCairo;
 
 static VALUE
-get_cairo(VALUE self) {
+get_cairo (VALUE self)
+{
 	GtkCairo *gtkcairo = RVAL2GOBJ(self);
 	cairo_t *cairo = gtk_cairo_get_cairo(gtkcairo);
 	VALUE rbcairo = rcairo_new_from(cairo);
@@ -22,7 +23,8 @@ get_cairo(VALUE self) {
 	return rbcairo;
 }
 
-void Init_gtkcairo() {
+void Init_gtkcairo ()
+{
 	/* define a "Gtk" class under module "Cairo".
 	 * cGtkCairo = G_DEF_CLASS(gtk_cairo_get_type(), "Gtk", mCairo); */
 
