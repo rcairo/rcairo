@@ -1,8 +1,8 @@
 #!/usr/bin/env ruby
 # vim: filetype=ruby:expandtab:shiftwidth=4:tabstop=8:softtabstop=4 :
 
-$LOAD_PATH.unshift "../packages/cairo/lib/"
 $LOAD_PATH.unshift "../packages/cairo/ext/"
+$LOAD_PATH.unshift "../packages/cairo/lib/"
 
 $:.push File.join(File.dirname($0), "cairo")
 
