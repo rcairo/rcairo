@@ -4,7 +4,8 @@
  * vim: tabstop=4 shiftwidth=4 noexpandtab :
  */
 
-#include "shared.h"
+#include "rbcairo.h"
+#include <rubyio.h>  /* file pointers. */
 
 VALUE mCairo, cCairo, cCairoSurface, cCairoMatrix;
 
@@ -43,6 +44,23 @@ rcairo_set_target_image(VALUE vself, VALUE vimage) {
 	                       img->width, img->height, img->stride);
 	return Qnil;
 }
+static VALUE
+rcairo_set_target_ps(VALUE vself, VALUE vfile,
+                     VALUE vwidth_inches, VALUE vheight_inches,
+                     VALUE vx_pixels_per_inch, VALUE vy_pixels_per_inch) {
+	OpenFile *rf;
+	FILE *f;
+
+	rb_check_type(vfile, T_FILE);
+	GetOpenFile(vfile, rf);
+	f = GetWriteFile(rf);
+
+	rb_iv_set(vself, "@target_file", vfile);
+	cairo_set_target_ps(rcairo_get_cairo(vself), f,
+	                    NUM2DBL(vwidth_inches), NUM2DBL(vheight_inches),
+	                    NUM2DBL(vx_pixels_per_inch), NUM2DBL(vy_pixels_per_inch));
+	return Qnil;
+}
 
 static VALUE
 rcairo_set_dash(VALUE vself, VALUE vdashes, VALUE offset) {
@@ -72,16 +90,6 @@ rcairo_inverse_transform_point(VALUE vself, VALUE pt) {
 static VALUE
 rcairo_inverse_transform_distance(VALUE vself, VALUE pt) {
 	return rcairo_run_pt_func(vself, pt, cairo_inverse_transform_distance);
-}
-
-static VALUE
-rcairo_text_extents(VALUE vself, VALUE text) {
-	double x, y, w, h, dx, dy;
-	cairo_text_extents(rcairo_get_cairo(vself), STR2CSTR(text),
-	                   &x, &y, &w, &h, &dx, &dy);
-	return rb_ary_new3(6, rb_float_new(x), rb_float_new(y),
-	                      rb_float_new(w), rb_float_new(h),
-	                      rb_float_new(dx), rb_float_new(dy));
 }
 
 /* Ruby-style functions. */
@@ -165,12 +173,12 @@ Init_cairo() {
 	rb_define_singleton_method(cCairo, "new", rcairo_rcairo_new, 0);
 	rb_define_method(cCairo, "dup", rcairo_dup, 0);
 	rb_define_method(cCairo, "target_image=", rcairo_set_target_image, 1);
+	rb_define_method(cCairo, "set_target_ps", rcairo_set_target_ps, 5);
 	rb_define_method(cCairo, "set_dash", rcairo_set_dash, 2);
 	rb_define_method(cCairo, "transform_point", rcairo_transform_point, 1);
 	rb_define_method(cCairo, "transform_distance", rcairo_transform_distance, 1);
 	rb_define_method(cCairo, "inverse_transform_point", rcairo_inverse_transform_point, 1);
 	rb_define_method(cCairo, "inverse_transform_distance", rcairo_inverse_transform_distance, 1);
-	rb_define_method(cCairo, "text_extents", rcairo_text_extents, 1);
 
 	rb_define_method(cCairo, "stack", rcairo_stack, 0);
 	rb_define_method(cCairo, "stroke", rcairo_stroke, 0);

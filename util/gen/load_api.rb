@@ -12,10 +12,16 @@ def load_api(fn)
   file.gsub!(/^extern "C" \{\s*/, '')
   file.gsub!(/\}\s*$/, '')
   file.gsub!(/\n\n/, "\n")
-  file.gsub!(/^\s*/, "")
-  file.split(/;\s*/).each { |decl|
+  file.strip!
+
+  # we used to just split on semicolon.
+  # but typedef struct { a; } b; needs to slurp as one line.
+  # now we have an ugly re.
+  file.scan(/\S+[^\}\{]*?(?:\{.*?\})?[^\}\{]*?;/m) { |decl|
     decl.gsub!(/\n/, " ")
     decl.gsub!(/\s+/, " ")
+    decl.gsub!(/;\s*$/, '')
+    #puts "-->decl<-- #{decl}"
     case decl
     when /^extern (.+?) (?:__external_linkage) (\w+) \((.+?)\)$/
       ret, func, args = $1, $2, $3.strip
