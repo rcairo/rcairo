@@ -1,0 +1,30 @@
+#!/usr/bin/env ruby
+# vim: set ts=2 sw=2 et :
+
+require 'cairo'
+
+class TextWindow < Cairo::Xlib::Window
+  def initialize(dpy)
+    @text = ">"
+    super(dpy, 400, 40, true)
+  end
+  def draw
+    @cairo.set_rgb_color(0, 0, 0)
+    @cairo.scale_font(20)
+    @cairo.move_to(10, 30)
+    @cairo.show_text(@text)
+  end
+  def keypress(key)
+    case key.chr
+    when 'q'
+      @dpy.quit
+    else
+      @text << key.chr if key > 0
+    end
+  end
+end
+
+dpy = Cairo::Xlib::Display.new
+w = TextWindow.new(dpy)
+dpy.mainloop
+
