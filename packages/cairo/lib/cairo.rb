@@ -115,14 +115,14 @@ class Surface
     end
 end
 
-class Transform
+class Matrix
     def dup
-        copy = Transform.new
+        copy = Matrix.new
         copy.copy(self)
         return copy
     end
     def clone
-        copy = Transform.new
+        copy = Matrix.new
         copy.copy(self)
         copy.freeze if self.frozen?
         return copy
@@ -134,9 +134,9 @@ class Transform
     def invert() ; dup.invert! ; end
 
     def multiply!(other) ; set_product(self, other) ; end
-    def multiply(other) ; Transform.new.set_product(self, other) ; end
+    def multiply(other) ; Matrix.new.set_product(self, other) ; end
 
-    def *(other) ; Transform.new.set_product(self, other) ; end
+    def *(other) ; Matrix.new.set_product(self, other) ; end
 end
 
 end
