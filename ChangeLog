@@ -1,4 +1,10 @@
-2005-02-09  Øyvind Kolås  <pippin@freedesktop.org>
+2005-02-10  Øyvind Kolås  <pippin@freedesktop.org>
+
+	* packages/cairo/svgcairo: added initial binding for libsvg-cairo,
+	without error checking, and good integration with the ruby file
+	handling.
+
+005-02-09  Øyvind Kolås  <pippin@freedesktop.org>
 
 	* packages/cairo/lib/cairo.rb: Fixed naming of Transform class to be
 	Matrix.
