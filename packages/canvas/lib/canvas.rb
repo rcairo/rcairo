@@ -592,7 +592,7 @@ class Label < Item
     cr = cairo
     cr.save
     setup_font cr
-    ret = cr.text_extents(@label)["width"]
+    ret = cr.text_extents(@label)[:width]
     cr.restore
     @buf_width = ret
   end

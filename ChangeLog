@@ -1,3 +1,8 @@
+2004-11-19  Øyvind Kolås  <pippin@freedesktop.org>
+
+	* packages/canvas/lib/canvas.rb Labal.width: access extents by atom
+	instead of string.
+
 2004-11-19  Øyvind Kolås  <pipipn@freedesktop.org>
 
 	* packages/cairo/ext/*.[ch]: reformatted code.
