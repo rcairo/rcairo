@@ -1,4 +1,8 @@
-/* vim: set ts=4 sw=4 noet : */
+/* ruby-cairo - Ruby bindings for Cairo.
+ * Copyright (C) 2003 Evan Martin <martine@danga.com>
+ *
+ * vim: tabstop=4 shiftwidth=4 noexpandtab :
+ */
 
 #include "shared.h"
 

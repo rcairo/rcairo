@@ -9,6 +9,7 @@
 
 void xlib_init();
 void cairo_xlib_init(void);
+void constants_init(void);
 
 extern VALUE mCairo, cCairo, cCairoSurface, cCairoMatrix, cCairoImage;
 extern VALUE cDisplay, eXlib;

@@ -159,6 +159,8 @@ void
 Init_cairo() {
 	mCairo = rb_define_module("Cairo");
 
+	constants_init();
+
 	cCairo = gen_Cairo();
 	rb_define_singleton_method(cCairo, "new", rcairo_rcairo_new, 0);
 	rb_define_method(cCairo, "dup", rcairo_dup, 0);
