@@ -28,6 +28,7 @@ VALUE gen_CairoSurface(void);
 VALUE rcairo_display_new();
 Display* rcairo_display_get_display(VALUE rdpy);
 
+VALUE rcairo_new_from(cairo_t *cr);
 VALUE rcairo_new();
 cairo_t* rcairo_get_cairo(VALUE rcairo);
 

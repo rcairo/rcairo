@@ -228,7 +228,7 @@ end
 
 $funcs.each { |func, ret, args|
   if special.has_key? func
-    dputs "* #{func} is marked for special handling"
+    dputs "+ #{func} is marked for special handling"
     next
   end
 
@@ -244,11 +244,13 @@ $funcs.each { |func, ret, args|
   end
 
   if added
-    dputs "* #{func}"
+    dputs "+ #{func}"
   else
-    dputs " -> don't know what to do with #{func}"
+    dputs "** don't know what to do with #{func}"
   end
 }
+
+puts
 
 $classes.each_value { |c|
   File.open("../src/gen-#{c.name}.c", "w") { |f|
@@ -257,6 +259,8 @@ $classes.each_value { |c|
     c.write(f)
   }
 }
+
+puts
 
 File.open("../src/gen-constants.c", "w") { |f|
   puts "Generating constants..."

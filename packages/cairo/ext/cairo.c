@@ -16,10 +16,14 @@ rcairo_get_cairo(VALUE vcairo) {
 	return cr;
 }
 VALUE
-rcairo_new() {
-	cairo_t *cr = cairo_create();
+rcairo_new_from(cairo_t *cr) {
 	cairo_reference(cr);
 	return Data_Wrap_Struct(cCairo, NULL, cairo_destroy, cr);
+}
+VALUE
+rcairo_new() {
+	cairo_t *cr = cairo_create();
+	return rcairo_new_from(cr);
 }
 static VALUE
 rcairo_rcairo_new(VALUE class) {

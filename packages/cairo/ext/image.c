@@ -4,7 +4,7 @@
  * vim: tabstop=4 shiftwidth=4 noexpandtab :
  */
 
-#include "shared.h"
+#include "rbcairo.h"
 
 VALUE cCairoImage;
 VALUE eCairoImageFormat;

@@ -4,7 +4,7 @@
  * vim: tabstop=4 shiftwidth=4 noexpandtab :
  */
 
-#include "shared.h"
+#include "rbcairo.h"
 
 #include "cairo-xlib.h"
 
