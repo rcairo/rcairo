@@ -381,10 +381,24 @@ rcairo_select_font (VALUE self,
                     VALUE slant,
                     VALUE weight)
 {
-  cairo_select_font (rcairo_get_cairo(self),
+  cairo_t *cr = rcairo_get_cairo (self);
+
+  cairo_select_font (cr,
                      STR2CSTR(family),
                      NUM2INT(slant),
                      NUM2INT(weight));
+    { /* FIXME XXX , hack to make sure font is 1 user space unit high */
+      cairo_font_t   *cur_font;
+      cairo_matrix_t *matrix;
+
+      matrix = cairo_matrix_create ();
+      cairo_matrix_set_identity (matrix);
+
+      cur_font = cairo_current_font (cr);
+      cairo_font_set_transform (cur_font, matrix);
+      cairo_set_font (cr, cur_font);
+      cairo_matrix_destroy (matrix);
+    }
   return Qnil;
 }
 

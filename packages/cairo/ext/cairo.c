@@ -278,12 +278,22 @@ rcairo_text_extents (VALUE self,
   cairo_text_extents (cr, STR2CSTR(utf8), &extents);
   hash = rb_hash_new ();
 
-  rb_hash_aset (hash, rb_str_new2("width"),  rb_float_new(extents.width));
-  rb_hash_aset (hash, rb_str_new2("height"), rb_float_new(extents.height));
-  rb_hash_aset (hash, rb_str_new2("x_bearing"), rb_float_new(extents.x_bearing));
-  rb_hash_aset (hash, rb_str_new2("y_bearing"), rb_float_new(extents.y_bearing));
-  rb_hash_aset (hash, rb_str_new2("x_advance"), rb_float_new(extents.x_advance));
-  rb_hash_aset (hash, rb_str_new2("y_advance"), rb_float_new(extents.y_advance));
+  rb_hash_aset (hash, ID2SYM(rb_intern("width")),
+                      rb_float_new(extents.width));
+
+  rb_hash_aset (hash, ID2SYM(rb_intern("height")),
+                      rb_float_new(extents.height));
+
+  rb_hash_aset (hash, ID2SYM(rb_intern("x_bearing")),
+                      rb_float_new(extents.x_bearing));
+
+  rb_hash_aset (hash, ID2SYM(rb_intern("y_bearing")),
+                      rb_float_new(extents.y_bearing));
+  rb_hash_aset (hash, ID2SYM(rb_intern("x_advance")),
+                      rb_float_new(extents.x_advance));
+
+  rb_hash_aset (hash, ID2SYM(rb_intern("y_advance")),
+                      rb_float_new(extents.y_advance));
 
   return hash;
 }
