@@ -1,3 +1,24 @@
+
+2005-02-07  Øyvind Kolås  <pippin@freedesktop.org>
+
+	* splitted into seperate files for classes
+	* made use of _SELF macro for more direct access
+	* unified under a rb_ namespace
+	* added font handling and extents
+
+2005-02-06  Øyvind Kolås  <pippin@freedesktop.org>
+
+	* imported mental guys ruby binding to my local tree
+	* added ps and pdf surfaces
+	* reindented according to GNU coding style
+	* made stroke, fill, in_stroke, in_fill, fill_extents and
+	  stroke_extents accept blocks that define the path, in spirit
+	  of the previous binding.
+	* added show_text, text_path, select_font, scale_font and
+	  transform_font
+	* made to work with gtkcairo
+
+
 2005-02-06  Øyvind Kolås  <pippin@freedesktop.org>
 
 	* packages/cairo/cairo.c: add new headers

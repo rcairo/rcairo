@@ -1,38 +1,20 @@
-AUTHORS
+Dependencies:
+        cairo, libpixman
 
-Evan Martins  <martine@danga.com>
-Øyvind Kolås  <pippin@freedesktop.org>
-
-PROVIDES  cairo and gtkcairo bindings
-
-DEPENDS
+For gtkcairo widget:
+        gtk+-2.0
+        gtkcairo  from cairo cvs
+        ruby-gnome2 with devel files
 
 
-Module Cairo:
-    dependencies:
-        libcairo
-        libpixman
+After building with:
 
-        (you probably have these)
-        xrender.h
-        xlib.h
-        ruby development headers
-        mkmf (part of ruby development, seperate package in debian)
-    recommended:
+./setup.rb config
+./setup.rb setup
 
-Module GtkCairo
-    dependencies:
-        Cairo
+the samples should be usable prior to installing with
 
-        gtk+ 2.4.x
-        glitz (not initialized
+./setup.rb install
 
-           for usage of the Cairo module
-           png
-           gtk+ 2.4.x
-           glitz       (how cross platform is glitz yet?, possible to only depend on glitz?
-                        need to check out input possiblities of glitz vs gtk+)
-Module CairoCanvas
-    dependencies:
-        Cairo
-        GtkCairo
+as root.
+
