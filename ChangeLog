@@ -1,5 +1,11 @@
 2005-02-10  Øyvind Kolås  <pippin@freedesktop.org>
 
+	* packages/cairo/svgcairo/rb_svgcairo.c: added error handling.
+	usage of a port for passing FILE stream to the parser.
+	* packages/cairo/svgcairo/extconf.rb: added -W to the compile flags.
+
+2005-02-10  Øyvind Kolås  <pippin@freedesktop.org>
+
 	* packages/cairo/svgcairo: added initial binding for libsvg-cairo,
 	without error checking, and good integration with the ruby file
 	handling.

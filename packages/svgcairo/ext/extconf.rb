@@ -3,7 +3,7 @@
 
 require 'mkmf'
 
-$CFLAGS = " -I ../../cairo/ext "
+$CFLAGS = " -W -I ../../cairo/ext "
 $CFLAGS  += `pkg-config --cflags libsvg-cairo`
 $LDFLAGS += `pkg-config --libs   libsvg-cairo`
 
