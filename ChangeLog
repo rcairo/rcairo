@@ -1,3 +1,9 @@
+2005-03-15  Øyvind Kolås  <pippin@freedesktop.org>
+
+	* packages/cairo/ext/rb_cairo_context.c:
+	* packages/cairo/lib/cairo.rb: Following API shakeup in cairo,
+	s/cairo_current_foo/cairo_get_foo/ .
+
 2005-02-15  Øyvind Kolås  <pippin@freedesktop.org>
 
 	* packages/cairo/ext/rb_cairo.c: added initialization of pattern.

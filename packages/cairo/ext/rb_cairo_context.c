@@ -723,10 +723,10 @@ rb_cairo_show_glyphs (VALUE self,
 }
 
 static    VALUE
-rb_cairo_current_font (VALUE self)
+rb_cairo_get_font (VALUE self)
 {
   cairo_font_t *xform;
-  xform = cairo_current_font (_SELF);
+  xform = cairo_get_font (_SELF);
   if (xform)
     {
       if (cairo_status (_SELF))
@@ -745,7 +745,7 @@ rb_cairo_current_font (VALUE self)
 }
 
 static    VALUE
-rb_cairo_current_font_extents (VALUE self)
+rb_cairo_get_font_extents (VALUE self)
 {
   return Qnil;
 }
@@ -889,99 +889,99 @@ rb_cairo_show_surface (VALUE self,
 /* Query functions */
 
 static    VALUE
-rb_cairo_current_operator (VALUE self)
+rb_cairo_get_operator (VALUE self)
 {
   cairo_operator_t op;
-  op = cairo_current_operator (_SELF);
+  op = cairo_get_operator (_SELF);
   return INT2FIX (op);
 }
 
 static    VALUE
-rb_cairo_current_rgb_color (VALUE self)
+rb_cairo_get_rgb_color (VALUE self)
 {
   double    rgb[3];
-  cairo_current_rgb_color (_SELF,
+  cairo_get_rgb_color (_SELF,
                            rgb, rgb + 1, rgb + 2);
   return float_array (rgb, 3);
 }
 
 static    VALUE
-rb_cairo_current_pattern (VALUE self)
+rb_cairo_get_pattern (VALUE self)
 {
-  return rb_cairo_pattern_wrap (cairo_current_pattern (_SELF));
+  return rb_cairo_pattern_wrap (cairo_get_pattern (_SELF));
 }
 
 static    VALUE
-rb_cairo_current_alpha (VALUE self)
+rb_cairo_get_alpha (VALUE self)
 {
   double    alpha;
-  alpha = cairo_current_alpha (_SELF);
+  alpha = cairo_get_alpha (_SELF);
   return rb_float_new (alpha);
 }
 
 static    VALUE
-rb_cairo_current_tolerance (VALUE self)
+rb_cairo_get_tolerance (VALUE self)
 {
   double    tolerance;
-  tolerance = cairo_current_tolerance (_SELF);
+  tolerance = cairo_get_tolerance (_SELF);
   return rb_float_new (tolerance);
 }
 
 static    VALUE
-rb_cairo_current_point (VALUE self)
+rb_cairo_get_point (VALUE self)
 {
   double    point[2];
-  cairo_current_point (_SELF, point, point + 1);
+  cairo_get_point (_SELF, point, point + 1);
   return float_array (point, 2);
 }
 
 static    VALUE
-rb_cairo_current_fill_rule (VALUE self)
+rb_cairo_get_fill_rule (VALUE self)
 {
   cairo_fill_rule_t rule;
-  rule = cairo_current_fill_rule (_SELF);
+  rule = cairo_get_fill_rule (_SELF);
   return INT2FIX (rule);
 }
 
 static    VALUE
-rb_cairo_current_line_width (VALUE self)
+rb_cairo_get_line_width (VALUE self)
 {
   double    line_width;
-  line_width = cairo_current_line_width (_SELF);
+  line_width = cairo_get_line_width (_SELF);
   return rb_float_new (line_width);
 }
 
 static    VALUE
-rb_cairo_current_line_cap (VALUE self)
+rb_cairo_get_line_cap (VALUE self)
 {
   cairo_line_cap_t cap;
-  cap = cairo_current_line_cap (_SELF);
+  cap = cairo_get_line_cap (_SELF);
   return INT2FIX (cap);
 }
 
 static    VALUE
-rb_cairo_current_line_join (VALUE self)
+rb_cairo_get_line_join (VALUE self)
 {
   cairo_line_join_t join;
-  join = cairo_current_line_join (_SELF);
+  join = cairo_get_line_join (_SELF);
   return INT2FIX (join);
 }
 
 static    VALUE
-rb_cairo_current_miter_limit (VALUE self)
+rb_cairo_get_miter_limit (VALUE self)
 {
   double    miter_limit;
-  miter_limit = cairo_current_miter_limit (_SELF);
+  miter_limit = cairo_get_miter_limit (_SELF);
   return rb_float_new (miter_limit);
 }
 
 static    VALUE
-rb_cairo_current_matrix (VALUE self)
+rb_cairo_get_matrix (VALUE self)
 {
   cairo_matrix_t *matrix = cairo_matrix_create ();
   if (matrix)
     {
-      cairo_current_matrix (_SELF, matrix);
+      cairo_get_matrix (_SELF, matrix);
       if (cairo_status (_SELF))
         {
           rb_free_matrix (matrix);
@@ -999,10 +999,10 @@ rb_cairo_current_matrix (VALUE self)
 
 
 static    VALUE
-rb_cairo_current_target_surface (VALUE self)
+rb_cairo_get_target_surface (VALUE self)
 {
   cairo_surface_t *surface;
-  surface = cairo_current_target_surface (_SELF);
+  surface = cairo_get_target_surface (_SELF);
   if (surface)
     {
       cairo_surface_reference (surface);
@@ -1075,12 +1075,12 @@ push_close_path (void *closure)
 }
 
 static    VALUE
-rb_cairo_current_path_array (VALUE self)
+rb_cairo_get_path_array (VALUE self)
 {
   VALUE     array;
   array = rb_ary_new ();
 
-  cairo_current_path (_SELF,
+  cairo_get_path (_SELF,
                       &push_move_to,
                       &push_line_to,
                       &push_curve_to, &push_close_path, (void *) array);
@@ -1089,12 +1089,12 @@ rb_cairo_current_path_array (VALUE self)
 }
 
 static    VALUE
-rb_cairo_current_path_flat_array (VALUE self)
+rb_cairo_get_path_flat_array (VALUE self)
 {
   VALUE     array;
   array = rb_ary_new ();
 
-  cairo_current_path_flat (_SELF,
+  cairo_get_path_flat (_SELF,
                            &push_move_to,
                            &push_line_to, &push_close_path, (void *) array);
 
@@ -1219,30 +1219,30 @@ Init_cairo_context (void)
   rb_define_method (rb_cCairo_Context, "show_surface",
                     RUBY_METHOD_FUNC (rb_cairo_show_surface), 3);
 
-  rb_define_method (rb_cCairo_Context, "current_operator",
-                    RUBY_METHOD_FUNC (rb_cairo_current_operator), 0);
-  rb_define_method (rb_cCairo_Context, "current_rgb_color",
-                    RUBY_METHOD_FUNC (rb_cairo_current_rgb_color), 0);
-  rb_define_method (rb_cCairo_Context, "current_pattern",
-                    RUBY_METHOD_FUNC (rb_cairo_current_pattern), 0);
-  rb_define_method (rb_cCairo_Context, "current_alpha",
-                    RUBY_METHOD_FUNC (rb_cairo_current_alpha), 0);
-  rb_define_method (rb_cCairo_Context, "current_tolerance",
-                    RUBY_METHOD_FUNC (rb_cairo_current_tolerance), 0);
-  rb_define_method (rb_cCairo_Context, "current_point",
-                    RUBY_METHOD_FUNC (rb_cairo_current_point), 0);
-  rb_define_method (rb_cCairo_Context, "current_fill_rule",
-                    RUBY_METHOD_FUNC (rb_cairo_current_fill_rule), 0);
-  rb_define_method (rb_cCairo_Context, "current_line_width",
-                    RUBY_METHOD_FUNC (rb_cairo_current_line_width), 0);
-  rb_define_method (rb_cCairo_Context, "current_line_cap",
-                    RUBY_METHOD_FUNC (rb_cairo_current_line_cap), 0);
-  rb_define_method (rb_cCairo_Context, "current_line_join",
-                    RUBY_METHOD_FUNC (rb_cairo_current_line_join), 0);
-  rb_define_method (rb_cCairo_Context, "current_miter_limit",
-                    RUBY_METHOD_FUNC (rb_cairo_current_miter_limit), 0);
-  rb_define_method (rb_cCairo_Context, "current_matrix",
-                    RUBY_METHOD_FUNC (rb_cairo_current_matrix), 0);
+  rb_define_method (rb_cCairo_Context, "get_operator",
+                    RUBY_METHOD_FUNC (rb_cairo_get_operator), 0);
+  rb_define_method (rb_cCairo_Context, "get_rgb_color",
+                    RUBY_METHOD_FUNC (rb_cairo_get_rgb_color), 0);
+  rb_define_method (rb_cCairo_Context, "get_pattern",
+                    RUBY_METHOD_FUNC (rb_cairo_get_pattern), 0);
+  rb_define_method (rb_cCairo_Context, "get_alpha",
+                    RUBY_METHOD_FUNC (rb_cairo_get_alpha), 0);
+  rb_define_method (rb_cCairo_Context, "get_tolerance",
+                    RUBY_METHOD_FUNC (rb_cairo_get_tolerance), 0);
+  rb_define_method (rb_cCairo_Context, "get_point",
+                    RUBY_METHOD_FUNC (rb_cairo_get_point), 0);
+  rb_define_method (rb_cCairo_Context, "get_fill_rule",
+                    RUBY_METHOD_FUNC (rb_cairo_get_fill_rule), 0);
+  rb_define_method (rb_cCairo_Context, "get_line_width",
+                    RUBY_METHOD_FUNC (rb_cairo_get_line_width), 0);
+  rb_define_method (rb_cCairo_Context, "get_line_cap",
+                    RUBY_METHOD_FUNC (rb_cairo_get_line_cap), 0);
+  rb_define_method (rb_cCairo_Context, "get_line_join",
+                    RUBY_METHOD_FUNC (rb_cairo_get_line_join), 0);
+  rb_define_method (rb_cCairo_Context, "get_miter_limit",
+                    RUBY_METHOD_FUNC (rb_cairo_get_miter_limit), 0);
+  rb_define_method (rb_cCairo_Context, "get_matrix",
+                    RUBY_METHOD_FUNC (rb_cairo_get_matrix), 0);
 
 
   rb_define_method (rb_cCairo_Context, "select_font",
@@ -1255,10 +1255,10 @@ Init_cairo_context (void)
                     RUBY_METHOD_FUNC (rb_cairo_show_text), 1);
   rb_define_method (rb_cCairo_Context, "show_glyphs",
                     RUBY_METHOD_FUNC (rb_cairo_show_glyphs), 1);
-  rb_define_method (rb_cCairo_Context, "current_font",
-                    RUBY_METHOD_FUNC (rb_cairo_current_font), 0);
-  rb_define_method (rb_cCairo_Context, "current_font_extents",
-                    RUBY_METHOD_FUNC (rb_cairo_current_font_extents), 0);
+  rb_define_method (rb_cCairo_Context, "get_font",
+                    RUBY_METHOD_FUNC (rb_cairo_get_font), 0);
+  rb_define_method (rb_cCairo_Context, "get_font_extents",
+                    RUBY_METHOD_FUNC (rb_cairo_get_font_extents), 0);
   rb_define_method (rb_cCairo_Context, "set_font",
                     RUBY_METHOD_FUNC (rb_cairo_set_font), 1);
   rb_define_method (rb_cCairo_Context, "text_extents",
@@ -1269,12 +1269,12 @@ Init_cairo_context (void)
                     RUBY_METHOD_FUNC (rb_cairo_text_path), 1);
   rb_define_method (rb_cCairo_Context, "glyph_path",
                     RUBY_METHOD_FUNC (rb_cairo_glyph_path), 1);
-  rb_define_method (rb_cCairo_Context, "current_target_surface",
-                    RUBY_METHOD_FUNC (rb_cairo_current_target_surface), 0);
-  rb_define_method (rb_cCairo_Context, "current_path_array",
-                    RUBY_METHOD_FUNC (rb_cairo_current_path_array), 0);
-  rb_define_method (rb_cCairo_Context, "current_path_flat_array",
-                    RUBY_METHOD_FUNC (rb_cairo_current_path_flat_array), 0);
+  rb_define_method (rb_cCairo_Context, "get_target_surface",
+                    RUBY_METHOD_FUNC (rb_cairo_get_target_surface), 0);
+  rb_define_method (rb_cCairo_Context, "get_path_array",
+                    RUBY_METHOD_FUNC (rb_cairo_get_path_array), 0);
+  rb_define_method (rb_cCairo_Context, "get_path_flat_array",
+                    RUBY_METHOD_FUNC (rb_cairo_get_path_flat_array), 0);
 }
 
 

@@ -30,7 +30,7 @@ class Context
     end
 
     def quad_to(x1, y1, x2, y2)
-        ( x0, y0 ) = current_point
+        ( x0, y0 ) = get_point
         cx1 = x0 + 2 * ( x1 - x0 ) / 3
         cy1 = y0 + 2 * ( y1 - y0 ) / 3
         cx2 = cx1 + ( x2 - x0 ) / 3
@@ -38,13 +38,13 @@ class Context
         curve_to(cx1, cy1, cx2, cy2, x2, y2)
     end
     def rel_quad_to(x1, y1, x2, y2)
-        ( x0, y0 ) = current_point
+        ( x0, y0 ) = get_point
         quad_to(x1 + x0, y1 + y0, x2 + x0, y2 + x0)
     end
 
-    private :current_path_array
-    def current_path(handler=nil)
-        array = current_path_array
+    private :get_path_array
+    def get_path(handler=nil)
+        array = get_path_array
         if handler.nil?
             array.each {|event| yield event } if block_given?
         else
@@ -53,9 +53,9 @@ class Context
         array
     end
 
-    private :current_path_flat_array
-    def current_path_flat(handler=nil)
-        array = current_path_flat_array
+    private :get_path_flat_array
+    def get_path_flat(handler=nil)
+        array = get_path_flat_array
         if handler.nil?
             array.each {|event| yield event } if block_given?
         else
@@ -85,32 +85,32 @@ class Context
     end
 
     alias operator= set_operator
-    alias operator current_operator
+    alias operator get_operator
     alias alpha= set_alpha
-    alias alpha current_alpha
+    alias alpha get_alpha
     alias tolerance= set_tolerance
-    alias tolerance current_tolerance
+    alias tolerance get_tolerance
     alias fill_rule= set_fill_rule
-    alias fill_rule current_fill_rule
+    alias fill_rule get_fill_rule
     alias line_width= set_line_width
-    alias line_width current_line_width
+    alias line_width get_line_width
     alias line_cap= set_line_cap
-    alias line_cap current_line_cap
+    alias line_cap get_line_cap
     alias line_join= set_line_join
-    alias line_join current_line_join
+    alias line_join get_line_join
     alias miter_limit= set_miter_limit
-    alias miter_limit current_miter_limit
+    alias miter_limit get_miter_limit
     alias matrix= set_matrix
-    alias matrix current_matrix
-    alias pattern current_pattern
+    alias matrix get_matrix
+    alias pattern get_pattern
     alias pattern= set_pattern
     alias set_transform set_matrix
-    alias current_transform current_matrix
+    alias get_transform get_matrix
     alias transform= set_transform
-    alias transform current_transform
+    alias transform get_transform
     alias target_surface= set_target_surface
-    alias target_surface current_target_surface
-    alias font current_font
+    alias target_surface get_target_surface
+    alias font get_font
     alias font= set_font
 
     alias in_fill? in_fill
