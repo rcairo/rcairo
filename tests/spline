@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 # vim: set ts=2 sw=2 et :
 
+$LOAD_PATH << "../src"
 require 'cairo'
 
 class SplineWindow < Cairo::Xlib::Window
