@@ -137,7 +137,7 @@ class PongWindow < Gtk::Window
     @gc = Gtk::CairoWidget.new
     @gc.modify_bg(Gtk::STATE_NORMAL, Gdk::Color.new(0,0,0))
     @gc.set_size_request(@field.width, @field.height)
-    @gc.signal_connect('redraw') { redraw }
+    @gc.signal_connect('paint') { paint }
 
     Gtk::timeout_add(Speed) { @field.update; @gc.queue_draw }
 
@@ -148,7 +148,7 @@ class PongWindow < Gtk::Window
     add(vb)
   end
 
-  def redraw
+  def paint
     cr = @gc.cairo
     @field.draw(cr)
   end

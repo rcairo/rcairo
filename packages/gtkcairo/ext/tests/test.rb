@@ -15,10 +15,10 @@ class DemoWindow < Gtk::Window
 
     set_default_size(200, 200)
     signal_connect('destroy') { Gtk.main_quit }
-    @gc.signal_connect('redraw') { redraw }
+    @gc.signal_connect('paint') { paint }
 
-    #b = Gtk::Button.new("redraw")
-    #b.signal_connect('clicked') { redraw }
+    #b = Gtk::Button.new("paint")
+    #b.signal_connect('clicked') { paint }
 
     vb = Gtk::VBox.new(FALSE, 5)
     vb.border_width = 10
@@ -27,7 +27,7 @@ class DemoWindow < Gtk::Window
     vb.show_all
     add(vb)
   end
-  def redraw
+  def paint
     cr = @gc.cairo
     cr.set_rgb_color(0, 0, 0)
     cr.rectangle(0, 0, 100, 100)
