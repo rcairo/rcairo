@@ -1,20 +1,42 @@
-Dependencies:
-        cairo, libpixman
+rcairo
+======
 
-For gtkcairo widget:
-        gtk+-2.0
-        gtkcairo  from cairo cvs
-        ruby-gnome2 with devel files
+ruby bindings for cairo // cairo extension for ruby
+
+http://cairographics.org/
 
 
-After building with:
+Dependencies
+------------
 
-./setup.rb config
-./setup.rb setup
+ruby                   >= 1.8
+cairo                  >= 0.4.0
 
-the samples should be usable prior to installing with
+libsvg-cairo  optional >= 0.1.4   # for svg parsing/rendering
 
-./setup.rb install
+gtkcairo      optional >= 0.4.0   # needed for gtk abilities
+ruby-gnome2   optional >= 0.11    # 
 
-as root.
+
+Compiling
+---------
+
+./setup.rb config    # to check for dependencies and create Makefiles
+./setup.rb setup     # to compile
+
+# the samples in the samples folder should be able to run before
+# instaliing.
+
+./setup.rb install   # to install the cairo extension.
+
+
+Mailing list
+------------
+
+If you have trouble with cairo or rcairo, or you have some ideas for how
+it could be improved, please feel free to send a message to the cairo
+mailinglist at cairo@cairographics.org , which is archived at
+
+  http://cairographics.org/cgi-bin/mailman/listinfo/cairo
+
 
