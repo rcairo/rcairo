@@ -1,9 +1,22 @@
+2005-03-21  Øyvind Kolås  <pippin@freedesktop.org>
+
+	* packages/cairo/ext/rb_cairo_context.c: Rename methods to eliminate
+	abbreviations (following changes in cairo.h):
+        cairo_concat_matrix             -> cairo_transform
+        cairo_transform_point           -> cairo_user_to_device
+        cairo_transform_distance        -> cairo_user_to_device_distance
+        cairo_inverse_transform_point   -> cairo_device_to_user
+        cairo_inverse_transform_distance-> cairo_device_to_user_distance
+        cairo_init_clip                 -> cairo_reset_clip
+
+
 2005-03-20  Øyvind Kolås  <pippin@freedesktop.org>
 
 	* README: reworked, borrowing ideas and style from pycairo README.
 	* COPYING,
 	* GPL,
 	* AUTHORS: added.
+
 
 2005-03-17  Øyvind Kolås  <pippin@freedesktop.org>
 

@@ -313,10 +313,10 @@ rb_cairo_rotate (VALUE self,
 }
 
 static    VALUE
-rb_cairo_concat_matrix (VALUE self,
-                        VALUE xform)
+rb_cairo_transform (VALUE self,
+                    VALUE xform)
 {
-  cairo_concat_matrix (_SELF, rb_v_to_cairo_matrix_t (xform));
+  cairo_transform (_SELF, rb_v_to_cairo_matrix_t (xform));
   check_context_status (_SELF);
   return self;
 }
@@ -345,49 +345,46 @@ rb_cairo_identity_matrix (VALUE self)
 }
 
 static    VALUE
-rb_cairo_transform_point (VALUE self,
-                          VALUE x, VALUE y)
+rb_cairo_user_to_device (VALUE self,
+                         VALUE x, VALUE y)
 {
   double    pair[2];
   pair[0] = NUM2DBL (x);
   pair[1] = NUM2DBL (y);
-  cairo_transform_point (_SELF, pair, pair + 1);
+  cairo_user_to_device (_SELF, pair, pair + 1);
   return float_array (pair, 2);
 }
 
 static    VALUE
-rb_cairo_transform_distance (VALUE self,
-                             VALUE dx, VALUE dy)
+rb_cairo_user_to_device_distance (VALUE self,
+                                  VALUE dx, VALUE dy)
 {
   double    pair[2];
   pair[0] = NUM2DBL (dx);
   pair[1] = NUM2DBL (dy);
-  cairo_transform_distance (_SELF, pair,
-                            pair + 1);
+  cairo_user_to_device_distance (_SELF, pair, pair + 1);
   return float_array (pair, 2);
 }
 
 static    VALUE
-rb_cairo_inverse_transform_point (VALUE self,
-                                  VALUE x, VALUE y)
+rb_cairo_device_to_user (VALUE self,
+                         VALUE x, VALUE y)
 {
   double    pair[2];
   pair[0] = NUM2DBL (x);
   pair[1] = NUM2DBL (y);
-  cairo_inverse_transform_point (_SELF,
-                                 pair, pair + 1);
+  cairo_device_to_user (_SELF, pair, pair + 1);
   return float_array (pair, 2);
 }
 
 static    VALUE
-rb_cairo_inverse_transform_distance (VALUE self,
-                                     VALUE dx, VALUE dy)
+rb_cairo_device_to_user_distance (VALUE self,
+                                  VALUE dx, VALUE dy)
 {
   double    pair[2];
   pair[0] = NUM2DBL (dx);
   pair[1] = NUM2DBL (dy);
-  cairo_inverse_transform_distance (_SELF,
-                                    pair, pair + 1);
+  cairo_inverse_device_to_user_distance (_SELF, pair, pair + 1);
   return float_array (pair, 2);
 }
 
@@ -615,9 +612,9 @@ rb_cairo_fill_extents (VALUE self)
 /* Clipping */
 
 static    VALUE
-rb_cairo_init_clip (VALUE self)
+rb_cairo_reset_clip (VALUE self)
 {
-  cairo_init_clip (_SELF);
+  cairo_reset_clip (_SELF);
   check_context_status (_SELF);
   return self;
 }
@@ -1147,23 +1144,22 @@ Init_cairo_context (void)
                     RUBY_METHOD_FUNC (rb_cairo_scale), 2);
   rb_define_method (rb_cCairo_Context, "rotate",
                     RUBY_METHOD_FUNC (rb_cairo_rotate), 1);
-  rb_define_method (rb_cCairo_Context, "concat_matrix",
-                    RUBY_METHOD_FUNC (rb_cairo_concat_matrix), 1);
+  rb_define_method (rb_cCairo_Context, "transform",
+                    RUBY_METHOD_FUNC (rb_cairo_transform), 1);
   rb_define_method (rb_cCairo_Context, "set_matrix",
                     RUBY_METHOD_FUNC (rb_cairo_set_matrix), 1);
   rb_define_method (rb_cCairo_Context, "default_matrix",
                     RUBY_METHOD_FUNC (rb_cairo_default_matrix), 1);
   rb_define_method (rb_cCairo_Context, "identity_matrix",
                     RUBY_METHOD_FUNC (rb_cairo_identity_matrix), 1);
-  rb_define_method (rb_cCairo_Context, "transform_point",
-                    RUBY_METHOD_FUNC (rb_cairo_transform_point), 2);
-  rb_define_method (rb_cCairo_Context, "transform_distance",
-                    RUBY_METHOD_FUNC (rb_cairo_transform_distance), 2);
-  rb_define_method (rb_cCairo_Context, "inverse_transform_point",
-                    RUBY_METHOD_FUNC (rb_cairo_inverse_transform_point), 2);
-  rb_define_method (rb_cCairo_Context, "inverse_transform_distance",
-                    RUBY_METHOD_FUNC (rb_cairo_inverse_transform_distance),
-                    2);
+  rb_define_method (rb_cCairo_Context, "user_to_device",
+                    RUBY_METHOD_FUNC (rb_cairo_user_to_device), 2);
+  rb_define_method (rb_cCairo_Context, "user_to_device_distance",
+                    RUBY_METHOD_FUNC (rb_cairo_user_to_device_distance), 2);
+  rb_define_method (rb_cCairo_Context, "device_to_user",
+                    RUBY_METHOD_FUNC (rb_cairo_device_to_user), 2);
+  rb_define_method (rb_cCairo_Context, "device_to_user_distance",
+                    RUBY_METHOD_FUNC (rb_cairo_device_to_user_distance), 2);
 
   /* path creation functions */
   
@@ -1211,8 +1207,8 @@ Init_cairo_context (void)
   rb_define_method (rb_cCairo_Context, "stroke_extents",
                     RUBY_METHOD_FUNC (rb_cairo_stroke_extents), 0);
 
-  rb_define_method (rb_cCairo_Context, "init_clip",
-                    RUBY_METHOD_FUNC (rb_cairo_init_clip), 0);
+  rb_define_method (rb_cCairo_Context, "reset_clip",
+                    RUBY_METHOD_FUNC (rb_cairo_reset_clip), 0);
   rb_define_method (rb_cCairo_Context, "clip",
                     RUBY_METHOD_FUNC (rb_cairo_clip), 0);
 
