@@ -39,3 +39,5 @@ File.open("test-0.png", "wb") {|stream|
     cr.show_page
 }
 
+
+puts "foo"

@@ -48,7 +48,7 @@ check_context_status (cairo_t *context)
   status = cairo_status (context);
   if (status)
     {
-      raise_cairo_exception (status, cairo_status_string (context));
+      rb_cairo_raise_exception (status, cairo_status_string (context));
     }
 }
 
@@ -732,7 +732,7 @@ rb_cairo_get_font (VALUE self)
       if (cairo_status (_SELF))
         {
           rb_free_font (xform);
-          raise_cairo_exception (cairo_status (_SELF),
+          rb_cairo_raise_exception (cairo_status (_SELF),
                                  cairo_status_string (_SELF));
         }
       return Data_Wrap_Struct (rb_cCairo_Font, NULL, rb_free_font, xform);
@@ -772,7 +772,7 @@ rb_cairo_text_extents (VALUE self,
       if (cairo_status (_SELF))
         {
           rb_free_font (xform);
-          raise_cairo_exception (cairo_status (_SELF),
+          rb_cairo_raise_exception (cairo_status (_SELF),
                                  cairo_status_string (_SELF));
         }
       return Data_Wrap_Struct (rb_cCairo_TextExtents, NULL, rb_free_text_extents, xform);
@@ -818,7 +818,7 @@ rb_cairo_glyph_extents (VALUE self,
       if (cairo_status (_SELF))
         {
           rb_free_font (xform);
-          raise_cairo_exception (cairo_status (_SELF),
+          rb_cairo_raise_exception (cairo_status (_SELF),
                                  cairo_status_string (_SELF));
         }
       free (glyphs);
@@ -985,7 +985,7 @@ rb_cairo_get_matrix (VALUE self)
       if (cairo_status (_SELF))
         {
           rb_free_matrix (matrix);
-          raise_cairo_exception (cairo_status (_SELF),
+          rb_cairo_raise_exception (cairo_status (_SELF),
                                  cairo_status_string (_SELF));
         }
       return rb_cairo_matrix_wrap (matrix);

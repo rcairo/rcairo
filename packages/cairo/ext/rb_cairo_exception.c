@@ -16,6 +16,8 @@ static VALUE rb_eCairo_NoCurrentPointError;
 static VALUE rb_eCairo_InvalidMatrixError;
 static VALUE rb_eCairo_NoTargetSurfaceError;
 static VALUE rb_eCairo_NullPointerError;
+static VALUE rb_eCairo_WriteError;
+static VALUE rb_eCairo_SurfaceFinishedError;
 
 void
 rb_cairo_raise_exception (cairo_status_t  status,
@@ -44,6 +46,11 @@ rb_cairo_raise_exception (cairo_status_t  status,
     case CAIRO_STATUS_NULL_POINTER:
       rb_raise (rb_eCairo_NullPointerError, string);
       break;
+    case CAIRO_STATUS_WRITE_ERROR:
+      rb_raise (rb_eCairo_WriteError, string);
+      break;
+    case CAIRO_STATUS_SURFACE_FINISHED:
+      rb_raise (rb_eCairo_SurfaceFinishedError, string);
     }
 }
 
@@ -60,10 +67,18 @@ Init_cairo_exception ()
     rb_define_class_under (rb_mCairo, "NoCurrentPointError",
                            rb_eRuntimeError);
   rb_eCairo_InvalidMatrixError =
-    rb_define_class_under (rb_mCairo, "InvalidMatrixError", rb_eArgError);
+    rb_define_class_under (rb_mCairo, "InvalidMatrixError",
+                           rb_eArgError);
   rb_eCairo_NoTargetSurfaceError =
     rb_define_class_under (rb_mCairo, "NoTargetSurfaceError",
                            rb_eRuntimeError);
   rb_eCairo_NullPointerError =
-    rb_define_class_under (rb_mCairo, "NullPointerError", rb_eTypeError);
+    rb_define_class_under (rb_mCairo, "NullPointerError",
+                           rb_eTypeError);
+  rb_eCairo_WriteError =
+    rb_define_class_under (rb_mCairo, "WriteError",
+                           rb_eRuntimeError);
+  rb_eCairo_SurfaceFinishedError =
+    rb_define_class_under (rb_mCairo, "SurfaceFinishedError",
+                           rb_eRuntimeError);
 }

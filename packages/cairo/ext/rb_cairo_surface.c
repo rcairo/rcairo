@@ -25,6 +25,31 @@
 
 #define _SELF  (DATA_PTR(self))
 
+static cairo_status_t
+rfile_write (void         *closure,
+             const char   *data,
+             unsigned int  length)
+{
+  OpenFile *fptr;
+  FILE     *fp;
+  
+  fptr = closure;
+  fp   = GetWriteFile (fptr);
+
+  if (rb_io_fwrite (data, length, fp) == length)
+    return CAIRO_STATUS_SUCCESS;
+  return CAIRO_STATUS_WRITE_ERROR;
+}
+
+static void
+rfile_destroy_closure (void *closure)
+{
+  OpenFile *fptr;
+ 
+  fptr = closure;
+}
+
+
 VALUE rb_cCairo_Surface;
 
 cairo_surface_t *
@@ -118,10 +143,17 @@ rb_cairo_surface_new_pdf (VALUE klass,
     {
       rb_raise (rb_eArgError, "height_inches must be positive");
     }
-
-  surface = cairo_pdf_surface_create (GetWriteFile (RFILE (port)->fptr),
+#if 1
+  surface = cairo_pdf_surface_create (rfile_write, rfile_destroy_closure, RFILE (port)->fptr,
                                       width_inches, height_inches,
                                       x_pixels_per_inch, y_pixels_per_inch);
+#endif
+#if 0
+  surface = cairo_pdf_surface_create_for_file (GetWriteFile(RFILE (port)->fptr),
+        width_inches, height_inches,
+        x_pixels_per_inch, y_pixels_per_inch);
+#endif
+  
   if (surface)
     {
       return Data_Wrap_Struct (rb_cCairo_Surface, NULL, rb_free_surface,
@@ -134,6 +166,13 @@ rb_cairo_surface_new_pdf (VALUE klass,
     }
 }
 #endif
+
+static    VALUE
+rb_cairo_surface_finish (VALUE self)
+{
+  cairo_surface_finish (_SELF);
+  return Qnil;
+}
 
 #ifdef CAIRO_HAS_PNG_SURFACE
 static    VALUE
@@ -229,7 +268,6 @@ rb_cairo_surface_new_ps (VALUE klass,
 }
 #endif
 
-
 void
 Init_cairo_surface (void)
 {
@@ -237,6 +275,9 @@ Init_cairo_surface (void)
     rb_define_class_under (rb_mCairo, "Surface", rb_cObject);
   rb_define_singleton_method (rb_cCairo_Surface, "new",
                               RUBY_METHOD_FUNC (rb_cairo_surface_new), 3);
+
+  rb_define_method (rb_cCairo_Surface, "finish",
+                              RUBY_METHOD_FUNC (rb_cairo_surface_finish), 0);
 
 #ifdef CAIRO_HAS_PDF_SURFACE
   rb_define_singleton_method (rb_cCairo_Surface, "new_pdf",
@@ -248,7 +289,7 @@ Init_cairo_surface (void)
                               RUBY_METHOD_FUNC (rb_cairo_surface_new_png), 4);
 #endif
 
-#ifdef CAIRO_HAS_PDF_SURFACE
+#ifdef CAIRO_HAS_PS_SURFACE
   rb_define_singleton_method (rb_cCairo_Surface, "new_ps",
                               RUBY_METHOD_FUNC (rb_cairo_surface_new_ps), 5);
 #endif

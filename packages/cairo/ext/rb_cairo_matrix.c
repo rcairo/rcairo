@@ -82,7 +82,7 @@ rb_cairo_matrix_copy (VALUE self, VALUE other)
                        rb_v_to_cairo_matrix_t (other));
   if (status)
     {
-      raise_cairo_exception (status, "error copying matrix");
+      rb_cairo_raise_exception (status, "error copying matrix");
     }
   return self;
 }
@@ -94,7 +94,7 @@ rb_cairo_matrix_set_identity (VALUE self)
   status = cairo_matrix_set_identity (_SELF);
   if (status)
     {
-      raise_cairo_exception (status, "error resetting matrix");
+      rb_cairo_raise_exception (status, "error resetting matrix");
     }
   return self;
 }
@@ -112,7 +112,7 @@ rb_cairo_matrix_set_affine (VALUE self,
                                     NUM2DBL (tx), NUM2DBL (ty));
   if (status)
     {
-      raise_cairo_exception (status, "error setting matrix components");
+      rb_cairo_raise_exception (status, "error setting matrix components");
     }
   return self;
 }
@@ -128,7 +128,7 @@ rb_cairo_matrix_get_affine (VALUE self)
                                     affine + 4, affine + 5);
   if (status)
     {
-      raise_cairo_exception (status, "error getting matrix components");
+      rb_cairo_raise_exception (status, "error getting matrix components");
     }
   return float_array (affine, 6);
 }
@@ -142,7 +142,7 @@ rb_cairo_matrix_translate (VALUE self,
                                    NUM2DBL (tx), NUM2DBL (ty));
   if (status)
     {
-      raise_cairo_exception (status, "error translating matrix");
+      rb_cairo_raise_exception (status, "error translating matrix");
     }
   return self;
 }
@@ -156,7 +156,7 @@ rb_cairo_matrix_scale (VALUE self,
                                NUM2DBL (sx), NUM2DBL (sy));
   if (status)
     {
-      raise_cairo_exception (status, "error scaling matrix");
+      rb_cairo_raise_exception (status, "error scaling matrix");
     }
   return self;
 }
@@ -170,7 +170,7 @@ rb_cairo_matrix_rotate (VALUE self,
                                 NUM2DBL (radians));
   if (status)
     {
-      raise_cairo_exception (status, "error rotating matrix");
+      rb_cairo_raise_exception (status, "error rotating matrix");
     }
   return self;
 }
@@ -182,7 +182,7 @@ rb_cairo_matrix_invert (VALUE self)
   status = cairo_matrix_invert (_SELF);
   if (status)
     {
-      raise_cairo_exception (status, "error inverting matrix");
+      rb_cairo_raise_exception (status, "error inverting matrix");
     }
   return self;
 }
@@ -197,7 +197,7 @@ rb_cairo_matrix_set_product (VALUE self,
                                   rb_v_to_cairo_matrix_t (a), rb_v_to_cairo_matrix_t (b));
   if (status)
     {
-      raise_cairo_exception (status, "error multiplying matrices");
+      rb_cairo_raise_exception (status, "error multiplying matrices");
     }
   return self;
 }
@@ -214,7 +214,7 @@ rb_cairo_matrix_transform_distance (VALUE self,
                                             pair, pair + 1);
   if (status)
     {
-      raise_cairo_exception (status, "error transforming distance");
+      rb_cairo_raise_exception (status, "error transforming distance");
     }
   return float_array (pair, 2);
 }
@@ -231,7 +231,7 @@ rb_cairo_matrix_transform_point (VALUE self,
                                          pair, pair + 1);
   if (status)
     {
-      raise_cairo_exception (status, "error transforming point");
+      rb_cairo_raise_exception (status, "error transforming point");
     }
   return float_array (pair, 2);
 }
