@@ -182,6 +182,18 @@ rsurface_new_from(cairo_surface_t *surf) {
 	return Data_Wrap_Struct(cCairoSurface, NULL, cairo_surface_destroy, surf);
 }
 
+VALUE
+rcairo_in_fill(VALUE self, VALUE x, VALUE y) {
+	return cairo_in_fill(rcairo_get_cairo(self), NUM2DBL(x), NUM2DBL(y))?
+		Qtrue:Qfalse;
+}
+
+
+VALUE
+rcairo_in_stroke(VALUE self, VALUE x, VALUE y) {
+	return cairo_in_stroke(rcairo_get_cairo(self), NUM2DBL(x), NUM2DBL(y))?
+		Qtrue:Qfalse;
+}
 
 /*static VALUE
 rcairo_surface_new_for_image(VALUE class, VALUE image) {
@@ -214,6 +226,11 @@ Init_cairo() {
 	rb_define_method(cCairo, "stack", rcairo_stack, 0);
 	rb_define_method(cCairo, "stroke", rcairo_stroke, 0);
 	rb_define_method(cCairo, "fill", rcairo_fill, 0);
+
+	rb_define_method(cCairo, "in_stroke", rcairo_in_stroke, 2);
+	rb_define_method(cCairo, "in_stroke?", rcairo_in_stroke, 2);
+	rb_define_method(cCairo, "in_fill", rcairo_in_fill, 2);
+	rb_define_method(cCairo, "in_fill?", rcairo_in_fill, 2);
 
 	cCairoMatrix = gen_CairoMatrix();
 

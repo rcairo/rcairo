@@ -78,6 +78,11 @@ special = {}
   'cairo_matrix_create',
   'cairo_matrix_destroy',
   'cairo_matrix_copy',
+
+   # insideness testing
+   'cairo_in_stroke',
+   'cairo_in_fill',
+
 ].each { |func| special[func] = 1 }
 
 def r_from_c(type)
