@@ -20,28 +20,49 @@ class Canvas < Gtk::CairoWidget
         add_events Gdk::Event::BUTTON_PRESS_MASK
 
         signal_connect('paint') { paint }
-        signal_connect('button_press_event') {|w,e|
-            press_event e.x, e.y, e.button
-        }
-    end
-    def press_event x,y,b
-        @x = x
-        @y = y
-        queue_draw
+
+        signal_connect('button_press_event') do
+           |widget,button_event|
+           @x = button_event.x
+           @y = button_event.y
+           queue_draw
+        end
+
+        add_events Gdk::Event::BUTTON1_MOTION_MASK
+        signal_connect('motion_notify_event') do
+           |widget,motion_event|
+           @x = motion_event.x
+           @y = motion_event.y
+           queue_draw
+        end
     end
     def paint
         cr = cairo
 
         cr.save
-          cr.set_rgb_color 0,0,0
-          cr.move_to @x, @y
-          cr.line_to 20,20
+          cr.rgb_color = 1,0,0
+          cr.move_to 20,20
+          cr.line_to @x, @y
+          cr.rel_line_to 120,0
           cr.stroke
-          cr.move_to @x, @y
-          
+
+          cr.rgb_color = 0,0,1
+
+          cr.alpha = 1
+          cr.move_to @x, @y-4
           cr.select_font "Sans", Cairo::FONT_WEIGHT_NORMAL, Cairo::FONT_SLANT_NORMAL
-          cr.scale_font 10
-          cr.show_text "foo"
+          cr.scale_font 15
+          cr.show_text "Ruby Cairo Foo"
+
+          12.times do
+              |i|
+              cr.alpha = 0.2
+              cr.stroke {
+                  radius=@x/(i+1)
+                  cr.arc @x, @y, radius, 0, 2*3.1415
+              }
+          end
+
         cr.restore
     end
 end

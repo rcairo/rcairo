@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 #
-# pong by Martin Evans
+# pong by Evan Martins
 #
 # vim: set ts=2 sw=2 et :
 

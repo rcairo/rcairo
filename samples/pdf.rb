@@ -32,4 +32,3 @@ puts "wrote #{SIZE}x#{SIZE}in, #{DPI}dpi image to #{FILENAME}."
 
 puts "foo"
 exit
-
