@@ -1,5 +1,11 @@
 2005-02-10  Øyvind Kolås  <pippin@freedesktop.org>
 
+	* packages/cairo/lib/cairo.rb: added optional 'handler' parameters to
+	Context::current_path and Context#current_path_flat.
+	patch from <mental@rydia.net>
+
+2005-02-10  Øyvind Kolås  <pippin@freedesktop.org>
+
 	* packages/cairo/lib/cairo.rb: made save_internal private,
 	patch from <mental@rydia.net>
 

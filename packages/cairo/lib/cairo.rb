@@ -43,16 +43,24 @@ class Context
     end
 
     private :current_path_array
-    def current_path
+    def current_path(handler=nil)
         array = current_path_array
-        array.each {|op| yield op } if block_given?
+        if handler.nil?
+            array.each {|event| yield event } if block_given?
+        else
+            array.each {|event| handler.send(*event) }
+        end
         array
     end
 
     private :current_path_flat_array
-    def current_path_flat
+    def current_path_flat(handler=nil)
         array = current_path_flat_array
-        array.each {|op| yield op } if block_given?
+        if handler.nil?
+            array.each {|event| yield event } if block_given?
+        else
+            array.each {|event| handler.send(*event) }
+        end
         array
     end
 
