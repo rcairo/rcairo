@@ -62,6 +62,7 @@ class Context
     end
 
     alias save_internal save
+    private :save_internal
     def save
         if block_given?
             save_internal
