@@ -9,7 +9,7 @@ require 'mkmf-gnome2'
 PKGConfig.have_package('gtkcairo') or exit 1
 
 # pull in rbcairo.h path.
-$CFLAGS += " -I ../src"
+$CFLAGS += " -I ../../cairo/ext"
 
 create_makefile('gtkcairo')
 
