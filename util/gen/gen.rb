@@ -6,6 +6,11 @@
 
 require 'load_api'
 
+if ARGV.length < 1
+  puts "usage: #{$0} path/to/cairo.h"
+  exit 1
+end
+
 $FILE_HEADER = '/* ruby-cairo - Ruby bindings for Cairo.
  * Copyright (C) 2003 Evan Martin <martine@danga.com>
  *

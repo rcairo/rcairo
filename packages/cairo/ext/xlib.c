@@ -6,8 +6,6 @@
 
 #include "rbcairo.h"
 
-#include "cairo-xlib.h"
-
 VALUE mXlib, eXlib, cDisplay, cWindow;
 
 VALUE

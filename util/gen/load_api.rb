@@ -23,7 +23,7 @@ def load_api(fn)
     decl.gsub!(/;\s*$/, '')
     #puts "-->decl<-- #{decl}"
     case decl
-    when /^extern (.+?) (?:__external_linkage) (\w+) \((.+?)\)$/
+    when /^(.+?) (\w+) \((.+?)\)$/
       ret, func, args = $1, $2, $3.strip
       ret = nil if ret == 'void'
       if args == 'void'
@@ -46,8 +46,8 @@ def load_api(fn)
       decl, type = $1, $2
       #puts "-->type<-- #{type}"
       structs << type
-    when /^typedef enum (.*?) \{(.*?)\} (\w+)$/
-      tag, content, type = $1, $2, $3
+    when /^typedef enum .*?\{(.*?)\} (\w+)$/
+      content, type = $1, $2
       defs = content.split(/,\s*/).map { |value|
         value.gsub!(/^\s*(\w+).*?$/) { $1 }
       }

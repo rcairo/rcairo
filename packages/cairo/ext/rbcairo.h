@@ -6,7 +6,6 @@
 
 #include <ruby.h>
 #include <cairo.h>
-#include <cairo-xlib.h>
 
 void xlib_init();
 void cairo_xlib_init(void);
