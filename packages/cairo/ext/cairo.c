@@ -188,11 +188,30 @@ rcairo_in_fill(VALUE self, VALUE x, VALUE y) {
 		Qtrue:Qfalse;
 }
 
-
 VALUE
 rcairo_in_stroke(VALUE self, VALUE x, VALUE y) {
 	return cairo_in_stroke(rcairo_get_cairo(self), NUM2DBL(x), NUM2DBL(y))?
 		Qtrue:Qfalse;
+}
+
+VALUE
+rcairo_text_extents(VALUE self, VALUE utf8) {
+	VALUE hash;
+	cairo_t *cr;
+	cairo_text_extents_t extents;
+
+	cr = rcairo_get_cairo(self);
+	cairo_text_extents (cr, STR2CSTR(utf8), &extents);
+	hash = rb_hash_new ();
+
+	rb_hash_aset (hash, rb_str_new2("width"),  rb_float_new(extents.width));
+	rb_hash_aset (hash, rb_str_new2("height"), rb_float_new(extents.height));
+	rb_hash_aset (hash, rb_str_new2("x_bearing"), rb_float_new(extents.x_bearing));
+	rb_hash_aset (hash, rb_str_new2("y_bearing"), rb_float_new(extents.y_bearing));
+	rb_hash_aset (hash, rb_str_new2("x_advance"), rb_float_new(extents.x_advance));
+	rb_hash_aset (hash, rb_str_new2("y_advance"), rb_float_new(extents.y_advance));
+
+	return hash;
 }
 
 /*static VALUE
@@ -231,6 +250,8 @@ Init_cairo() {
 	rb_define_method(cCairo, "in_stroke?", rcairo_in_stroke, 2);
 	rb_define_method(cCairo, "in_fill", rcairo_in_fill, 2);
 	rb_define_method(cCairo, "in_fill?", rcairo_in_fill, 2);
+
+	rb_define_method(cCairo, "text_extents", rcairo_text_extents, 1);
 
 	cCairoMatrix = gen_CairoMatrix();
 
