@@ -14,6 +14,7 @@ void constants_init(void);
 extern VALUE mCairo, cCairo, cCairoSurface, cCairoMatrix, cCairoImage;
 extern VALUE cDisplay, eXlib;
 
+/* A buffer for cairo to render images into. */
 typedef struct {
 	char *data;
 	cairo_format_t format;
@@ -24,18 +25,19 @@ VALUE gen_Cairo(void);
 VALUE gen_CairoMatrix(void);
 VALUE gen_CairoSurface(void);
 
-VALUE rcairo_display_new();
+VALUE    rcairo_display_new();
 Display* rcairo_display_get_display(VALUE rdpy);
 
-VALUE rcairo_new_from(cairo_t *cr);
-VALUE rcairo_new();
+VALUE    rcairo_new_from(cairo_t *cr);
+VALUE    rcairo_new();
 cairo_t* rcairo_get_cairo(VALUE rcairo);
 
-void rcairo_image_init(void);
+void         rcairo_image_init(void);
 RCairoImage* rcairo_image_get_image(VALUE vimage);
 
-VALUE rmatrix_new();
+VALUE           rmatrix_new();
 cairo_matrix_t* rmatrix_get_matrix(VALUE vmatrix);
 
-VALUE rsurface_new_from();
+VALUE            rsurface_new_from();
 cairo_surface_t* rsurface_get_surface(VALUE rcairo);
+

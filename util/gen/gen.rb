@@ -33,6 +33,7 @@ structs_to_r = {
   'cairo_t *'         => "Cairo",
   'cairo_surface_t *' => "Surface",
   'cairo_matrix_t *'  => "Matrix",
+  #'cairo_pattern_t *' => "Pattern",
 }
 
 special = {}
@@ -45,6 +46,12 @@ special = {}
 
   'cairo_set_target_image',  # need special Cairo::Image class
   'cairo_set_target_ps',     # need special file handling
+  'cairo_set_target_png',    # need special file handling
+
+  # outside the scope of rcairo and will not be wrapped:
+  'cairo_set_target_drawable',
+  'cairo_set_target_xcb',
+  'cairo_set_target_gl',
 
   'cairo_set_dash',          # takes an array of dashes via double* ?
 

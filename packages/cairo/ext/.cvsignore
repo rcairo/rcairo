@@ -1,2 +1,3 @@
 Makefile
 gen-*.c
+.arch-ids

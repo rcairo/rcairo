@@ -1,10 +1,12 @@
 #!/usr/bin/env ruby
 # vim: set ts=2 sw=2 et :
 
-$LOAD_PATH << "../src"
-
 require 'gtk2'
+
+$LOAD_PATH << "../../src"
 require 'cairo'
+
+$LOAD_PATH << ".."
 require 'gtkcairo'
 
 class CenteredRect
@@ -133,6 +135,7 @@ class PongWindow < Gtk::Window
     @field = Field.new
 
     @gc = Gtk::CairoWidget.new
+    @gc.modify_bg(Gtk::STATE_NORMAL, Gdk::Color.new(0,0,0))
     @gc.set_size_request(@field.width, @field.height)
     @gc.signal_connect('redraw') { redraw }
 

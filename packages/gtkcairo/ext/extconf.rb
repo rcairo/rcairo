@@ -1,9 +1,8 @@
+#!/usr/bin/env ruby
+
 =begin
 extconf.rb for Ruby/GtkCairo extention library
 =end
-
-#$LOAD_PATH.unshift File.expand_path(File.dirname(__FILE__) + '/../glib/src/lib')require 'mkmf-gnome2'
-$LOAD_PATH.unshift File.expand_path('/home/martine/projects/cvs/ruby-gnome2/glib/src/lib')
 
 require 'mkmf-gnome2'
 

@@ -48,21 +48,41 @@ rcairo_set_target_image(VALUE vself, VALUE vimage) {
 	                       img->width, img->height, img->stride);
 	return Qnil;
 }
-static VALUE
-rcairo_set_target_ps(VALUE vself, VALUE vfile,
-                     VALUE vwidth_inches, VALUE vheight_inches,
-                     VALUE vx_pixels_per_inch, VALUE vy_pixels_per_inch) {
+static FILE*
+set_output_file(VALUE vself, VALUE vfile) {
 	OpenFile *rf;
 	FILE *f;
 
 	rb_check_type(vfile, T_FILE);
+	rb_iv_set(vself, "@target_file", vfile);
+
 	GetOpenFile(vfile, rf);
 	f = GetWriteFile(rf);
 
-	rb_iv_set(vself, "@target_file", vfile);
+	return f;
+}
+static VALUE
+rcairo_set_target_ps(VALUE vself, VALUE vfile,
+                     VALUE vwidth_inches, VALUE vheight_inches,
+                     VALUE vx_pixels_per_inch, VALUE vy_pixels_per_inch) {
+	FILE *f;
+
+	f = set_output_file(vself, vfile);
+
 	cairo_set_target_ps(rcairo_get_cairo(vself), f,
 	                    NUM2DBL(vwidth_inches), NUM2DBL(vheight_inches),
 	                    NUM2DBL(vx_pixels_per_inch), NUM2DBL(vy_pixels_per_inch));
+	return Qnil;
+}
+static VALUE
+rcairo_set_target_png(VALUE vself, VALUE vfile, VALUE vformat,
+                      VALUE vwidth, VALUE vheight) {
+	FILE *f;
+
+	f = set_output_file(vself, vfile);
+
+	cairo_set_target_png(rcairo_get_cairo(vself), f, NUM2INT(vformat),
+	                     NUM2DBL(vwidth), NUM2DBL(vheight));
 	return Qnil;
 }
 
@@ -119,7 +139,13 @@ rcairo_run_path_func(VALUE vself, void (*f)(cairo_t *cr)) {
 
 static VALUE
 rcairo_stroke(VALUE vself) {
-	return rcairo_run_path_func(vself, cairo_stroke);
+	cairo_t *cr = rcairo_get_cairo(vself);
+	if (rb_block_given_p()) {
+		cairo_new_path(cr);
+		rb_yield(Qnil);
+	}
+	cairo_stroke(cr);
+	return Qnil;
 }
 
 static VALUE
@@ -178,6 +204,7 @@ Init_cairo() {
 	rb_define_method(cCairo, "dup", rcairo_dup, 0);
 	rb_define_method(cCairo, "target_image=", rcairo_set_target_image, 1);
 	rb_define_method(cCairo, "set_target_ps", rcairo_set_target_ps, 5);
+	rb_define_method(cCairo, "set_target_png", rcairo_set_target_png, 4);
 	rb_define_method(cCairo, "set_dash", rcairo_set_dash, 2);
 	rb_define_method(cCairo, "transform_point", rcairo_transform_point, 1);
 	rb_define_method(cCairo, "transform_distance", rcairo_transform_distance, 1);
