@@ -102,6 +102,8 @@ class Context
     alias miter_limit current_miter_limit
     alias matrix= set_matrix
     alias matrix current_matrix
+    alias pattern current_pattern
+    alias pattern= set_pattern
     alias set_transform set_matrix
     alias current_transform current_matrix
     alias transform= set_transform
@@ -148,4 +150,43 @@ class Matrix
     def *(other) ; Matrix.new.set_product(self, other) ; end
 end
 
+class Pattern
+
+    alias matrix  get_matrix
+    alias matrix= set_matrix
+    alias extend  get_extend
+    alias extend= set_extend
+    alias filter  get_filter
+    alias filter= set_filter
+    
+    class << Pattern  # singleton overrides
+        alias   :create_linear_internal :create_linear
+        private :create_linear_internal
+
+        def create_linear(x0,y0,x1,y1)
+            if block_given?
+                pat = create_linear_internal(x0,y0,x1,y1)
+                yield pat
+                return pat
+            end
+            create_linear_internal(x0,y0,x1,y1)
+        end
+
+        alias   :create_radial_internal :create_radial
+        private :create_radial_internal
+
+        def create_radial(cx0,cy0,r0,cx1,cy1,r1)
+            if block_given?
+                pat = create_radial_internal(cx0,cy0,r0,cx1,cy1,r1)
+                yield pat
+                return pat
+            end
+            create_radial_internal(cx0,cy0,r0,cx1,cy1,r1)
+        end
+
+    end
+
+
+
+end
 end

@@ -906,6 +906,12 @@ rb_cairo_current_rgb_color (VALUE self)
 }
 
 static    VALUE
+rb_cairo_current_pattern (VALUE self)
+{
+  return rb_cairo_pattern_wrap (cairo_current_pattern (_SELF));
+}
+
+static    VALUE
 rb_cairo_current_alpha (VALUE self)
 {
   double    alpha;
@@ -972,19 +978,17 @@ rb_cairo_current_miter_limit (VALUE self)
 static    VALUE
 rb_cairo_current_matrix (VALUE self)
 {
-  cairo_matrix_t *xform;
-
-  xform = cairo_matrix_create ();
-  if (xform)
+  cairo_matrix_t *matrix = cairo_matrix_create ();
+  if (matrix)
     {
-      cairo_current_matrix (_SELF, xform);
+      cairo_current_matrix (_SELF, matrix);
       if (cairo_status (_SELF))
         {
-          rb_free_matrix (xform);
+          rb_free_matrix (matrix);
           raise_cairo_exception (cairo_status (_SELF),
                                  cairo_status_string (_SELF));
         }
-      return Data_Wrap_Struct (rb_cCairo_Matrix, NULL, rb_free_matrix, xform);
+      return rb_cairo_matrix_wrap (matrix);
     }
   else
     {
@@ -1119,6 +1123,8 @@ Init_cairo_context (void)
                     RUBY_METHOD_FUNC (rb_cairo_set_operator), 1);
   rb_define_method (rb_cCairo_Context, "set_rgb_color",
                     RUBY_METHOD_FUNC (rb_cairo_set_rgb_color), 3);
+  rb_define_method (rb_cCairo_Context, "set_pattern",
+                    RUBY_METHOD_FUNC (rb_cairo_set_pattern), 1);
   rb_define_method (rb_cCairo_Context, "set_alpha",
                     RUBY_METHOD_FUNC (rb_cairo_set_alpha), 1);
   rb_define_method (rb_cCairo_Context, "set_tolerance",
@@ -1217,6 +1223,8 @@ Init_cairo_context (void)
                     RUBY_METHOD_FUNC (rb_cairo_current_operator), 0);
   rb_define_method (rb_cCairo_Context, "current_rgb_color",
                     RUBY_METHOD_FUNC (rb_cairo_current_rgb_color), 0);
+  rb_define_method (rb_cCairo_Context, "current_pattern",
+                    RUBY_METHOD_FUNC (rb_cairo_current_pattern), 0);
   rb_define_method (rb_cCairo_Context, "current_alpha",
                     RUBY_METHOD_FUNC (rb_cairo_current_alpha), 0);
   rb_define_method (rb_cCairo_Context, "current_tolerance",

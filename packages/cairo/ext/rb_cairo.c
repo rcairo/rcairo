@@ -26,6 +26,7 @@ Init_cairo ()
   Init_cairo_font ();
   Init_cairo_text_extents ();
   Init_cairo_font_extents ();
+  Init_cairo_pattern ();
   Init_cairo_glyph ();
 
 }

@@ -17,6 +17,7 @@
 extern VALUE rb_cCairo_Pattern;
 
 void             Init_cairo_pattern      (void);
+VALUE            rb_cairo_pattern_wrap   (cairo_pattern_t *pat);
 cairo_pattern_t *rb_v_to_cairo_pattern_t (VALUE value);
 void             rb_free_pattern         (void *ptr);
 

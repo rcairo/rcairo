@@ -17,6 +17,7 @@ extern VALUE rb_cCairo_Matrix;
 
 void            Init_cairo_matrix      (void);
 cairo_matrix_t *rb_v_to_cairo_matrix_t (VALUE value);
+VALUE           rb_cairo_matrix_wrap   (cairo_matrix_t *matrix);
 void            rb_free_matrix         (void *ptr);
 
 

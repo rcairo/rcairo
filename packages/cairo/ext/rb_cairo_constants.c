@@ -81,4 +81,24 @@ Init_cairo_constants (void)
                    INT2FIX (CAIRO_OPERATOR_ADD));
   rb_define_const (rb_mCairo,    "OPERATOR_SATURATE",
                    INT2FIX (CAIRO_OPERATOR_SATURATE));
+
+  rb_define_const (rb_mCairo,    "FILTER_FAST",
+                   INT2FIX (CAIRO_FILTER_FAST));
+  rb_define_const (rb_mCairo,    "FILTER_GOOD",
+                   INT2FIX (CAIRO_FILTER_GOOD));
+  rb_define_const (rb_mCairo,    "FILTER_BEST",
+                   INT2FIX (CAIRO_FILTER_BEST));
+  rb_define_const (rb_mCairo,    "FILTER_NEAREST",
+                   INT2FIX (CAIRO_FILTER_NEAREST));
+  rb_define_const (rb_mCairo,    "FILTER_BILINEAR",
+                   INT2FIX (CAIRO_FILTER_BILINEAR));
+  rb_define_const (rb_mCairo,    "FILTER_GAUSSIAN",
+                   INT2FIX (CAIRO_FILTER_GAUSSIAN));
+
+  rb_define_const (rb_mCairo,    "EXTEND_NONE",
+                   INT2FIX (CAIRO_EXTEND_NONE));
+  rb_define_const (rb_mCairo,    "EXTEND_REPEAT",
+                   INT2FIX (CAIRO_EXTEND_REPEAT));
+  rb_define_const (rb_mCairo,    "EXTEND_REFLECT",
+                   INT2FIX (CAIRO_EXTEND_REFLECT));
 }

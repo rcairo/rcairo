@@ -37,18 +37,34 @@ rb_free_matrix (void *ptr)
 }
 
 
+VALUE
+rb_cairo_matrix_wrap (cairo_matrix_t *matrix)
+{
+  if (matrix)
+    {
+      return Data_Wrap_Struct (rb_cCairo_Matrix, NULL, rb_free_matrix, matrix);
+    }
+  else
+    {
+      rb_raise (rb_eNoMemError, "unable to wrap matrix");
+      return Qundef;
+    }
+}  
+
+
 /*
  * methods
  */
 
+
+
 static    VALUE
 rb_cairo_matrix_new (VALUE klass)
 {
-  cairo_matrix_t *xform;
-  xform = cairo_matrix_create ();
-  if (xform)
+  cairo_matrix_t *matrix = cairo_matrix_create ();
+  if (matrix)
     {
-      return Data_Wrap_Struct (rb_cCairo_Matrix, NULL, rb_free_matrix, xform);
+      return rb_cairo_matrix_wrap (matrix);
     }
   else
     {
