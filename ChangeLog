@@ -1,3 +1,7 @@
+2005-02-09  Øyvind Kolås  <pippin@freedesktop.org>
+
+	* packages/cairo/lib/cairo.rb: Added the ability for save to
+	take a block.
 
 2005-02-07  Øyvind Kolås  <pippin@freedesktop.org>
 

@@ -61,6 +61,20 @@ class Context
         self.set_rgb_color(*args)
     end
 
+    alias save_internal save
+    def save
+        if block_given?
+            save_internal
+            begin
+                yield
+            ensure
+                restore
+            end
+        else
+            save_internal
+        end
+    end
+
     alias operator= set_operator
     alias operator current_operator
     alias alpha= set_alpha
