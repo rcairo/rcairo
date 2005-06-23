@@ -28,5 +28,4 @@ Init_cairo ()
   Init_cairo_font_extents ();
   Init_cairo_pattern ();
   Init_cairo_glyph ();
-
 }

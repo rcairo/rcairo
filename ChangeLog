@@ -1,3 +1,16 @@
+2005-06-23  Øyvind Kolås  <pippin@freedesktop.org>
+
+	API shakeup, watch out for falling parts.
+
+	* packages/cairo/ext/*.c: large changes, and regressions.
+	* packages/cairo/ext/rb_cairo_font.[ch]: removed
+	* packages/cairo/ext/rb_cairo_font_face.[ch]: added
+	* packages/cairo/lib/cairo.rb:
+	* samples/*.rb: removed
+	* samples/png.rb: initial test case for new API.
+	* README: fixed spelling error.
+	* AUTHORS: added Ilmari Heikkinen.
+
 2005-03-21  Øyvind Kolås  <pippin@freedesktop.org>
 
 	* packages/cairo/ext/rb_cairo_context.c: Rename methods to eliminate

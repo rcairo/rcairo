@@ -24,7 +24,7 @@ extern VALUE rb_mCairo;
 #include "rb_cairo_exception.h"
 #include "rb_cairo_matrix.h"
 #include "rb_cairo_pattern.h"
-#include "rb_cairo_font.h"
+#include "rb_cairo_font_face.h"
 #include "rb_cairo_font_extents.h"
 #include "rb_cairo_text_extents.h"
 #include "rb_cairo_glyph.h"

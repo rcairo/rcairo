@@ -114,7 +114,8 @@ rb_cairo_surface_new (VALUE klass,
     }
 }
 
-#ifdef CAIRO_HAS_PDF_SURFACE
+
+#if XXXCAIRO_HAS_PDF_SURFACE
 static    VALUE
 rb_cairo_surface_new_pdf (VALUE klass,
                           VALUE port,
@@ -222,7 +223,7 @@ rb_cairo_surface_new_png (VALUE klass,
 }
 #endif
 
-#ifdef CAIRO_HAS_PS_SURFACE
+#ifdef XXXCAIRO_HAS_PS_SURFACE
 static    VALUE
 rb_cairo_surface_new_ps (VALUE klass,
                          VALUE port,
@@ -268,6 +269,14 @@ rb_cairo_surface_new_ps (VALUE klass,
 }
 #endif
 
+static VALUE
+rb_cairo_surface_write_to_png (VALUE self,
+                               VALUE filename_v)
+{
+  cairo_surface_write_to_png (_SELF, STR2CSTR (filename_v));
+  return self;
+}
+
 void
 Init_cairo_surface (void)
 {
@@ -276,10 +285,12 @@ Init_cairo_surface (void)
   rb_define_singleton_method (rb_cCairo_Surface, "new",
                               RUBY_METHOD_FUNC (rb_cairo_surface_new), 3);
 
+  rb_define_method (rb_cCairo_Surface, "write_to_png",
+                              RUBY_METHOD_FUNC (rb_cairo_surface_write_to_png), 1);
   rb_define_method (rb_cCairo_Surface, "finish",
                               RUBY_METHOD_FUNC (rb_cairo_surface_finish), 0);
 
-#ifdef CAIRO_HAS_PDF_SURFACE
+#if XXXCAIRO_HAS_PDF_SURFACE
   rb_define_singleton_method (rb_cCairo_Surface, "new_pdf",
                               RUBY_METHOD_FUNC (rb_cairo_surface_new_pdf), 5);
 #endif
@@ -289,7 +300,7 @@ Init_cairo_surface (void)
                               RUBY_METHOD_FUNC (rb_cairo_surface_new_png), 4);
 #endif
 
-#ifdef CAIRO_HAS_PS_SURFACE
+#ifdef XXXCAIRO_HAS_PS_SURFACE
   rb_define_singleton_method (rb_cCairo_Surface, "new_ps",
                               RUBY_METHOD_FUNC (rb_cairo_surface_new_ps), 5);
 #endif

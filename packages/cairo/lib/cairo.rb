@@ -42,28 +42,6 @@ class Context
         quad_to(x1 + x0, y1 + y0, x2 + x0, y2 + x0)
     end
 
-    private :get_path_array
-    def get_path(handler=nil)
-        array = get_path_array
-        if handler.nil?
-            array.each {|event| yield event } if block_given?
-        else
-            array.each {|event| handler.send(*event) }
-        end
-        array
-    end
-
-    private :get_path_flat_array
-    def get_path_flat(handler=nil)
-        array = get_path_flat_array
-        if handler.nil?
-            array.each {|event| yield event } if block_given?
-        else
-            array.each {|event| handler.send(*event) }
-        end
-        array
-    end
-
     def rgb_color=(*args)
         args = args[0] if args[0].is_a? Array
         self.set_rgb_color(*args)
@@ -86,8 +64,6 @@ class Context
 
     alias operator= set_operator
     alias operator get_operator
-    alias alpha= set_alpha
-    alias alpha get_alpha
     alias tolerance= set_tolerance
     alias tolerance get_tolerance
     alias fill_rule= set_fill_rule
@@ -102,16 +78,15 @@ class Context
     alias miter_limit get_miter_limit
     alias matrix= set_matrix
     alias matrix get_matrix
-    alias pattern get_pattern
-    alias pattern= set_pattern
+    alias source get_source
+    alias source= set_source
     alias set_transform set_matrix
     alias get_transform get_matrix
     alias transform= set_transform
     alias transform get_transform
-    alias target_surface= set_target_surface
-    alias target_surface get_target_surface
-    alias font get_font
-    alias font= set_font
+    alias target get_target
+    alias font_face get_font_face
+    alias font_face= set_font_face
 
     alias in_fill? in_fill
     alias in_stroke? in_stroke
@@ -148,45 +123,5 @@ class Matrix
     def multiply(other) ; Matrix.new.set_product(self, other) ; end
 
     def *(other) ; Matrix.new.set_product(self, other) ; end
-end
-
-class Pattern
-
-    alias matrix  get_matrix
-    alias matrix= set_matrix
-    alias extend  get_extend
-    alias extend= set_extend
-    alias filter  get_filter
-    alias filter= set_filter
-    
-    class << Pattern  # singleton overrides
-        alias   :create_linear_internal :create_linear
-        private :create_linear_internal
-
-        def create_linear(x0,y0,x1,y1)
-            if block_given?
-                pat = create_linear_internal(x0,y0,x1,y1)
-                yield pat
-                return pat
-            end
-            create_linear_internal(x0,y0,x1,y1)
-        end
-
-        alias   :create_radial_internal :create_radial
-        private :create_radial_internal
-
-        def create_radial(cx0,cy0,r0,cx1,cy1,r1)
-            if block_given?
-                pat = create_radial_internal(cx0,cy0,r0,cx1,cy1,r1)
-                yield pat
-                return pat
-            end
-            create_radial_internal(cx0,cy0,r0,cx1,cy1,r1)
-        end
-
-    end
-
-
-
 end
 end

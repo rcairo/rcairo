@@ -35,6 +35,7 @@ rb_free_pattern (void *ptr)
     }
 }
 
+#if 0
 VALUE
 rb_cairo_pattern_wrap (cairo_pattern_t *pat)
 {
@@ -170,14 +171,14 @@ rb_cairo_pattern_get_filter (VALUE self)
   return INT2FIX (filter);
 }
 
-
+#endif
 
 void
 Init_cairo_pattern (void)
 {
   rb_cCairo_Pattern =
     rb_define_class_under (rb_mCairo, "Pattern", rb_cObject);
-  
+#if 0 
   rb_define_singleton_method (rb_cCairo_Pattern, "create_linear",
     RUBY_METHOD_FUNC (rb_cairo_pattern_create_linear), 4);
   rb_define_singleton_method (rb_cCairo_Pattern, "create_radial",
@@ -200,4 +201,5 @@ Init_cairo_pattern (void)
     RUBY_METHOD_FUNC (rb_cairo_pattern_set_filter), 1);
   rb_define_method (rb_cCairo_Pattern, "get_filter",
     RUBY_METHOD_FUNC (rb_cairo_pattern_get_filter), 0);
+#endif
 }

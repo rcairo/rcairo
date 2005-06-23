@@ -3,7 +3,7 @@
 
 require 'mkmf'
 
-$CFLAGS  = `pkg-config --cflags cairo`
+$CFLAGS  = "-Wall "+`pkg-config --cflags cairo`
 $LDFLAGS = `pkg-config --libs cairo`
 create_makefile("cairo")
 

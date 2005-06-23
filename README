@@ -25,7 +25,7 @@ Compiling
 ./setup.rb setup     # to compile
 
 # the samples in the samples folder should be able to run before
-# instaliing.
+# installation.
 
 ./setup.rb install   # to install the cairo extension.
 

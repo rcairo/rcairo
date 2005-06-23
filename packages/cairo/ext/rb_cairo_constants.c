@@ -55,26 +55,26 @@ Init_cairo_constants (void)
 
   rb_define_const (rb_mCairo,    "OPERATOR_CLEAR",
                    INT2FIX (CAIRO_OPERATOR_CLEAR));
-  rb_define_const (rb_mCairo,    "OPERATOR_SRC",
-                   INT2FIX (CAIRO_OPERATOR_SRC));
-  rb_define_const (rb_mCairo,    "OPERATOR_DST",
-                   INT2FIX (CAIRO_OPERATOR_DST));
+  rb_define_const (rb_mCairo,    "OPERATOR_SOURCE",
+                   INT2FIX (CAIRO_OPERATOR_SOURCE));
+  rb_define_const (rb_mCairo,    "OPERATOR_DEST",
+                   INT2FIX (CAIRO_OPERATOR_DEST));
   rb_define_const (rb_mCairo,    "OPERATOR_OVER",
                    INT2FIX (CAIRO_OPERATOR_OVER));
-  rb_define_const (rb_mCairo,    "OPERATOR_OVER_REVERSE",
-                   INT2FIX (CAIRO_OPERATOR_OVER_REVERSE));
+  rb_define_const (rb_mCairo,    "OPERATOR_DEST_OVER",
+                   INT2FIX (CAIRO_OPERATOR_DEST_OVER));
   rb_define_const (rb_mCairo,    "OPERATOR_IN",
                    INT2FIX (CAIRO_OPERATOR_IN));
-  rb_define_const (rb_mCairo,    "OPERATOR_IN_REVERSE",
-                   INT2FIX (CAIRO_OPERATOR_IN_REVERSE));
+  rb_define_const (rb_mCairo,    "OPERATOR_DEST_IN",
+                   INT2FIX (CAIRO_OPERATOR_DEST_IN));
   rb_define_const (rb_mCairo,    "OPERATOR_OUT",
                    INT2FIX (CAIRO_OPERATOR_OUT));
-  rb_define_const (rb_mCairo,    "OPERATOR_OUT_REVERSE",
-                   INT2FIX (CAIRO_OPERATOR_OUT_REVERSE));
+  rb_define_const (rb_mCairo,    "OPERATOR_DEST_OUT",
+                   INT2FIX (CAIRO_OPERATOR_DEST_OUT));
   rb_define_const (rb_mCairo,    "OPERATOR_ATOP",
                    INT2FIX (CAIRO_OPERATOR_ATOP));
-  rb_define_const (rb_mCairo,    "OPERATOR_ATOP_REVERSE",
-                   INT2FIX (CAIRO_OPERATOR_ATOP_REVERSE));
+  rb_define_const (rb_mCairo,    "OPERATOR_DEST_ATOP",
+                   INT2FIX (CAIRO_OPERATOR_DEST_ATOP));
   rb_define_const (rb_mCairo,    "OPERATOR_XOR",
                    INT2FIX (CAIRO_OPERATOR_XOR));
   rb_define_const (rb_mCairo,    "OPERATOR_ADD",
