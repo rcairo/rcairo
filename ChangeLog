@@ -1,3 +1,19 @@
+2005-09-08  Øyvind Kolås  <pippin@freedesktop.org>
+
+	Integrated patch from Kouhei Sutou <kou@cozmixng.org>.
+
+	* packages/cairo/ext/rb_cairo_exception.h:
+	* packages/cairo/ext/rb_cairo_exception.c:
+		(rb_cairo_raise_exception),
+		(Init_cairo_exception): Added new error types, made exception
+		retrieve the status string itself.
+	* packages/cairo/ext/rb_cairo_context.c:
+		(check_context_status): Simplified exception raising.
+	* packages/cairo/ext/rb_cairo_matrix.c:
+		(rb_cairo_matrix_copy): create a new matrix when copying.
+		(rb_cairo_matrix_invert): do status checking.
+		(Init_cairo_matrix): register invert! method.
+
 2005-06-23  Øyvind Kolås  <pippin@freedesktop.org>
 
 	API shakeup, watch out for falling parts.

@@ -96,8 +96,12 @@ rb_cairo_matrix_new (VALUE klass)
 static    VALUE
 rb_cairo_matrix_copy (VALUE self, VALUE other)
 {
-  cairo_matrix_copy (_SELF,
-                     rb_v_to_cairo_matrix_t (other));
+  cairo_matrix_t *matrix = rb_v_to_cairo_matrix_t (other);
+  
+  cairo_matrix_init (_SELF,
+                     matrix->xx, matrix->yx,
+                     matrix->xy, matrix->yy,
+                     matrix->x0, matrix->y0);
   return self;
 }
 
@@ -165,7 +169,13 @@ rb_cairo_matrix_rotate (VALUE self,
 static    VALUE
 rb_cairo_matrix_invert (VALUE self)
 {
-  cairo_matrix_invert (_SELF);
+  cairo_status_t status;
+  status = cairo_matrix_invert (_SELF);
+  if (status)
+    {
+      rb_cairo_raise_exception (status);
+    }
+      
   return self;
 }
 
@@ -226,6 +236,8 @@ Init_cairo_matrix (void)
                     RUBY_METHOD_FUNC (rb_cairo_matrix_scale), 2);
   rb_define_method (rb_cCairo_Matrix, "rotate!",
                     RUBY_METHOD_FUNC (rb_cairo_matrix_rotate), 2);
+  rb_define_method (rb_cCairo_Matrix, "invert!",
+                    RUBY_METHOD_FUNC (rb_cairo_matrix_invert), 0);
   rb_define_method (rb_cCairo_Matrix, "multiply!",
                     RUBY_METHOD_FUNC (rb_cairo_matrix_multiply), 3);
   rb_define_method (rb_cCairo_Matrix, "transform_point",

@@ -48,7 +48,7 @@ check_context_status (cairo_t *context)
   status = cairo_status (context);
   if (status)
     {
-      rb_cairo_raise_exception (status, cairo_status_string (context));
+      rb_cairo_raise_exception (status);
     }
 }
 
@@ -770,8 +770,7 @@ rb_cairo_get_font_face (VALUE self)
       if (cairo_status (_SELF))
         {
           rb_free_font_face (xform);
-          rb_cairo_raise_exception (cairo_status (_SELF),
-                                 cairo_status_string (_SELF));
+          rb_cairo_raise_exception (cairo_status (_SELF));
         }
       return Data_Wrap_Struct (rb_cCairo_FontFace, NULL, rb_free_font_face, xform);
     }
@@ -910,8 +909,7 @@ rb_cairo_get_matrix (VALUE self)
       if (cairo_status (_SELF))
         {
           rb_free_matrix (matrix);
-          rb_cairo_raise_exception (cairo_status (_SELF),
-                                 cairo_status_string (_SELF));
+          rb_cairo_raise_exception (cairo_status (_SELF));
         }
       return rb_cairo_matrix_wrap (matrix);
     }

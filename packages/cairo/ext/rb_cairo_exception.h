@@ -15,7 +15,6 @@
 
 void Init_cairo_exception     ();
 
-void rb_cairo_raise_exception (cairo_status_t  status,
-                               const char     *string);
+void rb_cairo_raise_exception (cairo_status_t  status);
 
 #endif

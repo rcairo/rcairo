@@ -14,7 +14,7 @@ static VALUE rb_eCairo_InvalidPopGroupError;
 static VALUE rb_eCairo_InvalidRestoreError;
 static VALUE rb_eCairo_NoCurrentPointError;
 static VALUE rb_eCairo_InvalidMatrixError;
-static VALUE rb_eCairo_NoTargetSurfaceError;
+static VALUE rb_eCairo_InvalidStatusError;
 static VALUE rb_eCairo_NullPointerError;
 static VALUE rb_eCairo_WriteError;
 static VALUE rb_eCairo_SurfaceFinishedError;
@@ -23,11 +23,17 @@ static VALUE rb_eCairo_InvalidPathDataError;
 static VALUE rb_eCairo_ReadError;
 static VALUE rb_eCairo_SurfaceTypeMismatchError;
 static VALUE rb_eCairo_PatternTypeMismatchError;
+static VALUE rb_eCairo_InvalidContentError;
+static VALUE rb_eCairo_InvalidFormatError;
+static VALUE rb_eCairo_InvalidVisualError;
+static VALUE rb_eCairo_FileNotFoundError;
+static VALUE rb_eCairo_InvalidDashError;
 
 void
-rb_cairo_raise_exception (cairo_status_t  status,
-                          const char     *string)
+rb_cairo_raise_exception (cairo_status_t  status)
 {
+  const char *string = cairo_status_to_string (status);
+  
   switch (status)
     {
     case CAIRO_STATUS_NO_MEMORY:
@@ -45,8 +51,8 @@ rb_cairo_raise_exception (cairo_status_t  status,
     case CAIRO_STATUS_INVALID_MATRIX:
       rb_raise (rb_eCairo_InvalidMatrixError, string);
       break;
-    case CAIRO_STATUS_NO_TARGET_SURFACE:
-      rb_raise (rb_eCairo_NoTargetSurfaceError, string);
+    case CAIRO_STATUS_INVALID_STATUS:
+      rb_raise (rb_eCairo_InvalidStatusError, string);
       break;
     case CAIRO_STATUS_NULL_POINTER:
       rb_raise (rb_eCairo_NullPointerError, string);
@@ -72,6 +78,21 @@ rb_cairo_raise_exception (cairo_status_t  status,
     case CAIRO_STATUS_PATTERN_TYPE_MISMATCH:
       rb_raise (rb_eCairo_PatternTypeMismatchError, string);
       break;
+    case CAIRO_STATUS_INVALID_CONTENT:
+      rb_raise (rb_eCairo_InvalidContentError, string);
+      break;
+    case CAIRO_STATUS_INVALID_FORMAT:
+      rb_raise (rb_eCairo_InvalidFormatError, string);
+      break;
+    case CAIRO_STATUS_INVALID_VISUAL:
+      rb_raise (rb_eCairo_InvalidVisualError, string);
+      break;
+    case CAIRO_STATUS_FILE_NOT_FOUND:
+      rb_raise (rb_eCairo_FileNotFoundError, string);
+      break;
+    case CAIRO_STATUS_INVALID_DASH:
+      rb_raise (rb_eCairo_InvalidDashError, string);
+      break;
     case CAIRO_STATUS_SUCCESS:
       break;
     }
@@ -92,9 +113,9 @@ Init_cairo_exception ()
   rb_eCairo_InvalidMatrixError =
     rb_define_class_under (rb_mCairo, "InvalidMatrixError",
                            rb_eArgError);
-  rb_eCairo_NoTargetSurfaceError =
-    rb_define_class_under (rb_mCairo, "NoTargetSurfaceError",
-                           rb_eRuntimeError);
+  rb_eCairo_InvalidStatusError =
+    rb_define_class_under (rb_mCairo, "InvalidStatusError",
+                           rb_eArgError);
   rb_eCairo_NullPointerError =
     rb_define_class_under (rb_mCairo, "NullPointerError",
                            rb_eTypeError);
@@ -119,4 +140,19 @@ Init_cairo_exception ()
   rb_eCairo_PatternTypeMismatchError =
     rb_define_class_under (rb_mCairo, "PatternTypeMismatch",
                            rb_eTypeError);
+  rb_eCairo_InvalidContentError =
+    rb_define_class_under (rb_mCairo, "InvalidContentError",
+                           rb_eArgError);
+  rb_eCairo_InvalidFormatError =
+    rb_define_class_under (rb_mCairo, "InvalidFormatError",
+                           rb_eArgError);
+  rb_eCairo_InvalidVisualError =
+    rb_define_class_under (rb_mCairo, "InvalidVisualError",
+                           rb_eArgError);
+  rb_eCairo_FileNotFoundError =
+    rb_define_class_under (rb_mCairo, "FileNotFound",
+                           rb_eRuntimeError);
+  rb_eCairo_InvalidDashError =
+    rb_define_class_under (rb_mCairo, "InvalidDashError",
+                           rb_eArgError);
 }
