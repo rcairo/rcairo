@@ -1,5 +1,12 @@
 2005-09-09  Øyvind Kolås  <pippin@freedesktop.org>
 
+	Missed a couple of files when applying the previous patch.
+
+	* packages/cairo/ext/rb_cairo_font_extents.h: removed.
+	* packages/cairo/ext/post-install.rb: added.
+
+2005-09-09  Øyvind Kolås  <pippin@freedesktop.org>
+
 	Header cleanup patch from Kouhei Sutou <kou@cozmixng.org>.
 
 	* packages/cairo/ext/rb_cairo_*.h: removed. The
