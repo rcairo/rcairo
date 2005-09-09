@@ -12,8 +12,6 @@
 
 #define _SELF  (DATA_PTR(self))
 
-VALUE rb_cCairo_Pattern;
-
 cairo_pattern_t *
 rb_v_to_cairo_pattern_t (VALUE value)
 {

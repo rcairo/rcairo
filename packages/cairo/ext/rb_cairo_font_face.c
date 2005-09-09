@@ -9,11 +9,9 @@
 */
 
 
-#include "rb_cairo_font_face.h"
+#include "rb_cairo.h"
 
 #define _SELF  (DATA_PTR(self))
-
-VALUE rb_cCairo_FontFace;
 
 cairo_font_face_t *
 value_to_font_face (VALUE value)

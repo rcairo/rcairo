@@ -50,8 +50,6 @@ rfile_destroy_closure (void *closure)
 }
 
 
-VALUE rb_cCairo_Surface;
-
 cairo_surface_t *
 rb_v_to_cairo_surface_t (VALUE value)
 {

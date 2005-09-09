@@ -9,11 +9,9 @@
  */
 
 
-#include "rb_cairo_font_extents.h"
+#include "rb_cairo.h"
 
 #define _SELF  ((cairo_font_extents_t *)DATA_PTR(self))
-
-VALUE rb_cCairo_FontExtents;
 
 cairo_font_extents_t *
 rb_v_to_cairo_font_extents_t (VALUE value)

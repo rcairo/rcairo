@@ -9,11 +9,9 @@
  */
 
 
-#include "rb_cairo_matrix.h"
+#include "rb_cairo.h"
 
 #define _SELF  (DATA_PTR(self))
-
-VALUE rb_cCairo_Matrix;
 
 cairo_matrix_t *
 rb_v_to_cairo_matrix_t (VALUE value)

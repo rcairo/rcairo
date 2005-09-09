@@ -8,9 +8,7 @@
  *
 */
 
-#include "rb_cairo_context.h"
-
-VALUE rb_cCairo_Context;
+#include "rb_cairo.h"
 
 #define _SELF  (DATA_PTR(self))
 

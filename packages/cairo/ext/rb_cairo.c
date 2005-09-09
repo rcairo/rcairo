@@ -11,7 +11,16 @@
 
 #include "rb_cairo.h"
 
-VALUE rb_mCairo;
+extern void Init_cairo_context (void);
+extern void Init_cairo_matrix (void);
+extern void Init_cairo_surface (void);
+extern void Init_cairo_constants (void);
+extern void Init_cairo_exception (void);
+extern void Init_cairo_font (void);
+extern void Init_cairo_text_extents (void);
+extern void Init_cairo_font_extents (void);
+extern void Init_cairo_pattern (void);
+extern void Init_cairo_glyph (void);
 
 void
 Init_cairo ()

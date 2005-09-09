@@ -9,9 +9,7 @@
  */
 
 
-#include "rb_cairo_glyph.h"
-
-VALUE rb_cCairo_Glyph;
+#include "rb_cairo.h"
 
 #define _SELF  ((cairo_glyph_t *)DATA_PTR(self))
 

@@ -10,9 +10,7 @@
 
 #define _SELF  ((cairo_text_extents_t *)DATA_PTR(self))
 
-#include "rb_cairo_text_extents.h"
-
-VALUE rb_cCairo_TextExtents;
+#include "rb_cairo.h"
 
 cairo_text_extents_t *
 rb_v_to_cairo_text_extents_t (VALUE value)

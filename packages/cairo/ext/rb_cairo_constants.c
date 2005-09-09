@@ -9,7 +9,7 @@
 */
 
 
-#include "rb_cairo_constants.h"
+#include "rb_cairo.h"
 
 void
 Init_cairo_constants (void)
