@@ -11,49 +11,55 @@
 
 #include "rb_cairo.h"
 
-#define _SELF  (DATA_PTR(self))
+VALUE rb_cCairo_FontFace;
+
+#define _SELF  (RVAL2CRFONTFACE(self))
 
 cairo_font_face_t *
-value_to_font_face (VALUE value)
+rb_cairo_font_face_from_ruby_object (VALUE obj)
 {
   cairo_font_face_t *xform;
-  if (CLASS_OF (value) != rb_cCairo_FontFace)
+  if (!RTEST (rb_obj_is_kind_of (obj, rb_cCairo_FontFace)))
     {
       rb_raise (rb_eTypeError, "not a cairo font face");
     }
-  Data_Get_Struct (value, cairo_font_face_t, xform);
+  Data_Get_Struct (obj, cairo_font_face_t, xform);
   return xform;
 }
 
-void
-rb_free_font_face (void *ptr)
+VALUE
+rb_cairo_font_face_to_ruby_object (cairo_font_face_t *face)
 {
-  if (ptr)
+  if (face)
     {
-//      cairo_font_destroy ((cairo_font_t *) ptr);
+      cairo_font_face_reference (face);
+      return Data_Wrap_Struct (rb_cCairo_FontFace, NULL,
+                               cairo_font_face_destroy, face);
+    }
+  else
+    {
+      return Qnil;
     }
 }
+
 
 #if 0
 static    VALUE
 rb_cairo_font_extents (VALUE self,
                        VALUE font_matrix_v)
 {
-  cairo_matrix_t       *font_matrix = rb_v_to_cairo_matrix_t (font_matrix_v);
-  cairo_font_extents_t *extents;
+  cairo_matrix_t       *font_matrix = RVAL2CRAMTRIX (font_matrix_v);
+  cairo_font_extents_t  extents;
   cairo_status_t        status;
 
-  extents = malloc (sizeof (cairo_font_extents_t));
-  if (extents)
+  status = cairo_font_extents (_SELF, font_matrix, &extents);
+  if (status)
     {
-      status = cairo_font_extents (_SELF, font_matrix, extents);
-      /* XXX; check status */
-      return Data_Wrap_Struct (rb_cCairo_FontExtents, NULL, rb_free_font_extents, extents);
+      rb_cairo_raise_exception (status);
     }
   else
     {
-      rb_raise (rb_eNoMemError, "unable to allocate font extents");
-      return Qundef;
+      return CRFONTEXTENTS2RVAL (&extents);
     }
 }
 
@@ -62,22 +68,13 @@ rb_cairo_font_glyph_extents (VALUE self,
                              VALUE font_matrix_v,
                              VALUE glyphs_v)
 {
-  cairo_matrix_t       *font_matrix = rb_v_to_cairo_matrix_t (font_matrix_v);
-  cairo_text_extents_t *extents;
+  cairo_matrix_t       *font_matrix = RVAL2CRMATRIX (font_matrix_v);
+  cairo_text_extents_t  extents;
   cairo_status_t        status;
 
-  extents = malloc (sizeof (cairo_text_extents_t));
-  if (extents)
-    {
-      /* XXX: unwrap glyph array */
-      cairo_font_glyph_extents (_SELF, font_matrix, NULL, 0, extents);
-      return Data_Wrap_Struct (rb_cCairo_TextExtents, NULL, free, extents);
-    }
-  else
-    {
-      rb_raise (rb_eNoMemError, "unable to allocate font extents");
-      return Qundef;
-    }
+  /* XXX: unwrap glyph array */
+  cairo_font_glyph_extents (_SELF, font_matrix, NULL, 0, &extents);
+  return CRTEXTEXTENTS2RVAL (&extents);
 }
 #endif
 

@@ -8,48 +8,52 @@
  *
  */
 
-#define _SELF  ((cairo_text_extents_t *)DATA_PTR(self))
-
 #include "rb_cairo.h"
 
+VALUE rb_cCairo_TextExtents;
+
+#define _SELF  (RVAL2CRTEXTEXTENTS(self))
+
 cairo_text_extents_t *
-rb_v_to_cairo_text_extents_t (VALUE value)
+rb_cairo_text_extents_from_ruby_object (VALUE obj)
 {
   cairo_text_extents_t *xform;
-  if (CLASS_OF (value) != rb_cCairo_TextExtents)
+  if (!RTEST (rb_obj_is_kind_of (obj, rb_cCairo_TextExtents)))
     {
       rb_raise (rb_eTypeError, "not a cairo text_extents");
     }
-  Data_Get_Struct (value, cairo_text_extents_t, xform);
+  Data_Get_Struct (obj, cairo_text_extents_t, xform);
   return xform;
 }
 
-void
-rb_free_text_extents (void *ptr)
+VALUE
+rb_cairo_text_extents_to_ruby_object (cairo_text_extents_t *extents)
 {
-  if (ptr)
+  if (extents)
     {
-      free ((cairo_text_extents_t *) ptr);
+      cairo_text_extents_t *new_extents = ALLOC (cairo_text_extents_t);
+      *new_extents = *extents;
+      return Data_Wrap_Struct (rb_cCairo_TextExtents, NULL, -1, new_extents);
+    }
+  else
+    {
+      return Qnil;
     }
 }
 
 static    VALUE
 rb_cairo_text_extents_new (VALUE klass)
 {
-  cairo_text_extents_t *text_extents;
-  VALUE text_extents_v;
+  cairo_text_extents_t text_extents;
 
-  text_extents = ALLOC (cairo_text_extents_t);
-  text_extents->x_bearing = 0.0;
-  text_extents->y_bearing = 0.0;
-  text_extents->width     = 0.0;
-  text_extents->height    = 0.0;
-  text_extents->x_advance = 0.0;
-  text_extents->y_advance = 0.0;
+  text_extents.x_bearing = 0.0;
+  text_extents.y_bearing = 0.0;
+  text_extents.width     = 0.0;
+  text_extents.height    = 0.0;
+  text_extents.x_advance = 0.0;
+  text_extents.y_advance = 0.0;
 
-  text_extents_v = Data_Wrap_Struct (rb_cCairo_TextExtents, NULL, free, text_extents);
-
-  return text_extents_v;
+  return CRTEXTEXTENTS2RVAL (&text_extents);
 }
 
 static    VALUE

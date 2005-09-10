@@ -11,41 +11,34 @@
 
 #include "rb_cairo.h"
 
-#define _SELF  (DATA_PTR(self))
+VALUE rb_cCairo_Matrix;
+
+#define _SELF  (RVAL2CRMATRIX(self))
 
 cairo_matrix_t *
-rb_v_to_cairo_matrix_t (VALUE value)
+rb_cairo_matrix_from_ruby_object (VALUE obj)
 {
   cairo_matrix_t *xform;
-  if (CLASS_OF (value) != rb_cCairo_Matrix)
+  if (!RTEST (rb_obj_is_kind_of (obj, rb_cCairo_Matrix)))
     {
       rb_raise (rb_eTypeError, "not a cairo matrix");
     }
-  Data_Get_Struct (value, cairo_matrix_t, xform);
+  Data_Get_Struct (obj, cairo_matrix_t, xform);
   return xform;
 }
 
-void
-rb_free_matrix (void *ptr)
-{
-  if (ptr)
-    {
-      free (ptr);
-    }
-}
-
-
 VALUE
-rb_cairo_matrix_wrap (cairo_matrix_t *matrix)
+rb_cairo_matrix_to_ruby_object (cairo_matrix_t *matrix)
 {
   if (matrix)
     {
-      return Data_Wrap_Struct (rb_cCairo_Matrix, NULL, rb_free_matrix, matrix);
+      cairo_matrix_t *new_matrix = ALLOC (cairo_matrix_t);
+      *new_matrix = *matrix;
+      return Data_Wrap_Struct (rb_cCairo_Matrix, NULL, -1, new_matrix);
     }
   else
     {
-      rb_raise (rb_eArgError, "unable to wrap matrix");
-      return Qundef;
+      return Qnil;
     }
 }  
 
@@ -75,26 +68,16 @@ float_array (double   *values,
 static    VALUE
 rb_cairo_matrix_new (VALUE klass)
 {
-  cairo_matrix_t *matrix;
+  cairo_matrix_t matrix;
   
-  matrix = malloc (sizeof (cairo_matrix_t));
-
-  if (matrix)
-    {
-      cairo_matrix_init_identity (matrix);
-      return rb_cairo_matrix_wrap (matrix);
-    }
-  else
-    {
-      rb_raise (rb_eNoMemError, "unable to allocate matrix");
-      return Qundef;
-    }
+  cairo_matrix_init_identity (&matrix);
+  return CRMATRIX2RVAL (&matrix);
 }
 
 static    VALUE
 rb_cairo_matrix_copy (VALUE self, VALUE other)
 {
-  cairo_matrix_t *matrix = rb_v_to_cairo_matrix_t (other);
+  cairo_matrix_t *matrix = RVAL2CRMATRIX (other);
   
   cairo_matrix_init (_SELF,
                      matrix->xx, matrix->yx,
@@ -183,8 +166,8 @@ rb_cairo_matrix_multiply (VALUE self,
                           VALUE b)
 {
   cairo_matrix_multiply (_SELF,
-                         rb_v_to_cairo_matrix_t (a),
-                         rb_v_to_cairo_matrix_t (b));
+                         RVAL2CRMATRIX (a),
+                         RVAL2CRMATRIX (b));
   return self;
 }
 

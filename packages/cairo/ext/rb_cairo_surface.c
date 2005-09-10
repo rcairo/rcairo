@@ -23,7 +23,9 @@
 #include <cairo-ps.h>
 #endif
 
-#define _SELF  (DATA_PTR(self))
+VALUE rb_cCairo_Surface;
+
+#define _SELF  (RVAL2CRSURFACE(self))
 
 static cairo_status_t
 rfile_write (void         *closure,
@@ -49,25 +51,38 @@ rfile_destroy_closure (void *closure)
   fptr = closure;
 }
 
-
 cairo_surface_t *
-rb_v_to_cairo_surface_t (VALUE value)
+rb_cairo_surface_from_ruby_object (VALUE obj)
 {
   cairo_surface_t *surface;
-  if (CLASS_OF (value) != rb_cCairo_Surface)
+  if (!RTEST (rb_obj_is_kind_of (obj, rb_cCairo_Surface)))
     {
       rb_raise (rb_eTypeError, "not a cairo surface");
     }
-  Data_Get_Struct (value, cairo_surface_t, surface);
+  Data_Get_Struct (obj, cairo_surface_t, surface);
   return surface;
 }
 
-void
+static void
 rb_free_surface (void *ptr)
 {
   if (ptr)
     {
       cairo_surface_destroy ((cairo_surface_t *) ptr);
+    }
+}
+
+VALUE
+rb_cairo_surface_to_ruby_object (cairo_surface_t *surface)
+{
+  if (surface)
+    {
+      cairo_surface_reference (surface);
+      return Data_Wrap_Struct (rb_cCairo_Surface, NULL, rb_free_surface, surface);
+    }
+  else
+    {
+      return Qnil;
     }
 }
 
@@ -102,8 +117,9 @@ rb_cairo_surface_new (VALUE klass,
     cairo_image_surface_create ((cairo_format_t) format, width, height);
   if (surface)
     {
-      return Data_Wrap_Struct (rb_cCairo_Surface, NULL, rb_free_surface,
-                               surface);
+      VALUE rb_surface = CRSURFACE2RVAL (surface);
+      cairo_surface_destroy (surface);
+      return rb_surface;
     }
   else
     {

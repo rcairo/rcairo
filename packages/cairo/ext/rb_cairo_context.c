@@ -10,17 +10,19 @@
 
 #include "rb_cairo.h"
 
-#define _SELF  (DATA_PTR(self))
+VALUE rb_cCairo_Context;
+
+#define _SELF  (RVAL2CRCONTEXT(self))
 
 cairo_t *
-rb_v_to_cairo_t (VALUE value)
+rb_cairo_from_ruby_object (VALUE obj)
 {
   cairo_t  *context;
-  if (CLASS_OF (value) != rb_cCairo_Context)
+  if (!RTEST (rb_obj_is_kind_of (obj, rb_cCairo_Context)))
     {
       rb_raise (rb_eTypeError, "not a cairo graphics context");
     }
-  Data_Get_Struct (value, cairo_t, context);
+  Data_Get_Struct (obj, cairo_t, context);
   return context;
 }
 
@@ -50,13 +52,20 @@ check_context_status (cairo_t *context)
     }
 }
 
-void
+static void
 rb_free_context (void *ptr)
 {
   if (ptr)
     {
       cairo_destroy ((cairo_t *) ptr);
     }
+}
+
+VALUE
+rb_cairo_to_ruby_object (cairo_t *cr)
+{
+  cairo_reference (cr);
+  return Data_Wrap_Struct (rb_cCairo_Context, NULL, rb_free_context, cr);
 }
 
 static    VALUE
@@ -66,25 +75,20 @@ rb_cairo_new (VALUE klass,
   cairo_surface_t *target;
   cairo_t         *cr;
 
-  target = rb_v_to_cairo_surface_t (target_v);
+  target = RVAL2CRSURFACE (target_v);
   cr     = cairo_create (target);
 
   if (cr)
     {
-      return Data_Wrap_Struct (rb_cCairo_Context, NULL, rb_free_context, cr);
+      VALUE rb_cr = CRCONTEXT2RVAL (cr);
+      cairo_destroy (cr);
+      return rb_cr;
     }
   else
     {
       rb_raise (rb_eNoMemError, "unable to allocate cairo context");
       return Qundef;
     }
-}
-
-VALUE
-rb_cairo_new_from (cairo_t *cr)
-{
-  cairo_reference (cr);
-  return Data_Wrap_Struct (rb_cCairo_Context, NULL, rb_free_context, cr);
 }
 
 static    VALUE
@@ -158,7 +162,7 @@ rb_cairo_set_source_surface (VALUE self,
                              VALUE width_v,
                              VALUE height_v)
 {
-  cairo_surface_t *surface = rb_v_to_cairo_surface_t (surface_v);
+  cairo_surface_t *surface = RVAL2CRSURFACE (surface_v);
   int              width  = NUM2INT (width_v);
   int              height = NUM2INT (height_v);
   cairo_set_source_surface (_SELF, surface, width, height);
@@ -171,7 +175,7 @@ rb_cairo_set_source (VALUE self,
                      VALUE pattern_v)
 {
   cairo_pattern_t *pattern;
-  pattern = rb_v_to_cairo_pattern_t (pattern_v);
+  pattern = RVAL2CRPATTERN (pattern_v);
 
   cairo_set_source (_SELF, pattern);
   check_context_status (_SELF);
@@ -182,9 +186,7 @@ rb_cairo_set_source (VALUE self,
 static    VALUE
 rb_cairo_get_source (VALUE self)
 {
-  cairo_pattern_t *pattern;
-  pattern = cairo_get_source (_SELF);
-  return rb_cairo_pattern_wrap  (pattern);
+  return CRPATTERN2RVAL (cairo_get_source (_SELF));
 }
 
 static    VALUE
@@ -329,7 +331,7 @@ static    VALUE
 rb_cairo_transform (VALUE self,
                     VALUE xform)
 {
-  cairo_transform (_SELF, rb_v_to_cairo_matrix_t (xform));
+  cairo_transform (_SELF, RVAL2CRMATRIX (xform));
   check_context_status (_SELF);
   return self;
 }
@@ -338,7 +340,7 @@ static    VALUE
 rb_cairo_set_matrix (VALUE self,
                      VALUE xform)
 {
-  cairo_set_matrix (_SELF, rb_v_to_cairo_matrix_t (xform));
+  cairo_set_matrix (_SELF, RVAL2CRMATRIX (xform));
   check_context_status (_SELF);
   return self;
 }
@@ -713,7 +715,7 @@ rb_cairo_set_font_matrix (VALUE self,
                           VALUE matrix)
 {
   cairo_set_font_matrix (_SELF,
-                         rb_v_to_cairo_matrix_t (matrix));
+                         RVAL2CRMATRIX (matrix));
   return self;
 }
 
@@ -747,7 +749,7 @@ rb_cairo_show_glyphs (VALUE self,
   for (i=0; i< count; i++)
     {
       memcpy ( (char *) &glyphs[i],
-               (char *) DATA_PTR (rb_ary_entry (glyphs_v, i)),
+               (char *) RVAL2CRGLYPH (rb_ary_entry (glyphs_v, i)),
                sizeof (cairo_glyph_t));
     }
 
@@ -765,12 +767,12 @@ rb_cairo_get_font_face (VALUE self)
   xform = cairo_get_font_face (_SELF);
   if (xform)
     {
+      VALUE rb_xform = CRFONTFACE2RVAL (xform);
       if (cairo_status (_SELF))
         {
-          rb_free_font_face (xform);
           rb_cairo_raise_exception (cairo_status (_SELF));
         }
-      return Data_Wrap_Struct (rb_cCairo_FontFace, NULL, rb_free_font_face, xform);
+      return rb_xform;
     }
   else
     {
@@ -784,7 +786,7 @@ rb_cairo_set_font_face (VALUE self,
                         VALUE xform)
 {
   cairo_set_font_face (_SELF,
-                       value_to_font_face (xform));
+                       RVAL2CRFONTFACE (xform));
   check_context_status (_SELF);
   return self;
 }
@@ -819,7 +821,7 @@ rb_cairo_glyph_path (VALUE self,
   for (i=0; i< count; i++)
     {
       memcpy ( (char *) &glyphs[i],
-               (char *) DATA_PTR (rb_ary_entry (glyphs_v, i)),
+               (char *) RVAL2CRGLYPH (rb_ary_entry (glyphs_v, i)),
                sizeof (cairo_glyph_t));
     }
 
@@ -900,40 +902,20 @@ rb_cairo_get_miter_limit (VALUE self)
 static    VALUE
 rb_cairo_get_matrix (VALUE self)
 {
-  cairo_matrix_t *matrix = malloc (sizeof (cairo_matrix_t));
-  if (matrix)
+  cairo_matrix_t matrix;
+  cairo_get_matrix (_SELF, &matrix);
+  if (cairo_status (_SELF))
     {
-      cairo_get_matrix (_SELF, matrix);
-      if (cairo_status (_SELF))
-        {
-          rb_free_matrix (matrix);
-          rb_cairo_raise_exception (cairo_status (_SELF));
-        }
-      return rb_cairo_matrix_wrap (matrix);
+      rb_cairo_raise_exception (cairo_status (_SELF));
     }
-  else
-    {
-      rb_raise (rb_eNoMemError, "out of memory");
-      return Qundef;
-    }
+  return CRMATRIX2RVAL (&matrix);
 }
 
 
 static    VALUE
 rb_cairo_get_target (VALUE self)
 {
-  cairo_surface_t *surface;
-  surface = cairo_get_target (_SELF);
-  if (surface)
-    {
-      cairo_surface_reference (surface);
-      return Data_Wrap_Struct (rb_cCairo_Surface, NULL, rb_free_surface,
-                               surface);
-    }
-  else
-    {
-      return Qnil;
-    }
+  return CRSURFACE2RVAL (cairo_get_target (_SELF));
 }
 
 void

@@ -11,6 +11,8 @@
 
 #include "rb_cairo.h"
 
+VALUE rb_mCairo;
+
 extern void Init_cairo_context (void);
 extern void Init_cairo_matrix (void);
 extern void Init_cairo_surface (void);

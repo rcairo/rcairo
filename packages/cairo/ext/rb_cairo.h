@@ -27,33 +27,56 @@ extern VALUE rb_cCairo_TextExtents;
 extern VALUE rb_cCairo_Glyph;
 extern VALUE rb_cCairo_Surface;
 
-VALUE    rb_cairo_new_from  (cairo_t *cr);
-cairo_t *rb_v_to_cairo_t    (VALUE value);
-void     rb_free_context    (void *ptr);
+#define RVAL2CRCONTEXT(obj)     (rb_cairo_from_ruby_object(obj))
+#define CRCONTEXT2RVAL(cr)      (rb_cairo_to_ruby_object(cr))
 
-void rb_cairo_raise_exception (cairo_status_t  status);
+#define RVAL2CRMATRIX(obj)      (rb_cairo_matrix_from_ruby_object(obj))
+#define CRMATRIX2RVAL(matrix)   (rb_cairo_matrix_to_ruby_object(matrix))
 
-cairo_matrix_t *rb_v_to_cairo_matrix_t (VALUE value);
-VALUE           rb_cairo_matrix_wrap   (cairo_matrix_t *matrix);
-void            rb_free_matrix         (void *ptr);
+#define RVAL2CRPATTERN(obj)     (rb_cairo_pattern_from_ruby_object(obj))
+#define CRPATTERN2RVAL(pattern) (rb_cairo_pattern_to_ruby_object(pattern))
 
-VALUE            rb_cairo_pattern_wrap   (cairo_pattern_t *pat);
-cairo_pattern_t *rb_v_to_cairo_pattern_t (VALUE value);
-void             rb_free_pattern         (void *ptr);
+#define RVAL2CRFONTFACE(obj)    (rb_cairo_font_face_from_ruby_object(obj))
+#define CRFONTFACE2RVAL(face)   (rb_cairo_font_face_to_ruby_object(face))
 
-cairo_font_face_t *value_to_font_face   (VALUE value);
-void               rb_free_font_face    (void *ptr);
+#define RVAL2CRFONTEXTENTS(obj) (rb_cairo_font_extents_from_ruby_object(obj))
+#define CRFONTEXTENTS2RVAL(ext) (rb_cairo_font_extents_to_ruby_object(ext))
 
-cairo_font_extents_t *rb_v_to_cairo_font_extents_t (VALUE value);
-void                  rb_free_font_extents         (void *ptr);
+#define RVAL2CRTEXTEXTENTS(obj) (rb_cairo_text_extents_from_ruby_object(obj))
+#define CRTEXTEXTENTS2RVAL(ext) (rb_cairo_text_extents_to_ruby_object(ext))
 
-cairo_text_extents_t *rb_v_to_cairo_text_extents_t (VALUE value);
-void                  rb_free_text_extents         (void *ptr);
+#define RVAL2CRGLYPH(obj)       (rb_cairo_glyph_from_ruby_object(obj))
+#define CRGLYPH2RVAL(glyph)     (rb_cairo_glyph_to_ruby_object(glyph))
 
-cairo_glyph_t *rb_v_to_cairo_glyph_t (VALUE value);
-void           rb_free_glyph         (void *ptr);
+#define RVAL2CRSURFACE(obj)     (rb_cairo_surface_from_ruby_object(obj))
+#define CRSURFACE2RVAL(surface) (rb_cairo_surface_to_ruby_object(surface))
 
-cairo_surface_t *rb_v_to_cairo_surface_t (VALUE value);
-void             rb_free_surface         (void *ptr);
+cairo_t              *rb_cairo_from_ruby_object              (VALUE obj);
+VALUE                 rb_cairo_to_ruby_object                (cairo_t *cr);
+
+cairo_matrix_t       *rb_cairo_matrix_from_ruby_object       (VALUE obj);
+VALUE                 rb_cairo_matrix_to_ruby_object         (cairo_matrix_t *matrix);
+
+cairo_pattern_t      *rb_cairo_pattern_from_ruby_object      (VALUE obj);
+VALUE                 rb_cairo_pattern_to_ruby_object        (cairo_pattern_t *pat);
+
+cairo_font_face_t    *rb_cairo_font_face_from_ruby_object    (VALUE obj);
+VALUE                 rb_cairo_font_face_to_ruby_object      (cairo_font_face_t *face);
+
+cairo_font_extents_t *rb_cairo_font_extents_from_ruby_object (VALUE obj);
+VALUE                 rb_cairo_font_extents_to_ruby_object   (cairo_font_extents_t *extents);
+
+cairo_text_extents_t *rb_cairo_text_extents_from_ruby_object (VALUE obj);
+VALUE                 rb_cairo_text_extents_to_ruby_object   (cairo_text_extents_t *extents);
+
+cairo_glyph_t        *rb_cairo_glyph_from_ruby_object        (VALUE obj);
+VALUE                 rb_cairo_glyph_to_ruby_object          (cairo_glyph_t *glyph);
+
+cairo_surface_t      *rb_cairo_surface_from_ruby_object      (VALUE obj);
+VALUE                 rb_cairo_surface_to_ruby_object        (cairo_surface_t *surface);
+
+
+
+void rb_cairo_raise_exception (cairo_status_t status);
 
 #endif

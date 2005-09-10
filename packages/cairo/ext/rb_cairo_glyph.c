@@ -11,43 +11,47 @@
 
 #include "rb_cairo.h"
 
-#define _SELF  ((cairo_glyph_t *)DATA_PTR(self))
+VALUE rb_cCairo_Glyph;
+
+#define _SELF  (RVAL2CRGLYPH(self))
 
 cairo_glyph_t *
-rb_v_to_cairo_glyph_t (VALUE value)
+rb_cairo_glyph_from_ruby_object (VALUE obj)
 {
   cairo_glyph_t *xform;
-  if (CLASS_OF (value) != rb_cCairo_Glyph)
+  if (!RTEST (rb_obj_is_kind_of (obj, rb_cCairo_Glyph)))
     {
       rb_raise (rb_eTypeError, "not a cairo glyph");
     }
-  Data_Get_Struct (value, cairo_glyph_t, xform);
+  Data_Get_Struct (obj, cairo_glyph_t, xform);
   return xform;
 }
 
-void
-rb_free_glyph (void *ptr)
+VALUE
+rb_cairo_glyph_to_ruby_object (cairo_glyph_t *glyph)
 {
-  if (ptr)
+  if (glyph)
     {
-      free ((cairo_glyph_t *) ptr);
+      cairo_glyph_t *new_glyph = ALLOC (cairo_glyph_t);
+      *new_glyph = *glyph;
+      return Data_Wrap_Struct (rb_cCairo_Glyph, NULL, -1, new_glyph);
+    }
+  else
+    {
+      return Qnil;
     }
 }
 
 static    VALUE
 rb_cairo_glyph_new (VALUE klass)
 {
-  cairo_glyph_t *glyph;
-  VALUE glyph_v;
+  cairo_glyph_t glyph;
 
-  glyph = ALLOC (cairo_glyph_t);
-  glyph->index = 0;
-  glyph->x     = 0.0;
-  glyph->y     = 0.0;
+  glyph.index = 0;
+  glyph.x     = 0.0;
+  glyph.y     = 0.0;
 
-  glyph_v = Data_Wrap_Struct (rb_cCairo_Glyph, NULL, free, glyph);
-
-  return glyph_v;
+  return CRGLYPH2RVAL (&glyph);
 }
 
 static    VALUE

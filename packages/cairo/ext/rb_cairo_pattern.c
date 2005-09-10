@@ -10,21 +10,23 @@
 
 #include "rb_cairo.h"
 
-#define _SELF  (DATA_PTR(self))
+VALUE rb_cCairo_Pattern;
+
+#define _SELF  (RVAL2CRPATTERN(self))
 
 cairo_pattern_t *
-rb_v_to_cairo_pattern_t (VALUE value)
+rb_cairo_pattern_from_ruby_object (VALUE obj)
 {
   cairo_pattern_t *pattern;
-  if (CLASS_OF (value) != rb_cCairo_Pattern)
+  if (!RTEST (rb_obj_is_kind_of (obj, rb_cCairo_Pattern)))
     {
       rb_raise (rb_eTypeError, "not a cairo pattern");
     }
-  Data_Get_Struct (value, cairo_pattern_t, pattern);
+  Data_Get_Struct (obj, cairo_pattern_t, pattern);
   return pattern;
 }
 
-void
+static void
 rb_free_pattern (void *ptr)
 {
   if (ptr)
@@ -33,9 +35,8 @@ rb_free_pattern (void *ptr)
     }
 }
 
-#if 0
 VALUE
-rb_cairo_pattern_wrap (cairo_pattern_t *pat)
+rb_cairo_pattern_to_ruby_object (cairo_pattern_t *pat)
 {
   if (pat)
     {
@@ -44,11 +45,11 @@ rb_cairo_pattern_wrap (cairo_pattern_t *pat)
     }
   else
     {
-      rb_raise (rb_eNoMemError, "unable to wrap pattern");
-      return Qundef;
+      return Qnil;
     }
-}  
+}
 
+#if 0
 VALUE
 rb_cairo_pattern_create_linear (VALUE klass,
                                 VALUE x0_v, VALUE y0_v,

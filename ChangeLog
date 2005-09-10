@@ -1,3 +1,22 @@
+2005-09-10  Øyvind Kolås  <pippin@gimp.org>
+
+	Patch from Kouhei Sutou <kou@cozmixng.org>.
+
+	Hiding free functions, cleanup of ruby <-> C conversion functions.
+	
+  	- rename ruby <-> C convert functions name.
+	ruby -> C: rb_cairo_XXX_from_ruby_object().
+    	C -> ruby: rb_cairo_XXX_to_ruby_object().
+	
+	- provide ruby <-> C convert macros.
+	   ruby -> C: RVAL2CRXXX()
+	   C -> ruby: CRXXX2RVAL()
+	
+  	- _SELF use RVAL2CRXXX()
+  	- rb_cairo_XXX_from_ruby_object() uses rb_obj_is_kind_of()
+	  instead of 'CLASS_OF() !=3D rb_cCairo_XXX'.
+  	- add 'static' or remove free functions.
+
 2005-09-09  Øyvind Kolås  <pippin@freedesktop.org>
 
 	Missed a couple of files when applying the previous patch.

@@ -11,45 +11,49 @@
 
 #include "rb_cairo.h"
 
-#define _SELF  ((cairo_font_extents_t *)DATA_PTR(self))
+VALUE rb_cCairo_FontExtents;
+
+#define _SELF  (RVAL2CRFONTEXTENTS(self))
 
 cairo_font_extents_t *
-rb_v_to_cairo_font_extents_t (VALUE value)
+rb_cairo_font_extents_from_ruby_object (VALUE obj)
 {
   cairo_font_extents_t *xform;
-  if (CLASS_OF (value) != rb_cCairo_FontExtents)
+  if (!RTEST (rb_obj_is_kind_of (obj, rb_cCairo_FontExtents)))
     {
       rb_raise (rb_eTypeError, "not a cairo font_extents");
     }
-  Data_Get_Struct (value, cairo_font_extents_t, xform);
+  Data_Get_Struct (obj, cairo_font_extents_t, xform);
   return xform;
 }
 
-void
-rb_free_font_extents (void *ptr)
+VALUE
+rb_cairo_font_extents_to_ruby_object (cairo_font_extents_t *extents)
 {
-  if (ptr)
+  if (extents)
     {
-      free ((cairo_font_extents_t *) ptr);
+      cairo_font_extents_t *new_extents = ALLOC (cairo_font_extents_t);
+      *new_extents = *extents;
+      return Data_Wrap_Struct (rb_cCairo_FontExtents, NULL, -1, new_extents);
+    }
+  else
+    {
+      return Qnil;
     }
 }
 
 static    VALUE
 rb_cairo_font_extents_new (VALUE klass)
 {
-  cairo_font_extents_t *font_extents;
-  VALUE font_extents_v;
+  cairo_font_extents_t font_extents;
 
-  font_extents = ALLOC (cairo_font_extents_t);
-  font_extents->ascent        = 0.0;
-  font_extents->descent       = 0.0;
-  font_extents->height        = 0.0;
-  font_extents->max_x_advance = 0.0;
-  font_extents->max_y_advance = 0.0;
+  font_extents.ascent        = 0.0;
+  font_extents.descent       = 0.0;
+  font_extents.height        = 0.0;
+  font_extents.max_x_advance = 0.0;
+  font_extents.max_y_advance = 0.0;
 
-  font_extents_v = Data_Wrap_Struct (rb_cCairo_FontExtents, NULL, free, font_extents);
-
-  return font_extents_v;
+  return CRFONTEXTENTS2RVAL (&font_extents);
 }
 
 static    VALUE
