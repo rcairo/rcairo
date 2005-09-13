@@ -1,3 +1,30 @@
+2005-09-13  Øyvind Kolås  <pippin@gimp.org>
+
+     Patch from Kouhei Sutou
+
+    * packages/cairo/ext:
+      - add (or rename) internal (static) functions to 'cr_XXX' prefix.
+      - XXX_v -> rb_XXX
+      - get_XXX -> XXX
+      - remove needless RUBY_METHOD_FUNC cast.
+      - call rb_obj_call_init() in new method.
+
+    * packages/cairo/ext/rb_cairo_font_face.c
+      (rb_cairo_font_extents, rb_cairo_font_glyph_extents):
+      move to ...
+
+    * packages/cairo/ext/rb_cairo_context.c:
+      - ... here.
+      - add some status checks.
+
+    * packages/cairo/ext/rb_cairo_context.c,
+      packages/cairo/ext/rb_cairo.h:
+      - rb_cairo_{from,to}_ruby_object ->
+	rb_cairo_context_{from,to}_ruby_object
+
+    * packages/cairo/lib/cairo.rb: auto-generate XXX=.
+      (Cairo::Context#save: move to the C-side.
+
 2005-09-10  Øyvind Kolås  <pippin@gimp.org>
 	
 	* AUTHORS: added Kouhei Sutou

@@ -43,9 +43,10 @@ rb_cairo_font_extents_to_ruby_object (cairo_font_extents_t *extents)
 }
 
 static    VALUE
-rb_cairo_font_extents_new (VALUE klass)
+cr_font_extents_new (int argc, VALUE *argv, VALUE klass)
 {
   cairo_font_extents_t font_extents;
+  VALUE self;
 
   font_extents.ascent        = 0.0;
   font_extents.descent       = 0.0;
@@ -53,35 +54,37 @@ rb_cairo_font_extents_new (VALUE klass)
   font_extents.max_x_advance = 0.0;
   font_extents.max_y_advance = 0.0;
 
-  return CRFONTEXTENTS2RVAL (&font_extents);
+  self = CRFONTEXTENTS2RVAL (&font_extents);
+  rb_obj_call_init (self, argc, argv);
+  return self;
 }
 
 static    VALUE
-rb_cairo_font_extents_ascent (VALUE self)
+cr_font_extents_ascent (VALUE self)
 {
   return rb_float_new (_SELF->ascent);
 }
 
 static    VALUE
-rb_cairo_font_extents_descent (VALUE self)
+cr_font_extents_descent (VALUE self)
 {
   return rb_float_new (_SELF->descent);
 }
 
 static    VALUE
-rb_cairo_font_extents_height (VALUE self)
+cr_font_extents_height (VALUE self)
 {
   return rb_float_new (_SELF->height);
 }
 
 static    VALUE
-rb_cairo_font_extents_max_x_advance (VALUE self)
+cr_font_extents_max_x_advance (VALUE self)
 {
   return rb_float_new (_SELF->max_x_advance);
 }
 
 static    VALUE
-rb_cairo_font_extents_max_y_advance (VALUE self)
+cr_font_extents_max_y_advance (VALUE self)
 {
   return rb_float_new (_SELF->max_y_advance);
 }
@@ -92,15 +95,15 @@ Init_cairo_font_extents (void)
   rb_cCairo_FontExtents =
     rb_define_class_under (rb_mCairo, "FontExtents", rb_cObject);
   rb_define_singleton_method (rb_cCairo_FontExtents, "new",
-                              RUBY_METHOD_FUNC (rb_cairo_font_extents_new), 0);
+                              cr_font_extents_new, -1);
   rb_define_method (rb_cCairo_FontExtents, "ascent",
-                    RUBY_METHOD_FUNC (rb_cairo_font_extents_ascent), 0);
+                    cr_font_extents_ascent, 0);
   rb_define_method (rb_cCairo_FontExtents, "descent",
-                    RUBY_METHOD_FUNC (rb_cairo_font_extents_descent), 0);
+                    cr_font_extents_descent, 0);
   rb_define_method (rb_cCairo_FontExtents, "height",
-                    RUBY_METHOD_FUNC (rb_cairo_font_extents_height), 0);
+                    cr_font_extents_height, 0);
   rb_define_method (rb_cCairo_FontExtents, "max_x_advance",
-                    RUBY_METHOD_FUNC (rb_cairo_font_extents_max_x_advance), 0);
+                    cr_font_extents_max_x_advance, 0);
   rb_define_method (rb_cCairo_FontExtents, "max_y_advance",
-                    RUBY_METHOD_FUNC (rb_cairo_font_extents_max_y_advance), 0);
+                    cr_font_extents_max_y_advance, 0);
 }

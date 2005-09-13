@@ -27,8 +27,8 @@ extern VALUE rb_cCairo_TextExtents;
 extern VALUE rb_cCairo_Glyph;
 extern VALUE rb_cCairo_Surface;
 
-#define RVAL2CRCONTEXT(obj)     (rb_cairo_from_ruby_object(obj))
-#define CRCONTEXT2RVAL(cr)      (rb_cairo_to_ruby_object(cr))
+#define RVAL2CRCONTEXT(obj)     (rb_cairo_context_from_ruby_object(obj))
+#define CRCONTEXT2RVAL(cr)      (rb_cairo_context_to_ruby_object(cr))
 
 #define RVAL2CRMATRIX(obj)      (rb_cairo_matrix_from_ruby_object(obj))
 #define CRMATRIX2RVAL(matrix)   (rb_cairo_matrix_to_ruby_object(matrix))
@@ -51,8 +51,8 @@ extern VALUE rb_cCairo_Surface;
 #define RVAL2CRSURFACE(obj)     (rb_cairo_surface_from_ruby_object(obj))
 #define CRSURFACE2RVAL(surface) (rb_cairo_surface_to_ruby_object(surface))
 
-cairo_t              *rb_cairo_from_ruby_object              (VALUE obj);
-VALUE                 rb_cairo_to_ruby_object                (cairo_t *cr);
+cairo_t              *rb_cairo_context_from_ruby_object      (VALUE obj);
+VALUE                 rb_cairo_context_to_ruby_object        (cairo_t *cr);
 
 cairo_matrix_t       *rb_cairo_matrix_from_ruby_object       (VALUE obj);
 VALUE                 rb_cairo_matrix_to_ruby_object         (cairo_matrix_t *matrix);

@@ -66,16 +66,19 @@ float_array (double   *values,
 
 
 static    VALUE
-rb_cairo_matrix_new (VALUE klass)
+cr_matrix_new (VALUE klass)
 {
   cairo_matrix_t matrix;
+  VALUE rb_matrix;
   
   cairo_matrix_init_identity (&matrix);
-  return CRMATRIX2RVAL (&matrix);
+  rb_matrix = CRMATRIX2RVAL (&matrix);
+  rb_obj_call_init (rb_matrix, 0, NULL);
+  return rb_matrix;
 }
 
 static    VALUE
-rb_cairo_matrix_copy (VALUE self, VALUE other)
+cr_matrix_copy (VALUE self, VALUE other)
 {
   cairo_matrix_t *matrix = RVAL2CRMATRIX (other);
   
@@ -87,17 +90,17 @@ rb_cairo_matrix_copy (VALUE self, VALUE other)
 }
 
 static    VALUE
-rb_cairo_matrix_init_identity (VALUE self)
+cr_matrix_init_identity (VALUE self)
 {
   cairo_matrix_init_identity (_SELF);
   return self;
 }
 
 static    VALUE
-rb_cairo_matrix_set (VALUE self,
-                     VALUE a,  VALUE b,
-                     VALUE c,  VALUE d,
-                     VALUE tx, VALUE ty)
+cr_matrix_set (VALUE self,
+               VALUE a,  VALUE b,
+               VALUE c,  VALUE d,
+               VALUE tx, VALUE ty)
 {
   cairo_matrix_init (_SELF,
                      NUM2DBL (a), NUM2DBL (b),
@@ -107,7 +110,7 @@ rb_cairo_matrix_set (VALUE self,
 }
 
 static    VALUE
-rb_cairo_matrix_get (VALUE self)
+cr_matrix_get (VALUE self)
 {
   cairo_matrix_t *matrix = _SELF;
   double    affine[6];
@@ -121,8 +124,8 @@ rb_cairo_matrix_get (VALUE self)
 }
 
 static    VALUE
-rb_cairo_matrix_translate (VALUE self,
-                           VALUE tx, VALUE ty)
+cr_matrix_translate (VALUE self,
+                     VALUE tx, VALUE ty)
 {
   cairo_matrix_translate (_SELF,
                           NUM2DBL (tx), NUM2DBL (ty));
@@ -130,8 +133,8 @@ rb_cairo_matrix_translate (VALUE self,
 }
 
 static    VALUE
-rb_cairo_matrix_scale (VALUE self,
-                          VALUE sx, VALUE sy)
+cr_matrix_scale (VALUE self,
+                 VALUE sx, VALUE sy)
 {
   cairo_matrix_scale (_SELF,
                       NUM2DBL (sx), NUM2DBL (sy));
@@ -139,8 +142,8 @@ rb_cairo_matrix_scale (VALUE self,
 }
 
 static    VALUE
-rb_cairo_matrix_rotate (VALUE self,
-                           VALUE radians)
+cr_matrix_rotate (VALUE self,
+                  VALUE radians)
 {
   cairo_matrix_rotate (_SELF,
                        NUM2DBL (radians));
@@ -148,7 +151,7 @@ rb_cairo_matrix_rotate (VALUE self,
 }
 
 static    VALUE
-rb_cairo_matrix_invert (VALUE self)
+cr_matrix_invert (VALUE self)
 {
   cairo_status_t status;
   status = cairo_matrix_invert (_SELF);
@@ -161,9 +164,9 @@ rb_cairo_matrix_invert (VALUE self)
 }
 
 static    VALUE
-rb_cairo_matrix_multiply (VALUE self,
-                          VALUE a,
-                          VALUE b)
+cr_matrix_multiply (VALUE self,
+                    VALUE a,
+                    VALUE b)
 {
   cairo_matrix_multiply (_SELF,
                          RVAL2CRMATRIX (a),
@@ -172,8 +175,8 @@ rb_cairo_matrix_multiply (VALUE self,
 }
 
 static    VALUE
-rb_cairo_matrix_transform_distance (VALUE self,
-                                    VALUE dx, VALUE dy)
+cr_matrix_transform_distance (VALUE self,
+                              VALUE dx, VALUE dy)
 {
   double    pair[2];
   pair[0] = NUM2DBL (dx);
@@ -184,8 +187,8 @@ rb_cairo_matrix_transform_distance (VALUE self,
 }
 
 static    VALUE
-rb_cairo_matrix_transform_point (VALUE self,
-                                 VALUE x, VALUE y)
+cr_matrix_transform_point (VALUE self,
+                           VALUE x, VALUE y)
 {
   double    pair[2];
   pair[0] = NUM2DBL (x);
@@ -202,27 +205,27 @@ Init_cairo_matrix (void)
   rb_cCairo_Matrix =
     rb_define_class_under (rb_mCairo, "Matrix", rb_cObject);
   rb_define_singleton_method (rb_cCairo_Matrix, "new",
-                              RUBY_METHOD_FUNC (rb_cairo_matrix_new), 0);
+                              cr_matrix_new, 0);
   rb_define_method (rb_cCairo_Matrix, "copy",
-                    RUBY_METHOD_FUNC (rb_cairo_matrix_copy), 1);
+                    cr_matrix_copy, 1);
   rb_define_method (rb_cCairo_Matrix, "set",
-                    RUBY_METHOD_FUNC (rb_cairo_matrix_set), 6);
-  rb_define_method (rb_cCairo_Matrix, "get",
-                    RUBY_METHOD_FUNC (rb_cairo_matrix_get), 0);
+                    cr_matrix_set, 6);
+  rb_define_method (rb_cCairo_Matrix, "to_a",
+                    cr_matrix_get, 0);
   rb_define_method (rb_cCairo_Matrix, "init_identity",
-                    RUBY_METHOD_FUNC (rb_cairo_matrix_init_identity), 1);
+                    cr_matrix_init_identity, 1);
   rb_define_method (rb_cCairo_Matrix, "translate!",
-                    RUBY_METHOD_FUNC (rb_cairo_matrix_translate), 2);
+                    cr_matrix_translate, 2);
   rb_define_method (rb_cCairo_Matrix, "scale!",
-                    RUBY_METHOD_FUNC (rb_cairo_matrix_scale), 2);
+                    cr_matrix_scale, 2);
   rb_define_method (rb_cCairo_Matrix, "rotate!",
-                    RUBY_METHOD_FUNC (rb_cairo_matrix_rotate), 2);
+                    cr_matrix_rotate, 2);
   rb_define_method (rb_cCairo_Matrix, "invert!",
-                    RUBY_METHOD_FUNC (rb_cairo_matrix_invert), 0);
+                    cr_matrix_invert, 0);
   rb_define_method (rb_cCairo_Matrix, "multiply!",
-                    RUBY_METHOD_FUNC (rb_cairo_matrix_multiply), 3);
+                    cr_matrix_multiply, 3);
   rb_define_method (rb_cCairo_Matrix, "transform_point",
-                    RUBY_METHOD_FUNC (rb_cairo_matrix_transform_point), 2);
+                    cr_matrix_transform_point, 2);
   rb_define_method (rb_cCairo_Matrix, "matrix_distance",
-                    RUBY_METHOD_FUNC (rb_cairo_matrix_transform_distance), 2);
+                    cr_matrix_transform_distance, 2);
 }

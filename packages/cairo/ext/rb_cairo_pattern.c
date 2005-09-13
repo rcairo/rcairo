@@ -27,7 +27,7 @@ rb_cairo_pattern_from_ruby_object (VALUE obj)
 }
 
 static void
-rb_free_pattern (void *ptr)
+cr_pattern_free (void *ptr)
 {
   if (ptr)
     {
@@ -41,7 +41,7 @@ rb_cairo_pattern_to_ruby_object (cairo_pattern_t *pat)
   if (pat)
     {
       cairo_pattern_reference (pat);
-      return Data_Wrap_Struct (rb_cCairo_Pattern, NULL, rb_free_pattern, pat);
+      return Data_Wrap_Struct (rb_cCairo_Pattern, NULL, cr_pattern_free, pat);
     }
   else
     {

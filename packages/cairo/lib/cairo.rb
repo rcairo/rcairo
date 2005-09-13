@@ -4,7 +4,21 @@ require 'cairo.so'
 
 module Cairo
 
+  module_function
+  def __add_one_arg_setter(klass)
+    names = klass.instance_methods(false)
+    names.each do |name|
+      if /^set_(.*)/ =~ name and
+          not names.include? "#{$1}=" and
+          klass.instance_method(name).arity == 1
+        klass.module_eval("def #{$1}=(val); set_#{$1}(val); val; end")
+      end
+    end
+  end
+
 class Context
+    Cairo.__add_one_arg_setter(self)
+
     def dup
         copy = Context.new
         copy.copy(self)
@@ -41,55 +55,10 @@ class Context
         ( x0, y0 ) = get_point
         quad_to(x1 + x0, y1 + y0, x2 + x0, y2 + x0)
     end
+end
 
-    def rgb_color=(*args)
-        args = args[0] if args[0].is_a? Array
-        self.set_rgb_color(*args)
-    end
-
-    alias save_internal save
-    private :save_internal
-    def save
-        if block_given?
-            save_internal
-            begin
-                yield
-            ensure
-                restore
-            end
-        else
-            save_internal
-        end
-    end
-
-    alias operator= set_operator
-    alias operator get_operator
-    alias tolerance= set_tolerance
-    alias tolerance get_tolerance
-    alias fill_rule= set_fill_rule
-    alias fill_rule get_fill_rule
-    alias line_width= set_line_width
-    alias line_width get_line_width
-    alias line_cap= set_line_cap
-    alias line_cap get_line_cap
-    alias line_join= set_line_join
-    alias line_join get_line_join
-    alias miter_limit= set_miter_limit
-    alias miter_limit get_miter_limit
-    alias matrix= set_matrix
-    alias matrix get_matrix
-    alias source get_source
-    alias source= set_source
-    alias set_transform set_matrix
-    alias get_transform get_matrix
-    alias transform= set_transform
-    alias transform get_transform
-    alias target get_target
-    alias font_face get_font_face
-    alias font_face= set_font_face
-
-    alias in_fill? in_fill
-    alias in_stroke? in_stroke
+class Glyph
+    Cairo.__add_one_arg_setter(self)
 end
 
 class Surface

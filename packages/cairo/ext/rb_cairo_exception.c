@@ -36,6 +36,8 @@ rb_cairo_raise_exception (cairo_status_t  status)
   
   switch (status)
     {
+    case CAIRO_STATUS_SUCCESS:
+      break;
     case CAIRO_STATUS_NO_MEMORY:
       rb_raise (rb_eNoMemError, string);
       break;
@@ -92,8 +94,6 @@ rb_cairo_raise_exception (cairo_status_t  status)
       break;
     case CAIRO_STATUS_INVALID_DASH:
       rb_raise (rb_eCairo_InvalidDashError, string);
-      break;
-    case CAIRO_STATUS_SUCCESS:
       break;
     }
 }

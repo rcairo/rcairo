@@ -42,7 +42,7 @@ rb_cairo_text_extents_to_ruby_object (cairo_text_extents_t *extents)
 }
 
 static    VALUE
-rb_cairo_text_extents_new (VALUE klass)
+cr_text_extents_new (VALUE klass)
 {
   cairo_text_extents_t text_extents;
 
@@ -57,37 +57,37 @@ rb_cairo_text_extents_new (VALUE klass)
 }
 
 static    VALUE
-rb_cairo_text_extents_x_bearing (VALUE self)
+cr_text_extents_x_bearing (VALUE self)
 {
   return rb_float_new (_SELF->x_bearing);
 }
 
 static    VALUE
-rb_cairo_text_extents_y_bearing (VALUE self)
+cr_text_extents_y_bearing (VALUE self)
 {
   return rb_float_new (_SELF->y_bearing);
 }
 
 static    VALUE
-rb_cairo_text_extents_width (VALUE self)
+cr_text_extents_width (VALUE self)
 {
   return rb_float_new (_SELF->width);
 }
 
 static    VALUE
-rb_cairo_text_extents_height (VALUE self)
+cr_text_extents_height (VALUE self)
 {
   return rb_float_new (_SELF->height);
 }
 
 static    VALUE
-rb_cairo_text_extents_x_advance (VALUE self)
+cr_text_extents_x_advance (VALUE self)
 {
   return rb_float_new (_SELF->x_advance);
 }
 
 static    VALUE
-rb_cairo_text_extents_y_advance (VALUE self)
+cr_text_extents_y_advance (VALUE self)
 {
   return rb_float_new (_SELF->y_advance);
 }
@@ -98,17 +98,17 @@ Init_cairo_text_extents (void)
   rb_cCairo_TextExtents =
     rb_define_class_under (rb_mCairo, "TextExtents", rb_cObject);
   rb_define_singleton_method (rb_cCairo_TextExtents, "new",
-                              RUBY_METHOD_FUNC (rb_cairo_text_extents_new), 0);
+                              cr_text_extents_new, 0);
   rb_define_method (rb_cCairo_TextExtents, "x_bearing",
-                    RUBY_METHOD_FUNC (rb_cairo_text_extents_x_bearing), 0);
+                    cr_text_extents_x_bearing, 0);
   rb_define_method (rb_cCairo_TextExtents, "y_bearing",
-                    RUBY_METHOD_FUNC (rb_cairo_text_extents_y_bearing), 0);
+                    cr_text_extents_y_bearing, 0);
   rb_define_method (rb_cCairo_TextExtents, "width",
-                    RUBY_METHOD_FUNC (rb_cairo_text_extents_width), 0);
+                    cr_text_extents_width, 0);
   rb_define_method (rb_cCairo_TextExtents, "height",
-                    RUBY_METHOD_FUNC (rb_cairo_text_extents_height), 0);
+                    cr_text_extents_height, 0);
   rb_define_method (rb_cCairo_TextExtents, "x_advance",
-                    RUBY_METHOD_FUNC (rb_cairo_text_extents_x_advance), 0);
+                    cr_text_extents_x_advance, 0);
   rb_define_method (rb_cCairo_TextExtents, "y_advance",
-                    RUBY_METHOD_FUNC (rb_cairo_text_extents_y_advance), 0);
+                    cr_text_extents_y_advance, 0);
 }

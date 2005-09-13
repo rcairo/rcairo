@@ -64,7 +64,7 @@ rb_cairo_surface_from_ruby_object (VALUE obj)
 }
 
 static void
-rb_free_surface (void *ptr)
+cr_surface_free (void *ptr)
 {
   if (ptr)
     {
@@ -78,7 +78,7 @@ rb_cairo_surface_to_ruby_object (cairo_surface_t *surface)
   if (surface)
     {
       cairo_surface_reference (surface);
-      return Data_Wrap_Struct (rb_cCairo_Surface, NULL, rb_free_surface, surface);
+      return Data_Wrap_Struct (rb_cCairo_Surface, NULL, cr_surface_free, surface);
     }
   else
     {
