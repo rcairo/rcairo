@@ -10,24 +10,18 @@ Dependencies
 ------------
 
 ruby                   >= 1.8
-cairo                  >= 0.4.0
-
-libsvg-cairo  optional >= 0.1.4   # for svg parsing/rendering
-
-gtkcairo      optional >= 0.4.0   # needed for gtk abilities
-ruby-gnome2   optional >= 0.11    # 
-
+cairo                  >= 1.0.0
 
 Compiling
 ---------
 
-./setup.rb config    # to check for dependencies and create Makefiles
-./setup.rb setup     # to compile
+ruby setup.rb config    # to check for dependencies and create Makefiles
+rub ysetup.rb setup     # to compile
 
 # the samples in the samples folder should be able to run before
 # installation.
 
-./setup.rb install   # to install the cairo extension.
+ruby setup.rb install   # to install the cairo extension.
 
 
 Mailing list
