@@ -1,5 +1,8 @@
 2005-09-30  Kouhei Sutou  <kou@cozmixng.org>
 
+	* packages/cairo/lib/cairo.rb: change indentation style to
+	  style of ruby-mode.el.
+
 	* README: update dependencies.
 
 	* packages/gtkcairo, packages/svgcairo: remove.
