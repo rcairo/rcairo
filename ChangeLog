@@ -1,3 +1,7 @@
+2005-09-30  Kouhei Sutou  <kou@cozmixng.org>
+
+	* setup.rb: update to 3.3.1.
+
 2005-09-29  Kouhei Sutou  <kou@cozmixng.org>
 
 	* packages/cairo/ext/extconf.rb: check modversion.
