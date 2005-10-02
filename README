@@ -16,7 +16,7 @@ Compiling
 ---------
 
 ruby setup.rb config    # to check for dependencies and create Makefiles
-rub ysetup.rb setup     # to compile
+ruby setup.rb setup     # to compile
 
 # the samples in the samples folder should be able to run before
 # installation.
