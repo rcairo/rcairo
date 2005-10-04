@@ -1,3 +1,14 @@
+2005-10-04  Kouhei Sutou  <kou@cozmixng.org>
+
+	* packages/cairo/ext/rb_cairo.h: Support Win32 platform.
+
+	* packages/cairo/ext/extconf.rb: ditto.
+
+	* packages/cairo/ext/cairo.def: Added.
+
+	* packages/cairo/ext/pkg-config.rb: Added. This file is from
+	  Ruby/GLib.
+
 2005-10-01  Kouhei Sutou  <kou@cozmixng.org>
 
 	* setup.rb: update to 3.4.0.

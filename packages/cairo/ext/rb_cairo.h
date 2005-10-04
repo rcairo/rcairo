@@ -17,15 +17,25 @@
 
 #include "ruby.h"
 
-extern VALUE rb_mCairo;
-extern VALUE rb_cCairo_Context;
-extern VALUE rb_cCairo_Matrix;
-extern VALUE rb_cCairo_Pattern;
-extern VALUE rb_cCairo_FontFace;
-extern VALUE rb_cCairo_FontExtents;
-extern VALUE rb_cCairo_TextExtents;
-extern VALUE rb_cCairo_Glyph;
-extern VALUE rb_cCairo_Surface;
+#if defined(RUBY_CAIRO_PLATFORM_WIN32) && !defined(RUBY_CAIRO_STATIC_COMPILATION)
+#  ifdef RUBY_CAIRO_COMPILATION
+#    define RUBY_CAIRO_VAR __declspec(dllexport)
+#  else
+#    define RUBY_CAIRO_VAR extern __declspec(dllimport)
+#  endif
+#else
+#  define RUBY_CAIRO_VAR extern
+#endif
+
+RUBY_CAIRO_VAR VALUE rb_mCairo;
+RUBY_CAIRO_VAR VALUE rb_cCairo_Context;
+RUBY_CAIRO_VAR VALUE rb_cCairo_Matrix;
+RUBY_CAIRO_VAR VALUE rb_cCairo_Pattern;
+RUBY_CAIRO_VAR VALUE rb_cCairo_FontFace;
+RUBY_CAIRO_VAR VALUE rb_cCairo_FontExtents;
+RUBY_CAIRO_VAR VALUE rb_cCairo_TextExtents;
+RUBY_CAIRO_VAR VALUE rb_cCairo_Glyph;
+RUBY_CAIRO_VAR VALUE rb_cCairo_Surface;
 
 #define RVAL2CRCONTEXT(obj)     (rb_cairo_context_from_ruby_object(obj))
 #define CRCONTEXT2RVAL(cr)      (rb_cairo_context_to_ruby_object(cr))

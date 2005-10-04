@@ -1,0 +1,28 @@
+EXPORTS
+    Init_cairo
+    rb_mCairo             DATA
+    rb_cCairo_Context     DATA
+    rb_cCairo_Matrix      DATA
+    rb_cCairo_Pattern     DATA
+    rb_cCairo_FontFace    DATA
+    rb_cCairo_FontExtents DATA
+    rb_cCairo_TextExtents DATA
+    rb_cCairo_Glyph       DATA
+    rb_cCairo_Surface     DATA
+    rb_cairo_context_from_ruby_object
+    rb_cairo_context_to_ruby_object
+    rb_cairo_matrix_from_ruby_object
+    rb_cairo_matrix_to_ruby_object
+    rb_cairo_pattern_from_ruby_object
+    rb_cairo_pattern_to_ruby_object
+    rb_cairo_font_face_from_ruby_object
+    rb_cairo_font_face_to_ruby_object
+    rb_cairo_font_extents_from_ruby_object
+    rb_cairo_font_extents_to_ruby_object
+    rb_cairo_text_extents_from_ruby_object
+    rb_cairo_text_extents_to_ruby_object
+    rb_cairo_glyph_from_ruby_object
+    rb_cairo_glyph_to_ruby_object
+    rb_cairo_surface_from_ruby_object
+    rb_cairo_surface_to_ruby_object
+    
