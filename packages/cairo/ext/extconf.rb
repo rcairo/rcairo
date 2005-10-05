@@ -20,7 +20,8 @@ end
 def check_win32()
   STDOUT.print("checking for Win32 OS... ")
   STDOUT.flush
-  if /mingw/ =~ RUBY_PLATFORM
+  if /cygwin|mingw|mswin32/ =~ RUBY_PLATFORM
+    $defs << "-DRUBY_CAIRO_PLATFORM_WIN32"
     STDOUT.print "yes\n"
     if $cc_is_gcc
       if /^2\./ =~ `#{Config::CONFIG['CC']} -dumpversion`.chomp
@@ -35,18 +36,22 @@ def check_win32()
 end
 
 def set_output_lib(target_name)
-  filename = "libruby-#{target_name}.a"
   if /cygwin|mingw/ =~ RUBY_PLATFORM
-    $defs << "-DRUBY_CAIRO_PLATFORM_WIN32"
+    filename = "libruby-#{target_name}.a"
     if RUBY_VERSION > "1.8.0"
       $DLDFLAGS << ",--out-implib=#{filename}" if filename
     elsif RUBY_VERSION > "1.8"
-      CONFIG["DLDFLAGS"].gsub!(/ -Wl,--out-implib=[^ ]+/, '')
-      CONFIG["DLDFLAGS"] << " -Wl,--out-implib=#{filename}" if filename
+      $DLDFLAGS.gsub!(/ -Wl,--out-implib=[^ ]+/, '')
+      $DLDFLAGS << " -Wl,--out-implib=#{filename}" if filename
     else
-      CONFIG["DLDFLAGS"].gsub!(/ --output-lib\s+[^ ]+/, '')
-      CONFIG["DLDFLAGS"] << " --output-lib #{filename}" if filename
+      $DLDFLAGS.gsub!(/ --output-lib\s+[^ ]+/, '')
+      $DLDFLAGS << " --output-lib #{filename}" if filename
     end
+  elsif /mswin32/ =~ RUBY_PLATFORM
+      filename = "libruby-#{target_name}.lib"
+      $DLDFLAGS.gsub!(/ --output-lib\s+[^ ]+/, '')
+      $DLDFLAGS.gsub!(/ \/IMPLIB:[^ ]+/, '')
+      $DLDFLAGS << " /IMPLIB:#{filename}" if filename    
   end
 end
 
