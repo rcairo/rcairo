@@ -1,3 +1,8 @@
+2005-10-06  Kouhei Sutou  <kou@cozmixng.org>
+
+	* packages/cairo/ext/extconf.rb: Fixed Win32 platform problem.
+	  Patch from Masao Mutoh <mutoh@highway.ne.jp>. Thanks!
+
 2005-10-04  Kouhei Sutou  <kou@cozmixng.org>
 
 	* packages/cairo/ext/rb_cairo.h: Support Win32 platform.
