@@ -1,8 +1,3 @@
-2005-10-07  Kouhei Sutou  <kou@cozmixng.org>
-
-	* packages/cairo/ext/depend: Use this instead of ...
-	* packages/cairo/ext/post-install.rb: ... this.
-
 2005-10-06  Kouhei Sutou  <kou@cozmixng.org>
 
 	* packages/cairo/ext/extconf.rb: Fixed Win32 platform problem.
