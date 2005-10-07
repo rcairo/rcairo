@@ -1,5 +1,8 @@
 2005-10-07  Kouhei Sutou  <kou@cozmixng.org>
 
+	* packages/cairo/ext/rb_cairo_surface.c: Implemented
+	  cairo_surface_t.
+
 	* packages/cairo/ext/rb_cairo_exception.c: Sorted "case" in the
 	  order of declaration cairo_status_t in cairo.h.
 
