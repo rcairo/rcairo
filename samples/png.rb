@@ -5,7 +5,7 @@ $LOAD_PATH.unshift "../packages/cairo/lib/"
 
 require 'cairo'
 include Cairo
-cr=Context.new(Surface.new(FORMAT_ARGB32, 200,200))
+cr=Context.new(SurfaceImage.new(FORMAT_ARGB32, 200,200))
 
 # fill background with white
 cr.set_source_rgb(1.0, 1.0, 1.0)

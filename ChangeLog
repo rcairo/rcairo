@@ -1,5 +1,8 @@
 2005-10-07  Kouhei Sutou  <kou@cozmixng.org>
 
+	* samples/png.rb: Use Cairo::SurfaceImage instead of
+	  Cairo::Surface.
+
 	* packages/cairo/ext/rb_cairo_surface.c: Implemented
 	  cairo_surface_t.
 
