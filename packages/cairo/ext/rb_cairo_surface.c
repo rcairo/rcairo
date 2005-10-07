@@ -26,18 +26,34 @@ VALUE rb_cCairo_SurfacePDF;
 VALUE rb_cCairo_SurfacePS;
 
 static ID cr_id_call;
+static cairo_user_data_key_t klass_key;
 
 #define _SELF  (RVAL2CRSURFACE(self))
 
 static inline void
 cr_surface_check_status (cairo_surface_t *surface)
 {
+  rb_cairo_raise_exception (cairo_surface_status (surface));
+}
+
+static void
+cr_surface_set_klass (cairo_surface_t *surface, VALUE klass)
+{
   cairo_status_t status;
-  status = cairo_surface_status (surface);
-  if (status)
+  status = cairo_surface_set_user_data (surface, &klass_key,
+                                        (void *)klass, NULL);
+  rb_cairo_raise_exception (status);
+}
+
+static VALUE
+cr_surface_get_klass (cairo_surface_t *surface)
+{
+  VALUE klass = (VALUE)cairo_surface_get_user_data (surface, &klass_key);
+  if (!klass)
     {
-      rb_cairo_raise_exception (status);
+      rb_raise (rb_eArgError, "[BUG] uninitialized surface for Ruby");
     }
+  return klass;
 }
 
 /* write callback */
@@ -50,7 +66,8 @@ cr_surface_write_func (void *closure, const unsigned char *data, unsigned int le
   if (!NIL_P(proc))
     {
       VALUE result;
-      result = rb_funcall (proc, cr_id_call, rb_str_new (data, length));
+      result = rb_funcall (proc, cr_id_call,
+                           rb_str_new ((const char *)data, length));
       status = NUM2INT (result);
       if (status != CAIRO_STATUS_SUCCESS && status != CAIRO_STATUS_WRITE_ERROR)
         status = CAIRO_STATUS_WRITE_ERROR;
@@ -95,6 +112,7 @@ rb_cairo_surface_from_ruby_object (VALUE obj)
       rb_raise (rb_eTypeError, "not a cairo surface");
     }
   Data_Get_Struct (obj, cairo_surface_t, surface);
+  cr_surface_set_klass (surface, rb_obj_class (obj));
   return surface;
 }
 
@@ -108,10 +126,11 @@ cr_surface_free (void *ptr)
 }
 
 VALUE
-rb_cairo_surface_to_ruby_object (cairo_surface_t *surface, VALUE klass)
+rb_cairo_surface_to_ruby_object (cairo_surface_t *surface)
 {
   if (surface)
     {
+      VALUE klass = cr_surface_get_klass (surface);
       cairo_surface_reference (surface);
       return Data_Wrap_Struct (klass, NULL, cr_surface_free, surface);
     }
@@ -129,19 +148,29 @@ cr_surface_allocate (VALUE klass)
 
 /* Surface manipulation */
 static VALUE
-cr_surface_create_similar (VALUE self, VALUE content, VALUE width, VALUE height)
+cr_surface_create_similar (VALUE self, VALUE rb_content,
+                           VALUE width, VALUE height)
 {
   cairo_surface_t *surface;
-  surface = cairo_create_similar (RVAL2CRSURFACE (self),
-                                  NUM2INT (content),
-                                  NUM2DBL (width),
-                                  NUM2DBL (height));
+  cairo_content_t content;
+
+  content = NUM2INT (rb_content);
+
+  if (content < CAIRO_CONTENT_COLOR ||
+      content > CAIRO_CONTENT_COLOR_ALPHA)
+    {
+        rb_raise (rb_eArgError, "invalid content");
+    }
+
+  surface = cairo_surface_create_similar (RVAL2CRSURFACE (self), content,
+                                          NUM2INT (width), NUM2INT (height));
   cr_surface_check_status (surface);
-  return CRSURFACE2RVAL (surface, rb_obj_class (self));
+  cr_surface_set_klass (surface, rb_obj_class (self));
+  return CRSURFACE2RVAL (surface);
 }
 
 static VALUE
-cairo_surface_finish (VALUE self)
+cr_surface_finish (VALUE self)
 {
   cairo_surface_finish (_SELF);
   cr_surface_check_status (_SELF);
@@ -163,16 +192,16 @@ cr_surface_write_to_png (int argc, VALUE *argv, VALUE self)
       rb_need_block();
       status = cairo_surface_write_to_png_stream (_SELF,
                                                   cr_surface_write_func,
-                                                  (void *)ruby_block);
+                                                  (void *)rb_block_proc());
     }
-  else if (TYPE(filename) != T_STRING || )
+  else if (n == 1 && TYPE(filename) == T_STRING)
     {
-      rb_raise (rb_eArgError,
-                "invalid argument (expect (filename) or (&block))");
+      status = cairo_surface_write_to_png (_SELF, StringValuePtr (filename));
     }
   else
     {
-      status = cairo_surface_write_to_png (_SELF, StringValuePtr (filiename));
+      rb_raise (rb_eArgError,
+                "invalid argument (expect (filename) or (&block))");
     }
   
   rb_cairo_raise_exception (status);
@@ -183,10 +212,14 @@ cr_surface_write_to_png (int argc, VALUE *argv, VALUE self)
 static VALUE
 cr_surface_get_font_options (VALUE self)
 {
-  cairo_font_options_t options;
+#if 0
+/* XXX: after implement Cairo::FontOptions */
+  cairo_font_options_t *options = cairo_font_options_create();
   cairo_surface_get_font_options (_SELF, &options);
   cr_surface_check_status (_SELF);
-  return CRFONTOPTIONS2RVAL (cairo_font_options_copy (&options)); /* check status!*/
+  return CRFONTOPTIONS2RVAL (cairo_font_options_copy (options)); /* check status!*/
+#endif
+  return Qnil;
 }
 
 static VALUE
@@ -246,11 +279,24 @@ cr_surface_image_create (VALUE self, VALUE format, VALUE width, VALUE height)
 }
 
 static cairo_surface_t *
-cr_surface_image_create_for_data (VALUE self, VALUE data, VALUE format,
+cr_surface_image_create_for_data (VALUE self, VALUE rb_data, VALUE rb_format,
                                   VALUE width, VALUE height, VALUE stride)
 {
-  return cairo_image_surface_create_for_data (StringValuePtr (data),
-                                              NUM2INT (format),
+  unsigned char *data;
+  cairo_format_t format;
+
+  format = NUM2INT (rb_format);
+
+  if (format < CAIRO_FORMAT_ARGB32 ||
+      format < CAIRO_FORMAT_A1)
+    {
+      rb_raise (rb_eArgError, "invalid format");
+    }
+
+  data = (unsigned char *)StringValuePtr (rb_data);
+  
+  return cairo_image_surface_create_for_data (data,
+                                              format,
                                               NUM2INT (width),
                                               NUM2INT (height),
                                               NUM2INT (stride));
@@ -266,7 +312,7 @@ static cairo_surface_t *
 cr_surface_image_create_from_png_stream (VALUE self)
 {
   return cairo_image_surface_create_from_png_stream (cr_surface_read_func,
-                                                     (void *)ruby_block);
+                                                     (void *)rb_block_proc());
 }
 #endif
 
@@ -438,14 +484,17 @@ Init_cairo_surface (void)
   
   rb_define_method (rb_cCairo_Surface, "create_similar",
                     cr_surface_create_similar, 3);
+  rb_define_method (rb_cCairo_Surface, "finish", cr_surface_finish, 0);
   
 #if CAIRO_HAS_PNG_FUNCTIONS
   rb_define_method (rb_cCairo_Surface, "write_to_png",
                     cr_surface_write_to_png, -1);
 #endif
+
   
   rb_define_method (rb_cCairo_Surface, "font_options",
                     cr_surface_get_font_options, 0);
+  rb_define_method (rb_cCairo_Surface, "flush", cr_surface_flush, 0);
   rb_define_method (rb_cCairo_Surface, "mark_dirty", cr_surface_mark_dirty, 0);
   rb_define_method (rb_cCairo_Surface, "set_device_offset",
                     cr_surface_set_device_offset, 2);
