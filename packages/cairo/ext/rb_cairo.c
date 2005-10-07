@@ -22,6 +22,7 @@ extern void Init_cairo_exception (void);
 extern void Init_cairo_font (void);
 extern void Init_cairo_text_extents (void);
 extern void Init_cairo_font_extents (void);
+extern void Init_cairo_font_options (void);
 extern void Init_cairo_pattern (void);
 extern void Init_cairo_glyph (void);
 
@@ -36,8 +37,9 @@ Init_cairo ()
   Init_cairo_constants ();
   Init_cairo_exception ();
   Init_cairo_font ();
-  Init_cairo_text_extents ();
   Init_cairo_font_extents ();
+  Init_cairo_font_options ();
+  Init_cairo_text_extents ();
   Init_cairo_pattern ();
   Init_cairo_glyph ();
 }

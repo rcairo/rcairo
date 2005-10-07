@@ -6,6 +6,7 @@ EXPORTS
     rb_cCairo_Pattern     DATA
     rb_cCairo_FontFace    DATA
     rb_cCairo_FontExtents DATA
+    rb_cCairo_FontOptions DATA
     rb_cCairo_TextExtents DATA
     rb_cCairo_Glyph       DATA
     rb_cCairo_Surface     DATA
@@ -18,6 +19,8 @@ EXPORTS
     rb_cairo_font_face_from_ruby_object
     rb_cairo_font_face_to_ruby_object
     rb_cairo_font_extents_from_ruby_object
+    rb_cairo_font_options_to_ruby_object
+    rb_cairo_font_options_from_ruby_object
     rb_cairo_font_extents_to_ruby_object
     rb_cairo_text_extents_from_ruby_object
     rb_cairo_text_extents_to_ruby_object
