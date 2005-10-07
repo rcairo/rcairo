@@ -10,17 +10,17 @@
 
 #include "rb_cairo.h"
 
-static VALUE rb_eCairo_InvalidPopGroupError;
 static VALUE rb_eCairo_InvalidRestoreError;
+static VALUE rb_eCairo_InvalidPopGroupError;
 static VALUE rb_eCairo_NoCurrentPointError;
 static VALUE rb_eCairo_InvalidMatrixError;
 static VALUE rb_eCairo_InvalidStatusError;
 static VALUE rb_eCairo_NullPointerError;
-static VALUE rb_eCairo_WriteError;
-static VALUE rb_eCairo_SurfaceFinishedError;
 static VALUE rb_eCairo_InvalidStringError;
 static VALUE rb_eCairo_InvalidPathDataError;
 static VALUE rb_eCairo_ReadError;
+static VALUE rb_eCairo_WriteError;
+static VALUE rb_eCairo_SurfaceFinishedError;
 static VALUE rb_eCairo_SurfaceTypeMismatchError;
 static VALUE rb_eCairo_PatternTypeMismatchError;
 static VALUE rb_eCairo_InvalidContentError;
@@ -59,12 +59,6 @@ rb_cairo_raise_exception (cairo_status_t  status)
     case CAIRO_STATUS_NULL_POINTER:
       rb_raise (rb_eCairo_NullPointerError, string);
       break;
-    case CAIRO_STATUS_WRITE_ERROR:
-      rb_raise (rb_eCairo_WriteError, string);
-      break;
-    case CAIRO_STATUS_SURFACE_FINISHED:
-      rb_raise (rb_eCairo_SurfaceFinishedError, string);
-      break;
     case CAIRO_STATUS_INVALID_STRING:
       rb_raise (rb_eCairo_InvalidStringError, string);
       break;
@@ -73,6 +67,12 @@ rb_cairo_raise_exception (cairo_status_t  status)
       break;
     case CAIRO_STATUS_READ_ERROR:
       rb_raise (rb_eCairo_ReadError, string);
+      break;
+    case CAIRO_STATUS_WRITE_ERROR:
+      rb_raise (rb_eCairo_WriteError, string);
+      break;
+    case CAIRO_STATUS_SURFACE_FINISHED:
+      rb_raise (rb_eCairo_SurfaceFinishedError, string);
       break;
     case CAIRO_STATUS_SURFACE_TYPE_MISMATCH:
       rb_raise (rb_eCairo_SurfaceTypeMismatchError, string);
@@ -119,12 +119,6 @@ Init_cairo_exception ()
   rb_eCairo_NullPointerError =
     rb_define_class_under (rb_mCairo, "NullPointerError",
                            rb_eTypeError);
-  rb_eCairo_WriteError =
-    rb_define_class_under (rb_mCairo, "WriteError",
-                           rb_eRuntimeError);
-  rb_eCairo_SurfaceFinishedError =
-    rb_define_class_under (rb_mCairo, "SurfaceFinishedError",
-                           rb_eRuntimeError);
   rb_eCairo_InvalidStringError =
     rb_define_class_under (rb_mCairo, "InvalidStringError",
                            rb_eArgError);
@@ -134,11 +128,17 @@ Init_cairo_exception ()
   rb_eCairo_ReadError =
     rb_define_class_under (rb_mCairo, "ReadError",
                            rb_eRuntimeError);
+  rb_eCairo_WriteError =
+    rb_define_class_under (rb_mCairo, "WriteError",
+                           rb_eRuntimeError);
+  rb_eCairo_SurfaceFinishedError =
+    rb_define_class_under (rb_mCairo, "SurfaceFinishedError",
+                           rb_eRuntimeError);
   rb_eCairo_SurfaceTypeMismatchError =
-    rb_define_class_under (rb_mCairo, "SurfaceTypeMismatch",
+    rb_define_class_under (rb_mCairo, "SurfaceTypeMismatchError",
                            rb_eTypeError);
   rb_eCairo_PatternTypeMismatchError =
-    rb_define_class_under (rb_mCairo, "PatternTypeMismatch",
+    rb_define_class_under (rb_mCairo, "PatternTypeMismatchError",
                            rb_eTypeError);
   rb_eCairo_InvalidContentError =
     rb_define_class_under (rb_mCairo, "InvalidContentError",
