@@ -213,14 +213,12 @@ cr_surface_write_to_png (int argc, VALUE *argv, VALUE self)
 static VALUE
 cr_surface_get_font_options (VALUE self)
 {
-#if 0
-/* XXX: after implement Cairo::FontOptions */
-  cairo_font_options_t *options = cairo_font_options_create();
-  cairo_surface_get_font_options (_SELF, &options);
+  cairo_font_options_t *options = NULL;
+  cairo_surface_get_font_options (_SELF, options);
   cr_surface_check_status (_SELF);
-  return CRFONTOPTIONS2RVAL (cairo_font_options_copy (options)); /* check status!*/
-#endif
-  return Qnil;
+  options = cairo_font_options_copy (options);
+  rb_cairo_raise_exception (cairo_font_options_status (options));
+  return CRFONTOPTIONS2RVAL (options);
 }
 
 static VALUE

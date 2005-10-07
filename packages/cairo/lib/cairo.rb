@@ -93,4 +93,8 @@ module Cairo
 
     def *(other) ; Matrix.new.set_product(self, other) ; end
   end
+
+  class FontOptions
+    Cairo.__add_one_arg_setter(self)
+  end
 end
