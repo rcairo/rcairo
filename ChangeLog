@@ -1,5 +1,8 @@
 2005-10-07  Kouhei Sutou  <kou@cozmixng.org>
 
+	* packages/cairo/ext: Added c-mode style configuration header for
+	  Emacs.
+
 	* samples/png.rb: Use Cairo::SurfaceImage instead of
 	  Cairo::Surface.
 
