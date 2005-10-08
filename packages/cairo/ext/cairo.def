@@ -1,16 +1,21 @@
 EXPORTS
     Init_cairo
-    rb_mCairo             DATA
-    rb_cCairo_Context     DATA
-    rb_cCairo_Path        DATA
-    rb_cCairo_Matrix      DATA
-    rb_cCairo_Pattern     DATA
-    rb_cCairo_FontFace    DATA
-    rb_cCairo_FontExtents DATA
-    rb_cCairo_FontOptions DATA
-    rb_cCairo_TextExtents DATA
-    rb_cCairo_Glyph       DATA
-    rb_cCairo_Surface     DATA
+    rb_mCairo                 DATA
+    rb_cCairo_Context         DATA
+    rb_cCairo_Path            DATA
+    rb_cCairo_Matrix          DATA
+    rb_cCairo_Pattern         DATA
+    rb_cCairo_SolidPattern    DATA
+    rb_cCairo_SurfacePattern  DATA
+    rb_cCairo_GradientPattern DATA
+    rb_cCairo_LinearPattern   DATA
+    rb_cCairo_RadialPattern   DATA
+    rb_cCairo_FontFace        DATA
+    rb_cCairo_FontExtents     DATA
+    rb_cCairo_FontOptions     DATA
+    rb_cCairo_TextExtents     DATA
+    rb_cCairo_Glyph           DATA
+    rb_cCairo_Surface         DATA
     rb_cairo_context_from_ruby_object
     rb_cairo_context_to_ruby_object
     rb_cairo_path_from_ruby_object
@@ -31,4 +36,3 @@ EXPORTS
     rb_cairo_glyph_to_ruby_object
     rb_cairo_surface_from_ruby_object
     rb_cairo_surface_to_ruby_object
-    

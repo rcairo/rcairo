@@ -13,6 +13,8 @@
 
 VALUE rb_cCairo_Context;
 
+static ID cr_id_source_class;
+
 #define _SELF  (RVAL2CRCONTEXT(self))
 
 static VALUE
@@ -105,11 +107,11 @@ cr_allocate (VALUE klass)
 }
 
 static VALUE
-cr_initialize (VALUE self, VALUE rb_target)
+cr_initialize (VALUE self, VALUE target)
 {
   cairo_t *cr;
 
-  cr = cairo_create (RVAL2CRSURFACE (rb_target));
+  cr = cairo_create (RVAL2CRSURFACE (target));
   cr_check_status (cr);
   DATA_PTR(self) = cr;
   return Qnil;
@@ -183,6 +185,7 @@ cr_set_source_rgb (int argc, VALUE *argv, VALUE self)
                         NUM2DBL (green),
                         NUM2DBL (blue));
   cr_check_status (_SELF);
+  rb_ivar_set (self, cr_id_source_class, rb_cCairo_SolidPattern);
   return self;
 }
 
@@ -219,6 +222,7 @@ cr_set_source_rgba (int argc, VALUE *argv, VALUE self)
                              NUM2DBL (blue),
                              NUM2DBL (alpha));
       cr_check_status (_SELF);
+      rb_ivar_set (self, cr_id_source_class, rb_cCairo_SolidPattern);
       return self;
     }
 }
@@ -231,6 +235,7 @@ cr_set_source_surface (VALUE self, VALUE surface, VALUE width, VALUE height)
                             NUM2INT (width),
                             NUM2INT (height));
   cr_check_status (_SELF);
+  rb_ivar_set (self, cr_id_source_class, rb_cCairo_SurfacePattern);
   return self;
 }
 
@@ -239,6 +244,7 @@ cr_set_source (VALUE self, VALUE pattern)
 {
   cairo_set_source (_SELF, RVAL2CRPATTERN (pattern));
   cr_check_status (_SELF);
+  rb_ivar_set (self, cr_id_source_class, rb_obj_class (pattern));
   return self;
 }
 
@@ -970,7 +976,16 @@ cr_get_operator (VALUE self)
 static VALUE
 cr_get_source (VALUE self)
 {
-  return CRPATTERN2RVAL (cairo_get_source (_SELF));
+  cairo_pattern_t *source;
+  source = cairo_get_source (_SELF);
+
+  if (source)
+    {
+      rb_cairo_raise_exception (cairo_pattern_status (source));
+      return CRPATTERN2RVAL (source, rb_ivar_get (self, cr_id_source_class));
+    }
+  else
+    return Qnil;
 }
 
 static VALUE
@@ -1035,7 +1050,11 @@ cr_get_matrix (VALUE self)
 static VALUE
 cr_get_target (VALUE self)
 {
-  return CRSURFACE2RVAL (cairo_get_target (_SELF));
+  cairo_surface_t *surface;
+
+  surface = cairo_get_target (_SELF);
+  rb_cairo_raise_exception (cairo_surface_status (surface));
+  return CRSURFACE2RVAL (surface);
 }
 
 /* Paths */
@@ -1066,6 +1085,8 @@ cr_copy_append_path (VALUE self, VALUE path)
 void
 Init_cairo_context (void)
 {
+  cr_id_source_class = rb_intern ("source_class");
+  
   rb_cCairo_Context =
     rb_define_class_under (rb_mCairo, "Context", rb_cObject);
 
