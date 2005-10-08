@@ -653,7 +653,7 @@ module FileOperations
 
   def command(*args)
     $stderr.puts args.join(' ') if verbose?
-    system(*args) or raise RuntimeError,
+    system(args.join(' ')) or raise RuntimeError,
         "system(#{args.map{|a| a.inspect }.join(' ')}) failed"
   end
 
