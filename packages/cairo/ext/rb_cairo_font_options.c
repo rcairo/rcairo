@@ -42,7 +42,7 @@ cr_options_free (void *ptr)
 }
 
 VALUE
-rb_cairo_options_to_ruby_object (cairo_font_options_t *options)
+rb_cairo_font_options_to_ruby_object (cairo_font_options_t *options)
 {
   if (options)
     {
