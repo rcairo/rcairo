@@ -188,9 +188,8 @@ cr_surface_write_to_png (int argc, VALUE *argv, VALUE self)
 
   n = rb_scan_args (argc, argv, "01", &filename);
 
-  if (n == 0)
+  if (n == 0 && rb_block_given_p ())
     {
-      rb_need_block();
       status = cairo_surface_write_to_png_stream (_SELF,
                                                   cr_surface_write_func,
                                                   (void *)rb_block_proc());
