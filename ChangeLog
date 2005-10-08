@@ -1,5 +1,9 @@
 2005-10-08  Kouhei Sutou  <kou@cozmixng.org>
 
+	* packages/cairo/ext/rb_cairo_context.c: Supported all API for
+	  cairo_t.
+	* samples/png.rb: Followed the avobe changes.
+
 	* packages/cairo/ext/rb_cairo_path.c: Implemented cairo_path_t.
 	* packages/cairo/ext/rb_cairo.c: ditto.
 	* packages/cairo/ext/rb_cairo.h: ditto.
