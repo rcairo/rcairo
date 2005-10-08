@@ -2,6 +2,7 @@ EXPORTS
     Init_cairo
     rb_mCairo             DATA
     rb_cCairo_Context     DATA
+    rb_cCairo_Path        DATA
     rb_cCairo_Matrix      DATA
     rb_cCairo_Pattern     DATA
     rb_cCairo_FontFace    DATA
@@ -12,6 +13,8 @@ EXPORTS
     rb_cCairo_Surface     DATA
     rb_cairo_context_from_ruby_object
     rb_cairo_context_to_ruby_object
+    rb_cairo_path_from_ruby_object
+    rb_cairo_path_to_ruby_object
     rb_cairo_matrix_from_ruby_object
     rb_cairo_matrix_to_ruby_object
     rb_cairo_pattern_from_ruby_object

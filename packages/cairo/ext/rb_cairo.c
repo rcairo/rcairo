@@ -15,6 +15,7 @@
 VALUE rb_mCairo;
 
 extern void Init_cairo_context (void);
+extern void Init_cairo_path (void);
 extern void Init_cairo_matrix (void);
 extern void Init_cairo_surface (void);
 extern void Init_cairo_constants (void);
@@ -32,6 +33,7 @@ Init_cairo ()
   rb_mCairo = rb_define_module ("Cairo");
 
   Init_cairo_context ();
+  Init_cairo_path ();
   Init_cairo_matrix ();
   Init_cairo_surface ();
   Init_cairo_constants ();
