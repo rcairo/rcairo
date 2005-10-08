@@ -97,4 +97,12 @@ module Cairo
   class FontOptions
     Cairo.__add_one_arg_setter(self)
   end
+
+  class Pattern
+    Cairo.__add_one_arg_setter(self)
+  end
+
+  class SurfacePattern
+    Cairo.__add_one_arg_setter(self)
+  end
 end

@@ -32,6 +32,11 @@ RUBY_CAIRO_VAR VALUE rb_cCairo_Context;
 RUBY_CAIRO_VAR VALUE rb_cCairo_Path;
 RUBY_CAIRO_VAR VALUE rb_cCairo_Matrix;
 RUBY_CAIRO_VAR VALUE rb_cCairo_Pattern;
+RUBY_CAIRO_VAR VALUE rb_cCairo_SolidPattern;
+RUBY_CAIRO_VAR VALUE rb_cCairo_SurfacePattern;
+RUBY_CAIRO_VAR VALUE rb_cCairo_GradientPattern;
+RUBY_CAIRO_VAR VALUE rb_cCairo_LinearPattern;
+RUBY_CAIRO_VAR VALUE rb_cCairo_RadialPattern;
 RUBY_CAIRO_VAR VALUE rb_cCairo_FontFace;
 RUBY_CAIRO_VAR VALUE rb_cCairo_FontExtents;
 RUBY_CAIRO_VAR VALUE rb_cCairo_FontOptions;
@@ -49,7 +54,7 @@ RUBY_CAIRO_VAR VALUE rb_cCairo_Surface;
 #define CRMATRIX2RVAL(matrix)   (rb_cairo_matrix_to_ruby_object(matrix))
 
 #define RVAL2CRPATTERN(obj)     (rb_cairo_pattern_from_ruby_object(obj))
-#define CRPATTERN2RVAL(pattern) (rb_cairo_pattern_to_ruby_object(pattern))
+#define CRPATTERN2RVAL(pattern, klass) (rb_cairo_pattern_to_ruby_object(pattern, klass))
 
 #define RVAL2CRFONTFACE(obj)    (rb_cairo_font_face_from_ruby_object(obj))
 #define CRFONTFACE2RVAL(face)   (rb_cairo_font_face_to_ruby_object(face))
@@ -79,7 +84,7 @@ cairo_matrix_t       *rb_cairo_matrix_from_ruby_object       (VALUE obj);
 VALUE                 rb_cairo_matrix_to_ruby_object         (cairo_matrix_t *matrix);
 
 cairo_pattern_t      *rb_cairo_pattern_from_ruby_object      (VALUE obj);
-VALUE                 rb_cairo_pattern_to_ruby_object        (cairo_pattern_t *pat);
+VALUE                 rb_cairo_pattern_to_ruby_object        (cairo_pattern_t *pat, VALUE klass);
 
 cairo_font_face_t    *rb_cairo_font_face_from_ruby_object    (VALUE obj);
 VALUE                 rb_cairo_font_face_to_ruby_object      (cairo_font_face_t *face);

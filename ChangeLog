@@ -1,5 +1,13 @@
 2005-10-09  Kouhei Sutou  <kou@cozmixng.org>
 
+	* packages/cairo/ext/rb_cairo_pattern.c: Implemented
+	  cairo_pattern_t.
+	* packages/cairo/ext/rb_cairo.c: ditto.
+	* packages/cairo/ext/rb_cairo.h: ditto.
+	* packages/cairo/ext/cairo.def: ditto.
+	* packages/cairo/lib/cairo.rb: ditto.
+	* packages/cairo/ext/rb_cairo_context.c: Followed the avobe changes.
+
 	* packages/cairo/ext/rb_cairo_surface.c
 	  (cr_surface_write_to_png): Don't use rb_need_block() for ruby <=
 	  1.8.2.
