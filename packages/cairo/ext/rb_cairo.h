@@ -29,6 +29,7 @@
 
 RUBY_CAIRO_VAR VALUE rb_mCairo;
 RUBY_CAIRO_VAR VALUE rb_cCairo_Context;
+RUBY_CAIRO_VAR VALUE rb_cCairo_Path;
 RUBY_CAIRO_VAR VALUE rb_cCairo_Matrix;
 RUBY_CAIRO_VAR VALUE rb_cCairo_Pattern;
 RUBY_CAIRO_VAR VALUE rb_cCairo_FontFace;
@@ -40,6 +41,9 @@ RUBY_CAIRO_VAR VALUE rb_cCairo_Surface;
 
 #define RVAL2CRCONTEXT(obj)     (rb_cairo_context_from_ruby_object(obj))
 #define CRCONTEXT2RVAL(cr)      (rb_cairo_context_to_ruby_object(cr))
+
+#define RVAL2CRPATH(obj)        (rb_cairo_path_from_ruby_object(obj))
+#define CRPATH2RVAL(path)       (rb_cairo_path_to_ruby_object(path))
 
 #define RVAL2CRMATRIX(obj)      (rb_cairo_matrix_from_ruby_object(obj))
 #define CRMATRIX2RVAL(matrix)   (rb_cairo_matrix_to_ruby_object(matrix))
@@ -67,6 +71,9 @@ RUBY_CAIRO_VAR VALUE rb_cCairo_Surface;
 
 cairo_t              *rb_cairo_context_from_ruby_object      (VALUE obj);
 VALUE                 rb_cairo_context_to_ruby_object        (cairo_t *cr);
+
+cairo_path_t         *rb_cairo_path_from_ruby_object         (VALUE obj);
+VALUE                 rb_cairo_path_to_ruby_object           (cairo_path_t *path);
 
 cairo_matrix_t       *rb_cairo_matrix_from_ruby_object       (VALUE obj);
 VALUE                 rb_cairo_matrix_to_ruby_object         (cairo_matrix_t *matrix);
