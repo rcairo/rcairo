@@ -1,6 +1,7 @@
 2005-10-08  Kouhei Sutou  <kou@cozmixng.org>
 
 	* setup.rb: Added workaround for an error on Win32 platform.
+	  Patch from Masao Mutoh <mutoh@highway.ne.jp>. Thanks!
 
 	* packages/cairo/ext/rb_cairo_font_options.c: Implemented
 	  cairo_font_options_t.
