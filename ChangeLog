@@ -1,5 +1,7 @@
 2005-10-08  Kouhei Sutou  <kou@cozmixng.org>
 
+	* packages/cairo/ext/rb_cairo_font_options.c: Fixed a typo.
+
 	* setup.rb: Added workaround for an error on Win32 platform.
 	  Patch from Masao Mutoh <mutoh@highway.ne.jp>. Thanks!
 
