@@ -186,7 +186,7 @@ cr_matrix_set (VALUE self,
 }
 
 static VALUE
-cr_matrix_get (VALUE self)
+cr_matrix_to_a (VALUE self)
 {
   cairo_matrix_t *matrix = _SELF;
   double affine[6];
@@ -197,6 +197,22 @@ cr_matrix_get (VALUE self)
   affine[4] = matrix->x0;
   affine[5] = matrix->y0;
   return cr__float_array (affine, 6);
+}
+
+static VALUE
+cr_matrix_to_s(VALUE self)
+{
+  cairo_matrix_t *matrix;
+  VALUE ret;
+
+  matrix = _SELF;
+
+  ret = rb_str_new2 ("<");
+  rb_str_cat2 (ret, rb_class2name (CLASS_OF (self)));
+  rb_str_cat2 (ret, ":");
+  rb_str_concat (ret, rb_inspect (cr_matrix_to_a (self)));
+  rb_str_cat2 (ret, ">");
+  return ret;
 }
 
 
@@ -232,5 +248,6 @@ Init_cairo_matrix (void)
 
   /* Utilities */
   rb_define_method (rb_cCairo_Matrix, "set", cr_matrix_set, 6);
-  rb_define_method (rb_cCairo_Matrix, "to_a", cr_matrix_get, 0);
+  rb_define_method (rb_cCairo_Matrix, "to_a", cr_matrix_to_a, 0);
+  rb_define_method (rb_cCairo_Matrix, "to_s", cr_matrix_to_s, 0);
 }
