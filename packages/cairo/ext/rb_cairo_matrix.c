@@ -154,13 +154,7 @@ cr_matrix_rotate (VALUE self,
 static    VALUE
 cr_matrix_invert (VALUE self)
 {
-  cairo_status_t status;
-  status = cairo_matrix_invert (_SELF);
-  if (status)
-    {
-      rb_cairo_raise_exception (status);
-    }
-      
+  rb_cairo_check_status (cairo_matrix_invert (_SELF));
   return self;
 }
 

@@ -106,6 +106,6 @@ VALUE                 rb_cairo_surface_to_ruby_object        (cairo_surface_t *s
 
 
 
-void rb_cairo_raise_exception (cairo_status_t status);
+void rb_cairo_check_status (cairo_status_t status);
 
 #endif

@@ -31,7 +31,7 @@ static VALUE rb_eCairo_FileNotFoundError;
 static VALUE rb_eCairo_InvalidDashError;
 
 void
-rb_cairo_raise_exception (cairo_status_t  status)
+rb_cairo_check_status (cairo_status_t status)
 {
   const char *string = cairo_status_to_string (status);
   
@@ -102,15 +102,18 @@ rb_cairo_raise_exception (cairo_status_t  status)
 void
 Init_cairo_exception ()
 {
+  VALUE rb_eCairo_Error;
+  rb_eCairo_Error =
+    rb_define_class_under (rb_mCairo, "Error", rb_eStandardError);
   rb_eCairo_InvalidRestoreError =
     rb_define_class_under (rb_mCairo, "InvalidRestoreError",
-                           rb_eRuntimeError);
+                           rb_eCairo_Error);
   rb_eCairo_InvalidPopGroupError =
     rb_define_class_under (rb_mCairo, "InvalidPopGroupError",
-                           rb_eRuntimeError);
+                           rb_eCairo_Error);
   rb_eCairo_NoCurrentPointError =
     rb_define_class_under (rb_mCairo, "NoCurrentPointError",
-                           rb_eRuntimeError);
+                           rb_eCairo_Error);
   rb_eCairo_InvalidMatrixError =
     rb_define_class_under (rb_mCairo, "InvalidMatrixError",
                            rb_eArgError);
@@ -128,13 +131,13 @@ Init_cairo_exception ()
                            rb_eArgError);
   rb_eCairo_ReadError =
     rb_define_class_under (rb_mCairo, "ReadError",
-                           rb_eRuntimeError);
+                           rb_eIOError);
   rb_eCairo_WriteError =
     rb_define_class_under (rb_mCairo, "WriteError",
-                           rb_eRuntimeError);
+                           rb_eIOError);
   rb_eCairo_SurfaceFinishedError =
     rb_define_class_under (rb_mCairo, "SurfaceFinishedError",
-                           rb_eRuntimeError);
+                           rb_eCairo_Error);
   rb_eCairo_SurfaceTypeMismatchError =
     rb_define_class_under (rb_mCairo, "SurfaceTypeMismatchError",
                            rb_eTypeError);
@@ -152,7 +155,7 @@ Init_cairo_exception ()
                            rb_eArgError);
   rb_eCairo_FileNotFoundError =
     rb_define_class_under (rb_mCairo, "FileNotFound",
-                           rb_eRuntimeError);
+                           rb_eCairo_Error);
   rb_eCairo_InvalidDashError =
     rb_define_class_under (rb_mCairo, "InvalidDashError",
                            rb_eArgError);

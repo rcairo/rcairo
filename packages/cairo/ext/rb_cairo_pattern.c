@@ -23,7 +23,7 @@ VALUE rb_cCairo_RadialPattern;
 static inline void
 cr_pattern_check_status (cairo_pattern_t *pattern)
 {
-  rb_cairo_raise_exception (cairo_pattern_status (pattern));
+  rb_cairo_check_status (cairo_pattern_status (pattern));
 }
 
 cairo_pattern_t *
