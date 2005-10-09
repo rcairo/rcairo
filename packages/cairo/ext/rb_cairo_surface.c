@@ -34,7 +34,7 @@ static cairo_user_data_key_t klass_key;
 static inline void
 cr_surface_check_status (cairo_surface_t *surface)
 {
-  rb_cairo_raise_exception (cairo_surface_status (surface));
+  rb_cairo_check_status (cairo_surface_status (surface));
 }
 
 static void
@@ -43,7 +43,7 @@ cr_surface_set_klass (cairo_surface_t *surface, VALUE klass)
   cairo_status_t status;
   status = cairo_surface_set_user_data (surface, &klass_key,
                                         (void *)klass, NULL);
-  rb_cairo_raise_exception (status);
+  rb_cairo_check_status (status);
 }
 
 static VALUE
@@ -204,7 +204,7 @@ cr_surface_write_to_png (int argc, VALUE *argv, VALUE self)
                 "invalid argument (expect (filename) or (&block))");
     }
   
-  rb_cairo_raise_exception (status);
+  rb_cairo_check_status (status);
   return self;
 }
 #endif
@@ -216,7 +216,7 @@ cr_surface_get_font_options (VALUE self)
   cairo_surface_get_font_options (_SELF, options);
   cr_surface_check_status (_SELF);
   options = cairo_font_options_copy (options);
-  rb_cairo_raise_exception (cairo_font_options_status (options));
+  rb_cairo_check_status (cairo_font_options_status (options));
   return CRFONTOPTIONS2RVAL (options);
 }
 

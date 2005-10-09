@@ -17,7 +17,7 @@ VALUE rb_cCairo_FontOptions;
 static inline void
 cr_options_check_status (cairo_font_options_t *options)
 {
-  rb_cairo_raise_exception (cairo_font_options_status (options));
+  rb_cairo_check_status (cairo_font_options_status (options));
 }
 
 cairo_font_options_t *

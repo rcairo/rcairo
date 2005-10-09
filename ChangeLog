@@ -1,5 +1,14 @@
 2005-10-09  Kouhei Sutou  <kou@cozmixng.org>
 
+	* packages/cairo/ext/rb_cairo_exception.c: Tidied exceptions.
+	* packages/cairo/ext/cairo.def: ditto.
+	* packages/cairo/ext/rb_cairo.h: ditto.
+	* packages/cairo/ext/rb_cairo_context.c: ditto.
+	* packages/cairo/ext/rb_cairo_font_options.c: ditto.
+	* packages/cairo/ext/rb_cairo_matrix.c: ditto.
+	* packages/cairo/ext/rb_cairo_pattern.c: ditto.
+	* packages/cairo/ext/rb_cairo_surface.c: ditto.
+
 	* packages/cairo/ext/rb_cairo_pattern.c: Implemented
 	  cairo_pattern_t.
 	* packages/cairo/ext/rb_cairo.c: ditto.

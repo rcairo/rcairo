@@ -43,7 +43,7 @@ glyphs_to_array (VALUE rb_array, cairo_glyph_t **glyphs, int *length)
   *glyphs = ALLOCA_N (cairo_glyph_t, *length);
 
   if (!*glyphs)
-    rb_cairo_raise_exception (CAIRO_STATUS_NO_MEMORY);
+    rb_cairo_check_status (CAIRO_STATUS_NO_MEMORY);
 
   for (i = 0; i < *length; i++)
     {
@@ -56,12 +56,7 @@ glyphs_to_array (VALUE rb_array, cairo_glyph_t **glyphs, int *length)
 static inline void
 cr_check_status (cairo_t *context)
 {
-  cairo_status_t status;
-  status = cairo_status (context);
-  if (status)
-    {
-      rb_cairo_raise_exception (status);
-    }
+  rb_cairo_check_status (cairo_status (context));
 }
 
 /* Functions for manipulating state objects */
@@ -370,7 +365,7 @@ cr_set_dash (VALUE self, VALUE dash_array, VALUE offset)
       values = ALLOCA_N (double, length);
       if (!values)
         {
-          rb_cairo_raise_exception (CAIRO_STATUS_NO_MEMORY);
+          rb_cairo_check_status (CAIRO_STATUS_NO_MEMORY);
         }
       for (i = 0; i < length; i++)
         {
@@ -981,7 +976,7 @@ cr_get_source (VALUE self)
 
   if (source)
     {
-      rb_cairo_raise_exception (cairo_pattern_status (source));
+      rb_cairo_check_status (cairo_pattern_status (source));
       return CRPATTERN2RVAL (source, rb_ivar_get (self, cr_id_source_class));
     }
   else
@@ -1053,7 +1048,7 @@ cr_get_target (VALUE self)
   cairo_surface_t *surface;
 
   surface = cairo_get_target (_SELF);
-  rb_cairo_raise_exception (cairo_surface_status (surface));
+  rb_cairo_check_status (cairo_surface_status (surface));
   return CRSURFACE2RVAL (surface);
 }
 
