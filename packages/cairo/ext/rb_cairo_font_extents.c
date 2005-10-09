@@ -9,7 +9,6 @@
  *
  */
 
-
 #include "rb_cairo.h"
 
 VALUE rb_cCairo_FontExtents;

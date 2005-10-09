@@ -40,6 +40,7 @@ RUBY_CAIRO_VAR VALUE rb_cCairo_RadialPattern;
 RUBY_CAIRO_VAR VALUE rb_cCairo_FontFace;
 RUBY_CAIRO_VAR VALUE rb_cCairo_FontExtents;
 RUBY_CAIRO_VAR VALUE rb_cCairo_FontOptions;
+RUBY_CAIRO_VAR VALUE rb_cCairo_ScaledFont;
 RUBY_CAIRO_VAR VALUE rb_cCairo_TextExtents;
 RUBY_CAIRO_VAR VALUE rb_cCairo_Glyph;
 RUBY_CAIRO_VAR VALUE rb_cCairo_Surface;
@@ -64,6 +65,9 @@ RUBY_CAIRO_VAR VALUE rb_cCairo_Surface;
 
 #define RVAL2CRFONTOPTIONS(obj) (rb_cairo_font_options_from_ruby_object(obj))
 #define CRFONTOPTIONS2RVAL(ext) (rb_cairo_font_options_to_ruby_object(ext))
+
+#define RVAL2CRSCALEDFONT(obj) (rb_cairo_scaled_font_from_ruby_object(obj))
+#define CRSCALEDFONT2RVAL(ext) (rb_cairo_scaled_font_to_ruby_object(ext))
 
 #define RVAL2CRTEXTEXTENTS(obj) (rb_cairo_text_extents_from_ruby_object(obj))
 #define CRTEXTEXTENTS2RVAL(ext) (rb_cairo_text_extents_to_ruby_object(ext))
@@ -94,6 +98,9 @@ VALUE                 rb_cairo_font_extents_to_ruby_object   (cairo_font_extents
 
 cairo_font_options_t *rb_cairo_font_options_from_ruby_object (VALUE obj);
 VALUE                 rb_cairo_font_options_to_ruby_object   (cairo_font_options_t *options);
+
+cairo_scaled_font_t  *rb_cairo_scaled_font_from_ruby_object (VALUE obj);
+VALUE                 rb_cairo_scaled_font_to_ruby_object   (cairo_scaled_font_t *options);
 
 cairo_text_extents_t *rb_cairo_text_extents_from_ruby_object (VALUE obj);
 VALUE                 rb_cairo_text_extents_to_ruby_object   (cairo_text_extents_t *extents);

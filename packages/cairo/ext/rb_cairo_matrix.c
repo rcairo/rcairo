@@ -11,6 +11,7 @@
 
 
 #include "rb_cairo.h"
+#include "rb_cairo_private.h"
 
 VALUE rb_cCairo_Matrix;
 
@@ -42,22 +43,6 @@ rb_cairo_matrix_to_ruby_object (cairo_matrix_t *matrix)
       return Qnil;
     }
 }  
-
-
-static VALUE
-float_array (double   *values,
-             unsigned  count)
-{
-  VALUE     result;
-  unsigned  i;
-
-  result = rb_ary_new2 (count);
-  for (i = 0; i < count; i++)
-    {
-      rb_ary_push (result, rb_float_new (values[i]));
-    }
-  return result;
-}
 
 
 /*
@@ -121,7 +106,7 @@ cr_matrix_get (VALUE self)
   affine[3] = matrix->yy;
   affine[4] = matrix->x0;
   affine[5] = matrix->y0;
-  return float_array (affine, 6);
+  return cr__float_array (affine, 6);
 }
 
 static    VALUE
@@ -178,7 +163,7 @@ cr_matrix_transform_distance (VALUE self,
   pair[1] = NUM2DBL (dy);
   cairo_matrix_transform_distance (_SELF,
                                    pair, pair + 1);
-  return float_array (pair, 2);
+  return cr__float_array (pair, 2);
 }
 
 static    VALUE
@@ -190,7 +175,7 @@ cr_matrix_transform_point (VALUE self,
   pair[1] = NUM2DBL (y);
   cairo_matrix_transform_point (_SELF,
                                 pair, pair + 1);
-  return float_array (pair, 2);
+  return cr__float_array (pair, 2);
 }
 
 

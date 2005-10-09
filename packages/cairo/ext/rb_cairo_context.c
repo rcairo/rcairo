@@ -10,48 +10,13 @@
 */
 
 #include "rb_cairo.h"
+#include "rb_cairo_private.h"
 
 VALUE rb_cCairo_Context;
 
 static ID cr_id_source_class;
 
 #define _SELF  (RVAL2CRCONTEXT(self))
-
-static VALUE
-float_array (double *values, unsigned count)
-{
-  VALUE result;
-  int i;
-
-  result = rb_ary_new2 (count);
-  for (i = 0; i < count; i++)
-    {
-      rb_ary_push (result, rb_float_new (values[i]));
-    }
-  return result;
-}
-
-static void
-glyphs_to_array (VALUE rb_array, cairo_glyph_t **glyphs, int *length)
-{
-  int i;
-  
-  if (!rb_obj_is_kind_of (rb_array, rb_cArray))
-     rb_raise (rb_eTypeError, "expected array");
-
-  *length = RARRAY(rb_array)->len;
-  *glyphs = ALLOCA_N (cairo_glyph_t, *length);
-
-  if (!*glyphs)
-    rb_cairo_check_status (CAIRO_STATUS_NO_MEMORY);
-
-  for (i = 0; i < *length; i++)
-    {
-      memcpy ((char *) &(*glyphs)[i],
-              (char *) RVAL2CRGLYPH (rb_ary_entry (rb_array, i)),
-              sizeof (cairo_glyph_t));
-    }
-}
 
 static inline void
 cr_check_status (cairo_t *context)
@@ -442,7 +407,7 @@ cr_user_to_device (VALUE self, VALUE x, VALUE y)
   pair[1] = NUM2DBL (y);
   cairo_user_to_device (_SELF, pair, pair + 1);
   cr_check_status (_SELF);
-  return float_array (pair, 2);
+  return cr__float_array (pair, 2);
 }
 
 static VALUE
@@ -453,7 +418,7 @@ cr_user_to_device_distance (VALUE self, VALUE dx, VALUE dy)
   pair[1] = NUM2DBL (dy);
   cairo_user_to_device_distance (_SELF, pair, pair + 1);
   cr_check_status (_SELF);
-  return float_array (pair, 2);
+  return cr__float_array (pair, 2);
 }
 
 static VALUE
@@ -464,7 +429,7 @@ cr_device_to_user (VALUE self, VALUE x, VALUE y)
   pair[1] = NUM2DBL (y);
   cairo_device_to_user (_SELF, pair, pair + 1);
   cr_check_status (_SELF);
-  return float_array (pair, 2);
+  return cr__float_array (pair, 2);
 }
 
 static VALUE
@@ -475,7 +440,7 @@ cr_device_to_user_distance (VALUE self, VALUE dx, VALUE dy)
   pair[1] = NUM2DBL (dy);
   cairo_device_to_user_distance (_SELF, pair, pair + 1);
   cr_check_status (_SELF);
-  return float_array (pair, 2);
+  return cr__float_array (pair, 2);
 }
 
 
@@ -760,7 +725,7 @@ cr_stroke_extents (VALUE self)
       rb_yield (self);
     }
   cairo_stroke_extents (_SELF, extents, extents + 1, extents + 2, extents + 3);
-  return float_array (extents, 4);
+  return cr__float_array (extents, 4);
 }
 
 static VALUE
@@ -773,7 +738,7 @@ cr_fill_extents (VALUE self)
       rb_yield (self);
     }
   cairo_fill_extents (_SELF, extents, extents + 1, extents + 2, extents + 3);
-  return float_array (extents, 4);
+  return cr__float_array (extents, 4);
 }
 
 /* Clipping */
@@ -885,7 +850,7 @@ cr_show_glyphs (VALUE self, VALUE rb_glyphs)
   if (!rb_obj_is_kind_of (rb_glyphs, rb_cArray))
      rb_raise (rb_eTypeError, "expected array");
     
-  glyphs_to_array (rb_glyphs, &glyphs, &count);
+  cr__glyphs_to_array (rb_glyphs, &glyphs, &count);
   cairo_show_glyphs (_SELF, glyphs, count);
   cr_check_status (_SELF);
   return self;
@@ -934,7 +899,7 @@ cr_glyph_extents (VALUE self, VALUE rb_glyphs)
   cairo_glyph_t *glyphs;
   int length;
 
-  glyphs_to_array (rb_glyphs, &glyphs, &length);
+  cr__glyphs_to_array (rb_glyphs, &glyphs, &length);
   cairo_glyph_extents (_SELF, glyphs, length, &extents);
   cr_check_status (_SELF);
   return CRTEXTEXTENTS2RVAL (&extents);
@@ -954,7 +919,7 @@ cr_glyph_path (VALUE self, VALUE rb_glyphs)
   int count;
   cairo_glyph_t *glyphs;
 
-  glyphs_to_array (rb_glyphs, &glyphs, &count);
+  cr__glyphs_to_array (rb_glyphs, &glyphs, &count);
   cairo_glyph_path (_SELF, glyphs, count);
   cr_check_status (_SELF);
   
@@ -1000,7 +965,7 @@ cr_get_current_point (VALUE self)
 {
   double point[2];
   cairo_get_current_point (_SELF, point, point + 1);
-  return float_array (point, 2);
+  return cr__float_array (point, 2);
 }
 
 static VALUE
