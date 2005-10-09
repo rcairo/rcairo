@@ -1,6 +1,6 @@
 2005-10-09  Kouhei Sutou  <kou@cozmixng.org>
 
-	* packages/cairo/lib/cairo.rb: Removed needless wrapper API.
+	* packages/cairo/lib/cairo.rb: Removed deprecated wrapper API.
 
 	* packages/cairo/ext/rb_cairo_surface.c:
 	  - Implemented File I/O API by Ruby.

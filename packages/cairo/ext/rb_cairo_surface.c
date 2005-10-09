@@ -242,7 +242,7 @@ cr_surface_finish (VALUE self)
 
 #if CAIRO_HAS_PNG_FUNCTIONS
 static VALUE
-cr_surface_write_to_png_stream (VALUE self, VALUE target)
+cr_image_surface_write_to_png_stream (VALUE self, VALUE target)
 {
   cairo_status_t status;
   cr_io_callback_closure_t closure;
@@ -260,30 +260,30 @@ cr_surface_write_to_png_stream (VALUE self, VALUE target)
 }
 
 static VALUE
-cr_surface_write_to_png_stream_invoke (VALUE info)
+cr_image_surface_write_to_png_stream_invoke (VALUE info)
 {
-  return cr_surface_write_to_png_stream (rb_ary_entry (info, 0),
-                                         rb_ary_entry (info, 1));
+  return cr_image_surface_write_to_png_stream (rb_ary_entry (info, 0),
+                                               rb_ary_entry (info, 1));
 }
 
 static VALUE
-cr_surface_write_to_png (VALUE self, VALUE filename)
+cr_image_surface_write_to_png (VALUE self, VALUE filename)
 {
   VALUE info, file;
 
   file = rb_file_open (StringValuePtr (filename), "wb");
   info = rb_ary_new3 (2, self, file);
-  return rb_ensure (cr_surface_write_to_png_stream_invoke, info,
+  return rb_ensure (cr_image_surface_write_to_png_stream_invoke, info,
                     rb_io_close, file);
 }
 
 static VALUE
-cr_surface_write_to_png_generic (VALUE self, VALUE target)
+cr_image_surface_write_to_png_generic (VALUE self, VALUE target)
 {
   if (rb_respond_to (target, cr_id_write))
-    return cr_surface_write_to_png_stream (self, target);
+    return cr_image_surface_write_to_png_stream (self, target);
   else
-    return cr_surface_write_to_png (self, target);
+    return cr_image_surface_write_to_png (self, target);
 }
 #endif
 
@@ -346,8 +346,51 @@ cr_surface_set_device_offset (VALUE self, VALUE x_offset, VALUE y_offset)
 
 
 /* Image-surface functions */
+#if CAIRO_HAS_PNG_FUNCTIONS
+static VALUE
+cr_image_surface_create_from_png_stream (VALUE target)
+{
+  cr_io_callback_closure_t closure;
+  cairo_surface_t *surface;
+
+  closure.target = target;
+  closure.error = Qnil;
+  
+  surface = cairo_image_surface_create_from_png_stream (cr_surface_read_func,
+                                                        (void *)&closure);
+  if (!NIL_P (closure.error))
+    rb_exc_raise (closure.error);
+  
+  return (VALUE)surface;
+}
+
+static VALUE
+cr_image_surface_create_from_png (VALUE filename)
+{
+  VALUE file;
+  file = rb_file_open (StringValuePtr (filename), "rb");
+  
+  return rb_ensure (cr_image_surface_create_from_png_stream, file,
+                    rb_io_close, file);
+}
+
+static VALUE
+cr_image_surface_create_from_png_generic (VALUE self, VALUE target)
+{
+  cairo_surface_t *surface;
+  if (rb_respond_to (target, cr_id_read))
+    surface = (cairo_surface_t *)cr_image_surface_create_from_png_stream (target);
+  else
+    surface = (cairo_surface_t *)cr_image_surface_create_from_png (target);
+
+  cr_surface_check_status (surface);
+  return CRSURFACE2RVAL (surface);
+}
+#endif
+
+
 static cairo_surface_t *
-cr_surface_image_create (VALUE self, VALUE format, VALUE width, VALUE height)
+cr_image_surface_create (VALUE self, VALUE format, VALUE width, VALUE height)
 {
   return cairo_image_surface_create (NUM2INT (format),
                                      NUM2INT (width),
@@ -355,7 +398,7 @@ cr_surface_image_create (VALUE self, VALUE format, VALUE width, VALUE height)
 }
 
 static cairo_surface_t *
-cr_surface_image_create_for_data (VALUE self, VALUE rb_data, VALUE rb_format,
+cr_image_surface_create_for_data (VALUE self, VALUE rb_data, VALUE rb_format,
                                   VALUE width, VALUE height, VALUE stride)
 {
   unsigned char *data;
@@ -378,61 +421,23 @@ cr_surface_image_create_for_data (VALUE self, VALUE rb_data, VALUE rb_format,
                                               NUM2INT (stride));
 }
 
-#if CAIRO_HAS_PNG_FUNCTIONS
 static VALUE
-cr_surface_image_create_from_png_stream (VALUE target)
-{
-  cr_io_callback_closure_t closure;
-  cairo_surface_t *surface;
-
-  closure.target = target;
-  closure.error = Qnil;
-  
-  surface = cairo_image_surface_create_from_png_stream (cr_surface_read_func,
-                                                        (void *)&closure);
-  if (!NIL_P (closure.error))
-    rb_exc_raise (closure.error);
-  
-  return (VALUE)surface;
-}
-
-static VALUE
-cr_surface_image_create_from_png (VALUE filename)
-{
-  VALUE file;
-  file = rb_file_open (StringValuePtr (filename), "rb");
-  
-  return rb_ensure (cr_surface_image_create_from_png_stream, file,
-                    rb_io_close, file);
-}
-#endif
-
-static VALUE
-cr_surface_image_initialize (int argc, VALUE *argv, VALUE self)
+cr_image_surface_initialize (int argc, VALUE *argv, VALUE self)
 {
   cairo_surface_t *surface;
   VALUE arg1, arg2, arg3, arg4, arg5;
   int n;
   
-  n = rb_scan_args (argc, argv, "14", &arg1, &arg2, &arg3, &arg4, &arg5);
+  n = rb_scan_args (argc, argv, "32", &arg1, &arg2, &arg3, &arg4, &arg5);
 
   if (n == 3)
-    surface = cr_surface_image_create (self, arg1, arg2, arg3);
+    surface = cr_image_surface_create (self, arg1, arg2, arg3);
   else if (n == 5)
     surface =
-      cr_surface_image_create_for_data (self, arg1, arg2, arg3, arg4, arg5);
-#if CAIRO_HAS_PNG_FUNCTIONS
-  else if (n == 1 && rb_respond_to (arg1, cr_id_read))
-    surface = (cairo_surface_t *)cr_surface_image_create_from_png_stream (arg1);
-  else if (n == 1)
-    surface = (cairo_surface_t *)cr_surface_image_create_from_png (arg1);
-#endif
+      cr_image_surface_create_for_data (self, arg1, arg2, arg3, arg4, arg5);
   else
     rb_raise (rb_eArgError,
               "invalid argument (expect "
-#if CAIRO_HAS_PNG_FUNCTIONS
-              "(input), (filename), "
-#endif
               "(format, width, height) or "
               "(data, format, width, height, stride))");
 
@@ -442,13 +447,13 @@ cr_surface_image_initialize (int argc, VALUE *argv, VALUE self)
 }
 
 static VALUE
-cr_surface_image_get_width (VALUE self)
+cr_image_surface_get_width (VALUE self)
 {
   return INT2NUM (cairo_image_surface_get_width (_SELF));
 }
 
 static VALUE
-cr_surface_image_get_height (VALUE self)
+cr_image_surface_get_height (VALUE self)
 {
   return INT2NUM (cairo_image_surface_get_height (_SELF));
 }
@@ -456,7 +461,7 @@ cr_surface_image_get_height (VALUE self)
 #if CAIRO_HAS_PS_SURFACE
 /* PS-surface functions */
 static VALUE
-cr_surface_ps_create_for_stream (VALUE info)
+cr_ps_surface_create_for_stream (VALUE info)
 {
   VALUE self, input, width_in_points, height_in_points;
   cr_io_callback_closure_t closure;
@@ -481,19 +486,19 @@ cr_surface_ps_create_for_stream (VALUE info)
 }
 
 static VALUE
-cr_surface_ps_create (VALUE self, VALUE filename,
+cr_ps_surface_create (VALUE self, VALUE filename,
                        VALUE width_in_points, VALUE height_in_points)
 {
   VALUE file, info;
   
   file = rb_file_open (StringValuePtr (filename), "rb");
   info = rb_ary_new3 (4, self, file, width_in_points, height_in_points);
-  return rb_ensure (cr_surface_ps_create_for_stream, info,
+  return rb_ensure (cr_ps_surface_create_for_stream, info,
                     rb_io_close, file);
 }
 
 static VALUE
-cr_surface_ps_initialize (VALUE self, VALUE target,
+cr_ps_surface_initialize (VALUE self, VALUE target,
                            VALUE width_in_points, VALUE height_in_points)
 {
   cairo_surface_t *surface;
@@ -502,11 +507,11 @@ cr_surface_ps_initialize (VALUE self, VALUE target,
     {
       VALUE info;
       info = rb_ary_new3 (4, self, target, width_in_points, height_in_points);
-      surface = (cairo_surface_t *)cr_surface_ps_create_for_stream (info);
+      surface = (cairo_surface_t *)cr_ps_surface_create_for_stream (info);
     }
   else
     {
-      surface = (cairo_surface_t *)cr_surface_ps_create (self, target,
+      surface = (cairo_surface_t *)cr_ps_surface_create (self, target,
                                                          width_in_points,
                                                          height_in_points);
     }
@@ -517,7 +522,7 @@ cr_surface_ps_initialize (VALUE self, VALUE target,
 }
 
 static VALUE
-cr_surface_ps_set_dpi (VALUE self, VALUE x_dpi, VALUE y_dpi)
+cr_ps_surface_set_dpi (VALUE self, VALUE x_dpi, VALUE y_dpi)
 {
   cairo_ps_surface_set_dpi (_SELF, NUM2DBL (x_dpi), NUM2DBL (y_dpi));
   cr_surface_check_status (_SELF);
@@ -528,7 +533,7 @@ cr_surface_ps_set_dpi (VALUE self, VALUE x_dpi, VALUE y_dpi)
 #if CAIRO_HAS_PDF_SURFACE
 /* PDF-surface functions */
 static VALUE
-cr_surface_pdf_create_for_stream (VALUE info)
+cr_pdf_surface_create_for_stream (VALUE info)
 {
   VALUE self, input, width_in_points, height_in_points;
   cr_io_callback_closure_t closure;
@@ -553,19 +558,19 @@ cr_surface_pdf_create_for_stream (VALUE info)
 }
 
 static VALUE
-cr_surface_pdf_create (VALUE self, VALUE filename,
+cr_pdf_surface_create (VALUE self, VALUE filename,
                        VALUE width_in_points, VALUE height_in_points)
 {
   VALUE file, info;
   
   file = rb_file_open (StringValuePtr (filename), "rb");
   info = rb_ary_new3 (4, self, file, width_in_points, height_in_points);
-  return rb_ensure (cr_surface_pdf_create_for_stream, info,
+  return rb_ensure (cr_pdf_surface_create_for_stream, info,
                     rb_io_close, file);
 }
 
 static VALUE
-cr_surface_pdf_initialize (VALUE self, VALUE target,
+cr_pdf_surface_initialize (VALUE self, VALUE target,
                            VALUE width_in_points, VALUE height_in_points)
 {
   cairo_surface_t *surface;
@@ -574,11 +579,11 @@ cr_surface_pdf_initialize (VALUE self, VALUE target,
     {
       VALUE info;
       info = rb_ary_new3 (4, self, target, width_in_points, height_in_points);
-      surface = (cairo_surface_t *)cr_surface_pdf_create_for_stream (info);
+      surface = (cairo_surface_t *)cr_pdf_surface_create_for_stream (info);
     }
   else
     {
-      surface = (cairo_surface_t *)cr_surface_pdf_create (self, target,
+      surface = (cairo_surface_t *)cr_pdf_surface_create (self, target,
                                                           width_in_points,
                                                           height_in_points);
     }
@@ -589,7 +594,7 @@ cr_surface_pdf_initialize (VALUE self, VALUE target,
 }
 
 static VALUE
-cr_surface_pdf_set_dpi (VALUE self, VALUE x_dpi, VALUE y_dpi)
+cr_pdf_surface_set_dpi (VALUE self, VALUE x_dpi, VALUE y_dpi)
 {
   cairo_pdf_surface_set_dpi (_SELF, NUM2DBL (x_dpi), NUM2DBL (y_dpi));
   cr_surface_check_status (_SELF);
@@ -612,12 +617,6 @@ Init_cairo_surface (void)
                     cr_surface_create_similar, 3);
   rb_define_method (rb_cCairo_Surface, "finish", cr_surface_finish, 0);
   
-#if CAIRO_HAS_PNG_FUNCTIONS
-  rb_define_method (rb_cCairo_Surface, "write_to_png",
-                    cr_surface_write_to_png_generic, 1);
-#endif
-
-  
   rb_define_method (rb_cCairo_Surface, "font_options",
                     cr_surface_get_font_options, 0);
   rb_define_method (rb_cCairo_Surface, "flush", cr_surface_flush, 0);
@@ -629,14 +628,24 @@ Init_cairo_surface (void)
   rb_cCairo_ImageSurface =
     rb_define_class_under (rb_mCairo, "ImageSurface", rb_cCairo_Surface);
   
+#if CAIRO_HAS_PNG_FUNCTIONS
+  rb_define_singleton_method (rb_cCairo_ImageSurface, "from_png",
+                              cr_image_surface_create_from_png_generic, 1);
+#endif
+  
   rb_define_method (rb_cCairo_ImageSurface, "initialize",
-                    cr_surface_image_initialize, -1);
+                    cr_image_surface_initialize, -1);
 
   rb_define_method (rb_cCairo_ImageSurface, "width",
-                    cr_surface_image_get_width, 0);
+                    cr_image_surface_get_width, 0);
   rb_define_method (rb_cCairo_ImageSurface, "height",
-                    cr_surface_image_get_height, 0);
+                    cr_image_surface_get_height, 0);
   
+#if CAIRO_HAS_PNG_FUNCTIONS
+  rb_define_method (rb_cCairo_ImageSurface, "write_to_png",
+                    cr_image_surface_write_to_png_generic, 1);
+#endif
+
   
 #if CAIRO_HAS_PS_SURFACE
   /* PS-surface */
@@ -644,9 +653,9 @@ Init_cairo_surface (void)
     rb_define_class_under (rb_mCairo, "PSSurface", rb_cCairo_Surface);
 
   rb_define_method (rb_cCairo_PSSurface, "initialize",
-                    cr_surface_ps_initialize, 3);
+                    cr_ps_surface_initialize, 3);
   rb_define_method (rb_cCairo_PSSurface, "set_dpi",
-                    cr_surface_ps_set_dpi, 2);
+                    cr_ps_surface_set_dpi, 2);
 #endif
 
 #if CAIRO_HAS_PDF_SURFACE
@@ -655,8 +664,8 @@ Init_cairo_surface (void)
     rb_define_class_under (rb_mCairo, "PDFSurface", rb_cCairo_Surface);
 
   rb_define_method (rb_cCairo_PDFSurface, "initialize",
-                    cr_surface_pdf_initialize, 3);
+                    cr_pdf_surface_initialize, 3);
   rb_define_method (rb_cCairo_PDFSurface, "set_dpi",
-                    cr_surface_pdf_set_dpi, 2);
+                    cr_pdf_surface_set_dpi, 2);
 #endif
 }
