@@ -24,23 +24,12 @@ module Cairo
       copy.copy(self)
       return copy
     end
+    
     def clone
       copy = Context.new
       copy.copy(self)
       copy.freeze if self.frozen?
       return copy
-    end
-
-    def set_target_png(port, format, width, height)
-      set_target_surface(Surface.new_png(port, format, width, height))
-    end
-
-    def set_target_ps(port, width_inches, height_inches, x_pixels_inch, y_pixels_inch)
-      set_target_surface(Surface.new_ps(port, width_inches, height_inches, x_pixels_inch, y_pixels_inch))
-    end
-
-    def set_target_pdf(port, width_inches, height_inches, x_pixels_inch, y_pixels_inch)
-      set_target_surface(Surface.new_pdf(port, width_inches, height_inches, x_pixels_inch, y_pixels_inch))
     end
 
     def quad_to(x1, y1, x2, y2)

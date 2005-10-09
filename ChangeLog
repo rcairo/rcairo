@@ -1,5 +1,11 @@
 2005-10-09  Kouhei Sutou  <kou@cozmixng.org>
 
+	* packages/cairo/lib/cairo.rb: Removed needless wrapper API.
+
+	* packages/cairo/ext/rb_cairo_surface.c:
+	  - Implemented File I/O API by Ruby.
+	  - SurfaceXXX -> XXXSurface.
+
 	* packages/cairo/ext/rb_cairo_exception.c: Tidied exceptions.
 	* packages/cairo/ext/cairo.def: ditto.
 	* packages/cairo/ext/rb_cairo.h: ditto.
