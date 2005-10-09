@@ -61,26 +61,21 @@ module Cairo
 
   class Matrix
     def dup
-      copy = Matrix.new
-      copy.copy(self)
-      return copy
+      Matrix.new(*to_a)
     end
+    
     def clone
-      copy = Matrix.new
-      copy.copy(self)
+      copy = dup
       copy.freeze if self.frozen?
-      return copy
+      copy
     end
 
-    def transform(tx, ty) ; dup.transform!(tx, ty) ; end
-    def scale(sx, sy) ; dup.scale!(sx, sy) ; end
-    def rotate(radians) ; dup.rotate!(radians) ; end
-    def invert() ; dup.invert! ; end
-
-    def multiply!(other) ; set_product(self, other) ; end
-    def multiply(other) ; Matrix.new.set_product(self, other) ; end
-
-    def *(other) ; Matrix.new.set_product(self, other) ; end
+    def transform(tx, ty); dup.transform!(tx, ty); end
+    def scale(sx, sy); dup.scale!(sx, sy); end
+    def rotate(radians); dup.rotate!(radians); end
+    def invert; dup.invert!; end
+    def multiply(other); dup.multiply!(other); end
+    alias * multiply
   end
 
   class FontOptions
