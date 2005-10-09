@@ -1,5 +1,17 @@
 2005-10-09  Kouhei Sutou  <kou@cozmixng.org>
 
+	* packages/cairo/ext/rb_cairo_context.c,
+	  packages/cairo/ext/rb_cairo_matrix.c: Moved duplicated
+	  functions to ...
+	* packages/cairo/ext/rb_cairo_private.h: ... here.
+	* packages/cairo/ext/rb_cairo_private.c: ditto.
+
+	* packages/cairo/ext/rb_cairo_scaled_font.c: Implemented
+	  cairo_scaled_font_t.
+	* packages/cairo/ext/cairo.def: ditto.
+	* packages/cairo/ext/rb_cairo.c: ditto.
+	* packages/cairo/ext/rb_cairo.h: ditto.
+
 	* packages/cairo/lib/cairo.rb: Removed deprecated wrapper API.
 
 	* packages/cairo/ext/rb_cairo_surface.c:
