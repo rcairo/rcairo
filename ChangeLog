@@ -1,5 +1,7 @@
 2005-10-10  Kouhei Sutou  <kou@cozmixng.org>
 
+	* packages/cairo/ext/rb_cairo_constants.c: Supported all constants.
+
 	* packages/cairo/ext/rb_cairo_matrix.c: Added a utility method.
 
 	* packages/cairo/lib/cairo.rb: Remove deprecated API.
