@@ -19,19 +19,6 @@ module Cairo
   class Context
     Cairo.__add_one_arg_setter(self)
 
-    def dup
-      copy = Context.new
-      copy.copy(self)
-      return copy
-    end
-    
-    def clone
-      copy = Context.new
-      copy.copy(self)
-      copy.freeze if self.frozen?
-      return copy
-    end
-
     def quad_to(x1, y1, x2, y2)
       ( x0, y0 ) = get_point
       cx1 = x0 + 2 * ( x1 - x0 ) / 3
@@ -40,6 +27,7 @@ module Cairo
       cy2 = cy1 + ( y2 - y0 ) / 3
       curve_to(cx1, cy1, cx2, cy2, x2, y2)
     end
+    
     def rel_quad_to(x1, y1, x2, y2)
       ( x0, y0 ) = get_point
       quad_to(x1 + x0, y1 + y0, x2 + x0, y2 + x0)
