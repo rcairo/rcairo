@@ -1,5 +1,9 @@
 2005-10-11  Kouhei Sutou  <kou@cozmixng.org>
 
+	* packages/cairo/ext/rb_cairo_font_extents.c:
+	  - Removed Cairo::FontExtents.new
+	  - Added Cairo::FontExtents#to_s
+
 	* packages/cairo/ext/rb_cairo_text_extents.c:
 	  - Removed Cairo::TextExtents.new
 	  - Added Cairo::TextExtents#to_s

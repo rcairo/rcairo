@@ -13,18 +13,18 @@
 
 VALUE rb_cCairo_FontExtents;
 
-#define _SELF  (RVAL2CRFONTEXTENTS(self))
+#define _SELF(self)  (RVAL2CRFONTEXTENTS(self))
 
 cairo_font_extents_t *
 rb_cairo_font_extents_from_ruby_object (VALUE obj)
 {
-  cairo_font_extents_t *xform;
+  cairo_font_extents_t *extents;
   if (!RTEST (rb_obj_is_kind_of (obj, rb_cCairo_FontExtents)))
     {
-      rb_raise (rb_eTypeError, "not a cairo font_extents");
+      rb_raise (rb_eTypeError, "not a cairo font extents");
     }
-  Data_Get_Struct (obj, cairo_font_extents_t, xform);
-  return xform;
+  Data_Get_Struct (obj, cairo_font_extents_t, extents);
+  return extents;
 }
 
 VALUE
@@ -43,59 +43,69 @@ rb_cairo_font_extents_to_ruby_object (cairo_font_extents_t *extents)
 }
 
 static    VALUE
-cr_font_extents_new (int argc, VALUE *argv, VALUE klass)
-{
-  cairo_font_extents_t font_extents;
-  VALUE self;
-
-  font_extents.ascent        = 0.0;
-  font_extents.descent       = 0.0;
-  font_extents.height        = 0.0;
-  font_extents.max_x_advance = 0.0;
-  font_extents.max_y_advance = 0.0;
-
-  self = CRFONTEXTENTS2RVAL (&font_extents);
-  rb_obj_call_init (self, argc, argv);
-  return self;
-}
-
-static    VALUE
 cr_font_extents_ascent (VALUE self)
 {
-  return rb_float_new (_SELF->ascent);
+  return rb_float_new (_SELF(self)->ascent);
 }
 
 static    VALUE
 cr_font_extents_descent (VALUE self)
 {
-  return rb_float_new (_SELF->descent);
+  return rb_float_new (_SELF(self)->descent);
 }
 
 static    VALUE
 cr_font_extents_height (VALUE self)
 {
-  return rb_float_new (_SELF->height);
+  return rb_float_new (_SELF(self)->height);
 }
 
 static    VALUE
 cr_font_extents_max_x_advance (VALUE self)
 {
-  return rb_float_new (_SELF->max_x_advance);
+  return rb_float_new (_SELF(self)->max_x_advance);
 }
 
 static    VALUE
 cr_font_extents_max_y_advance (VALUE self)
 {
-  return rb_float_new (_SELF->max_y_advance);
+  return rb_float_new (_SELF(self)->max_y_advance);
 }
+
+static VALUE
+cr_font_extents_to_s (VALUE self)
+{
+  VALUE ret;
+
+  ret = rb_str_new2 ("#<");
+  rb_str_cat2 (ret, rb_class2name (CLASS_OF (self)));
+  rb_str_cat2 (ret, ": ");
+  rb_str_cat2 (ret, "ascent=");
+  rb_str_concat (ret, rb_inspect (cr_font_extents_ascent (self)));
+  rb_str_cat2 (ret, ", ");
+  rb_str_cat2 (ret, "descent=");
+  rb_str_concat (ret, rb_inspect (cr_font_extents_descent (self)));
+  rb_str_cat2 (ret, ", ");
+  rb_str_cat2 (ret, "height=");
+  rb_str_concat (ret, rb_inspect (cr_font_extents_height (self)));
+  rb_str_cat2 (ret, ", ");
+  rb_str_cat2 (ret, "max_x_advance=");
+  rb_str_concat (ret, rb_inspect (cr_font_extents_max_x_advance (self)));
+  rb_str_cat2 (ret, ", ");
+  rb_str_cat2 (ret, "max_y_advance=");
+  rb_str_concat (ret, rb_inspect (cr_font_extents_max_y_advance (self)));
+  rb_str_cat2 (ret, ">");
+                 
+  return ret;
+}
+
 
 void
 Init_cairo_font_extents (void)
 {
   rb_cCairo_FontExtents =
     rb_define_class_under (rb_mCairo, "FontExtents", rb_cObject);
-  rb_define_singleton_method (rb_cCairo_FontExtents, "new",
-                              cr_font_extents_new, -1);
+
   rb_define_method (rb_cCairo_FontExtents, "ascent",
                     cr_font_extents_ascent, 0);
   rb_define_method (rb_cCairo_FontExtents, "descent",
@@ -106,4 +116,6 @@ Init_cairo_font_extents (void)
                     cr_font_extents_max_x_advance, 0);
   rb_define_method (rb_cCairo_FontExtents, "max_y_advance",
                     cr_font_extents_max_y_advance, 0);
+
+  rb_define_method (rb_cCairo_FontExtents, "to_s", cr_font_extents_to_s, 0);
 }
