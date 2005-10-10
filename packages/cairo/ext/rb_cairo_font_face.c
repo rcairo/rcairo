@@ -19,13 +19,13 @@ VALUE rb_cCairo_FontFace;
 cairo_font_face_t *
 rb_cairo_font_face_from_ruby_object (VALUE obj)
 {
-  cairo_font_face_t *xform;
+  cairo_font_face_t *face;
   if (!RTEST (rb_obj_is_kind_of (obj, rb_cCairo_FontFace)))
     {
       rb_raise (rb_eTypeError, "not a cairo font face");
     }
-  Data_Get_Struct (obj, cairo_font_face_t, xform);
-  return xform;
+  Data_Get_Struct (obj, cairo_font_face_t, face);
+  return face;
 }
 
 VALUE

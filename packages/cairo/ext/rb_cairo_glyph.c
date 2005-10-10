@@ -19,13 +19,13 @@ VALUE rb_cCairo_Glyph;
 cairo_glyph_t *
 rb_cairo_glyph_from_ruby_object (VALUE obj)
 {
-  cairo_glyph_t *xform;
+  cairo_glyph_t *glyph;
   if (!RTEST (rb_obj_is_kind_of (obj, rb_cCairo_Glyph)))
     {
       rb_raise (rb_eTypeError, "not a cairo glyph");
     }
-  Data_Get_Struct (obj, cairo_glyph_t, xform);
-  return xform;
+  Data_Get_Struct (obj, cairo_glyph_t, glyph);
+  return glyph;
 }
 
 static void
