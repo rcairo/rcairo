@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2005-10-10 15:40:26 $
+ * $Date: 2005-10-10 16:07:16 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -31,11 +31,34 @@ extern void Init_cairo_text_extents (void);
 extern void Init_cairo_pattern (void);
 extern void Init_cairo_glyph (void);
 
+
 void
 Init_cairo ()
 {
+  int major, minor, micro;
+  
   rb_mCairo = rb_define_module ("Cairo");
 
+  rb_define_const (rb_mCairo, "BUILD_VERSION",
+                   rb_ary_new3 (3,
+                                INT2FIX (CAIRO_VERSION_MAJOR),
+                                INT2FIX (CAIRO_VERSION_MINOR),
+                                INT2FIX (CAIRO_VERSION_MICRO)));
+
+  major = cairo_version () / 10000;
+  minor = (cairo_version () % 1000) / 10;
+  micro = cairo_version () % 10;
+
+  rb_define_const (rb_mCairo, "VERSION",
+                   rb_ary_new3 (3,
+                                INT2FIX (major),
+                                INT2FIX (minor),
+                                INT2FIX (micro)));
+  
+  rb_define_const (rb_mCairo, "MAJOR_VERSION", INT2FIX (major));
+  rb_define_const (rb_mCairo, "MINOR_VERSION", INT2FIX (minor));
+  rb_define_const (rb_mCairo, "MICRO_VERSION", INT2FIX (micro));
+  
   Init_cairo_context ();
   Init_cairo_path ();
   Init_cairo_matrix ();

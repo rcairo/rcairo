@@ -1,5 +1,10 @@
 2005-10-11  Kouhei Sutou  <kou@cozmixng.org>
 
+	* packages/cairo/ext/rb_cairo.c: Added cairo version info.
+
+	* packages/cairo/lib/cairo.rb: Added bindings version info as
+	  1.0.0-beta.
+
 	* samples/canvas: Removed.
 	
 	* packages/cairo/ext/: Added CVS keywords.
