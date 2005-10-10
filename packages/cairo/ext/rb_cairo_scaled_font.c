@@ -2,6 +2,9 @@
 /*
  * Ruby Cairo Binding
  *
+ * $Author: kou $
+ * $Date: 2005-10-10 15:40:26 $
+ *
  * Copyright 2005 Kouhei Sutou <kou@cozmixng.org>
  *
  * This file is made available under the same terms as Ruby
