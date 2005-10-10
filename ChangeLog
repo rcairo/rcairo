@@ -1,5 +1,10 @@
 2005-10-11  Kouhei Sutou  <kou@cozmixng.org>
 
+	* packages/cairo/ext/rb_cairo_context.c: Renamed 'xform'.
+	* packages/cairo/ext/rb_cairo_font_face.c: ditto.
+	* packages/cairo/ext/rb_cairo_glyph.c: ditto.
+	* packages/cairo/ext/rb_cairo_matrix.c: ditto.
+
 	* packages/cairo/ext/rb_cairo_private.c: Changed prefix to
 	  'rb_cairo__' from 'cr__'.
 	* packages/cairo/ext/rb_cairo_matrix.c: ditto.

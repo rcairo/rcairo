@@ -376,17 +376,17 @@ cr_rotate (VALUE self, VALUE radians)
 }
 
 static VALUE
-cr_transform (VALUE self, VALUE xform)
+cr_transform (VALUE self, VALUE matrix)
 {
-  cairo_transform (_SELF, RVAL2CRMATRIX (xform));
+  cairo_transform (_SELF, RVAL2CRMATRIX (matrix));
   cr_check_status (_SELF);
   return self;
 }
 
 static VALUE
-cr_set_matrix (VALUE self, VALUE xform)
+cr_set_matrix (VALUE self, VALUE matrix)
 {
-  cairo_set_matrix (_SELF, RVAL2CRMATRIX (xform));
+  cairo_set_matrix (_SELF, RVAL2CRMATRIX (matrix));
   cr_check_status (_SELF);
   return self;
 }
@@ -859,11 +859,11 @@ cr_show_glyphs (VALUE self, VALUE rb_glyphs)
 static VALUE
 cr_get_font_face (VALUE self)
 {
-  cairo_font_face_t *xform;
+  cairo_font_face_t *face;
   
-  xform = cairo_get_font_face (_SELF);
+  face = cairo_get_font_face (_SELF);
   cr_check_status (_SELF);
-  return CRFONTFACE2RVAL (xform);
+  return CRFONTFACE2RVAL (face);
 }
 
 static VALUE
@@ -876,9 +876,9 @@ cr_font_extents (VALUE self)
 }
 
 static VALUE
-cr_set_font_face (VALUE self, VALUE xform)
+cr_set_font_face (VALUE self, VALUE face)
 {
-  cairo_set_font_face (_SELF, RVAL2CRFONTFACE (xform));
+  cairo_set_font_face (_SELF, RVAL2CRFONTFACE (face));
   cr_check_status (_SELF);
   return self;
 }

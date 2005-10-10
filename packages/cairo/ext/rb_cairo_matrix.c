@@ -20,13 +20,13 @@ VALUE rb_cCairo_Matrix;
 cairo_matrix_t *
 rb_cairo_matrix_from_ruby_object (VALUE obj)
 {
-  cairo_matrix_t *xform;
+  cairo_matrix_t *matrix;
   if (!RTEST (rb_obj_is_kind_of (obj, rb_cCairo_Matrix)))
     {
       rb_raise (rb_eTypeError, "not a cairo matrix");
     }
-  Data_Get_Struct (obj, cairo_matrix_t, xform);
-  return xform;
+  Data_Get_Struct (obj, cairo_matrix_t, matrix);
+  return matrix;
 }
 
 static void
