@@ -13,18 +13,18 @@
 
 VALUE rb_cCairo_TextExtents;
 
-#define _SELF  (RVAL2CRTEXTEXTENTS(self))
+#define _SELF(self)  (RVAL2CRTEXTEXTENTS(self))
 
 cairo_text_extents_t *
 rb_cairo_text_extents_from_ruby_object (VALUE obj)
 {
-  cairo_text_extents_t *xform;
+  cairo_text_extents_t *extents;
   if (!RTEST (rb_obj_is_kind_of (obj, rb_cCairo_TextExtents)))
     {
       rb_raise (rb_eTypeError, "not a cairo text_extents");
     }
-  Data_Get_Struct (obj, cairo_text_extents_t, xform);
-  return xform;
+  Data_Get_Struct (obj, cairo_text_extents_t, extents);
+  return extents;
 }
 
 VALUE
@@ -42,64 +42,80 @@ rb_cairo_text_extents_to_ruby_object (cairo_text_extents_t *extents)
     }
 }
 
-static    VALUE
-cr_text_extents_new (VALUE klass)
-{
-  cairo_text_extents_t text_extents;
 
-  text_extents.x_bearing = 0.0;
-  text_extents.y_bearing = 0.0;
-  text_extents.width     = 0.0;
-  text_extents.height    = 0.0;
-  text_extents.x_advance = 0.0;
-  text_extents.y_advance = 0.0;
-
-  return CRTEXTEXTENTS2RVAL (&text_extents);
-}
-
-static    VALUE
+static VALUE
 cr_text_extents_x_bearing (VALUE self)
 {
-  return rb_float_new (_SELF->x_bearing);
+  return rb_float_new (_SELF(self)->x_bearing);
 }
 
-static    VALUE
+static VALUE
 cr_text_extents_y_bearing (VALUE self)
 {
-  return rb_float_new (_SELF->y_bearing);
+  return rb_float_new (_SELF(self)->y_bearing);
 }
 
-static    VALUE
+static VALUE
 cr_text_extents_width (VALUE self)
 {
-  return rb_float_new (_SELF->width);
+  return rb_float_new (_SELF(self)->width);
 }
 
-static    VALUE
+static VALUE
 cr_text_extents_height (VALUE self)
 {
-  return rb_float_new (_SELF->height);
+  return rb_float_new (_SELF(self)->height);
 }
 
-static    VALUE
+static VALUE
 cr_text_extents_x_advance (VALUE self)
 {
-  return rb_float_new (_SELF->x_advance);
+  return rb_float_new (_SELF(self)->x_advance);
 }
 
-static    VALUE
+static VALUE
 cr_text_extents_y_advance (VALUE self)
 {
-  return rb_float_new (_SELF->y_advance);
+  return rb_float_new (_SELF(self)->y_advance);
 }
+
+static VALUE
+cr_text_extents_to_s (VALUE self)
+{
+  VALUE ret;
+
+  ret = rb_str_new2 ("#<");
+  rb_str_cat2 (ret, rb_class2name (CLASS_OF (self)));
+  rb_str_cat2 (ret, ": ");
+  rb_str_cat2 (ret, "x_bearing=");
+  rb_str_concat (ret, rb_inspect (cr_text_extents_x_bearing (self)));
+  rb_str_cat2 (ret, ", ");
+  rb_str_cat2 (ret, "y_bearing=");
+  rb_str_concat (ret, rb_inspect (cr_text_extents_y_bearing (self)));
+  rb_str_cat2 (ret, ", ");
+  rb_str_cat2 (ret, "width=");
+  rb_str_concat (ret, rb_inspect (cr_text_extents_width (self)));
+  rb_str_cat2 (ret, ", ");
+  rb_str_cat2 (ret, "height=");
+  rb_str_concat (ret, rb_inspect (cr_text_extents_height (self)));
+  rb_str_cat2 (ret, ", ");
+  rb_str_cat2 (ret, "x_advance=");
+  rb_str_concat (ret, rb_inspect (cr_text_extents_x_advance (self)));
+  rb_str_cat2 (ret, ", ");
+  rb_str_cat2 (ret, "y_advance=");
+  rb_str_concat (ret, rb_inspect (cr_text_extents_y_advance (self)));
+  rb_str_cat2 (ret, ">");
+                 
+  return ret;
+}
+
 
 void
 Init_cairo_text_extents (void)
 {
   rb_cCairo_TextExtents =
     rb_define_class_under (rb_mCairo, "TextExtents", rb_cObject);
-  rb_define_singleton_method (rb_cCairo_TextExtents, "new",
-                              cr_text_extents_new, 0);
+
   rb_define_method (rb_cCairo_TextExtents, "x_bearing",
                     cr_text_extents_x_bearing, 0);
   rb_define_method (rb_cCairo_TextExtents, "y_bearing",
@@ -112,4 +128,7 @@ Init_cairo_text_extents (void)
                     cr_text_extents_x_advance, 0);
   rb_define_method (rb_cCairo_TextExtents, "y_advance",
                     cr_text_extents_y_advance, 0);
+
+  rb_define_method (rb_cCairo_TextExtents, "to_s",
+                    cr_text_extents_to_s, 0);
 }
