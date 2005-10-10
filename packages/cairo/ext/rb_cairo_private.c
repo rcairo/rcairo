@@ -11,7 +11,7 @@
 #include "rb_cairo.h"
 
 VALUE
-cr__float_array (double *values, unsigned count)
+rb_cairo__float_array (double *values, unsigned count)
 {
   VALUE result;
   int i;
@@ -25,7 +25,7 @@ cr__float_array (double *values, unsigned count)
 }
 
 void
-cr__glyphs_to_array (VALUE rb_array, cairo_glyph_t **glyphs, int *length)
+rb_cairo__glyphs_to_array (VALUE rb_array, cairo_glyph_t **glyphs, int *length)
 {
   int i;
   
