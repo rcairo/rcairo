@@ -4,7 +4,16 @@ require 'cairo.so'
 
 module Cairo
 
+  BINDINGS_VERSION = [1, 0, 0, "beta"]
+
   module_function
+  def bindings_version
+    major, minor, micro, tag = BINDINGS_VERSION
+    version = [major, minor, micro].join('.')
+    version << "-#{tag}" if tag
+    version
+  end
+  
   def __add_one_arg_setter(klass)
     names = klass.instance_methods(false)
     names.each do |name|
