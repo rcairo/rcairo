@@ -1,5 +1,7 @@
 2005-10-11  Kouhei Sutou  <kou@cozmixng.org>
 
+	* samples/canvas: Removed.
+	
 	* packages/cairo/ext/: Added CVS keywords.
 
 	* packages/cairo/ext/rb_cairo_context.c: Renamed 'xform'.
