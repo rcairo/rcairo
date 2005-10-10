@@ -11,7 +11,7 @@
 #ifndef RB_CAIRO_PRIVATE_H
 #define RB_CAIRO_PRIVATE_H
 
-VALUE cr__float_array (double *values, unsigned count);
-void cr__glyphs_to_array (VALUE rb_array, cairo_glyph_t **glyphs, int *length);
+VALUE rb_cairo__float_array (double *values, unsigned count);
+void rb_cairo__glyphs_to_array (VALUE rb_array, cairo_glyph_t **glyphs, int *length);
 
 #endif

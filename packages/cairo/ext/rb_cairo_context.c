@@ -407,7 +407,7 @@ cr_user_to_device (VALUE self, VALUE x, VALUE y)
   pair[1] = NUM2DBL (y);
   cairo_user_to_device (_SELF, pair, pair + 1);
   cr_check_status (_SELF);
-  return cr__float_array (pair, 2);
+  return rb_cairo__float_array (pair, 2);
 }
 
 static VALUE
@@ -418,7 +418,7 @@ cr_user_to_device_distance (VALUE self, VALUE dx, VALUE dy)
   pair[1] = NUM2DBL (dy);
   cairo_user_to_device_distance (_SELF, pair, pair + 1);
   cr_check_status (_SELF);
-  return cr__float_array (pair, 2);
+  return rb_cairo__float_array (pair, 2);
 }
 
 static VALUE
@@ -429,7 +429,7 @@ cr_device_to_user (VALUE self, VALUE x, VALUE y)
   pair[1] = NUM2DBL (y);
   cairo_device_to_user (_SELF, pair, pair + 1);
   cr_check_status (_SELF);
-  return cr__float_array (pair, 2);
+  return rb_cairo__float_array (pair, 2);
 }
 
 static VALUE
@@ -440,7 +440,7 @@ cr_device_to_user_distance (VALUE self, VALUE dx, VALUE dy)
   pair[1] = NUM2DBL (dy);
   cairo_device_to_user_distance (_SELF, pair, pair + 1);
   cr_check_status (_SELF);
-  return cr__float_array (pair, 2);
+  return rb_cairo__float_array (pair, 2);
 }
 
 
@@ -725,7 +725,7 @@ cr_stroke_extents (VALUE self)
       rb_yield (self);
     }
   cairo_stroke_extents (_SELF, extents, extents + 1, extents + 2, extents + 3);
-  return cr__float_array (extents, 4);
+  return rb_cairo__float_array (extents, 4);
 }
 
 static VALUE
@@ -738,7 +738,7 @@ cr_fill_extents (VALUE self)
       rb_yield (self);
     }
   cairo_fill_extents (_SELF, extents, extents + 1, extents + 2, extents + 3);
-  return cr__float_array (extents, 4);
+  return rb_cairo__float_array (extents, 4);
 }
 
 /* Clipping */
@@ -850,7 +850,7 @@ cr_show_glyphs (VALUE self, VALUE rb_glyphs)
   if (!rb_obj_is_kind_of (rb_glyphs, rb_cArray))
      rb_raise (rb_eTypeError, "expected array");
     
-  cr__glyphs_to_array (rb_glyphs, &glyphs, &count);
+  rb_cairo__glyphs_to_array (rb_glyphs, &glyphs, &count);
   cairo_show_glyphs (_SELF, glyphs, count);
   cr_check_status (_SELF);
   return self;
@@ -899,7 +899,7 @@ cr_glyph_extents (VALUE self, VALUE rb_glyphs)
   cairo_glyph_t *glyphs;
   int length;
 
-  cr__glyphs_to_array (rb_glyphs, &glyphs, &length);
+  rb_cairo__glyphs_to_array (rb_glyphs, &glyphs, &length);
   cairo_glyph_extents (_SELF, glyphs, length, &extents);
   cr_check_status (_SELF);
   return CRTEXTEXTENTS2RVAL (&extents);
@@ -919,7 +919,7 @@ cr_glyph_path (VALUE self, VALUE rb_glyphs)
   int count;
   cairo_glyph_t *glyphs;
 
-  cr__glyphs_to_array (rb_glyphs, &glyphs, &count);
+  rb_cairo__glyphs_to_array (rb_glyphs, &glyphs, &count);
   cairo_glyph_path (_SELF, glyphs, count);
   cr_check_status (_SELF);
   
@@ -957,7 +957,7 @@ cr_get_tolerance (VALUE self)
 static VALUE
 cr_get_antialias(VALUE self)
 {
-  return INT2NUM(cairo_get_antialias(_SELF));
+  return INT2NUM (cairo_get_antialias(_SELF));
 }
 
 static VALUE
@@ -965,7 +965,7 @@ cr_get_current_point (VALUE self)
 {
   double point[2];
   cairo_get_current_point (_SELF, point, point + 1);
-  return cr__float_array (point, 2);
+  return rb_cairo__float_array (point, 2);
 }
 
 static VALUE

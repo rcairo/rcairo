@@ -157,7 +157,7 @@ cr_matrix_transform_distance (VALUE self, VALUE dx, VALUE dy)
   pair[0] = NUM2DBL (dx);
   pair[1] = NUM2DBL (dy);
   cairo_matrix_transform_distance (_SELF, pair, pair + 1);
-  return cr__float_array (pair, 2);
+  return rb_cairo__float_array (pair, 2);
 }
 
 static VALUE
@@ -167,7 +167,7 @@ cr_matrix_transform_point (VALUE self, VALUE x, VALUE y)
   pair[0] = NUM2DBL (x);
   pair[1] = NUM2DBL (y);
   cairo_matrix_transform_point (_SELF, pair, pair + 1);
-  return cr__float_array (pair, 2);
+  return rb_cairo__float_array (pair, 2);
 }
 
 
@@ -196,22 +196,20 @@ cr_matrix_to_a (VALUE self)
   affine[3] = matrix->yy;
   affine[4] = matrix->x0;
   affine[5] = matrix->y0;
-  return cr__float_array (affine, 6);
+  return rb_cairo__float_array (affine, 6);
 }
 
 static VALUE
 cr_matrix_to_s(VALUE self)
 {
-  cairo_matrix_t *matrix;
   VALUE ret;
 
-  matrix = _SELF;
-
-  ret = rb_str_new2 ("<");
+  ret = rb_str_new2 ("#<");
   rb_str_cat2 (ret, rb_class2name (CLASS_OF (self)));
   rb_str_cat2 (ret, ":");
   rb_str_concat (ret, rb_inspect (cr_matrix_to_a (self)));
   rb_str_cat2 (ret, ">");
+  
   return ret;
 }
 

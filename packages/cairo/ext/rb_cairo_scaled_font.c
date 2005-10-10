@@ -95,7 +95,7 @@ cr_scaled_font_glyph_extents (VALUE self, VALUE rb_glyphs)
   cairo_glyph_t *glyphs;
   int count;
 
-  cr__glyphs_to_array (rb_glyphs, &glyphs, &count);
+  rb_cairo__glyphs_to_array (rb_glyphs, &glyphs, &count);
   cairo_scaled_font_glyph_extents (_SELF (self), glyphs, count, &extents);
   cr_scaled_font_check_status (_SELF (self));
   return CRTEXTEXTENTS2RVAL (&extents);
