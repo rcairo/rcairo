@@ -2,8 +2,8 @@
 /*
  * Ruby Cairo Binding
  *
- * $Author: kou $
- * $Date: 2005-10-10 15:40:26 $
+ * $Author: pippin $
+ * $Date: 2005-10-10 19:30:40 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -179,7 +179,7 @@ cr_gradient_pattern_add_color_stop (int argc, VALUE *argv, VALUE self)
       (RARRAY (red)->len == 3 || RARRAY (red)->len == 4))
     {
       VALUE ary = red;
-      n = RARRAY (ary)->len;
+      n = RARRAY (ary)->len + 1;
       
       red = rb_ary_entry (ary, 0);
       green = rb_ary_entry (ary, 1);
@@ -187,13 +187,13 @@ cr_gradient_pattern_add_color_stop (int argc, VALUE *argv, VALUE self)
       alpha = rb_ary_entry (ary, 3);
     }
 
-  if (n == 3)
+  if (n == 4)
     {
       cairo_pattern_add_color_stop_rgb (_SELF (self), NUM2DBL (offset),
                                         NUM2DBL (red), NUM2DBL (green),
                                         NUM2DBL (blue));
     }
-  else if (n == 4)
+  else if (n == 5)
     {
       cairo_pattern_add_color_stop_rgba (_SELF (self), NUM2DBL (offset),
                                          NUM2DBL (red), NUM2DBL (green),
