@@ -14,7 +14,7 @@
 
 VALUE rb_cCairo_Glyph;
 
-#define _SELF  (RVAL2CRGLYPH(self))
+#define _SELF(self)  (RVAL2CRGLYPH(self))
 
 cairo_glyph_t *
 rb_cairo_glyph_from_ruby_object (VALUE obj)
@@ -28,6 +28,15 @@ rb_cairo_glyph_from_ruby_object (VALUE obj)
   return xform;
 }
 
+static void
+cr_glyph_free (void *ptr)
+{
+  if (ptr)
+    {
+      free (ptr);
+    }
+}
+
 VALUE
 rb_cairo_glyph_to_ruby_object (cairo_glyph_t *glyph)
 {
@@ -35,7 +44,7 @@ rb_cairo_glyph_to_ruby_object (cairo_glyph_t *glyph)
     {
       cairo_glyph_t *new_glyph = ALLOC (cairo_glyph_t);
       *new_glyph = *glyph;
-      return Data_Wrap_Struct (rb_cCairo_Glyph, NULL, -1, new_glyph);
+      return Data_Wrap_Struct (rb_cCairo_Glyph, NULL, cr_glyph_free, new_glyph);
     }
   else
     {
@@ -43,82 +52,102 @@ rb_cairo_glyph_to_ruby_object (cairo_glyph_t *glyph)
     }
 }
 
-static    VALUE
-cr_glyph_new (int argc, VALUE *argv, VALUE klass)
+static VALUE
+cr_glyph_allocate (VALUE klass)
 {
-  cairo_glyph_t glyph;
-  VALUE rb_glyph;
-
-  glyph.index = 0;
-  glyph.x     = 0.0;
-  glyph.y     = 0.0;
-
-  rb_glyph = CRGLYPH2RVAL (&glyph);
-  rb_obj_call_init (rb_glyph, argc, argv);
-  return rb_glyph;
+  return Data_Wrap_Struct (klass, NULL, cr_glyph_free, NULL);
 }
 
-static    VALUE
+static VALUE
+cr_glyph_initialize (VALUE self, VALUE index, VALUE x, VALUE y)
+{
+  cairo_glyph_t *glyph;
+
+  glyph = ALLOC (cairo_glyph_t);
+  glyph->index = NUM2ULONG (index);
+  glyph->x = NUM2DBL (x);
+  glyph->y = NUM2DBL (y);
+
+  DATA_PTR (self) = glyph;
+  return Qnil;
+}
+
+static VALUE
 cr_glyph_index (VALUE self)
 {
-  return INT2NUM(_SELF->index);
+  return ULONG2NUM (_SELF(self)->index);
 }
 
-static    VALUE
+static VALUE
 cr_glyph_x (VALUE self)
 {
-  return rb_float_new (_SELF->x);
+  return rb_float_new (_SELF(self)->x);
 }
 
-static    VALUE
+static VALUE
 cr_glyph_y (VALUE self)
 {
-  return rb_float_new (_SELF->y);
+  return rb_float_new (_SELF(self)->y);
 }
 
-static    VALUE
-cr_glyph_set_index (VALUE self,
-                    VALUE rb_index)
+static VALUE
+cr_glyph_set_index (VALUE self, VALUE index)
 {
-  _SELF->index = NUM2ULONG (rb_index);
+  _SELF(self)->index = NUM2ULONG (index);
   return self;
 }
 
-static    VALUE
-cr_glyph_set_x (VALUE self,
-                VALUE rb_x)
+static VALUE
+cr_glyph_set_x (VALUE self, VALUE x)
 {
-  _SELF->x = NUM2DBL (rb_x);
+  _SELF(self)->x = NUM2DBL (x);
   return self;
 }
 
-static    VALUE
-cr_glyph_set_y (VALUE self,
-                VALUE rb_y)
+static VALUE
+cr_glyph_set_y (VALUE self, VALUE y)
 {
-  _SELF->y = NUM2DBL (rb_y);
+  _SELF(self)->y = NUM2DBL (y);
   return self;
 }
 
+static VALUE
+cr_glyph_to_s (VALUE self)
+{
+  VALUE ret;
+
+  ret = rb_str_new2 ("#<");
+  rb_str_cat2 (ret, rb_class2name (CLASS_OF (self)));
+  rb_str_cat2 (ret, ": ");
+  rb_str_cat2 (ret, "index=");
+  rb_str_concat (ret, rb_inspect (cr_glyph_index (self)));
+  rb_str_cat2 (ret, ", ");
+  rb_str_cat2 (ret, "x=");
+  rb_str_concat (ret, rb_inspect (cr_glyph_x (self)));
+  rb_str_cat2 (ret, ", ");
+  rb_str_cat2 (ret, "y=");
+  rb_str_concat (ret, rb_inspect (cr_glyph_y (self)));
+  rb_str_cat2 (ret, ">");
+                 
+  return ret;
+}
 
 
 void
 Init_cairo_glyph (void)
 {
-  rb_cCairo_Glyph =
-    rb_define_class_under (rb_mCairo, "Glyph", rb_cObject);
-  rb_define_singleton_method (rb_cCairo_Glyph, "new",
-                              cr_glyph_new, -1);
-  rb_define_method (rb_cCairo_Glyph, "index",
-                    cr_glyph_index, 0);
-  rb_define_method (rb_cCairo_Glyph, "x",
-                    cr_glyph_x, 0);
-  rb_define_method (rb_cCairo_Glyph, "y",
-                    cr_glyph_y, 0);
-  rb_define_method (rb_cCairo_Glyph, "set_index",
-                    cr_glyph_set_index, 1);
-  rb_define_method (rb_cCairo_Glyph, "set_x",
-                    cr_glyph_set_x, 1);
-  rb_define_method (rb_cCairo_Glyph, "set_y",
-                    cr_glyph_set_y, 1);
+  rb_cCairo_Glyph = rb_define_class_under (rb_mCairo, "Glyph", rb_cObject);
+
+  rb_define_alloc_func (rb_cCairo_Glyph, cr_glyph_allocate);
+
+  rb_define_method (rb_cCairo_Glyph, "initialize", cr_glyph_initialize, 3);
+  
+  rb_define_method (rb_cCairo_Glyph, "index", cr_glyph_index, 0);
+  rb_define_method (rb_cCairo_Glyph, "x", cr_glyph_x, 0);
+  rb_define_method (rb_cCairo_Glyph, "y", cr_glyph_y, 0);
+  rb_define_method (rb_cCairo_Glyph, "set_index", cr_glyph_set_index, 1);
+  rb_define_method (rb_cCairo_Glyph, "set_x", cr_glyph_set_x, 1);
+  rb_define_method (rb_cCairo_Glyph, "set_y", cr_glyph_set_y, 1);
+
+  rb_define_method (rb_cCairo_Glyph, "to_s", cr_glyph_to_s, 0);
 }
