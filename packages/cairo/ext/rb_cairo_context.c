@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2005-10-10 15:40:26 $
+ * $Date: 2005-10-11 13:23:49 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -103,16 +103,9 @@ cr_save (VALUE self)
 
 /* Modify state */
 static VALUE
-cr_set_operator (VALUE self, VALUE rb_op)
+cr_set_operator (VALUE self, VALUE operator)
 {
-  int op;
-  Check_Type (rb_op, T_FIXNUM);
-  op = FIX2INT (rb_op);
-  if (op < CAIRO_OPERATOR_CLEAR || op > CAIRO_OPERATOR_SATURATE)
-    {
-      rb_raise (rb_eArgError, "invalid composition operator");
-    }
-  cairo_set_operator (_SELF, (cairo_operator_t) op);
+  cairo_set_operator (_SELF, RVAL2CROPERATOR (operator));
   cr_check_status (_SELF);
   return self;
 }
@@ -256,22 +249,15 @@ cr_set_tolerance (VALUE self, VALUE tolerance)
 static VALUE
 cr_set_antialias(VALUE self, VALUE antialias)
 {
-  cairo_set_antialias(_SELF, NUM2INT(antialias));
+  cairo_set_antialias(_SELF, RVAL2CRANTIALIAS (antialias));
   cr_check_status(_SELF);
   return self;
 }
 
 static VALUE
-cr_set_fill_rule (VALUE self, VALUE rb_rule)
+cr_set_fill_rule (VALUE self, VALUE rule)
 {
-  cairo_fill_rule_t rule;
-  Check_Type (rb_rule, T_FIXNUM);
-  rule = FIX2INT (rb_rule);
-  if (rule < CAIRO_FILL_RULE_WINDING || rule > CAIRO_FILL_RULE_EVEN_ODD)
-    {
-      rb_raise (rb_eArgError, "invalid fill rule");
-    }
-  cairo_set_fill_rule (_SELF, rule);
+  cairo_set_fill_rule (_SELF, RVAL2CRFILLRULE (rule));
   cr_check_status (_SELF);
   return self;
 }
@@ -284,31 +270,17 @@ cr_set_line_width (VALUE self, VALUE width)
 }
 
 static VALUE
-cr_set_line_cap (VALUE self, VALUE rb_cap)
+cr_set_line_cap (VALUE self, VALUE cap)
 {
-  cairo_line_cap_t cap;
-  Check_Type (rb_cap, T_FIXNUM);
-  cap = FIX2INT (rb_cap);
-  if (cap < CAIRO_LINE_CAP_BUTT || cap > CAIRO_LINE_CAP_SQUARE)
-    {
-      rb_raise (rb_eArgError, "invalid line cap type");
-    }
-  cairo_set_line_cap (_SELF, cap);
+  cairo_set_line_cap (_SELF, RVAL2CRLINECAP (cap));
   cr_check_status (_SELF);
   return self;
 }
 
 static VALUE
-cr_set_line_join (VALUE self, VALUE rb_join)
+cr_set_line_join (VALUE self, VALUE join)
 {
-  cairo_line_join_t join;
-  Check_Type (rb_join, T_FIXNUM);
-  join = FIX2INT (rb_join);
-  if (join < CAIRO_LINE_JOIN_MITER || join > CAIRO_LINE_JOIN_BEVEL)
-    {
-      rb_raise (rb_eArgError, "invalid line join type");
-    }
-  cairo_set_line_join (_SELF, join);
+  cairo_set_line_join (_SELF, RVAL2CRLINEJOIN (join));
   cr_check_status (_SELF);
   return self;
 }
@@ -771,25 +743,10 @@ cr_clip_preserve (VALUE self)
 
 /* Font/Text functions */
 static   VALUE
-cr_select_font_face (VALUE self, VALUE family, VALUE rb_slant, VALUE rb_weight)
+cr_select_font_face (VALUE self, VALUE family, VALUE slant, VALUE weight)
 {
-  cairo_font_slant_t slant = NUM2INT (rb_slant);
-  cairo_font_weight_t weight = NUM2INT (rb_weight);
-
-  if (slant < CAIRO_FONT_SLANT_NORMAL ||
-      slant > CAIRO_FONT_SLANT_OBLIQUE)
-    {
-      rb_raise (rb_eArgError, "invalid font slant");
-    }
-
-  if (weight < CAIRO_FONT_WEIGHT_NORMAL ||
-      weight > CAIRO_FONT_WEIGHT_BOLD)
-    {
-      rb_raise (rb_eArgError, "invalid font weight");
-    }
- 
-
-  cairo_select_font_face (_SELF, STR2CSTR (family), slant, weight);
+  cairo_select_font_face (_SELF, STR2CSTR (family),
+                          RVAL2CRFONTSLANT (slant), RVAL2CRFONTWEIGHT (weight));
   cr_check_status (_SELF);
   return self;
 }

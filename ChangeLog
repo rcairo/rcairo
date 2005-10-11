@@ -1,5 +1,7 @@
 2005-10-11  Kouhei Sutou  <kou@cozmixng.org>
 
+	* packages/cairo/ext: Extracted Ruby object -> enum type codes.
+
 	* packages/cairo/ext/rb_cairo_pattern.c
 	(cr_gradient_pattern_add_color_stop_rgba): Renamed from
 	cr_gradient_pattern_add_color_stop.

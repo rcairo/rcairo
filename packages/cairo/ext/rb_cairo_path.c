@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2005-10-10 15:40:26 $
+ * $Date: 2005-10-11 13:23:49 $
  *
  * Copyright 2005 Kouhei Sutou <kou@cozmixng.org>
  *
@@ -60,7 +60,11 @@ cr_path_each (VALUE self)
   for (i = 0; i < path->num_data; i += path->data[i].header.length)
     {
       cairo_path_data_t *data = &(path->data[i]);
-      VALUE points = rb_ary_new ();
+      cairo_path_data_type_t type;
+      VALUE points;
+
+      type = RVAL2CRPATHDATATYPE (data->header.type);
+      points = rb_ary_new ();
 
       for (j = 1; j < data->header.length; j++)
         {
@@ -68,7 +72,7 @@ cr_path_each (VALUE self)
                                             rb_float_new (data[j].point.x),
                                             rb_float_new (data[j].point.y)));
         }
-      rb_yield_values (2, INT2NUM (data->header.type), points);
+      rb_yield_values (2, type, points);
     }
 
   return self;

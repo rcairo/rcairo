@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2005-10-10 15:40:26 $
+ * $Date: 2005-10-11 13:23:49 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -102,8 +102,8 @@ VALUE                 rb_cairo_font_extents_to_ruby_object   (cairo_font_extents
 cairo_font_options_t *rb_cairo_font_options_from_ruby_object (VALUE obj);
 VALUE                 rb_cairo_font_options_to_ruby_object   (cairo_font_options_t *options);
 
-cairo_scaled_font_t  *rb_cairo_scaled_font_from_ruby_object (VALUE obj);
-VALUE                 rb_cairo_scaled_font_to_ruby_object   (cairo_scaled_font_t *options);
+cairo_scaled_font_t  *rb_cairo_scaled_font_from_ruby_object  (VALUE obj);
+VALUE                 rb_cairo_scaled_font_to_ruby_object    (cairo_scaled_font_t *options);
 
 cairo_text_extents_t *rb_cairo_text_extents_from_ruby_object (VALUE obj);
 VALUE                 rb_cairo_text_extents_to_ruby_object   (cairo_text_extents_t *extents);
@@ -114,6 +114,38 @@ VALUE                 rb_cairo_glyph_to_ruby_object          (cairo_glyph_t *gly
 cairo_surface_t      *rb_cairo_surface_from_ruby_object      (VALUE obj);
 VALUE                 rb_cairo_surface_to_ruby_object        (cairo_surface_t *surface);
 
+
+#define RVAL2CROPERATOR(obj)      (rb_cairo_operator_from_ruby_object(obj))
+#define RVAL2CRANTIALIAS(obj)     (rb_cairo_antialias_from_ruby_object(obj))
+#define RVAL2CRFILLRULE(obj)      (rb_cairo_fill_rule_from_ruby_object(obj))
+#define RVAL2CRLINECAP(obj)       (rb_cairo_line_cap_from_ruby_object(obj))
+#define RVAL2CRLINEJOIN(obj)      (rb_cairo_line_join_from_ruby_object(obj))
+#define RVAL2CRFONTSLANT(obj)     (rb_cairo_font_slant_from_ruby_object(obj))
+#define RVAL2CRFONTWEIGHT(obj)    (rb_cairo_font_weight_from_ruby_object(obj))
+#define RVAL2CRSUBPIXELORDER(obj) (rb_cairo_subpixel_order_from_ruby_object(obj))
+#define RVAL2CRHINTSTYLE(obj)     (rb_cairo_hint_style_from_ruby_object(obj))
+#define RVAL2CRHINTMETRICS(obj)   (rb_cairo_hint_metrics_from_ruby_object(obj))
+#define RVAL2CRPATHDATATYPE(obj)  (rb_cairo_path_data_type_from_ruby_object(obj))
+#define RVAL2CRCONTENT(obj)       (rb_cairo_content_from_ruby_object(obj))
+#define RVAL2CRFORMAT(obj)        (rb_cairo_format_from_ruby_object(obj))
+#define RVAL2CREXTEND(obj)        (rb_cairo_extend_from_ruby_object(obj))
+#define RVAL2CRFILTER(obj)        (rb_cairo_filter_from_ruby_object(obj))
+
+cairo_operator_t       rb_cairo_operator_from_ruby_object       (VALUE obj);
+cairo_antialias_t      rb_cairo_antialias_from_ruby_object      (VALUE obj);
+cairo_fill_rule_t      rb_cairo_fill_rule_from_ruby_object      (VALUE obj);
+cairo_line_cap_t       rb_cairo_line_cap_from_ruby_object       (VALUE obj);
+cairo_line_join_t      rb_cairo_line_join_from_ruby_object      (VALUE obj);
+cairo_font_slant_t     rb_cairo_font_slant_from_ruby_object     (VALUE obj);
+cairo_font_weight_t    rb_cairo_font_weight_from_ruby_object    (VALUE obj);
+cairo_subpixel_order_t rb_cairo_subpixel_order_from_ruby_object (VALUE obj);
+cairo_hint_style_t     rb_cairo_hint_style_from_ruby_object     (VALUE obj);
+cairo_hint_metrics_t   rb_cairo_hint_metrics_from_ruby_object   (VALUE obj);
+cairo_path_data_type_t rb_cairo_path_data_type_from_ruby_object (VALUE obj);
+cairo_content_t        rb_cairo_content_from_ruby_object        (VALUE obj);
+cairo_format_t         rb_cairo_format_from_ruby_object         (VALUE obj);
+cairo_extend_t         rb_cairo_extend_from_ruby_object         (VALUE obj);
+cairo_filter_t         rb_cairo_filter_from_ruby_object         (VALUE obj);
 
 
 void rb_cairo_check_status (cairo_status_t status);

@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2005-10-10 15:40:26 $
+ * $Date: 2005-10-11 13:23:49 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -14,6 +14,87 @@
 
 
 #include "rb_cairo.h"
+
+#define CAIRO_OPERATOR_MIN CAIRO_OPERATOR_CLEAR
+#define CAIRO_OPERATOR_MAX CAIRO_OPERATOR_SATURATE
+
+#define CAIRO_ANTIALIAS_MIN CAIRO_ANTIALIAS_DEFAULT
+#define CAIRO_ANTIALIAS_MAX CAIRO_ANTIALIAS_SUBPIXEL
+
+#define CAIRO_FILL_RULE_MIN CAIRO_FILL_RULE_WINDING
+#define CAIRO_FILL_RULE_MAX CAIRO_FILL_RULE_EVEN_ODD
+
+#define CAIRO_LINE_CAP_MIN CAIRO_LINE_CAP_BUTT
+#define CAIRO_LINE_CAP_MAX CAIRO_LINE_CAP_SQUARE
+
+#define CAIRO_LINE_JOIN_MIN CAIRO_LINE_JOIN_MITER
+#define CAIRO_LINE_JOIN_MAX CAIRO_LINE_JOIN_BEVEL
+
+#define CAIRO_FONT_SLANT_MIN CAIRO_FONT_SLANT_NORMAL
+#define CAIRO_FONT_SLANT_MAX CAIRO_FONT_SLANT_OBLIQUE
+
+#define CAIRO_FONT_WEIGHT_MIN CAIRO_FONT_WEIGHT_NORMAL
+#define CAIRO_FONT_WEIGHT_MAX CAIRO_FONT_WEIGHT_BOLD
+
+#define CAIRO_SUBPIXEL_ORDER_MIN CAIRO_SUBPIXEL_ORDER_DEFAULT
+#define CAIRO_SUBPIXEL_ORDER_MAX CAIRO_SUBPIXEL_ORDER_VBGR
+
+#define CAIRO_HINT_STYLE_MIN CAIRO_HINT_STYLE_DEFAULT
+#define CAIRO_HINT_STYLE_MAX CAIRO_HINT_STYLE_FULL
+
+#define CAIRO_HINT_METRICS_MIN CAIRO_HINT_METRICS_DEFAULT
+#define CAIRO_HINT_METRICS_MAX CAIRO_HINT_METRICS_OFF
+
+#define CAIRO_PATH_MIN CAIRO_PATH_MOVE_TO
+#define CAIRO_PATH_MAX CAIRO_PATH_CLOSE_PATH
+
+#define CAIRO_CONTENT_MIN CAIRO_CONTENT_COLOR
+#define CAIRO_CONTENT_MAX CAIRO_CONTENT_COLOR_ALPHA
+
+#define CAIRO_FORMAT_MIN CAIRO_FORMAT_ARGB32
+#define CAIRO_FORMAT_MAX CAIRO_FORMAT_A1
+
+#define CAIRO_EXTEND_MIN CAIRO_EXTEND_NONE
+#define CAIRO_EXTEND_MAX CAIRO_EXTEND_REFLECT
+
+#define CAIRO_FILTER_MIN CAIRO_FILTER_FAST
+#define CAIRO_FILTER_MAX CAIRO_FILTER_GAUSSIAN
+
+#define DEFINE_RVAL2ENUM(name, const_name)                  \
+cairo_ ## name ## _t                                        \
+rb_cairo_ ## name ## _from_ruby_object (VALUE rb_ ## name)  \
+{                                                           \
+  cairo_ ## name ## _t name;                                \
+  name = FIX2INT (rb_ ## name);                             \
+  if (name < CAIRO_ ## const_name ## _MIN ||                \
+      name > CAIRO_ ## const_name ## _MAX)                  \
+    {                                                       \
+      rb_raise (rb_eArgError,                               \
+                "invalid %s: %d (expect %d <= %s <= %d)",   \
+                #name, name,                                \
+                CAIRO_ ## const_name ## _MIN,               \
+                #name,                                      \
+                CAIRO_ ## const_name ## _MAX);              \
+    }                                                       \
+  return name;                                              \
+}
+
+DEFINE_RVAL2ENUM(operator, OPERATOR)
+DEFINE_RVAL2ENUM(antialias, ANTIALIAS)
+DEFINE_RVAL2ENUM(fill_rule, FILL_RULE)
+DEFINE_RVAL2ENUM(line_cap, LINE_CAP)
+DEFINE_RVAL2ENUM(line_join, LINE_JOIN)
+DEFINE_RVAL2ENUM(font_slant, FONT_SLANT)
+DEFINE_RVAL2ENUM(font_weight, FONT_WEIGHT)
+DEFINE_RVAL2ENUM(subpixel_order, SUBPIXEL_ORDER)
+DEFINE_RVAL2ENUM(hint_style, HINT_STYLE)
+DEFINE_RVAL2ENUM(hint_metrics, HINT_METRICS)
+DEFINE_RVAL2ENUM(path_data_type, PATH)
+DEFINE_RVAL2ENUM(content, CONTENT)
+DEFINE_RVAL2ENUM(format, FORMAT)
+DEFINE_RVAL2ENUM(extend, EXTEND)
+DEFINE_RVAL2ENUM(filter, FILTER)
+
 
 void
 Init_cairo_constants (void)
@@ -88,7 +169,7 @@ Init_cairo_constants (void)
                    INT2FIX (CAIRO_LINE_JOIN_BEVEL));
 
 
-  /* cairo_slant_t */
+  /* cairo_font_slant_t */
   rb_define_const (rb_mCairo,    "FONT_SLANT_NORMAL",
                    INT2FIX (CAIRO_FONT_SLANT_NORMAL));
   rb_define_const (rb_mCairo,    "FONT_SLANT_ITALIC",
@@ -97,7 +178,7 @@ Init_cairo_constants (void)
                    INT2FIX (CAIRO_FONT_SLANT_OBLIQUE));
 
 
-  /* cairo_weight_t */
+  /* cairo_font_weight_t */
   rb_define_const (rb_mCairo,    "FONT_WEIGHT_NORMAL",
                    INT2FIX (CAIRO_FONT_WEIGHT_NORMAL));
   rb_define_const (rb_mCairo,    "FONT_WEIGHT_BOLD",
