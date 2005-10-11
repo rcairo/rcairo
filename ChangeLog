@@ -1,3 +1,12 @@
+2005-10-12  Kouhei Sutou  <kou@cozmixng.org>
+
+	* packages/cairo/ext/rb_cairo_surface.c
+	(cr_image_surface_create_from_png_generic): Set class of the
+	surface.
+
+	* packages/cairo/ext/rb_cairo_context.c (cr_set_source_generic):
+	Fixed wrong variable name.
+
 2005-10-11  Kouhei Sutou  <kou@cozmixng.org>
 
 	* packages/cairo/ext/rb_cairo_context.c: Provided

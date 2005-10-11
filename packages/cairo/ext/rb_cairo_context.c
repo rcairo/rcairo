@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2005-10-11 14:45:41 $
+ * $Date: 2005-10-11 15:40:05 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -199,7 +199,7 @@ cr_set_source_generic (int argc, VALUE *argv, VALUE self)
     {
       return cr_set_source (self, arg1);
     }
-  else if (n == 3 && rb_obj_is_kind_of (self, rb_cCairo_Surface))
+  else if (n == 3 && rb_obj_is_kind_of (arg1, rb_cCairo_Surface))
     {
       return cr_set_source_surface (self, arg1, arg2, arg3);
     }
