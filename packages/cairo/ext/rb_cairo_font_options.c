@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2005-10-10 15:40:26 $
+ * $Date: 2005-10-11 13:23:49 $
  *
  * Copyright 2005 Kouhei Sutou <kou@cozmixng.org>
  *
@@ -105,19 +105,9 @@ cr_options_hash (VALUE self)
 }
 
 static VALUE
-cr_options_set_antialias (VALUE self, VALUE rb_antialias)
+cr_options_set_antialias (VALUE self, VALUE antialias)
 {
-  cairo_antialias_t antialias;
-
-  antialias = NUM2INT (rb_antialias);
-  
-  if (antialias < CAIRO_ANTIALIAS_DEFAULT ||
-      antialias > CAIRO_ANTIALIAS_SUBPIXEL)
-    {
-      rb_raise (rb_eArgError, "invalid antialias");
-    }
-  
-  cairo_font_options_set_antialias (_SELF (self), antialias);
+  cairo_font_options_set_antialias (_SELF (self), RVAL2CRANTIALIAS (antialias));
   return self;
 }
 
@@ -128,19 +118,10 @@ cr_options_get_antialias (VALUE self)
 }
 
 static VALUE
-cr_options_set_subpixel_order (VALUE self, VALUE rb_subpixel_order)
+cr_options_set_subpixel_order (VALUE self, VALUE subpixel_order)
 {
-  cairo_subpixel_order_t subpixel_order;
-
-  subpixel_order = NUM2INT (rb_subpixel_order);
-  
-  if (subpixel_order < CAIRO_SUBPIXEL_ORDER_DEFAULT ||
-      subpixel_order > CAIRO_SUBPIXEL_ORDER_VBGR)
-    {
-      rb_raise (rb_eArgError, "invalid subpixel order");
-    }
-  
-  cairo_font_options_set_subpixel_order (_SELF (self), subpixel_order);
+  cairo_font_options_set_subpixel_order (_SELF (self),
+                                         RVAL2CRSUBPIXELORDER (subpixel_order));
   return self;
 }
 
@@ -151,19 +132,10 @@ cr_options_get_subpixel_order (VALUE self)
 }
 
 static VALUE
-cr_options_set_hint_style (VALUE self, VALUE rb_hint_style)
+cr_options_set_hint_style (VALUE self, VALUE hint_style)
 {
-  cairo_hint_style_t hint_style;
-
-  hint_style = NUM2INT (rb_hint_style);
-  
-  if (hint_style < CAIRO_HINT_STYLE_DEFAULT ||
-      hint_style > CAIRO_HINT_STYLE_FULL)
-    {
-      rb_raise (rb_eArgError, "invalid hint style");
-    }
-  
-  cairo_font_options_set_hint_style (_SELF (self), hint_style);
+  cairo_font_options_set_hint_style (_SELF (self),
+                                     RVAL2CRHINTSTYLE (hint_style));
   return self;
 }
 
@@ -174,19 +146,10 @@ cr_options_get_hint_style (VALUE self)
 }
 
 static VALUE
-cr_options_set_hint_metrics (VALUE self, VALUE rb_hint_metrics)
+cr_options_set_hint_metrics (VALUE self, VALUE hint_metrics)
 {
-  cairo_hint_metrics_t hint_metrics;
-
-  hint_metrics = NUM2INT (rb_hint_metrics);
-  
-  if (hint_metrics < CAIRO_HINT_METRICS_DEFAULT ||
-      hint_metrics > CAIRO_HINT_METRICS_ON)
-    {
-      rb_raise (rb_eArgError, "invalid hint metrics");
-    }
-  
-  cairo_font_options_set_hint_metrics (_SELF (self), hint_metrics);
+  cairo_font_options_set_hint_metrics (_SELF (self),
+                                       RVAL2CRHINTMETRICS (hint_metrics));
   return self;
 }
 

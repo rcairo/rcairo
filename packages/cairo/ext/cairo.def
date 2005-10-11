@@ -39,4 +39,19 @@ EXPORTS
     rb_cairo_glyph_to_ruby_object
     rb_cairo_surface_from_ruby_object
     rb_cairo_surface_to_ruby_object
+    rb_cairo_operator_from_ruby_object
+    rb_cairo_antialias_from_ruby_object
+    rb_cairo_fill_rule_from_ruby_object
+    rb_cairo_line_cap_from_ruby_object
+    rb_cairo_line_join_from_ruby_object
+    rb_cairo_font_slant_from_ruby_object
+    rb_cairo_font_weight_from_ruby_object
+    rb_cairo_subpixel_order_from_ruby_object
+    rb_cairo_hint_style_from_ruby_object
+    rb_cairo_hint_metrics_from_ruby_object
+    rb_cairo_path_data_type_from_ruby_object
+    rb_cairo_content_from_ruby_object
+    rb_cairo_format_from_ruby_object
+    rb_cairo_extend_from_ruby_object
+    rb_cairo_filter_from_ruby_object
     rb_cairo_check_status

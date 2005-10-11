@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2005-10-10 15:40:26 $
+ * $Date: 2005-10-11 13:23:49 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -214,21 +214,13 @@ cr_surface_allocate (VALUE klass)
 
 /* Surface manipulation */
 static VALUE
-cr_surface_create_similar (VALUE self, VALUE rb_content,
+cr_surface_create_similar (VALUE self, VALUE content,
                            VALUE width, VALUE height)
 {
   cairo_surface_t *surface;
-  cairo_content_t content;
 
-  content = NUM2INT (rb_content);
-
-  if (content < CAIRO_CONTENT_COLOR ||
-      content > CAIRO_CONTENT_COLOR_ALPHA)
-    {
-        rb_raise (rb_eArgError, "invalid content");
-    }
-
-  surface = cairo_surface_create_similar (RVAL2CRSURFACE (self), content,
+  surface = cairo_surface_create_similar (RVAL2CRSURFACE (self),
+                                          RVAL2CRCONTENT (content),
                                           NUM2INT (width), NUM2INT (height));
   cr_surface_check_status (surface);
   cr_surface_set_klass (surface, rb_obj_class (self));
@@ -395,30 +387,21 @@ cr_image_surface_create_from_png_generic (VALUE self, VALUE target)
 static cairo_surface_t *
 cr_image_surface_create (VALUE self, VALUE format, VALUE width, VALUE height)
 {
-  return cairo_image_surface_create (NUM2INT (format),
+  return cairo_image_surface_create (RVAL2CRFORMAT (format),
                                      NUM2INT (width),
                                      NUM2INT (height));
 }
 
 static cairo_surface_t *
-cr_image_surface_create_for_data (VALUE self, VALUE rb_data, VALUE rb_format,
+cr_image_surface_create_for_data (VALUE self, VALUE rb_data, VALUE format,
                                   VALUE width, VALUE height, VALUE stride)
 {
   unsigned char *data;
-  cairo_format_t format;
-
-  format = NUM2INT (rb_format);
-
-  if (format < CAIRO_FORMAT_ARGB32 ||
-      format < CAIRO_FORMAT_A1)
-    {
-      rb_raise (rb_eArgError, "invalid format");
-    }
 
   data = (unsigned char *)StringValuePtr (rb_data);
   
   return cairo_image_surface_create_for_data (data,
-                                              format,
+                                              RVAL2CRFORMAT (format),
                                               NUM2INT (width),
                                               NUM2INT (height),
                                               NUM2INT (stride));

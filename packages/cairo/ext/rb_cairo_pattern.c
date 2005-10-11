@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2005-10-11 01:59:07 $
+ * $Date: 2005-10-11 13:23:49 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -235,17 +235,9 @@ cr_pattern_get_matrix (VALUE self)
 
 /* Cairo::SurfacePattern */
 static VALUE
-cr_surface_pattern_set_extend (VALUE self, VALUE rb_extend)
+cr_surface_pattern_set_extend (VALUE self, VALUE extend)
 {
-  cairo_extend_t extend;
-  extend = NUM2INT (rb_extend);
-  if (extend < CAIRO_EXTEND_NONE ||
-      extend > CAIRO_EXTEND_REFLECT)
-    {
-      rb_raise (rb_eArgError, "invalide pattern extend type");
-    }
-
-  cairo_pattern_set_extend (_SELF (self), extend);
+  cairo_pattern_set_extend (_SELF (self), RVAL2CREXTEND (extend));
   cr_pattern_check_status (_SELF (self));
   return self;
 }
@@ -257,17 +249,9 @@ cr_surface_pattern_get_extend (VALUE self)
 }
 
 static VALUE
-cr_surface_pattern_set_filter (VALUE self, VALUE rb_filter)
+cr_surface_pattern_set_filter (VALUE self, VALUE filter)
 {
-  cairo_filter_t filter;
-  filter = NUM2INT (rb_filter);
-  if (filter < CAIRO_FILTER_FAST ||
-      filter > CAIRO_FILTER_GAUSSIAN)
-    {
-      rb_raise (rb_eArgError, "invalide pattern filter type");
-    }
-
-  cairo_pattern_set_filter (_SELF (self), filter);
+  cairo_pattern_set_filter (_SELF (self), RVAL2CRFILTER (filter));
   cr_pattern_check_status (_SELF (self));
   return self;
 }
