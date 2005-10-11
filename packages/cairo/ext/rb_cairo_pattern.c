@@ -2,8 +2,8 @@
 /*
  * Ruby Cairo Binding
  *
- * $Author: pippin $
- * $Date: 2005-10-10 19:30:40 $
+ * $Author: kou $
+ * $Date: 2005-10-11 01:59:07 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -168,7 +168,7 @@ cr_radial_pattern_initialize (VALUE self, VALUE cx0, VALUE cy0, VALUE radius0,
 
 /* Cairo::GradientPattern */
 static VALUE
-cr_gradient_pattern_add_color_stop (int argc, VALUE *argv, VALUE self)
+cr_gradient_pattern_add_color_stop_rgba (int argc, VALUE *argv, VALUE self)
 {
   VALUE offset, red, green, blue, alpha;
   int n;
@@ -187,7 +187,7 @@ cr_gradient_pattern_add_color_stop (int argc, VALUE *argv, VALUE self)
       alpha = rb_ary_entry (ary, 3);
     }
 
-  if (n == 4)
+  if (n == 4 || (n == 5 && NIL_P (alpha)))
     {
       cairo_pattern_add_color_stop_rgb (_SELF (self), NUM2DBL (offset),
                                         NUM2DBL (red), NUM2DBL (green),
@@ -315,8 +315,8 @@ Init_cairo_pattern (void)
   rb_cCairo_GradientPattern =
     rb_define_class_under (rb_mCairo, "GradientPattern", rb_cCairo_Pattern);
 
-  rb_define_method (rb_cCairo_GradientPattern, "add_color_stop",
-                    cr_gradient_pattern_add_color_stop, -1);
+  rb_define_method (rb_cCairo_GradientPattern, "add_color_stop_rgba",
+                    cr_gradient_pattern_add_color_stop_rgba, -1);
 
   rb_cCairo_LinearPattern =
     rb_define_class_under (rb_mCairo, "LinearPattern",
