@@ -1,5 +1,9 @@
 2005-10-11  Kouhei Sutou  <kou@cozmixng.org>
 
+	* packages/cairo/ext/rb_cairo_context.c: Provided
+	Cairo::Context#set_soruce_rgba.
+	(cr_arc_negative, cr_arc): cx -> xc and cy -> yc.
+
 	* packages/cairo/ext: Extracted Ruby object -> enum type codes.
 
 	* packages/cairo/ext/rb_cairo_pattern.c
