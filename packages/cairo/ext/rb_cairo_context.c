@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2005-10-11 13:23:49 $
+ * $Date: 2005-10-11 14:45:41 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -112,40 +112,6 @@ cr_set_operator (VALUE self, VALUE operator)
 
 
 static VALUE
-cr_set_source_rgb (int argc, VALUE *argv, VALUE self)
-{
-  VALUE red, green, blue;
-  int n;
-
-  n = rb_scan_args(argc, argv, "12", &red, &green, &blue);
-
-  if (n == 1 && RTEST (rb_obj_is_kind_of (red, rb_cArray)))
-    {
-      VALUE ary = red;
-      n = RARRAY (ary)->len;
-      if (n >= 3)
-        {
-          red = rb_ary_entry (ary, 0);
-          green = rb_ary_entry (ary, 1);
-          blue = rb_ary_entry (ary, 2);
-        }
-    }
-
-  if (n < 3)
-    {
-      rb_raise (rb_eArgError, "invalid RGB");
-    }
-      
-  cairo_set_source_rgb (_SELF,
-                        NUM2DBL (red),
-                        NUM2DBL (green),
-                        NUM2DBL (blue));
-  cr_check_status (_SELF);
-  rb_ivar_set (self, cr_id_source_class, rb_cCairo_SolidPattern);
-  return self;
-}
-
-static VALUE
 cr_set_source_rgba (int argc, VALUE *argv, VALUE self)
 {
   VALUE red, green, blue, alpha;
@@ -157,7 +123,7 @@ cr_set_source_rgba (int argc, VALUE *argv, VALUE self)
     {
       VALUE ary = red;
       n = RARRAY (ary)->len;
-      if (n >= 4)
+      if (n >= 3)
         {
           red = rb_ary_entry (ary, 0);
           green = rb_ary_entry (ary, 1);
@@ -166,21 +132,34 @@ cr_set_source_rgba (int argc, VALUE *argv, VALUE self)
         }
     }
 
-  if (n < 4)
+  if (n == 3)
     {
-      return cr_set_source_rgb (argc, argv, self);
+      cairo_set_source_rgb (_SELF,
+                            NUM2DBL (red),
+                            NUM2DBL (green),
+                            NUM2DBL (blue));
     }
-  else
+  else if (n == 4)
     {
       cairo_set_source_rgba (_SELF,
                              NUM2DBL (red),
                              NUM2DBL (green),
                              NUM2DBL (blue),
                              NUM2DBL (alpha));
-      cr_check_status (_SELF);
-      rb_ivar_set (self, cr_id_source_class, rb_cCairo_SolidPattern);
-      return self;
     }
+  else
+    {
+      VALUE inspected_arg = rb_inspect (rb_ary_new4 (argc, argv));
+      rb_raise (rb_eArgError,
+                "invalid RGB%s: %s (expect "
+                "(red, green, blue), (red, green, blue, alpha), "
+                "([red, green, blue]) or ([red, green, blue, alpha]))",
+                n == 4 ? "A" : "",
+                StringValuePtr (inspected_arg));
+    }
+  cr_check_status (_SELF);
+  rb_ivar_set (self, cr_id_source_class, rb_cCairo_SolidPattern);
+  return self;
 }
 
 static VALUE
@@ -455,20 +434,20 @@ cr_curve_to (VALUE self, VALUE x1, VALUE y1,
 }
 
 static VALUE
-cr_arc (VALUE self, VALUE cx, VALUE cy, VALUE radius,
+cr_arc (VALUE self, VALUE xc, VALUE yc, VALUE radius,
         VALUE angle1, VALUE angle2)
 {
-  cairo_arc (_SELF, NUM2DBL (cx), NUM2DBL (cy), NUM2DBL (radius),
+  cairo_arc (_SELF, NUM2DBL (xc), NUM2DBL (yc), NUM2DBL (radius),
              NUM2DBL (angle1), NUM2DBL (angle2));
   cr_check_status (_SELF);
   return self;
 }
 
 static VALUE
-cr_arc_negative (VALUE self, VALUE cx, VALUE cy, VALUE radius,
+cr_arc_negative (VALUE self, VALUE xc, VALUE yc, VALUE radius,
                  VALUE angle1, VALUE angle2)
 {
-  cairo_arc_negative (_SELF, NUM2DBL (cx), NUM2DBL (cy), NUM2DBL (radius),
+  cairo_arc_negative (_SELF, NUM2DBL (xc), NUM2DBL (yc), NUM2DBL (radius),
                       NUM2DBL (angle1), NUM2DBL (angle2));
   cr_check_status (_SELF);
   return self;
@@ -1021,6 +1000,8 @@ Init_cairo_context (void)
   /* Modify state */
   rb_define_method (rb_cCairo_Context, "set_operator", cr_set_operator, 1);
   rb_define_method (rb_cCairo_Context, "set_source", cr_set_source_generic, -1);
+  rb_define_method (rb_cCairo_Context, "set_source_rgba",
+                    cr_set_source_rgba, -1);
   rb_define_method (rb_cCairo_Context, "set_tolerance", cr_set_tolerance, 1);
   rb_define_method (rb_cCairo_Context, "set_antialias", cr_set_antialias, 1);
   rb_define_method (rb_cCairo_Context, "set_fill_rule", cr_set_fill_rule, 1);
