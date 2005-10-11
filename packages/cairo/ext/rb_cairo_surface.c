@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2005-10-11 13:23:49 $
+ * $Date: 2005-10-11 15:40:05 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -370,7 +370,7 @@ cr_image_surface_create_from_png (VALUE filename)
 }
 
 static VALUE
-cr_image_surface_create_from_png_generic (VALUE self, VALUE target)
+cr_image_surface_create_from_png_generic (VALUE klass, VALUE target)
 {
   cairo_surface_t *surface;
   if (rb_respond_to (target, cr_id_read))
@@ -379,6 +379,7 @@ cr_image_surface_create_from_png_generic (VALUE self, VALUE target)
     surface = (cairo_surface_t *)cr_image_surface_create_from_png (target);
 
   cr_surface_check_status (surface);
+  cr_surface_set_klass (surface, klass);
   return CRSURFACE2RVAL (surface);
 }
 #endif
