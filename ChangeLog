@@ -1,5 +1,8 @@
 2005-10-12  Kouhei Sutou  <kou@cozmixng.org>
 
+	* samples/png.rb: Use Cairo::Context#set_source_rgb instead of
+	Cairo::Context#set_source.
+
 	* packages/cairo/ext/rb_cairo_context.c (cr_set_source_rgb):
 	Re-implemented for backward compatibility.
 
