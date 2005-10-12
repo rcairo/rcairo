@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2005-10-11 15:40:05 $
+ * $Date: 2005-10-12 14:57:44 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -110,6 +110,42 @@ cr_set_operator (VALUE self, VALUE operator)
   return self;
 }
 
+static VALUE
+cr_set_source_rgb (int argc, VALUE *argv, VALUE self)
+{
+  VALUE red, green, blue;
+  int n;
+
+  n = rb_scan_args (argc, argv, "12", &red, &green, &blue);
+
+  if (n == 1 && RTEST (rb_obj_is_kind_of (red, rb_cArray)))
+    {
+      VALUE ary = red;
+      n = RARRAY (ary)->len;
+      red = rb_ary_entry (ary, 0);
+      green = rb_ary_entry (ary, 1);
+      blue = rb_ary_entry (ary, 2);
+    }
+
+  if (n == 3)
+    {
+      cairo_set_source_rgb (_SELF,
+                            NUM2DBL (red),
+                            NUM2DBL (green),
+                            NUM2DBL (blue));
+    }
+  else
+    {
+      VALUE inspected_arg = rb_inspect (rb_ary_new4 (argc, argv));
+      rb_raise (rb_eArgError,
+                "invalid RGB: %s (expect "
+                "(red, green, blue) or ([red, green, blue]))",
+                StringValuePtr (inspected_arg));
+    }
+  cr_check_status (_SELF);
+  rb_ivar_set (self, cr_id_source_class, rb_cCairo_SolidPattern);
+  return self;
+}
 
 static VALUE
 cr_set_source_rgba (int argc, VALUE *argv, VALUE self)
@@ -123,13 +159,10 @@ cr_set_source_rgba (int argc, VALUE *argv, VALUE self)
     {
       VALUE ary = red;
       n = RARRAY (ary)->len;
-      if (n >= 3)
-        {
-          red = rb_ary_entry (ary, 0);
-          green = rb_ary_entry (ary, 1);
-          blue = rb_ary_entry (ary, 2);
-          alpha = rb_ary_entry (ary, 3);
-        }
+      red = rb_ary_entry (ary, 0);
+      green = rb_ary_entry (ary, 1);
+      blue = rb_ary_entry (ary, 2);
+      alpha = rb_ary_entry (ary, 3);
     }
 
   if (n == 3)
@@ -1000,6 +1033,8 @@ Init_cairo_context (void)
   /* Modify state */
   rb_define_method (rb_cCairo_Context, "set_operator", cr_set_operator, 1);
   rb_define_method (rb_cCairo_Context, "set_source", cr_set_source_generic, -1);
+  rb_define_method (rb_cCairo_Context, "set_source_rgb",
+                    cr_set_source_rgb, -1);
   rb_define_method (rb_cCairo_Context, "set_source_rgba",
                     cr_set_source_rgba, -1);
   rb_define_method (rb_cCairo_Context, "set_tolerance", cr_set_tolerance, 1);
