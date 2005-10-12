@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2005-10-11 13:23:49 $
+ * $Date: 2005-10-12 15:21:56 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -168,6 +168,45 @@ cr_radial_pattern_initialize (VALUE self, VALUE cx0, VALUE cy0, VALUE radius0,
 
 /* Cairo::GradientPattern */
 static VALUE
+cr_gradient_pattern_add_color_stop_rgb (int argc, VALUE *argv, VALUE self)
+{
+  VALUE offset, red, green, blue;
+  int n;
+  
+  n = rb_scan_args (argc, argv, "22", &offset, &red, &green, &blue);
+
+  if (n == 2 && rb_obj_is_kind_of (red, rb_cArray))
+    {
+      VALUE ary = red;
+      n = RARRAY (ary)->len + 1;
+      
+      red = rb_ary_entry (ary, 0);
+      green = rb_ary_entry (ary, 1);
+      blue = rb_ary_entry (ary, 2);
+    }
+
+  if (n == 4)
+    {
+      cairo_pattern_add_color_stop_rgb (_SELF (self), NUM2DBL (offset),
+                                        NUM2DBL (red), NUM2DBL (green),
+                                        NUM2DBL (blue));
+    }
+  else
+    {
+      VALUE inspected_arg = rb_inspect (rb_ary_new4 (argc, argv));
+      rb_raise (rb_eArgError,
+                "invalid argument: %s (expect "
+                "(offset, red, green, blue) or "
+                "(offset, [red, green, blue])"
+                ")",
+                StringValuePtr (inspected_arg));
+    }
+
+  cr_pattern_check_status (_SELF (self));
+  return self;
+}
+
+static VALUE
 cr_gradient_pattern_add_color_stop_rgba (int argc, VALUE *argv, VALUE self)
 {
   VALUE offset, red, green, blue, alpha;
@@ -175,8 +214,7 @@ cr_gradient_pattern_add_color_stop_rgba (int argc, VALUE *argv, VALUE self)
   
   n = rb_scan_args (argc, argv, "23", &offset, &red, &green, &blue, &alpha);
 
-  if (n == 2 && rb_obj_is_kind_of (red, rb_cArray) &&
-      (RARRAY (red)->len == 3 || RARRAY (red)->len == 4))
+  if (n == 2 && rb_obj_is_kind_of (red, rb_cArray))
     {
       VALUE ary = red;
       n = RARRAY (ary)->len + 1;
@@ -201,13 +239,15 @@ cr_gradient_pattern_add_color_stop_rgba (int argc, VALUE *argv, VALUE self)
     }
   else
     {
+      VALUE inspected_arg = rb_inspect (rb_ary_new4 (argc, argv));
       rb_raise (rb_eArgError,
-                "invalid argument (expect "
+                "invalid argument: %s (expect "
                 "(offset, red, green, blue), "
                 "(offset, [red, green, blue]), "
                 "(offset, red, green, blue, alpha) or "
                 "(offset, [red, green, blue, alpha])"
-                ")");
+                ")",
+                StringValuePtr (inspected_arg));
     }
 
   cr_pattern_check_status (_SELF (self));
@@ -299,8 +339,12 @@ Init_cairo_pattern (void)
   rb_cCairo_GradientPattern =
     rb_define_class_under (rb_mCairo, "GradientPattern", rb_cCairo_Pattern);
 
+  rb_define_method (rb_cCairo_GradientPattern, "add_color_stop_rgb",
+                    cr_gradient_pattern_add_color_stop_rgb, -1);
   rb_define_method (rb_cCairo_GradientPattern, "add_color_stop_rgba",
                     cr_gradient_pattern_add_color_stop_rgba, -1);
+  rb_define_alias (rb_cCairo_GradientPattern,
+                   "add_color_stop", "add_color_stop_rgba");
 
   rb_cCairo_LinearPattern =
     rb_define_class_under (rb_mCairo, "LinearPattern",
