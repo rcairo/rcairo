@@ -8,7 +8,7 @@ include Cairo
 cr=Context.new(ImageSurface.new(FORMAT_ARGB32, 200,200))
 
 # fill background with white
-cr.set_source(1.0, 1.0, 1.0)
+cr.set_source_rgba(1.0, 1.0, 1.0)
 cr.paint
 
 # create shape
