@@ -1,5 +1,8 @@
 2005-10-12  Kouhei Sutou  <kou@cozmixng.org>
 
+	* samples/png.rb: Use Cairo::Context#set_source_rgba instead of
+	Cairo::Context#set_source.
+
 	* packages/cairo/ext/rb_cairo_surface.c
 	(cr_image_surface_create_from_png_generic): Set class of the
 	surface.
