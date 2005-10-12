@@ -1,3 +1,9 @@
+2005-10-13  Kouhei Sutou  <kou@cozmixng.org>
+
+	* packages/cairo/ext/rb_cairo_pattern.c: Added
+	Cairo::GradientPattern#add_color_stop_rgb and
+	Cairo::GradientPattern#add_color_stop for convenience.
+
 2005-10-12  Kouhei Sutou  <kou@cozmixng.org>
 
 	* samples/png.rb: Use Cairo::Context#set_source_rgb instead of
