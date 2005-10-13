@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2005-10-11 15:40:05 $
+ * $Date: 2005-10-13 04:45:52 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -65,6 +65,8 @@ cr_surface_get_klass (cairo_surface_t *surface)
 typedef struct cr_io_callback_closure {
   VALUE target;
   VALUE error;
+  unsigned char *data;
+  unsigned int length;
 } cr_io_callback_closure_t;
 
 static VALUE
@@ -78,18 +80,18 @@ cr_surface_io_func_rescue (VALUE io_closure)
 
 /* write callback */
 static VALUE
-cr_surface_write_func_invoke (VALUE info)
+cr_surface_write_func_invoke (VALUE write_closure)
 {
   VALUE output, data;
   long written_bytes;
+  cr_io_callback_closure_t *closure;
   unsigned int length;
-  
-  output = rb_ary_entry(info, 0);
-  data = rb_ary_entry(info, 1);
 
-  rb_funcall (output, cr_id_write, 1, data);
-  return Qnil;
+  closure = (cr_io_callback_closure_t *)write_closure;
   
+  output = closure->target;
+  data = rb_str_new ((const char *)closure->data, closure->length);
+
   length = RSTRING (data)->len;
   while (length != 0)
     {
@@ -108,13 +110,12 @@ cr_surface_write_func (void *write_closure,
                        const unsigned char *data, unsigned int length)
 {
   cr_io_callback_closure_t *closure;
-  VALUE args;
 
   closure = (cr_io_callback_closure_t *)write_closure;
-  args = rb_ary_new3 (2,
-                      closure->target,
-                      rb_str_new ((const char *)data, length));
-  rb_rescue2 (cr_surface_write_func_invoke, args,
+  closure->data = (unsigned char *)data;
+  closure->length = length;
+  
+  rb_rescue2 (cr_surface_write_func_invoke, (VALUE) closure,
               cr_surface_io_func_rescue, (VALUE) closure, rb_eException,
               (VALUE)0);
   
@@ -126,25 +127,24 @@ cr_surface_write_func (void *write_closure,
 
 /* read callback */
 static VALUE
-cr_surface_read_func_invoke (VALUE info)
+cr_surface_read_func_invoke (VALUE read_closure)
 {
   VALUE input, result;
+  cr_io_callback_closure_t *closure;
   unsigned int length, rest;
-  unsigned char *data;
-  
-  input = rb_ary_entry (info, 0);
-  length = NUM2UINT (rb_ary_entry (info, 1));
-  data = (unsigned char *) rb_ary_entry (info, 2);
+
+  closure = (cr_io_callback_closure_t *)read_closure;
+  input = closure->target;
+  length = closure->length;
   
   result = rb_str_new2 ("");
-  rest = length;
 
   for (rest = length; rest != 0; rest = length - RSTRING (result)->len)
     {
       rb_str_concat (result, rb_funcall (input, cr_id_read, 1, INT2NUM (rest)));
     }
 
-  memcpy ((void *)data, (const void *)StringValuePtr (result), length);
+  memcpy ((void *)closure->data, (const void *)StringValuePtr (result), length);
 
   return Qnil;
 }
@@ -154,11 +154,11 @@ cr_surface_read_func (void *read_closure,
                       unsigned char *data, unsigned int length)
 {
   cr_io_callback_closure_t *closure;
-  VALUE args;
 
   closure = (cr_io_callback_closure_t *)read_closure;
-  args = rb_ary_new3 (3, closure->target, UINT2NUM (length), (VALUE) data);
-  rb_rescue2 (cr_surface_read_func_invoke, args,
+  closure->data = data;
+  closure->length = length;
+  rb_rescue2 (cr_surface_read_func_invoke, (VALUE) closure,
               cr_surface_io_func_rescue, (VALUE) closure, rb_eException,
               (VALUE)0);
   
@@ -372,6 +372,7 @@ cr_image_surface_create_from_png (VALUE filename)
 static VALUE
 cr_image_surface_create_from_png_generic (VALUE klass, VALUE target)
 {
+  VALUE rb_surface;
   cairo_surface_t *surface;
   if (rb_respond_to (target, cr_id_read))
     surface = (cairo_surface_t *)cr_image_surface_create_from_png_stream (target);
@@ -380,7 +381,9 @@ cr_image_surface_create_from_png_generic (VALUE klass, VALUE target)
 
   cr_surface_check_status (surface);
   cr_surface_set_klass (surface, klass);
-  return CRSURFACE2RVAL (surface);
+  rb_surface = cr_surface_allocate (klass);
+  DATA_PTR (rb_surface) = surface;
+  return rb_surface;
 }
 #endif
 
