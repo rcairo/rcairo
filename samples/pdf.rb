@@ -4,8 +4,9 @@ $LOAD_PATH.unshift "../packages/cairo/ext/"
 $LOAD_PATH.unshift "../packages/cairo/lib/"
 
 require 'cairo'
+require 'stringio'
 
-surface = Cairo::ImageSurface.new(Cairo::FORMAT_ARGB32, 200, 200)
+surface = Cairo::PDFSurface.new("test.pdf", 200, 200)
 cr = Cairo::Context.new(surface)
 
 # fill background with white
@@ -26,6 +27,6 @@ cr.set_line_join(Cairo::LINE_JOIN_MITER)
 cr.set_line_width(4)
 cr.stroke
 
-cr.target.write_to_png("test.png")
+cr.show_page
 
 cr.target.finish

@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2005-10-12 14:57:44 $
+ * $Date: 2005-10-15 14:33:46 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -757,7 +757,7 @@ cr_clip_preserve (VALUE self)
 static   VALUE
 cr_select_font_face (VALUE self, VALUE family, VALUE slant, VALUE weight)
 {
-  cairo_select_font_face (_SELF, STR2CSTR (family),
+  cairo_select_font_face (_SELF, StringValuePtr (family),
                           RVAL2CRFONTSLANT (slant), RVAL2CRFONTWEIGHT (weight));
   cr_check_status (_SELF);
   return self;
@@ -808,7 +808,7 @@ cr_get_font_options (VALUE self)
 static VALUE
 cr_show_text (VALUE self, VALUE utf8)
 {
-  cairo_show_text (_SELF, STR2CSTR (utf8));
+  cairo_show_text (_SELF, StringValuePtr (utf8));
   cr_check_status (_SELF);
   return self;
 }
@@ -880,7 +880,7 @@ cr_glyph_extents (VALUE self, VALUE rb_glyphs)
 static VALUE
 cr_text_path (VALUE self, VALUE utf8)
 {
-  cairo_text_path (_SELF, STR2CSTR (utf8));
+  cairo_text_path (_SELF, StringValuePtr (utf8));
   cr_check_status (_SELF);
   return self;
 }

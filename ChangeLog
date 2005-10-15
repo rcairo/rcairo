@@ -1,3 +1,12 @@
+2005-10-15  Kouhei Sutou  <kou@cozmixng.org>
+
+	* packages/cairo/ext/rb_cairo_context.c: Use StringValuePtr
+	instead of STR2CSTR.
+
+	* packages/cairo/ext/rb_cairo_surface.c: Supported PS/PDF surface.
+	* samples/ps.rb, samples/ps2.rb: Added PS surface sample.
+	* samples/pdf.rb, samples/pdf2.rb: Added PDF surface sample.
+
 2005-10-13  Kouhei Sutou  <kou@cozmixng.org>
 
 	* packages/cairo/ext/rb_cairo_surface.c: Fixed a SEGV bug caused

@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2005-10-13 04:45:52 $
+ * $Date: 2005-10-15 14:33:46 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -31,9 +31,16 @@ VALUE rb_cCairo_PSSurface;
 
 static ID cr_id_read;
 static ID cr_id_write;
-static cairo_user_data_key_t klass_key;
+static ID cr_id_holder;
+static ID cr_id_closed;
+static ID cr_id_closure;
+static cairo_user_data_key_t cr_klass_key;
+static cairo_user_data_key_t cr_closure_key;
 
 #define _SELF  (RVAL2CRSURFACE(self))
+
+#define CR_TRUE 1
+#define CR_FALSE 0
 
 static inline void
 cr_surface_check_status (cairo_surface_t *surface)
@@ -45,7 +52,7 @@ static void
 cr_surface_set_klass (cairo_surface_t *surface, VALUE klass)
 {
   cairo_status_t status;
-  status = cairo_surface_set_user_data (surface, &klass_key,
+  status = cairo_surface_set_user_data (surface, &cr_klass_key,
                                         (void *)klass, NULL);
   rb_cairo_check_status (status);
 }
@@ -53,7 +60,7 @@ cr_surface_set_klass (cairo_surface_t *surface, VALUE klass)
 static VALUE
 cr_surface_get_klass (cairo_surface_t *surface)
 {
-  VALUE klass = (VALUE)cairo_surface_get_user_data (surface, &klass_key);
+  VALUE klass = (VALUE)cairo_surface_get_user_data (surface, &cr_klass_key);
   if (!klass)
     {
       rb_raise (rb_eArgError, "[BUG] uninitialized surface for Ruby");
@@ -65,9 +72,81 @@ cr_surface_get_klass (cairo_surface_t *surface)
 typedef struct cr_io_callback_closure {
   VALUE target;
   VALUE error;
+  VALUE klass;
   unsigned char *data;
   unsigned int length;
+  cairo_bool_t is_file;
 } cr_io_callback_closure_t;
+
+static VALUE
+cr_closure_target_push (VALUE klass, VALUE obj)
+{
+  VALUE holder, key, objs;
+  
+  holder = rb_ivar_get (klass, cr_id_holder);
+  key = rb_obj_id (obj);
+  objs = rb_hash_aref (holder, key);
+
+  if (NIL_P (objs))
+    {
+      objs = rb_ary_new ();
+      rb_hash_aset (holder, key, objs);
+    }
+
+  rb_ary_push(objs, obj);
+
+  return Qnil;
+}
+
+static VALUE
+cr_closure_target_pop(VALUE klass, VALUE obj)
+{
+  VALUE holder, key, objs;
+  VALUE result = Qnil;
+
+  holder = rb_ivar_get (klass, cr_id_holder);
+  key = rb_obj_id (obj);
+  objs = rb_hash_aref (holder, key);
+
+  if (!NIL_P (objs))
+    {
+      result = rb_ary_pop (objs);
+      if (RARRAY (objs)->len == 0)
+        {
+          rb_hash_delete (holder, key);
+        }
+    }
+
+  return result;
+}
+
+static cr_io_callback_closure_t *
+cr_closure_new (VALUE target, cairo_bool_t is_file)
+{
+  cr_io_callback_closure_t *closure;
+  closure = ALLOC (cr_io_callback_closure_t);
+
+  closure->target = target;
+  closure->error = Qnil;
+  closure->is_file = is_file;
+  
+  return closure;
+}
+
+static void
+cr_closure_destroy (cr_io_callback_closure_t *closure)
+{
+  if (closure->is_file)
+    cr_closure_target_pop (closure->klass, closure->target);
+
+  free (closure);
+}
+
+static void
+cr_closure_free (void *closure)
+{
+  cr_closure_destroy ((cr_io_callback_closure_t *) closure);
+}
 
 static VALUE
 cr_surface_io_func_rescue (VALUE io_closure)
@@ -230,7 +309,22 @@ cr_surface_create_similar (VALUE self, VALUE content,
 static VALUE
 cr_surface_finish (VALUE self)
 {
+  cr_io_callback_closure_t *closure;
+  closure = cairo_surface_get_user_data (_SELF, &cr_closure_key);
+  
   cairo_surface_finish (_SELF);
+
+  if (closure && closure->is_file)
+    {
+      VALUE file;
+      file = closure->target;
+      if (!RTEST (rb_funcall (file, cr_id_closed, 0)))
+        rb_io_close (file);
+    }
+  
+  if (closure && !NIL_P (closure->error))
+    rb_exc_raise (closure->error);
+  
   cr_surface_check_status (_SELF);
   return self;
 }
@@ -244,6 +338,7 @@ cr_image_surface_write_to_png_stream (VALUE self, VALUE target)
 
   closure.target = target;
   closure.error = Qnil;
+  closure.is_file = CR_FALSE;
 
   status = cairo_surface_write_to_png_stream (_SELF, cr_surface_write_func,
                                               (void *)&closure);
@@ -350,6 +445,7 @@ cr_image_surface_create_from_png_stream (VALUE target)
 
   closure.target = target;
   closure.error = Qnil;
+  closure.is_file = CR_FALSE;
   
   surface = cairo_image_surface_create_from_png_stream (cr_surface_read_func,
                                                         (void *)&closure);
@@ -448,148 +544,67 @@ cr_image_surface_get_height (VALUE self)
   return INT2NUM (cairo_image_surface_get_height (_SELF));
 }
 
+
+#define DEFINE_SURFACE(type)                                              \
+static VALUE                                                              \
+cr_ ## type ## _surface_initialize (VALUE self, VALUE target,             \
+                                    VALUE rb_width_in_points,             \
+                                    VALUE rb_height_in_points)            \
+{                                                                         \
+  cr_io_callback_closure_t *closure;                                      \
+  cairo_surface_t *surface;                                               \
+  double width_in_points, height_in_points;                               \
+                                                                          \
+  if (rb_respond_to (target, cr_id_write))                                \
+    {                                                                     \
+      closure = cr_closure_new (target, CR_FALSE);                        \
+    }                                                                     \
+  else                                                                    \
+    {                                                                     \
+      VALUE file;                                                         \
+      file = rb_file_open (StringValuePtr (target), "wb");                \
+      closure = cr_closure_new (file, CR_TRUE);                           \
+      closure->klass = rb_obj_class (self);                               \
+      cr_closure_target_push (closure->klass, closure->target);           \
+    }                                                                     \
+                                                                          \
+  width_in_points = NUM2DBL (rb_width_in_points);                         \
+  height_in_points = NUM2DBL (rb_height_in_points);                       \
+  surface =                                                               \
+    cairo_ ## type ## _surface_create_for_stream (cr_surface_write_func,  \
+                                                  (void *) closure,       \
+                                                  width_in_points,        \
+                                                  height_in_points);      \
+                                                                          \
+  if (cairo_surface_status (surface))                                     \
+    cr_closure_destroy (closure);                                         \
+  else                                                                    \
+    cairo_surface_set_user_data (surface, &cr_closure_key,                \
+                                 closure, cr_closure_free);               \
+                                                                          \
+  cr_surface_check_status (surface);                                      \
+  DATA_PTR (self) = surface;                                              \
+  return Qnil;                                                            \
+}                                                                         \
+                                                                          \
+static VALUE                                                              \
+cr_ ## type ## _surface_set_dpi (VALUE self, VALUE x_dpi, VALUE y_dpi)    \
+{                                                                         \
+  cairo_ ## type ## _surface_set_dpi (_SELF,                              \
+                                      NUM2DBL (x_dpi),                    \
+                                      NUM2DBL (y_dpi));                   \
+  cr_surface_check_status (_SELF);                                        \
+  return self;                                                            \
+}
+
 #if CAIRO_HAS_PS_SURFACE
 /* PS-surface functions */
-static VALUE
-cr_ps_surface_create_for_stream (VALUE info)
-{
-  VALUE self, input, width_in_points, height_in_points;
-  cr_io_callback_closure_t closure;
-  cairo_surface_t *surface;
-
-  self = rb_ary_entry (info, 0);
-  input = rb_ary_entry (info, 1);
-  width_in_points = rb_ary_entry (info, 2);
-  height_in_points = rb_ary_entry (info, 3);
-  
-  closure.target = input;
-  closure.error = Qnil;
-  
-  surface = cairo_ps_surface_create_for_stream (cr_surface_write_func,
-                                                (void *) &closure,
-                                                NUM2DBL (width_in_points),
-                                                NUM2DBL (height_in_points));
-  if (!NIL_P (closure.error))
-    rb_exc_raise (closure.error);
-  
-  return (VALUE)surface;
-}
-
-static VALUE
-cr_ps_surface_create (VALUE self, VALUE filename,
-                       VALUE width_in_points, VALUE height_in_points)
-{
-  VALUE file, info;
-  
-  file = rb_file_open (StringValuePtr (filename), "rb");
-  info = rb_ary_new3 (4, self, file, width_in_points, height_in_points);
-  return rb_ensure (cr_ps_surface_create_for_stream, info,
-                    rb_io_close, file);
-}
-
-static VALUE
-cr_ps_surface_initialize (VALUE self, VALUE target,
-                           VALUE width_in_points, VALUE height_in_points)
-{
-  cairo_surface_t *surface;
-  
-  if (rb_respond_to (target, cr_id_read))
-    {
-      VALUE info;
-      info = rb_ary_new3 (4, self, target, width_in_points, height_in_points);
-      surface = (cairo_surface_t *)cr_ps_surface_create_for_stream (info);
-    }
-  else
-    {
-      surface = (cairo_surface_t *)cr_ps_surface_create (self, target,
-                                                         width_in_points,
-                                                         height_in_points);
-    }
-  
-  cr_surface_check_status (surface);
-  DATA_PTR (self) = surface;
-  return Qnil;
-}
-
-static VALUE
-cr_ps_surface_set_dpi (VALUE self, VALUE x_dpi, VALUE y_dpi)
-{
-  cairo_ps_surface_set_dpi (_SELF, NUM2DBL (x_dpi), NUM2DBL (y_dpi));
-  cr_surface_check_status (_SELF);
-  return self;
-}
+DEFINE_SURFACE(ps)
 #endif
 
 #if CAIRO_HAS_PDF_SURFACE
 /* PDF-surface functions */
-static VALUE
-cr_pdf_surface_create_for_stream (VALUE info)
-{
-  VALUE self, input, width_in_points, height_in_points;
-  cr_io_callback_closure_t closure;
-  cairo_surface_t *surface;
-
-  self = rb_ary_entry (info, 0);
-  input = rb_ary_entry (info, 1);
-  width_in_points = rb_ary_entry (info, 2);
-  height_in_points = rb_ary_entry (info, 3);
-  
-  closure.target = input;
-  closure.error = Qnil;
-  
-  surface = cairo_pdf_surface_create_for_stream (cr_surface_write_func,
-                                                 (void *) &closure,
-                                                 NUM2DBL (width_in_points),
-                                                 NUM2DBL (height_in_points));
-  if (!NIL_P (closure.error))
-    rb_exc_raise (closure.error);
-  
-  return (VALUE)surface;
-}
-
-static VALUE
-cr_pdf_surface_create (VALUE self, VALUE filename,
-                       VALUE width_in_points, VALUE height_in_points)
-{
-  VALUE file, info;
-  
-  file = rb_file_open (StringValuePtr (filename), "rb");
-  info = rb_ary_new3 (4, self, file, width_in_points, height_in_points);
-  return rb_ensure (cr_pdf_surface_create_for_stream, info,
-                    rb_io_close, file);
-}
-
-static VALUE
-cr_pdf_surface_initialize (VALUE self, VALUE target,
-                           VALUE width_in_points, VALUE height_in_points)
-{
-  cairo_surface_t *surface;
-  
-  if (rb_respond_to (target, cr_id_read))
-    {
-      VALUE info;
-      info = rb_ary_new3 (4, self, target, width_in_points, height_in_points);
-      surface = (cairo_surface_t *)cr_pdf_surface_create_for_stream (info);
-    }
-  else
-    {
-      surface = (cairo_surface_t *)cr_pdf_surface_create (self, target,
-                                                          width_in_points,
-                                                          height_in_points);
-    }
-  
-  cr_surface_check_status (surface);
-  DATA_PTR (self) = surface;
-  return Qnil;
-}
-
-static VALUE
-cr_pdf_surface_set_dpi (VALUE self, VALUE x_dpi, VALUE y_dpi)
-{
-  cairo_pdf_surface_set_dpi (_SELF, NUM2DBL (x_dpi), NUM2DBL (y_dpi));
-  cr_surface_check_status (_SELF);
-  return self;
-}
+DEFINE_SURFACE(pdf)
 #endif
 
 void
@@ -597,6 +612,9 @@ Init_cairo_surface (void)
 {
   cr_id_read = rb_intern ("read");
   cr_id_write = rb_intern ("write");
+  cr_id_closed = rb_intern ("closed?");
+  cr_id_closure = rb_intern ("closure");
+  cr_id_holder = rb_intern ("holder");
   
   rb_cCairo_Surface =
     rb_define_class_under (rb_mCairo, "Surface", rb_cObject);
@@ -636,26 +654,31 @@ Init_cairo_surface (void)
                     cr_image_surface_write_to_png_generic, 1);
 #endif
 
-  
+
+#define INIT_SURFACE(type, name)                                        \
+  rb_cCairo_ ## name ## Surface =                                       \
+    rb_define_class_under (rb_mCairo, # name "Surface",                 \
+                           rb_cCairo_Surface);                          \
+                                                                        \
+  rb_ivar_set (rb_cCairo_ ## name ## Surface,                           \
+               cr_id_holder, rb_hash_new ());                           \
+                                                                        \
+  rb_define_method (rb_cCairo_ ## name ## Surface, "initialize",        \
+                    cr_ ## type ## _surface_initialize, 3);             \
+  rb_define_method (rb_cCairo_ ## name ## Surface, "set_dpi",           \
+                    cr_ ## type ## _surface_set_dpi, 2);
+
 #if CAIRO_HAS_PS_SURFACE
   /* PS-surface */
-  rb_cCairo_PSSurface =
-    rb_define_class_under (rb_mCairo, "PSSurface", rb_cCairo_Surface);
-
-  rb_define_method (rb_cCairo_PSSurface, "initialize",
-                    cr_ps_surface_initialize, 3);
-  rb_define_method (rb_cCairo_PSSurface, "set_dpi",
-                    cr_ps_surface_set_dpi, 2);
+  INIT_SURFACE(ps, PS)
+#else
+  rb_cCairo_PSSurface = Qnil;
 #endif
 
 #if CAIRO_HAS_PDF_SURFACE
   /* PDF-surface */
-  rb_cCairo_PDFSurface =
-    rb_define_class_under (rb_mCairo, "PDFSurface", rb_cCairo_Surface);
-
-  rb_define_method (rb_cCairo_PDFSurface, "initialize",
-                    cr_pdf_surface_initialize, 3);
-  rb_define_method (rb_cCairo_PDFSurface, "set_dpi",
-                    cr_pdf_surface_set_dpi, 2);
+  INIT_SURFACE(pdf, PDF)
+#else
+  rb_cCairo_PDFSurface = Qnil;
 #endif
 }
