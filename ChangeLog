@@ -1,3 +1,13 @@
+2005-10-16  Ilmari Heikkinen  <kig@misfiring.net>
+
+	* packages/cairo/ext/rb_cairo_context.c (cr_get_font_options):
+	Fixed segmentation fault. Use cairo_font_options_create().
+	* packages/cairo/ext/rb_cairo_surface.c
+	(cr_surface_get_font_options): ditto.
+
+	* packages/cairo/ext/rb_cairo_constants.c: Fixed
+	typo. ANTIALIAS_NONO -> ANTIALIAS_NONE.
+
 2005-10-16  Kouhei Sutou  <kou@cozmixng.org>
 
 	* NEWS: Added release 1.0.0.

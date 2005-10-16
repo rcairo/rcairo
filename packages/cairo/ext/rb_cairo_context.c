@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2005-10-15 14:33:46 $
+ * $Date: 2005-10-16 03:57:01 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -799,7 +799,7 @@ cr_set_font_options (VALUE self, VALUE options)
 static VALUE
 cr_get_font_options (VALUE self)
 {
-  cairo_font_options_t *options = NULL;
+  cairo_font_options_t *options = cairo_font_options_create();
   cairo_get_font_options (_SELF, options);
   cr_check_status (_SELF);
   return CRFONTOPTIONS2RVAL (options);
