@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2005-10-11 13:23:49 $
+ * $Date: 2005-10-16 03:57:01 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -136,7 +136,7 @@ Init_cairo_constants (void)
   /* cairo_antialias_t */
   rb_define_const (rb_mCairo,    "ANTIALIAS_DEFAULT",
                    INT2FIX (CAIRO_ANTIALIAS_DEFAULT));
-  rb_define_const (rb_mCairo,    "ANTIALIAS_NONO",
+  rb_define_const (rb_mCairo,    "ANTIALIAS_NONE",
                    INT2FIX (CAIRO_ANTIALIAS_NONE));
   rb_define_const (rb_mCairo,    "ANTIALIAS_GRAY",
                    INT2FIX (CAIRO_ANTIALIAS_GRAY));
