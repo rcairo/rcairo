@@ -1,5 +1,12 @@
 2005-10-17  Kouhei Sutou  <kou@cozmixng.org>
 
+	* packages/cairo/lib/cairo.rb
+	(Cairo::Context#rounded_rectangle, Cairo::Context#circle):
+	Added convenience methods.
+
+	* samples/pac.rb: Port PDF::Writer sample.
+	* samples/pac2.rb: ditto.
+
 	* packages/cairo/ext/rb_cairo_context.c: Fixed wrong number of
 	argument of Cairo::Context#identity_matrix.
 
