@@ -1,3 +1,8 @@
+2005-10-17  Kouhei Sutou  <kou@cozmixng.org>
+
+	* packages/cairo/ext/rb_cairo_context.c: Fixed wrong number of
+	argument of Cairo::Context#identity_matrix.
+
 2005-10-16  Ilmari Heikkinen  <kig@misfiring.net>
 
 	* packages/cairo/ext/rb_cairo_context.c (cr_get_font_options):

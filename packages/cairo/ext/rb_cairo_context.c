@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2005-10-16 03:57:01 $
+ * $Date: 2005-10-17 09:40:51 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -799,7 +799,8 @@ cr_set_font_options (VALUE self, VALUE options)
 static VALUE
 cr_get_font_options (VALUE self)
 {
-  cairo_font_options_t *options = cairo_font_options_create();
+  cairo_font_options_t *options = cairo_font_options_create ();
+  rb_cairo_check_status (cairo_font_options_status (options));
   cairo_get_font_options (_SELF, options);
   cr_check_status (_SELF);
   return CRFONTOPTIONS2RVAL (options);
@@ -1054,7 +1055,7 @@ Init_cairo_context (void)
   
   rb_define_method (rb_cCairo_Context, "set_matrix", cr_set_matrix, 1);
   rb_define_method (rb_cCairo_Context, "identity_matrix",
-                    cr_identity_matrix, 1);
+                    cr_identity_matrix, 0);
   rb_define_method (rb_cCairo_Context, "user_to_device", cr_user_to_device, 2);
   rb_define_method (rb_cCairo_Context, "user_to_device_distance",
                     cr_user_to_device_distance, 2);
