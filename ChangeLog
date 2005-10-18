@@ -1,5 +1,8 @@
 2005-10-18  Kouhei Sutou  <kou@cozmixng.org>
 
+	* packages/cairo/ext/rb_cairo_surface.c: Not compile cr_closure
+	functions if PS/PDF surface isn't supported.
+
 	* samples/pac.rb: Use Cairo::Context#fill_preserve.
 	* samples/pac2.rb: ditto.
 

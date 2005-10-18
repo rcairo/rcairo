@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2005-10-16 03:57:01 $
+ * $Date: 2005-10-18 12:16:07 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -21,6 +21,12 @@
 
 #if CAIRO_HAS_PDF_SURFACE
 #include <cairo-pdf.h>
+#endif
+
+#if CAIRO_HAS_PS_SURFACE || CAIRO_HAS_PDF_SURFACE
+#  define HAS_CREATE_CR_CLOSURE_SURFACE 1
+#else
+#  define HAS_CREATE_CR_CLOSURE_SURFACE 0
 #endif
 
 
@@ -78,6 +84,7 @@ typedef struct cr_io_callback_closure {
   cairo_bool_t is_file;
 } cr_io_callback_closure_t;
 
+#if HAS_CREATE_CR_CLOSURE_SURFACE
 static VALUE
 cr_closure_target_push (VALUE klass, VALUE obj)
 {
@@ -147,6 +154,7 @@ cr_closure_free (void *closure)
 {
   cr_closure_destroy ((cr_io_callback_closure_t *) closure);
 }
+#endif
 
 static VALUE
 cr_surface_io_func_rescue (VALUE io_closure)
