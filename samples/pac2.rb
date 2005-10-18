@@ -103,27 +103,26 @@ def pac(surface, width, height)
   ghost_width = 0.18
   ghost_height = 0.29
   ghost_radius= 0.08
-  ghost = Proc.new do
-    cr.move_to(ghost_x, ghost_y)
-    cr.line_to(ghost_x, ghost_y - ghost_height)
-    cr.curve_to(ghost_x + ghost_width / 3.0,
-                ghost_y - ghost_height - ghost_radius,
-                ghost_x + ghost_width * (2.0 / 3.0),
-                ghost_y - ghost_height - ghost_radius,
-                ghost_x + ghost_width,
-                ghost_y - ghost_height)
-    cr.line_to(ghost_x + ghost_width, ghost_y)
-    i = 0
-    (ghost_x + ghost_width).step(ghost_x, -ghost_x_step) do |x|
-      cr.line_to(x, ghost_y + -ghost_y_step * (i % 2))
-      i += 1
-    end
-    cr.close_path
+  cr.move_to(ghost_x, ghost_y)
+  cr.line_to(ghost_x, ghost_y - ghost_height)
+  cr.curve_to(ghost_x + ghost_width / 3.0,
+              ghost_y - ghost_height - ghost_radius,
+              ghost_x + ghost_width * (2.0 / 3.0),
+              ghost_y - ghost_height - ghost_radius,
+              ghost_x + ghost_width,
+              ghost_y - ghost_height)
+  cr.line_to(ghost_x + ghost_width, ghost_y)
+  i = 0
+  (ghost_x + ghost_width).step(ghost_x, -ghost_x_step) do |x|
+    cr.line_to(x, ghost_y + -ghost_y_step * (i % 2))
+    i += 1
   end
+  cr.close_path
+  
   cr.set_source_rgb(*blue)
-  cr.fill(&ghost)
+  cr.fill_preserve
   cr.set_source_rgb(*cyan)
-  cr.stroke(&ghost)
+  cr.stroke
 
   # Ghost Eyes
   eye_x = 0.62
