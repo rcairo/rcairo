@@ -1,3 +1,8 @@
+2005-10-18  Kouhei Sutou  <kou@cozmixng.org>
+
+	* samples/pac.rb: Use Cairo::Context#fill_preserve.
+	* samples/pac2.rb: ditto.
+
 2005-10-17  Kouhei Sutou  <kou@cozmixng.org>
 
 	* packages/cairo/lib/cairo.rb

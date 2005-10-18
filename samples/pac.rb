@@ -56,22 +56,21 @@ def pac(surface)
   cr.circle(450, 250, 10).fill
 
   # Ghost
-  ghost = Proc.new do
-    cr.move_to(500, 350)
-    cr.line_to(500, 175)
-    cr.curve_to(550, 125, 600, 125, 650, 175)
-    cr.line_to(650, 350)
-    cr.line_to(625, 325)
-    cr.line_to(600, 350)
-    cr.line_to(575, 325)
-    cr.line_to(550, 350)
-    cr.line_to(525, 325)
-    cr.line_to(500, 350)
-  end
+  cr.move_to(500, 350)
+  cr.line_to(500, 175)
+  cr.curve_to(550, 125, 600, 125, 650, 175)
+  cr.line_to(650, 350)
+  cr.line_to(625, 325)
+  cr.line_to(600, 350)
+  cr.line_to(575, 325)
+  cr.line_to(550, 350)
+  cr.line_to(525, 325)
+  cr.line_to(500, 350)
+
   cr.set_source_rgb(*blue)
-  cr.fill(&ghost)
+  cr.fill_preserve
   cr.set_source_rgb(*cyan)
-  cr.stroke(&ghost)
+  cr.stroke
 
   # Ghost Eyes
   cr.set_source_rgb(*white)
