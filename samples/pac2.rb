@@ -35,7 +35,7 @@ def pac(surface, width, height)
   wall_height = 0.03
   wall_space = 0.5
   wall_x = 0.02
-  wall1_y = 1 - 0.83
+  wall1_y = 1 - 0.86
   wall2_y = wall1_y + wall_space
   wall_radius = 0.01
   
