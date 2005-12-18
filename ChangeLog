@@ -1,3 +1,11 @@
+2005-12-18  Kouhei Sutou  <kou@cozmixng.org>
+
+	* packages/cairo/lib/cairo.rb (Cairo::Context#rounded_rectangle): 
+	processed h and height same as the one of
+	Cairo::Context#rectangle.
+
+	* samples/pac1.rb, samples/pac2.rb: followed the above change.
+
 2005-10-18  Kouhei Sutou  <kou@cozmixng.org>
 
 	* packages/cairo/ext/rb_cairo_surface.c: Not compile cr_closure

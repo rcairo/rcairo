@@ -27,17 +27,17 @@ def pac(surface)
 
   # Wall
   cr.set_source_rgb(*magenta)
-  cr.rounded_rectangle(20, 100, 750, 20, 10)
+  cr.rounded_rectangle(20, 80, 750, 20, 10)
   cr.fill
   cr.set_source_rgb(*cyan)
-  cr.rounded_rectangle(20, 100, 750, 20, 10)
+  cr.rounded_rectangle(20, 80, 750, 20, 10)
   cr.stroke
   
   cr.set_source_rgb(*magenta)
-  cr.rounded_rectangle(20, 400, 750, 20, 10)
+  cr.rounded_rectangle(20, 380, 750, 20, 10)
   cr.fill
   cr.set_source_rgb(*cyan)
-  cr.rounded_rectangle(20, 400, 750, 20, 10)
+  cr.rounded_rectangle(20, 380, 750, 20, 10)
   cr.stroke
   
   # Body

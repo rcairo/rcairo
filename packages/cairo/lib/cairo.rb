@@ -46,7 +46,7 @@ module Cairo
       x1 = x
       x2 = x1 + width
       y1 = y
-      y2 = y1 - height
+      y2 = y1 + height
 
       y_radius ||= x_radius
 
@@ -60,13 +60,13 @@ module Cairo
 
       move_to(x1 + xr1, y1)
       line_to(x2 - xr1, y1)
-      curve_to(x2 - xr2, y1, x2, y1 - yr2, x2, y1 - yr1)
-      line_to(x2, y2 + yr1)
-      curve_to(x2, y2 + yr2, x2 - xr2, y2, x2 - xr1, y2)
+      curve_to(x2 - xr2, y1, x2, y1 + yr2, x2, y1 + yr1)
+      line_to(x2, y2 - yr1)
+      curve_to(x2, y2 - yr2, x2 - xr2, y2, x2 - xr1, y2)
       line_to(x1 + xr1, y2)
-      curve_to(x1 + xr2, y2, x1, y2 + yr2, x1, y2 + yr1)
-      line_to(x1, y1 - yr1)
-      curve_to(x1, y1 - yr2, x1 + xr2, y1, x1 + xr1, y1)
+      curve_to(x1 + xr2, y2, x1, y2 - yr2, x1, y2 - yr1)
+      line_to(x1, y1 + yr1)
+      curve_to(x1, y1 + yr2, x1 + xr2, y1, x1 + xr1, y1)
       close_path
     end
     
