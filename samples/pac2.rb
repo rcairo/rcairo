@@ -159,10 +159,17 @@ surface = Cairo::ImageSurface.new(Cairo::FORMAT_ARGB32, width, height)
 cr = pac(surface, width, height)
 cr.target.write_to_png("pac2.png")
 
-surface = Cairo::PSSurface.new("pac2.ps", width, height)
-cr = pac(surface, width, height)
-cr.target.finish
+scalable_surface_output = Proc.new do |surface_class_name, suffix|
+  if Cairo.const_defined?(surface_class_name)
+    surface_class = Cairo.const_get(surface_class_name)
+    surface = surface_class.new("pac2.#{suffix}", width, height)
+    cr = pac(surface, width, height)
+    cr.target.finish
+  else
+    puts("#{surface_class_name} isn't supported.")
+  end
+end
 
-surface = Cairo::PDFSurface.new("pac2.pdf", width, height)
-cr = pac(surface, width, height)
-cr.target.finish
+scalable_surface_output.call("PSSurface", "ps")
+scalable_surface_output.call("PDFSurface", "pdf")
+scalable_surface_output.call("SVGSurface", "svg")

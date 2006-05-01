@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2005-10-18 12:16:07 $
+ * $Date: 2006-05-01 07:44:41 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -16,14 +16,18 @@
 #include "rubyio.h"
 
 #if CAIRO_HAS_PS_SURFACE
-#include <cairo-ps.h>
+#  include <cairo-ps.h>
 #endif
 
 #if CAIRO_HAS_PDF_SURFACE
-#include <cairo-pdf.h>
+#  include <cairo-pdf.h>
 #endif
 
-#if CAIRO_HAS_PS_SURFACE || CAIRO_HAS_PDF_SURFACE
+#if CAIRO_HAS_SVG_SURFACE
+#  include <cairo-svg.h>
+#endif
+
+#if CAIRO_HAS_PS_SURFACE || CAIRO_HAS_PDF_SURFACE || CAIRO_HAS_SVG_SURFACE
 #  define HAS_CREATE_CR_CLOSURE_SURFACE 1
 #else
 #  define HAS_CREATE_CR_CLOSURE_SURFACE 0
@@ -34,6 +38,7 @@ VALUE rb_cCairo_Surface;
 VALUE rb_cCairo_ImageSurface;
 VALUE rb_cCairo_PDFSurface;
 VALUE rb_cCairo_PSSurface;
+VALUE rb_cCairo_SVGSurface;
 
 static ID cr_id_read;
 static ID cr_id_write;
@@ -615,6 +620,11 @@ DEFINE_SURFACE(ps)
 DEFINE_SURFACE(pdf)
 #endif
 
+#if CAIRO_HAS_SVG_SURFACE
+/* SVG-surface functions */
+DEFINE_SURFACE(svg)
+#endif
+
 void
 Init_cairo_surface (void)
 {
@@ -688,5 +698,12 @@ Init_cairo_surface (void)
   INIT_SURFACE(pdf, PDF)
 #else
   rb_cCairo_PDFSurface = Qnil;
+#endif
+
+#if CAIRO_HAS_SVG_SURFACE
+  /* SVG-surface */
+  INIT_SURFACE(svg, SVG)
+#else
+  rb_cCairo_SVGSurface = Qnil;
 #endif
 }
