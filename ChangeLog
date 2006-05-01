@@ -1,3 +1,17 @@
+2006-05-01  Kouhei Sutou  <kou@cozmixng.org>
+
+	* packages/cairo/ext/rb_cairo_surface.c: supported
+	Cairo::SVGSurface.
+
+	* samples/scalable.rb:
+	- created by merging ps.rb, ps2.rb, pdf.rb and pdf2.rb.
+	- added Cairo::SVGSurface example.
+	* samples/ps.rb, samples/ps2.rb, samples/pdf.rb, samples/pdf2.rb:
+	merged into scalable.rb.
+
+	* samples/pac.rb, samples/pac2.rb: added Cairo::SVGSurface
+	example.
+
 2005-12-18  Kouhei Sutou  <kou@cozmixng.org>
 
 	* packages/cairo/lib/cairo.rb (Cairo::Context#rounded_rectangle): 
