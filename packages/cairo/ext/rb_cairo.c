@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2005-10-10 16:07:16 $
+ * $Date: 2006-05-02 05:57:16 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -46,7 +46,7 @@ Init_cairo ()
                                 INT2FIX (CAIRO_VERSION_MICRO)));
 
   major = cairo_version () / 10000;
-  minor = (cairo_version () % 1000) / 10;
+  minor = (cairo_version () % 10000) / 100;
   micro = cairo_version () % 10;
 
   rb_define_const (rb_mCairo, "VERSION",

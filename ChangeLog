@@ -1,5 +1,8 @@
 2006-05-02  Kouhei Sutou  <kou@cozmixng.org>
 
+	* packages/cairo/ext/rb_cairo.c (Cairo::MINOR_VERSION): fixed
+	cairo_version() decoding bug.
+
 	* README, packages/cairo/ext/extconf.rb: supported only 1.1.2 or
 	higher.
 
