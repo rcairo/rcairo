@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2006-05-01 07:44:41 $
+ * $Date: 2006-05-02 05:37:02 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -342,6 +342,13 @@ cr_surface_finish (VALUE self)
   return self;
 }
 
+static VALUE
+cr_surface_get_type (VALUE self)
+{
+  return INT2NUM (cairo_surface_get_type (_SELF));
+}
+
+
 #if CAIRO_HAS_PNG_FUNCTIONS
 static VALUE
 cr_image_surface_write_to_png_stream (VALUE self, VALUE target)
@@ -396,7 +403,6 @@ cr_surface_get_font_options (VALUE self)
   cairo_font_options_t *options = cairo_font_options_create();
   cairo_surface_get_font_options (_SELF, options);
   cr_surface_check_status (_SELF);
-  options = cairo_font_options_copy (options);
   rb_cairo_check_status (cairo_font_options_status (options));
   return CRFONTOPTIONS2RVAL (options);
 }
@@ -636,13 +642,13 @@ Init_cairo_surface (void)
   
   rb_cCairo_Surface =
     rb_define_class_under (rb_mCairo, "Surface", rb_cObject);
-
   rb_define_alloc_func (rb_cCairo_Surface, cr_surface_allocate);
   
   rb_define_method (rb_cCairo_Surface, "create_similar",
                     cr_surface_create_similar, 3);
   rb_define_method (rb_cCairo_Surface, "finish", cr_surface_finish, 0);
-  
+  rb_define_method (rb_cCairo_Surface, "type", cr_surface_get_type, 0);
+
   rb_define_method (rb_cCairo_Surface, "font_options",
                     cr_surface_get_font_options, 0);
   rb_define_method (rb_cCairo_Surface, "flush", cr_surface_flush, 0);

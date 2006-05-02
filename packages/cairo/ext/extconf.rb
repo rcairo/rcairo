@@ -10,7 +10,7 @@ STDOUT.print("checking for GCC... ")
 STDOUT.flush
 if macro_defined?("__GNUC__", "")
   STDOUT.print "yes\n"
-  $CFLAGS += ' -Wall' 
+  $CFLAGS += ' -Wall'
   $cc_is_gcc = true
 else
   STDOUT.print "no\n"
@@ -51,7 +51,7 @@ def set_output_lib(target_name)
       filename = "libruby-#{target_name}.lib"
       $DLDFLAGS.gsub!(/ --output-lib\s+[^ ]+/, '')
       $DLDFLAGS.gsub!(/ \/IMPLIB:[^ ]+/, '')
-      $DLDFLAGS << " /IMPLIB:#{filename}" if filename    
+      $DLDFLAGS << " /IMPLIB:#{filename}" if filename
   end
 end
 
@@ -63,7 +63,7 @@ end
 
 pkg = "cairo"
 modname = "cairo"
-major, minor, micro = 1, 0, 0
+major, minor, micro = 1, 1, 2
 
 PKGConfig.have_package(pkg, major, minor, micro) or exit 1
 
