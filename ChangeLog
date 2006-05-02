@@ -1,6 +1,7 @@
 2006-05-02  Kouhei Sutou  <kou@cozmixng.org>
 
-	* packages/cairo/ext/extconf.rb: supported only 1.1.2 or higher.
+	* README, packages/cairo/ext/extconf.rb: supported only 1.1.2 or
+	higher.
 
 	* packages/cairo/ext/rb_cairo_surface.c: supported
 	cairo_surface_get_type().
