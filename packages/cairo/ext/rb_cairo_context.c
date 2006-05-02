@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2005-10-17 09:40:51 $
+ * $Date: 2006-05-02 05:37:02 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -449,6 +449,14 @@ cr_move_to (VALUE self, VALUE x, VALUE y)
 }
 
 static VALUE
+cr_new_sub_path (VALUE self)
+{
+  cairo_new_sub_path (_SELF);
+  cr_check_status (_SELF);
+  return self;
+}
+
+static VALUE
 cr_line_to (VALUE self, VALUE x, VALUE y)
 {
   cairo_line_to (_SELF, NUM2DBL (x), NUM2DBL (y));
@@ -807,6 +815,14 @@ cr_get_font_options (VALUE self)
 }
 
 static VALUE
+cr_set_scaled_font (VALUE self, VALUE scaled_font)
+{
+  cairo_set_scaled_font (_SELF, RVAL2CRSCALEDFONT (scaled_font));
+  cr_check_status (_SELF);
+  return self;
+}
+
+static VALUE
 cr_show_text (VALUE self, VALUE utf8)
 {
   cairo_show_text (_SELF, StringValuePtr (utf8));
@@ -1066,6 +1082,7 @@ Init_cairo_context (void)
   /* Path creation functions */
   rb_define_method (rb_cCairo_Context, "new_path", cr_new_path, 0);
   rb_define_method (rb_cCairo_Context, "move_to", cr_move_to, 2);
+  rb_define_method (rb_cCairo_Context, "new_sub_path", cr_new_sub_path, 0);
   rb_define_method (rb_cCairo_Context, "line_to", cr_line_to, 2);
   rb_define_method (rb_cCairo_Context, "curve_to", cr_curve_to, 6);
   rb_define_method (rb_cCairo_Context, "arc", cr_arc, 5);
@@ -1110,6 +1127,8 @@ Init_cairo_context (void)
   rb_define_method (rb_cCairo_Context, "set_font_options",
                     cr_set_font_options, 1);
   rb_define_method (rb_cCairo_Context, "font_options", cr_get_font_options, 0);
+  rb_define_method (rb_cCairo_Context, "set_scaled_font",
+                    cr_set_scaled_font, 1);
   rb_define_method (rb_cCairo_Context, "show_text", cr_show_text, 1);
   rb_define_method (rb_cCairo_Context, "show_glyphs", cr_show_glyphs, 1);
   rb_define_method (rb_cCairo_Context, "font_face", cr_get_font_face, 0);

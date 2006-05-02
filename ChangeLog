@@ -1,3 +1,32 @@
+2006-05-02  Kouhei Sutou  <kou@cozmixng.org>
+
+	* packages/cairo/ext/extconf.rb: supported only 1.1.2 or higher.
+
+	* packages/cairo/ext/rb_cairo_surface.c: supported
+	cairo_surface_get_type().
+
+	* packages/cairo/ext/rb_cairo_scaled_font.c: supported
+	cairo_scaled_font_get_type(), cairo_scaled_font_text_extents(),
+	cairo_scaled_font_get_font_face(),
+	cairo_scaled_font_get_font_matrix(),
+	cairo_scaled_font_get_ctm() and
+	cairo_scaled_Font_get_font_options().
+
+	* packages/cairo/ext/rb_cairo_pattern.c: supported
+	cairo_pattern_get_type().
+
+	* packages/cairo/ext/rb_cairo_font_face.c: supported
+	cairo_font_face_get_type().
+
+	* packages/cairo/ext/rb_cairo_context.c: supported
+	cairo_new_sub_path() and cr_set_scaled_font().
+
+	* packages/cairo/ext/rb_cairo_constants.c: supported new enums.
+	- cairo_font_type_t
+	- cairo_surface_type_t
+	- cairo_pattern_type_t
+	- CAIRO_EXTEND_PAD
+
 2006-05-01  Kouhei Sutou  <kou@cozmixng.org>
 
 	* packages/cairo/ext/rb_cairo_surface.c: supported

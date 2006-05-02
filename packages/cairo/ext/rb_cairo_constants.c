@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2005-10-16 03:57:01 $
+ * $Date: 2006-05-02 05:37:02 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -150,7 +150,7 @@ Init_cairo_constants (void)
   rb_define_const (rb_mCairo,    "FILL_RULE_EVEN_ODD",
                    INT2FIX (CAIRO_FILL_RULE_EVEN_ODD));
 
-                   
+
   /* cairo_line_cap_t */
   rb_define_const (rb_mCairo,    "LINE_CAP_BUTT",
                    INT2FIX (CAIRO_LINE_CAP_BUTT));
@@ -220,6 +220,15 @@ Init_cairo_constants (void)
                    INT2FIX (CAIRO_HINT_METRICS_OFF));
 
 
+  /* cairo_font_type_t */
+  rb_define_const (rb_mCairo, "FONT_TYPE_TOY", INT2FIX(CAIRO_FONT_TYPE_TOY));
+  rb_define_const (rb_mCairo, "FONT_TYPE_FT", INT2FIX(CAIRO_FONT_TYPE_FT));
+  rb_define_const (rb_mCairo, "FONT_TYPE_WIN32",
+                   INT2FIX(CAIRO_FONT_TYPE_WIN32));
+  rb_define_const (rb_mCairo, "FONT_TYPE_ATSUI",
+                   INT2FIX(CAIRO_FONT_TYPE_ATSUI));
+
+
   /* cairo_path_data_type_t */
   rb_define_const (rb_mCairo,    "PATH_MOVE_TO",
                    INT2FIX (CAIRO_PATH_MOVE_TO));
@@ -240,6 +249,30 @@ Init_cairo_constants (void)
                    INT2FIX (CAIRO_CONTENT_COLOR_ALPHA));
 
 
+  /* cairo_surface_type_t */
+  rb_define_const (rb_mCairo, "SURFACE_TYPE_IMAGE",
+                   INT2FIX (CAIRO_SURFACE_TYPE_IMAGE));
+  rb_define_const (rb_mCairo, "SURFACE_TYPE_PDF",
+                   INT2FIX (CAIRO_SURFACE_TYPE_PDF));
+  rb_define_const (rb_mCairo, "SURFACE_TYPE_PS",
+                   INT2FIX (CAIRO_SURFACE_TYPE_PS));
+  rb_define_const (rb_mCairo, "SURFACE_TYPE_XLIB",
+                   INT2FIX (CAIRO_SURFACE_TYPE_XLIB));
+  rb_define_const (rb_mCairo, "SURFACE_TYPE_XCB",
+                   INT2FIX (CAIRO_SURFACE_TYPE_XCB));
+  rb_define_const (rb_mCairo, "SURFACE_TYPE_GLITZ",
+                   INT2FIX (CAIRO_SURFACE_TYPE_GLITZ));
+  rb_define_const (rb_mCairo, "SURFACE_TYPE_QUARTZ",
+                   INT2FIX (CAIRO_SURFACE_TYPE_QUARTZ));
+  rb_define_const (rb_mCairo, "SURFACE_TYPE_WIN32",
+                   INT2FIX (CAIRO_SURFACE_TYPE_WIN32));
+  rb_define_const (rb_mCairo, "SURFACE_TYPE_BEOS",
+                   INT2FIX (CAIRO_SURFACE_TYPE_BEOS));
+  rb_define_const (rb_mCairo, "SURFACE_TYPE_DIRECTFB",
+                   INT2FIX (CAIRO_SURFACE_TYPE_DIRECTFB));
+  rb_define_const (rb_mCairo, "SURFACE_TYPE_SVG",
+                   INT2FIX (CAIRO_SURFACE_TYPE_SVG));
+
   /* cairo_format_t */
   rb_define_const (rb_mCairo,    "FORMAT_ARGB32",
                    INT2FIX (CAIRO_FORMAT_ARGB32));
@@ -251,6 +284,16 @@ Init_cairo_constants (void)
                    INT2FIX (CAIRO_FORMAT_A1));
 
 
+  /* cairo_pattern_type_t */
+  rb_define_const (rb_mCairo, "PATTERN_TYPE_SOLID",
+                   INT2FIX (CAIRO_PATTERN_TYPE_SOLID));
+  rb_define_const (rb_mCairo, "PATTERN_TYPE_SURFACE",
+                   INT2FIX (CAIRO_PATTERN_TYPE_SURFACE));
+  rb_define_const (rb_mCairo, "PATTERN_TYPE_LINEAR",
+                   INT2FIX (CAIRO_PATTERN_TYPE_LINEAR));
+  rb_define_const (rb_mCairo, "PATTERN_TYPE_RADIAL",
+                   INT2FIX (CAIRO_PATTERN_TYPE_RADIAL));
+
   /* cairo_extend_t */
   rb_define_const (rb_mCairo,    "EXTEND_NONE",
                    INT2FIX (CAIRO_EXTEND_NONE));
@@ -258,8 +301,10 @@ Init_cairo_constants (void)
                    INT2FIX (CAIRO_EXTEND_REPEAT));
   rb_define_const (rb_mCairo,    "EXTEND_REFLECT",
                    INT2FIX (CAIRO_EXTEND_REFLECT));
+  rb_define_const (rb_mCairo,    "EXTEND_PAD",
+                   INT2FIX (CAIRO_EXTEND_PAD));
 
-  
+
   /* cairo_filter_t */
   rb_define_const (rb_mCairo,    "FILTER_FAST",
                    INT2FIX (CAIRO_FILTER_FAST));

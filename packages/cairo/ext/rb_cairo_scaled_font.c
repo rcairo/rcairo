@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2005-10-10 15:40:26 $
+ * $Date: 2006-05-02 05:37:02 $
  *
  * Copyright 2005 Kouhei Sutou <kou@cozmixng.org>
  *
@@ -83,12 +83,28 @@ cr_scaled_font_initialize (VALUE self, VALUE face, VALUE matrix,
 }
 
 static VALUE
+cr_scaled_font_get_type (VALUE self)
+{
+  return INT2NUM (cairo_scaled_font_get_type ( _SELF (self)));
+}
+
+static VALUE
 cr_scaled_font_extents (VALUE self)
 {
   cairo_font_extents_t extents;
   cairo_scaled_font_extents (_SELF (self), &extents);
   cr_scaled_font_check_status (_SELF (self));
   return CRFONTEXTENTS2RVAL (&extents);
+}
+
+static VALUE
+cr_scaled_font_text_extents (VALUE self, VALUE utf8)
+{
+  cairo_text_extents_t extents;
+  cairo_scaled_font_text_extents (_SELF (self), StringValueCStr (utf8),
+                                  &extents);
+  cr_scaled_font_check_status (_SELF (self));
+  return CRTEXTEXTENTS2RVAL (&extents);
 }
 
 static VALUE
@@ -104,6 +120,43 @@ cr_scaled_font_glyph_extents (VALUE self, VALUE rb_glyphs)
   return CRTEXTEXTENTS2RVAL (&extents);
 }
 
+static VALUE
+cr_scaled_font_get_font_face (VALUE self)
+{
+  cairo_font_face_t *face;
+  face = cairo_scaled_font_get_font_face (_SELF (self));
+  cr_scaled_font_check_status (_SELF (self));
+  return CRFONTFACE2RVAL (face);
+}
+
+static VALUE
+cr_scaled_font_get_font_matrix (VALUE self)
+{
+  cairo_matrix_t font_matrix;
+  cairo_scaled_font_get_font_matrix (_SELF (self), &font_matrix);
+  cr_scaled_font_check_status (_SELF (self));
+  return CRMATRIX2RVAL (&font_matrix);
+}
+
+static VALUE
+cr_scaled_font_get_ctm (VALUE self)
+{
+  cairo_matrix_t ctm;
+  cairo_scaled_font_get_font_matrix (_SELF (self), &ctm);
+  cr_scaled_font_check_status (_SELF (self));
+  return CRMATRIX2RVAL (&ctm);
+}
+
+static VALUE
+cr_scaled_font_get_font_options (VALUE self)
+{
+  cairo_font_options_t *options = cairo_font_options_create();
+  cairo_scaled_font_get_font_options (_SELF (self), options);
+  cr_scaled_font_check_status (_SELF (self));
+  rb_cairo_check_status (cairo_font_options_status (options));
+  return CRFONTOPTIONS2RVAL (options);
+}
+
 void
 Init_cairo_scaled_font (void)
 {
@@ -115,8 +168,17 @@ Init_cairo_scaled_font (void)
   rb_define_method (rb_cCairo_ScaledFont, "initialize",
                     cr_scaled_font_initialize, 4);
 
-  rb_define_method (rb_cCairo_ScaledFont, "extents",
-                    cr_scaled_font_extents, 0);
+  rb_define_method (rb_cCairo_ScaledFont, "type", cr_scaled_font_get_type, 0);
+  rb_define_method (rb_cCairo_ScaledFont, "extents", cr_scaled_font_extents, 0);
+  rb_define_method (rb_cCairo_ScaledFont, "text_extents",
+                    cr_scaled_font_text_extents, 1);
   rb_define_method (rb_cCairo_ScaledFont, "glyph_extents",
                     cr_scaled_font_glyph_extents, 1);
+  rb_define_method (rb_cCairo_ScaledFont, "font_face",
+                    cr_scaled_font_get_font_face, 0);
+  rb_define_method (rb_cCairo_ScaledFont, "font_matrix",
+                    cr_scaled_font_get_font_matrix, 0);
+  rb_define_method (rb_cCairo_ScaledFont, "ctm", cr_scaled_font_get_ctm, 0);
+  rb_define_method (rb_cCairo_ScaledFont, "font_options",
+                    cr_scaled_font_get_font_options, 0);
 }
