@@ -99,7 +99,7 @@ module Cairo
       copy
     end
 
-    def transform(tx, ty); dup.transform!(tx, ty); end
+    def translate(tx, ty); dup.translate!(tx, ty); end
     def scale(sx, sy); dup.scale!(sx, sy); end
     def rotate(radians); dup.rotate!(radians); end
     def invert; dup.invert!; end

@@ -1,3 +1,7 @@
+2006-05-11  Kouhei Sutou  <kou@cozmixng.org>
+
+	* packages/cairo/lib/cairo.rb: fixed typo.
+
 2006-05-02  Kouhei Sutou  <kou@cozmixng.org>
 
 	* packages/cairo/ext/rb_cairo.c (Cairo::MINOR_VERSION): fixed
