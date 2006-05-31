@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2005-10-10 15:40:26 $
+ * $Date: 2006-05-31 05:02:41 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -32,6 +32,7 @@ static VALUE rb_eCairo_InvalidFormatError;
 static VALUE rb_eCairo_InvalidVisualError;
 static VALUE rb_eCairo_FileNotFoundError;
 static VALUE rb_eCairo_InvalidDashError;
+static VALUE rb_eCairo_InvalidDscCommentError;
 
 void
 rb_cairo_check_status (cairo_status_t status)
@@ -99,6 +100,9 @@ rb_cairo_check_status (cairo_status_t status)
     case CAIRO_STATUS_INVALID_DASH:
       rb_raise (rb_eCairo_InvalidDashError, string);
       break;
+    case CAIRO_STATUS_INVALID_DSC_COMMENT:
+      rb_raise (rb_eCairo_InvalidDscCommentError, string);
+      break;
     }
 }
 
@@ -162,4 +166,7 @@ Init_cairo_exception ()
   rb_eCairo_InvalidDashError =
     rb_define_class_under (rb_mCairo, "InvalidDashError",
                            rb_eArgError);
+  rb_eCairo_InvalidDscCommentError =
+    rb_define_class_under (rb_mCairo, "InvalidDscCommentError",
+                           rb_eCairo_Error);
 }

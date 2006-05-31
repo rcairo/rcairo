@@ -1,3 +1,19 @@
+2006-05-31  Kouhei Sutou  <kou@cozmixng.org>
+
+	* README, packages/cairo/ext/extconf.rb: supported only 1.1.6 or
+	higher.
+
+	* packages/cairo/ext/rb_cairo_context.c: supported
+	cairo_push_group(), cairo_push_group_with_content(),
+	cairo_pop_group(), cairo_pop_group_to_source() and
+	cairo_get_group_target().
+
+	* packages/cairo/ext/rb_cairo_exception.c: supported
+	CAIRO_STATUS_INVALID_DSC_COMMENT.
+
+	* packages/cairo/ext/rb_cairo_surface.c: supported
+	cairo_surface_get_device_offset().
+
 2006-05-11  Kouhei Sutou  <kou@cozmixng.org>
 
 	* packages/cairo/lib/cairo.rb: fixed typo.

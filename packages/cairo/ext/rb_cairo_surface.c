@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2006-05-02 05:37:02 $
+ * $Date: 2006-05-31 05:02:41 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -453,6 +453,16 @@ cr_surface_set_device_offset (VALUE self, VALUE x_offset, VALUE y_offset)
   return self;
 }
 
+static VALUE
+cr_surface_get_device_offset (VALUE self)
+{
+  double x_offset, y_offset;
+
+  cairo_surface_get_device_offset (_SELF, &x_offset, &y_offset);
+  cr_surface_check_status (_SELF);
+  return rb_ary_new3 (2, rb_float_new (x_offset), rb_float_new (y_offset));
+}
+
 
 /* Image-surface functions */
 #if CAIRO_HAS_PNG_FUNCTIONS
@@ -655,6 +665,8 @@ Init_cairo_surface (void)
   rb_define_method (rb_cCairo_Surface, "mark_dirty", cr_surface_mark_dirty, 0);
   rb_define_method (rb_cCairo_Surface, "set_device_offset",
                     cr_surface_set_device_offset, 2);
+  rb_define_method (rb_cCairo_Surface, "device_offset",
+                    cr_surface_get_device_offset, 0);
 
   /* Image-surface */
   rb_cCairo_ImageSurface =

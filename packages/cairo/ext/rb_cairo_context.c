@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2006-05-02 05:37:02 $
+ * $Date: 2006-05-31 05:02:41 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -100,6 +100,58 @@ cr_save (VALUE self)
     }
   return result;
 }
+
+static VALUE
+cr_pop_group (VALUE self)
+{
+  cairo_pop_group (_SELF);
+  cr_check_status (_SELF);
+  return Qnil;
+}
+
+static VALUE
+cr_pop_group_to_source (VALUE self)
+{
+  cairo_pop_group_to_source (_SELF);
+  cr_check_status (_SELF);
+  return Qnil;
+}
+
+static VALUE
+cr_pop_group_generic (int argc, VALUE *argv, VALUE self)
+{
+  VALUE to_source;
+  rb_scan_args (argc, argv, "01", &to_source);
+  if (RTEST(to_source))
+    return cr_pop_group_to_source (self);
+  else
+    return cr_pop_group (self);
+}
+
+static VALUE
+cr_push_group (int argc, VALUE *argv, VALUE self)
+{
+  VALUE result = Qnil;
+  VALUE content, pop_to_source;
+  rb_scan_args (argc, argv, "02", &content, &pop_to_source);
+
+  if (NIL_P(content))
+    cairo_push_group (_SELF);
+  else
+    cairo_push_group_with_content (_SELF, RVAL2CRCONTENT(content));
+  cr_check_status (_SELF);
+
+  if (rb_block_given_p ())
+    {
+      if (RTEST (pop_to_source))
+        result = rb_ensure (rb_yield, self, cr_pop_group_to_source, self);
+      else
+        result = rb_ensure (rb_yield, self, cr_pop_group, self);
+    }
+
+  return result;
+}
+
 
 /* Modify state */
 static VALUE
@@ -1006,6 +1058,16 @@ cr_get_target (VALUE self)
   return CRSURFACE2RVAL (surface);
 }
 
+static VALUE
+cr_get_group_target (VALUE self)
+{
+  cairo_surface_t *surface;
+
+  surface = cairo_get_group_target (_SELF);
+  rb_cairo_check_status (cairo_surface_status (surface));
+  return CRSURFACE2RVAL (surface);
+}
+
 /* Paths */
 static VALUE
 cr_copy_path (VALUE self)
@@ -1046,6 +1108,10 @@ Init_cairo_context (void)
 
   rb_define_method (rb_cCairo_Context, "save", cr_save, 0);
   rb_define_method (rb_cCairo_Context, "restore", cr_restore, 0);
+  rb_define_method (rb_cCairo_Context, "push_group", cr_push_group, -1);
+  rb_define_method (rb_cCairo_Context, "pop_group", cr_pop_group_generic, -1);
+  rb_define_method (rb_cCairo_Context, "pop_group_to_source",
+                    cr_pop_group_to_source, 0);
 
   /* Modify state */
   rb_define_method (rb_cCairo_Context, "set_operator", cr_set_operator, 1);
@@ -1154,7 +1220,8 @@ Init_cairo_context (void)
   rb_define_method (rb_cCairo_Context, "miter_limit", cr_get_miter_limit, 0);
   rb_define_method (rb_cCairo_Context, "matrix", cr_get_matrix, 0);
   rb_define_method (rb_cCairo_Context, "target", cr_get_target, 0);
-  
+  rb_define_method (rb_cCairo_Context, "group_target", cr_get_group_target, 0);
+
   /* Paths */
   rb_define_method (rb_cCairo_Context, "copy_path", cr_copy_path, 0);
   rb_define_method (rb_cCairo_Context, "copy_path_flat", cr_copy_path_flat, 0);
