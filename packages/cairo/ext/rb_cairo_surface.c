@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2006-05-31 05:02:41 $
+ * $Date: 2006-06-25 14:29:24 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -348,6 +348,12 @@ cr_surface_get_type (VALUE self)
   return INT2NUM (cairo_surface_get_type (_SELF));
 }
 
+static VALUE
+cr_surface_get_content (VALUE self)
+{
+  return INT2NUM (cairo_surface_get_content (_SELF));
+}
+
 
 #if CAIRO_HAS_PNG_FUNCTIONS
 static VALUE
@@ -463,6 +469,18 @@ cr_surface_get_device_offset (VALUE self)
   return rb_ary_new3 (2, rb_float_new (x_offset), rb_float_new (y_offset));
 }
 
+static VALUE
+cr_surface_set_fallback_resolution (VALUE self,
+                                    VALUE x_pixels_per_inch,
+                                    VALUE y_pixels_per_inch)
+{
+  cairo_surface_set_fallback_resolution (_SELF,
+                                         NUM2DBL (x_pixels_per_inch),
+                                         NUM2DBL (y_pixels_per_inch));
+  cr_surface_check_status (_SELF);
+  return self;
+}
+
 
 /* Image-surface functions */
 #if CAIRO_HAS_PNG_FUNCTIONS
@@ -562,6 +580,29 @@ cr_image_surface_initialize (int argc, VALUE *argv, VALUE self)
 }
 
 static VALUE
+cr_image_surface_get_data (VALUE self)
+{
+  unsigned char *data;
+  cairo_surface_t *surface;
+
+  surface = _SELF;
+  data = cairo_image_surface_get_data (surface);
+
+  if (data)
+    return rb_str_new ((const char *)data,
+                       cairo_image_surface_get_stride (surface) *
+                       cairo_image_surface_get_height (surface));
+  else
+    return Qnil;
+}
+
+static VALUE
+cr_image_surface_get_format (VALUE self)
+{
+  return INT2NUM (cairo_image_surface_get_format (_SELF));
+}
+
+static VALUE
 cr_image_surface_get_width (VALUE self)
 {
   return INT2NUM (cairo_image_surface_get_width (_SELF));
@@ -573,7 +614,14 @@ cr_image_surface_get_height (VALUE self)
   return INT2NUM (cairo_image_surface_get_height (_SELF));
 }
 
+static VALUE
+cr_image_surface_get_stride (VALUE self)
+{
+  return INT2NUM (cairo_image_surface_get_stride (_SELF));
+}
 
+
+/* Printing surfaces */
 #define DEFINE_SURFACE(type)                                              \
 static VALUE                                                              \
 cr_ ## type ## _surface_initialize (VALUE self, VALUE target,             \
@@ -614,17 +662,8 @@ cr_ ## type ## _surface_initialize (VALUE self, VALUE target,             \
   cr_surface_check_status (surface);                                      \
   DATA_PTR (self) = surface;                                              \
   return Qnil;                                                            \
-}                                                                         \
-                                                                          \
-static VALUE                                                              \
-cr_ ## type ## _surface_set_dpi (VALUE self, VALUE x_dpi, VALUE y_dpi)    \
-{                                                                         \
-  cairo_ ## type ## _surface_set_dpi (_SELF,                              \
-                                      NUM2DBL (x_dpi),                    \
-                                      NUM2DBL (y_dpi));                   \
-  cr_surface_check_status (_SELF);                                        \
-  return self;                                                            \
 }
+
 
 #if CAIRO_HAS_PS_SURFACE
 /* PS-surface functions */
@@ -640,6 +679,7 @@ DEFINE_SURFACE(pdf)
 /* SVG-surface functions */
 DEFINE_SURFACE(svg)
 #endif
+
 
 void
 Init_cairo_surface (void)
@@ -658,6 +698,7 @@ Init_cairo_surface (void)
                     cr_surface_create_similar, 3);
   rb_define_method (rb_cCairo_Surface, "finish", cr_surface_finish, 0);
   rb_define_method (rb_cCairo_Surface, "type", cr_surface_get_type, 0);
+  rb_define_method (rb_cCairo_Surface, "content", cr_surface_get_content, 0);
 
   rb_define_method (rb_cCairo_Surface, "font_options",
                     cr_surface_get_font_options, 0);
@@ -667,6 +708,8 @@ Init_cairo_surface (void)
                     cr_surface_set_device_offset, 2);
   rb_define_method (rb_cCairo_Surface, "device_offset",
                     cr_surface_get_device_offset, 0);
+  rb_define_method (rb_cCairo_Surface, "set_fallback_resolution",
+                    cr_surface_set_fallback_resolution, 2);
 
   /* Image-surface */
   rb_cCairo_ImageSurface =
@@ -680,11 +723,17 @@ Init_cairo_surface (void)
   rb_define_method (rb_cCairo_ImageSurface, "initialize",
                     cr_image_surface_initialize, -1);
 
+  rb_define_method (rb_cCairo_ImageSurface, "data",
+                    cr_image_surface_get_data, 0);
+  rb_define_method (rb_cCairo_ImageSurface, "format",
+                    cr_image_surface_get_format, 0);
   rb_define_method (rb_cCairo_ImageSurface, "width",
                     cr_image_surface_get_width, 0);
   rb_define_method (rb_cCairo_ImageSurface, "height",
                     cr_image_surface_get_height, 0);
-  
+  rb_define_method (rb_cCairo_ImageSurface, "stride",
+                    cr_image_surface_get_stride, 0);
+
 #if CAIRO_HAS_PNG_FUNCTIONS
   rb_define_method (rb_cCairo_ImageSurface, "write_to_png",
                     cr_image_surface_write_to_png_generic, 1);
@@ -700,9 +749,7 @@ Init_cairo_surface (void)
                cr_id_holder, rb_hash_new ());                           \
                                                                         \
   rb_define_method (rb_cCairo_ ## name ## Surface, "initialize",        \
-                    cr_ ## type ## _surface_initialize, 3);             \
-  rb_define_method (rb_cCairo_ ## name ## Surface, "set_dpi",           \
-                    cr_ ## type ## _surface_set_dpi, 2);
+                    cr_ ## type ## _surface_initialize, 3);
 
 #if CAIRO_HAS_PS_SURFACE
   /* PS-surface */

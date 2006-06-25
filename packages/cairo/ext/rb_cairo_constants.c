@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2006-05-02 05:37:02 $
+ * $Date: 2006-06-25 14:29:24 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -282,6 +282,8 @@ Init_cairo_constants (void)
                    INT2FIX (CAIRO_FORMAT_A8));
   rb_define_const (rb_mCairo,    "FORMAT_A1",
                    INT2FIX (CAIRO_FORMAT_A1));
+  rb_define_const (rb_mCairo,    "FORMAT_RGB16_565",
+                   INT2FIX (CAIRO_FORMAT_RGB16_565));
 
 
   /* cairo_pattern_type_t */

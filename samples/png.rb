@@ -5,7 +5,11 @@ $LOAD_PATH.unshift "../packages/cairo/lib/"
 
 require 'cairo'
 
-surface = Cairo::ImageSurface.new(Cairo::FORMAT_ARGB32, 200, 200)
+format = Cairo::FORMAT_ARGB32
+width = 200
+height = 200
+
+surface = Cairo::ImageSurface.new(format, width, height)
 cr = Cairo::Context.new(surface)
 
 # fill background with white
@@ -28,4 +32,11 @@ cr.stroke
 
 cr.target.write_to_png("test.png")
 
+data = cr.target.data
+stride = cr.target.stride
+
 cr.target.finish
+
+surface = Cairo::ImageSurface.new(data, Cairo::FORMAT_ARGB32,
+                                  width, height, stride)
+surface.write_to_png("test-renew.png")

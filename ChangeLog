@@ -1,3 +1,23 @@
+2006-06-25  Kouhei Sutou  <kou@cozmixng.org>
+
+	* README, packages/cairo/ext/extconf.rb: supported only 1.1.10 or
+	higher.
+
+	* packages/cairo/ext/rb_cairo_constants.c: supported
+	CAIRO_FORMAT_RGB16_565.
+
+	* packages/cairo/ext/rb_cairo_surface.c:
+	  - supported cairo_surface_get_content(),
+	    cairo_surface_set_fallback_resolution(),
+	    cairo_image_surface_get_data(),
+	    cairo_image_surface_get_format() and
+	    cairo_image_surface_get_stride().
+	  - removed cairo_ps_surface_set_dpi(),
+	    cairo_pdf_surface_set_dpi() and cairo_svg_surface_set_dpi()
+	    support.
+
+	* samples/png.rb: added Cairo::ImageSurface#data sample.
+
 2006-06-01  Kouhei Sutou  <kou@cozmixng.org>
 
 	* samples/text2.rb: added an example that output PS/PDF/SVG for
