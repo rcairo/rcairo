@@ -63,7 +63,7 @@ end
 
 pkg = "cairo"
 modname = "cairo"
-major, minor, micro = 1, 1, 6
+major, minor, micro = 1, 1, 10
 
 PKGConfig.have_package(pkg, major, minor, micro) or exit 1
 
