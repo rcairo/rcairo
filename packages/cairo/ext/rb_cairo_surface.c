@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2006-06-25 14:29:24 $
+ * $Date: 2006-06-27 14:34:49 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -71,11 +71,33 @@ cr_surface_set_klass (cairo_surface_t *surface, VALUE klass)
 static VALUE
 cr_surface_get_klass (cairo_surface_t *surface)
 {
-  VALUE klass = (VALUE)cairo_surface_get_user_data (surface, &cr_klass_key);
-  if (!klass)
+  VALUE klass;
+  void *data = cairo_surface_get_user_data (surface, &cr_klass_key);
+
+  if (data)
+    klass = (VALUE) data;
+  else
     {
-      rb_raise (rb_eArgError, "[BUG] uninitialized surface for Ruby");
+      switch (cairo_surface_get_type (surface))
+        {
+        case CAIRO_SURFACE_TYPE_IMAGE:
+          klass = rb_cCairo_ImageSurface;
+          break;
+        case CAIRO_SURFACE_TYPE_PDF:
+          klass = rb_cCairo_PDFSurface;
+          break;
+        case CAIRO_SURFACE_TYPE_PS:
+          klass = rb_cCairo_PSSurface;
+          break;
+        case CAIRO_SURFACE_TYPE_SVG:
+          klass = rb_cCairo_SVGSurface;
+          break;
+        default:
+          klass = rb_cCairo_Surface;
+          break;
+        }
     }
+
   return klass;
 }
 

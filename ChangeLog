@@ -1,5 +1,8 @@
 2006-06-27  Kouhei Sutou  <kou@cozmixng.org>
 
+	* packages/cairo/ext/rb_cairo_surface.c: use cairo_surface_type_t
+	for Ruby <-> C surface conversion.
+
 	* packages/cairo/ext/rb_cairo_context.c (cr_push_group): changed
 	default arguments handling to
 	  push_group(content=nil, pop_to_source=true)
