@@ -1,5 +1,11 @@
 2006-06-27  Kouhei Sutou  <kou@cozmixng.org>
 
+	* packages/cairo/ext/rb_cairo_context.c (cr_push_group): changed
+	default arguments handling to
+	  push_group(content=nil, pop_to_source=true)
+	from
+	  push_group(content=nil, pop_to_source=false)
+
 	* packages/cairo/ext/rb_cairo.c: fixed Cairo::VERSION.
 
 2006-06-25  Kouhei Sutou  <kou@cozmixng.org>
