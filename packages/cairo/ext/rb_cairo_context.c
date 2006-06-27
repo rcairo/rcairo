@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2006-05-31 05:02:41 $
+ * $Date: 2006-06-27 14:29:45 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -143,6 +143,9 @@ cr_push_group (int argc, VALUE *argv, VALUE self)
 
   if (rb_block_given_p ())
     {
+      if (NIL_P (pop_to_source))
+        pop_to_source = Qtrue;
+
       if (RTEST (pop_to_source))
         result = rb_ensure (rb_yield, self, cr_pop_group_to_source, self);
       else
