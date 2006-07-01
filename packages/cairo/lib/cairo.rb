@@ -88,6 +88,16 @@ module Cairo
     end
   end
 
+  class SVGSurface
+    class << self
+      def versions_as_string
+        versions.collect do |version|
+          version_to_string(version)
+        end
+      end
+    end
+  end
+
   class Matrix
     def dup
       Matrix.new(*to_a)

@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2006-06-27 14:34:49 $
+ * $Date: 2006-07-01 14:45:55 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -14,18 +14,6 @@
 
 #include "rb_cairo.h"
 #include "rubyio.h"
-
-#if CAIRO_HAS_PS_SURFACE
-#  include <cairo-ps.h>
-#endif
-
-#if CAIRO_HAS_PDF_SURFACE
-#  include <cairo-pdf.h>
-#endif
-
-#if CAIRO_HAS_SVG_SURFACE
-#  include <cairo-svg.h>
-#endif
 
 #if CAIRO_HAS_PS_SURFACE || CAIRO_HAS_PDF_SURFACE || CAIRO_HAS_SVG_SURFACE
 #  define HAS_CREATE_CR_CLOSURE_SURFACE 1
@@ -690,16 +678,105 @@ cr_ ## type ## _surface_initialize (VALUE self, VALUE target,             \
 #if CAIRO_HAS_PS_SURFACE
 /* PS-surface functions */
 DEFINE_SURFACE(ps)
+
+static VALUE
+cr_ps_surface_set_size (VALUE self,
+                        VALUE width_in_points,
+                        VALUE height_in_points)
+{
+  cairo_ps_surface_set_size (_SELF,
+                             NUM2DBL (width_in_points),
+                             NUM2DBL (height_in_points));
+  cr_surface_check_status (_SELF);
+  return Qnil;
+}
+
+static VALUE
+cr_ps_surface_dsc_comment (VALUE self, VALUE comment)
+{
+  cairo_ps_surface_dsc_comment (_SELF, StringValueCStr (comment));
+  cr_surface_check_status (_SELF);
+  return Qnil;
+}
+
+static VALUE
+cr_ps_surface_dsc_begin_setup (VALUE self)
+{
+  cairo_ps_surface_dsc_begin_setup (_SELF);
+  cr_surface_check_status (_SELF);
+  if (rb_block_given_p ())
+    return rb_yield (self);
+  else
+    return Qnil;
+}
+
+static VALUE
+cr_ps_surface_dsc_begin_page_setup (VALUE self)
+{
+  cairo_ps_surface_dsc_begin_page_setup (_SELF);
+  cr_surface_check_status (_SELF);
+  if (rb_block_given_p ())
+    return rb_yield (self);
+  else
+    return Qnil;
+}
 #endif
 
 #if CAIRO_HAS_PDF_SURFACE
 /* PDF-surface functions */
 DEFINE_SURFACE(pdf)
+
+static VALUE
+cr_pdf_surface_set_size (VALUE self,
+                         VALUE width_in_points,
+                         VALUE height_in_points)
+{
+  cairo_pdf_surface_set_size (_SELF,
+                              NUM2DBL (width_in_points),
+                              NUM2DBL (height_in_points));
+  cr_surface_check_status (_SELF);
+  return Qnil;
+}
 #endif
 
 #if CAIRO_HAS_SVG_SURFACE
 /* SVG-surface functions */
 DEFINE_SURFACE(svg)
+
+static VALUE
+cr_svg_surface_restrict_to_version (VALUE self, VALUE version)
+{
+  cairo_svg_surface_restrict_to_version (_SELF, RVAL2CRSVGVERSION (version));
+  cr_surface_check_status (_SELF);
+  return Qnil;
+}
+
+static VALUE
+cr_svg_get_versions (VALUE self)
+{
+  VALUE rb_versions;
+  int i, num_versions;
+  cairo_svg_version_t const *versions;
+
+  cairo_svg_get_versions (&versions, &num_versions);
+
+  rb_versions = rb_ary_new2 (num_versions);
+
+  for (i = 0; i < num_versions; i++)
+    {
+      rb_ary_push (rb_versions, INT2NUM (versions[i]));
+    }
+
+  return rb_versions;
+}
+
+static VALUE
+cr_svg_version_to_string (VALUE self, VALUE version)
+{
+  const char *ver_str;
+  ver_str = cairo_svg_version_to_string (RVAL2CRSVGVERSION(version));
+  return rb_str_new2 (ver_str);
+}
 #endif
 
 
@@ -776,6 +853,14 @@ Init_cairo_surface (void)
 #if CAIRO_HAS_PS_SURFACE
   /* PS-surface */
   INIT_SURFACE(ps, PS)
+
+  rb_define_method (rb_cCairo_PSSurface, "set_size", cr_ps_surface_set_size, 2);
+  rb_define_method (rb_cCairo_PSSurface, "dsc_comment",
+                    cr_ps_surface_dsc_comment, 1);
+  rb_define_method (rb_cCairo_PSSurface, "dsc_begin_setup",
+                    cr_ps_surface_dsc_begin_setup, 0);
+  rb_define_method (rb_cCairo_PSSurface, "dsc_begin_page_setup",
+                    cr_ps_surface_dsc_begin_page_setup, 0);
 #else
   rb_cCairo_PSSurface = Qnil;
 #endif
@@ -783,6 +868,9 @@ Init_cairo_surface (void)
 #if CAIRO_HAS_PDF_SURFACE
   /* PDF-surface */
   INIT_SURFACE(pdf, PDF)
+
+  rb_define_method (rb_cCairo_PDFSurface, "set_size",
+                    cr_pdf_surface_set_size, 2);
 #else
   rb_cCairo_PDFSurface = Qnil;
 #endif
@@ -790,6 +878,19 @@ Init_cairo_surface (void)
 #if CAIRO_HAS_SVG_SURFACE
   /* SVG-surface */
   INIT_SURFACE(svg, SVG)
+
+  rb_define_const (rb_cCairo_SVGSurface, "VERSION_1_1",
+                   rb_const_get (rb_mCairo, rb_intern ("SVG_VERSION_1_1")));
+  rb_define_const (rb_cCairo_SVGSurface, "VERSION_1_2",
+                   rb_const_get (rb_mCairo, rb_intern ("SVG_VERSION_1_2")));
+
+  rb_define_singleton_method (rb_cCairo_SVGSurface, "versions",
+                              cr_svg_get_versions, 0);
+  rb_define_singleton_method (rb_cCairo_SVGSurface, "version_to_string",
+                              cr_svg_version_to_string, 1);
+
+  rb_define_method (rb_cCairo_SVGSurface, "restrict_to_version",
+                    cr_svg_surface_restrict_to_version, 1);
 #else
   rb_cCairo_SVGSurface = Qnil;
 #endif

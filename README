@@ -10,7 +10,7 @@ Dependencies
 ------------
 
 ruby                   >= 1.8
-cairo                  >= 1.1.10
+cairo                  >= 1.2.0
 
 Compiling
 ---------

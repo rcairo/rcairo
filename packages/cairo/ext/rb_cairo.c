@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2006-06-27 13:11:07 $
+ * $Date: 2006-07-01 14:45:55 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -59,11 +59,12 @@ Init_cairo ()
   rb_define_const (rb_mCairo, "MINOR_VERSION", INT2FIX (minor));
   rb_define_const (rb_mCairo, "MICRO_VERSION", INT2FIX (micro));
   
+  Init_cairo_constants ();
+
   Init_cairo_context ();
   Init_cairo_path ();
   Init_cairo_matrix ();
   Init_cairo_surface ();
-  Init_cairo_constants ();
   Init_cairo_exception ();
   Init_cairo_font ();
   Init_cairo_font_extents ();

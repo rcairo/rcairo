@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2006-06-25 14:29:24 $
+ * $Date: 2006-07-01 14:45:55 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -60,6 +60,9 @@
 #define CAIRO_FILTER_MIN CAIRO_FILTER_FAST
 #define CAIRO_FILTER_MAX CAIRO_FILTER_GAUSSIAN
 
+#define CAIRO_SVG_VERSION_MIN CAIRO_SVG_VERSION_1_1
+#define CAIRO_SVG_VERSION_MAX CAIRO_SVG_VERSION_1_2
+
 #define DEFINE_RVAL2ENUM(name, const_name)                  \
 cairo_ ## name ## _t                                        \
 rb_cairo_ ## name ## _from_ruby_object (VALUE rb_ ## name)  \
@@ -94,6 +97,7 @@ DEFINE_RVAL2ENUM(content, CONTENT)
 DEFINE_RVAL2ENUM(format, FORMAT)
 DEFINE_RVAL2ENUM(extend, EXTEND)
 DEFINE_RVAL2ENUM(filter, FILTER)
+DEFINE_RVAL2ENUM(svg_version, SVG_VERSION)
 
 
 void
@@ -320,4 +324,12 @@ Init_cairo_constants (void)
                    INT2FIX (CAIRO_FILTER_BILINEAR));
   rb_define_const (rb_mCairo,    "FILTER_GAUSSIAN",
                    INT2FIX (CAIRO_FILTER_GAUSSIAN));
+
+#if CAIRO_HAS_SVG_SURFACE
+  /* cairo_svg_version_t */
+  rb_define_const (rb_mCairo,    "SVG_VERSION_1_1",
+                   INT2FIX (CAIRO_SVG_VERSION_1_1));
+  rb_define_const (rb_mCairo,    "SVG_VERSION_1_2",
+                   INT2FIX (CAIRO_SVG_VERSION_1_2));
+#endif
 }
