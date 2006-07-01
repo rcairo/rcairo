@@ -1,5 +1,9 @@
 2006-07-01  Kouhei Sutou  <kou@cozmixng.org>
 
+	* NEWS: added 1.2.0 entry.
+
+2006-07-01  Kouhei Sutou  <kou@cozmixng.org>
+
 	* README: supported only 1.2.0 or higher.
 	* packages/cairo/ext/extconf.rb: ditto.
 
