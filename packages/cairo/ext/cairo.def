@@ -54,4 +54,5 @@ EXPORTS
     rb_cairo_format_from_ruby_object
     rb_cairo_extend_from_ruby_object
     rb_cairo_filter_from_ruby_object
+    rb_cairo_svg_version_from_ruby_object
     rb_cairo_check_status

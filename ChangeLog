@@ -1,3 +1,27 @@
+2006-07-01  Kouhei Sutou  <kou@cozmixng.org>
+
+	* README: supported only 1.2.0 or higher.
+	* packages/cairo/ext/extconf.rb: ditto.
+
+	* packages/cairo/ext/cairo.def: added
+	rb_cairo_svg_version_from_ruby_object().
+
+	* packages/cairo/ext/rb_cairo.c (Init_cairo): initialize constants
+	before other modules.
+
+	* packages/cairo/ext/rb_cairo.h:
+	  - include all available header files.
+	  - supported cairo_svg_version_t.
+
+	* packages/cairo/ext/rb_cairo_constants.c: supported
+	cairo_svg_surface_t.
+
+	* packages/cairo/ext/rb_cairo_surface.c: supported missing
+	functions in cairo-ps.h, cairo-pdf.h and cairo-svg.h.
+
+	* packages/cairo/lib/cairo.rb
+	(Cairo::SVGSurface.versions_as_string): added convenience method.
+
 2006-06-27  Kouhei Sutou  <kou@cozmixng.org>
 
 	* packages/cairo/ext/rb_cairo_surface.c: use cairo_surface_type_t

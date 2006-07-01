@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2005-10-11 13:23:49 $
+ * $Date: 2006-07-01 14:45:55 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -17,6 +17,18 @@
 #define RB_CAIRO_H
 
 #include <cairo.h>
+
+#if CAIRO_HAS_PS_SURFACE
+#  include <cairo-ps.h>
+#endif
+
+#if CAIRO_HAS_PDF_SURFACE
+#  include <cairo-pdf.h>
+#endif
+
+#if CAIRO_HAS_SVG_SURFACE
+#  include <cairo-svg.h>
+#endif
 
 #include "ruby.h"
 
@@ -130,6 +142,9 @@ VALUE                 rb_cairo_surface_to_ruby_object        (cairo_surface_t *s
 #define RVAL2CRFORMAT(obj)        (rb_cairo_format_from_ruby_object(obj))
 #define RVAL2CREXTEND(obj)        (rb_cairo_extend_from_ruby_object(obj))
 #define RVAL2CRFILTER(obj)        (rb_cairo_filter_from_ruby_object(obj))
+#if CAIRO_HAS_SVG_SURFACE
+#define RVAL2CRSVGVERSION(obj)    (rb_cairo_svg_version_from_ruby_object(obj))
+#endif
 
 cairo_operator_t       rb_cairo_operator_from_ruby_object       (VALUE obj);
 cairo_antialias_t      rb_cairo_antialias_from_ruby_object      (VALUE obj);
@@ -146,7 +161,9 @@ cairo_content_t        rb_cairo_content_from_ruby_object        (VALUE obj);
 cairo_format_t         rb_cairo_format_from_ruby_object         (VALUE obj);
 cairo_extend_t         rb_cairo_extend_from_ruby_object         (VALUE obj);
 cairo_filter_t         rb_cairo_filter_from_ruby_object         (VALUE obj);
-
+#if CAIRO_HAS_SVG_SURFACE
+cairo_svg_version_t    rb_cairo_svg_version_from_ruby_object    (VALUE obj);
+#endif
 
 void rb_cairo_check_status (cairo_status_t status);
 
