@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2006-07-01 14:45:55 $
+ * $Date: 2006-07-11 00:29:07 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -97,8 +97,9 @@ DEFINE_RVAL2ENUM(content, CONTENT)
 DEFINE_RVAL2ENUM(format, FORMAT)
 DEFINE_RVAL2ENUM(extend, EXTEND)
 DEFINE_RVAL2ENUM(filter, FILTER)
+#if CAIRO_HAS_SVG_SURFACE
 DEFINE_RVAL2ENUM(svg_version, SVG_VERSION)
-
+#endif
 
 void
 Init_cairo_constants (void)
