@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2006-05-02 05:37:02 $
+ * $Date: 2006-10-15 07:12:33 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -321,16 +321,20 @@ Init_cairo_pattern (void)
 
   rb_define_method (rb_cCairo_Pattern, "set_matrix", cr_pattern_set_matrix, 1);
   rb_define_method (rb_cCairo_Pattern, "matrix", cr_pattern_get_matrix, 0);
-  
+
+  RB_CAIRO_DEF_SETTERS (rb_cCairo_Pattern);
+
   rb_cCairo_SolidPattern =
     rb_define_class_under (rb_mCairo, "SolidPattern", rb_cCairo_Pattern);
 
   rb_define_method (rb_cCairo_SolidPattern, "initialize",
                     cr_solid_pattern_initialize, -1);
 
+  RB_CAIRO_DEF_SETTERS (rb_cCairo_SolidPattern);
+
   rb_cCairo_SurfacePattern =
     rb_define_class_under (rb_mCairo, "SurfacePattern", rb_cCairo_Pattern);
-  
+
   rb_define_method (rb_cCairo_SurfacePattern, "initialize",
                     cr_surface_pattern_initialize, 1);
 
@@ -343,6 +347,8 @@ Init_cairo_pattern (void)
   rb_define_method (rb_cCairo_SurfacePattern, "filter",
                     cr_surface_pattern_get_filter, 0);
 
+  RB_CAIRO_DEF_SETTERS (rb_cCairo_SurfacePattern);
+
   rb_cCairo_GradientPattern =
     rb_define_class_under (rb_mCairo, "GradientPattern", rb_cCairo_Pattern);
 
@@ -353,6 +359,8 @@ Init_cairo_pattern (void)
   rb_define_alias (rb_cCairo_GradientPattern,
                    "add_color_stop", "add_color_stop_rgba");
 
+  RB_CAIRO_DEF_SETTERS (rb_cCairo_GradientPattern);
+
   rb_cCairo_LinearPattern =
     rb_define_class_under (rb_mCairo, "LinearPattern",
                            rb_cCairo_GradientPattern);
@@ -360,10 +368,14 @@ Init_cairo_pattern (void)
   rb_define_method (rb_cCairo_LinearPattern, "initialize",
                     cr_linear_pattern_initialize, 4);
 
+  RB_CAIRO_DEF_SETTERS (rb_cCairo_LinearPattern);
+
   rb_cCairo_RadialPattern =
     rb_define_class_under (rb_mCairo, "RadialPattern",
                            rb_cCairo_GradientPattern);
 
   rb_define_method (rb_cCairo_RadialPattern, "initialize",
                     cr_radial_pattern_initialize, 6);
+
+  RB_CAIRO_DEF_SETTERS (rb_cCairo_RadialPattern);
 }

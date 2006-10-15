@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2006-07-01 14:45:55 $
+ * $Date: 2006-10-15 07:12:33 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -166,5 +166,9 @@ cairo_svg_version_t    rb_cairo_svg_version_from_ruby_object    (VALUE obj);
 #endif
 
 void rb_cairo_check_status (cairo_status_t status);
+
+
+#define RB_CAIRO_DEF_SETTERS(klass) rb_cairo_def_setters(klass);
+void rb_cairo_def_setters (VALUE klass);
 
 #endif

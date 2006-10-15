@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2005-10-10 15:40:26 $
+ * $Date: 2006-10-15 07:12:33 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -153,4 +153,6 @@ Init_cairo_glyph (void)
   rb_define_method (rb_cCairo_Glyph, "set_y", cr_glyph_set_y, 1);
 
   rb_define_method (rb_cCairo_Glyph, "to_s", cr_glyph_to_s, 0);
+
+  RB_CAIRO_DEF_SETTERS (rb_cCairo_Glyph);
 }
