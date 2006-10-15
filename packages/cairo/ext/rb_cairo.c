@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2006-10-15 06:54:07 $
+ * $Date: 2006-10-15 07:12:33 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -31,12 +31,21 @@ extern void Init_cairo_text_extents (void);
 extern void Init_cairo_pattern (void);
 extern void Init_cairo_glyph (void);
 
+static ID id__add_one_arg_setter;
+
+void
+rb_cairo_def_setters (VALUE klass)
+{
+  rb_funcall (rb_mCairo, id__add_one_arg_setter, 1, klass);
+}
 
 void
 Init_cairo ()
 {
   int major, minor, micro;
-  
+
+  id__add_one_arg_setter = rb_intern("__add_one_arg_setter");
+
   rb_mCairo = rb_define_module ("Cairo");
 
   rb_define_const (rb_mCairo, "BUILD_VERSION",

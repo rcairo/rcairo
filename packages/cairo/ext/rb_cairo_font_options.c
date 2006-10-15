@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2005-10-11 13:23:49 $
+ * $Date: 2006-10-15 07:12:33 $
  *
  * Copyright 2005 Kouhei Sutou <kou@cozmixng.org>
  *
@@ -190,4 +190,6 @@ Init_cairo_font_options (void)
                     cr_options_set_hint_metrics, 1);
   rb_define_method (rb_cCairo_FontOptions, "hint_metrics",
                     cr_options_get_hint_metrics, 0);
+
+  RB_CAIRO_DEF_SETTERS (rb_cCairo_FontOptions);
 }

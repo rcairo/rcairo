@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2006-06-27 14:29:45 $
+ * $Date: 2006-10-15 07:12:33 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -1229,4 +1229,6 @@ Init_cairo_context (void)
   rb_define_method (rb_cCairo_Context, "copy_path", cr_copy_path, 0);
   rb_define_method (rb_cCairo_Context, "copy_path_flat", cr_copy_path_flat, 0);
   rb_define_method (rb_cCairo_Context, "append_path", cr_copy_append_path, 1);
+
+  RB_CAIRO_DEF_SETTERS (rb_cCairo_Context);
 }

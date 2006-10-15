@@ -4,6 +4,16 @@
 	from ...
 	* packages/cairo/lib/cairo.rb: ... here.
 
+	* packages/cairo/lib/cairo.rb: moved Cairo.__add_one_arg_setter
+	call to ...
+	* packages/cairo/ext/rb_cairo.c, packages/cairo/ext/rb_cairo.h,
+	  packages/cairo/ext/rb_cairo_context.c,
+	  packages/cairo/ext/rb_cairo_font_options.c,
+	  packages/cairo/ext/rb_cairo_glyph.c,
+	  packages/cairo/ext/rb_cairo_matrix.c,
+	  packages/cairo/ext/rb_cairo_pattern.c,
+	  packages/cairo/ext/rb_cairo_surface.c: ... here.
+
 2006-10-15  Mathieu Blondel <mathieu@mblondel.org>
 
 	* packages/cairo/lib/cairo.rb (Cairo::Context#quad_to,

@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2006-07-01 14:45:55 $
+ * $Date: 2006-10-15 07:12:33 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -810,6 +810,8 @@ Init_cairo_surface (void)
   rb_define_method (rb_cCairo_Surface, "set_fallback_resolution",
                     cr_surface_set_fallback_resolution, 2);
 
+  RB_CAIRO_DEF_SETTERS (rb_cCairo_Surface);
+
   /* Image-surface */
   rb_cCairo_ImageSurface =
     rb_define_class_under (rb_mCairo, "ImageSurface", rb_cCairo_Surface);
@@ -861,6 +863,8 @@ Init_cairo_surface (void)
                     cr_ps_surface_dsc_begin_setup, 0);
   rb_define_method (rb_cCairo_PSSurface, "dsc_begin_page_setup",
                     cr_ps_surface_dsc_begin_page_setup, 0);
+
+  RB_CAIRO_DEF_SETTERS (rb_cCairo_PSSurface);
 #else
   rb_cCairo_PSSurface = Qnil;
 #endif
@@ -871,6 +875,8 @@ Init_cairo_surface (void)
 
   rb_define_method (rb_cCairo_PDFSurface, "set_size",
                     cr_pdf_surface_set_size, 2);
+
+  RB_CAIRO_DEF_SETTERS (rb_cCairo_PDFSurface);
 #else
   rb_cCairo_PDFSurface = Qnil;
 #endif
@@ -891,6 +897,8 @@ Init_cairo_surface (void)
 
   rb_define_method (rb_cCairo_SVGSurface, "restrict_to_version",
                     cr_svg_surface_restrict_to_version, 1);
+
+  RB_CAIRO_DEF_SETTERS (rb_cCairo_SVGSurface);
 #else
   rb_cCairo_SVGSurface = Qnil;
 #endif
