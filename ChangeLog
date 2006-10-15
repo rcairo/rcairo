@@ -1,3 +1,9 @@
+2006-10-15  Mathieu Blondel <mathieu@mblondel.org>
+
+	* packages/cairo/lib/cairo.rb (Cairo::Context#quad_to,
+	Cairo::Context#rel_quad_to): followed the current API:
+	get_point -> current_point.
+
 2006-07-11  Kouhei Sutou  <kou@cozmixng.org>
 
 	* packages/cairo/ext/rb_cairo_constants.c: added a check whether
