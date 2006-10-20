@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2006-10-15 07:12:33 $
+ * $Date: 2006-10-20 14:41:49 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -818,10 +818,25 @@ cr_clip_preserve (VALUE self)
 
 /* Font/Text functions */
 static   VALUE
-cr_select_font_face (VALUE self, VALUE family, VALUE slant, VALUE weight)
+cr_select_font_face (int argc, VALUE *argv, VALUE self)
 {
-  cairo_select_font_face (_SELF, StringValuePtr (family),
-                          RVAL2CRFONTSLANT (slant), RVAL2CRFONTWEIGHT (weight));
+  VALUE family, rb_slant, rb_weight;
+  cairo_font_slant_t slant;
+  cairo_font_weight_t weight;
+
+  rb_scan_args(argc, argv, "12", &family, &rb_slant, &rb_weight);
+
+  if (NIL_P (rb_slant))
+    slant = CAIRO_FONT_SLANT_NORMAL;
+  else
+    slant = RVAL2CRFONTSLANT (rb_slant);
+
+  if (NIL_P (rb_weight))
+    weight = CAIRO_FONT_WEIGHT_NORMAL;
+  else
+    weight = RVAL2CRFONTWEIGHT (rb_weight);
+
+  cairo_select_font_face (_SELF, StringValueCStr (family), slant, weight);
   cr_check_status (_SELF);
   return self;
 }
@@ -1188,7 +1203,7 @@ Init_cairo_context (void)
 
   /* Font/Text functions */
   rb_define_method (rb_cCairo_Context, "select_font_face",
-                    cr_select_font_face, 3);
+                    cr_select_font_face, -1);
   rb_define_method (rb_cCairo_Context, "set_font_size", cr_set_font_size, 1);
   rb_define_method (rb_cCairo_Context, "set_font_matrix",
                     cr_set_font_matrix, 1);
