@@ -1,3 +1,11 @@
+2006-10-20  Kouhei Sutou  <kou@cozmixng.org>
+
+	* packages/cairo/ext/rb_cairo_context.c (cr_select_font_face):
+	made slang and weight arguments of Cairo::Context#select_font_face
+	optional.
+
+	* samples/text2.rb: added --fade-out option.
+
 2006-10-15  Kouhei Sutou  <kou@cozmixng.org>
 
 	* packages/cairo/ext/rb_cairo.c (Cairo::BINDINGS_VERSION): moved
