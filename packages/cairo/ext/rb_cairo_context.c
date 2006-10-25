@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2006-10-20 14:41:49 $
+ * $Date: 2006-10-25 14:27:27 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -803,6 +803,11 @@ cr_reset_clip (VALUE self)
 static VALUE
 cr_clip (VALUE self)
 {
+  if (rb_block_given_p ())
+    {
+      cr_new_path (self);
+      rb_yield (self);
+    }
   cairo_clip (_SELF);
   cr_check_status (_SELF);
   return self;
@@ -811,6 +816,11 @@ cr_clip (VALUE self)
 static VALUE
 cr_clip_preserve (VALUE self)
 {
+  if (rb_block_given_p ())
+    {
+      cr_new_path (self);
+      rb_yield (self);
+    }
   cairo_clip_preserve (_SELF);
   cr_check_status (_SELF);
   return self;
