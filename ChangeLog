@@ -1,3 +1,10 @@
+2006-11-09  Kouhei Sutou  <kou@cozmixng.org>
+
+	* packages/cairo/lib/cairo.rb, packages/cairo/lib/cairo/context/,
+	packages/cairo/lib/cairo/context.rb: split Cairo::Context
+	extensions with each file under packages/cairo/lib/cairo/context/
+	directory.
+
 2006-10-25  Kouhei Sutou  <kou@cozmixng.org>
 
 	* packages/cairo/ext/rb_cairo_context.c (cr_clip)
