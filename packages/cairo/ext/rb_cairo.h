@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2006-10-15 07:12:33 $
+ * $Date: 2006-11-27 14:35:52 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -29,6 +29,12 @@
 #if CAIRO_HAS_SVG_SURFACE
 #  include <cairo-svg.h>
 #endif
+
+#define CAIRO_CHECK_VERSION(major, minor, micro)    \
+    (CAIRO_VERSION_MAJOR > (major) || \
+     (CAIRO_VERSION_MAJOR == (major) && CAIRO_VERSION_MINOR > (minor)) || \
+     (CAIRO_VERSION_MAJOR == (major) && CAIRO_VERSION_MINOR == (minor) && \
+      CAIRO_VERSION_MICRO >= (micro)))
 
 #include "ruby.h"
 

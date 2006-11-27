@@ -1,5 +1,7 @@
 2006-11-27  Kouhei Sutou  <kou@cozmixng.org>
 
+	* packages/cairo/ext/rb_cairo.h (CAIRO_CHECK_VERSION): added.
+
 	* packages/cairo/ext/rb_cairo_surface.c: moved #write_to_png to
 	Cairo::Surface from Cairo::ImageSurface.
 
