@@ -1,3 +1,8 @@
+2006-11-27  Kouhei Sutou  <kou@cozmixng.org>
+
+	* packages/cairo/ext/rb_cairo_surface.c: moved #write_to_png to
+	Cairo::Surface from Cairo::ImageSurface.
+
 2006-11-09  Kouhei Sutou  <kou@cozmixng.org>
 
 	* packages/cairo/lib/cairo.rb, packages/cairo/lib/cairo/context/,
