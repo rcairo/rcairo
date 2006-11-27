@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2006-10-15 07:12:33 $
+ * $Date: 2006-11-27 14:35:11 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -367,7 +367,7 @@ cr_surface_get_content (VALUE self)
 
 #if CAIRO_HAS_PNG_FUNCTIONS
 static VALUE
-cr_image_surface_write_to_png_stream (VALUE self, VALUE target)
+cr_surface_write_to_png_stream (VALUE self, VALUE target)
 {
   cairo_status_t status;
   cr_io_callback_closure_t closure;
@@ -386,30 +386,30 @@ cr_image_surface_write_to_png_stream (VALUE self, VALUE target)
 }
 
 static VALUE
-cr_image_surface_write_to_png_stream_invoke (VALUE info)
+cr_surface_write_to_png_stream_invoke (VALUE info)
 {
-  return cr_image_surface_write_to_png_stream (rb_ary_entry (info, 0),
-                                               rb_ary_entry (info, 1));
+  return cr_surface_write_to_png_stream (rb_ary_entry (info, 0),
+                                         rb_ary_entry (info, 1));
 }
 
 static VALUE
-cr_image_surface_write_to_png (VALUE self, VALUE filename)
+cr_surface_write_to_png (VALUE self, VALUE filename)
 {
   VALUE info, file;
 
   file = rb_file_open (StringValuePtr (filename), "wb");
   info = rb_ary_new3 (2, self, file);
-  return rb_ensure (cr_image_surface_write_to_png_stream_invoke, info,
+  return rb_ensure (cr_surface_write_to_png_stream_invoke, info,
                     rb_io_close, file);
 }
 
 static VALUE
-cr_image_surface_write_to_png_generic (VALUE self, VALUE target)
+cr_surface_write_to_png_generic (VALUE self, VALUE target)
 {
   if (rb_respond_to (target, cr_id_write))
-    return cr_image_surface_write_to_png_stream (self, target);
+    return cr_surface_write_to_png_stream (self, target);
   else
-    return cr_image_surface_write_to_png (self, target);
+    return cr_surface_write_to_png (self, target);
 }
 #endif
 
@@ -810,6 +810,11 @@ Init_cairo_surface (void)
   rb_define_method (rb_cCairo_Surface, "set_fallback_resolution",
                     cr_surface_set_fallback_resolution, 2);
 
+#if CAIRO_HAS_PNG_FUNCTIONS
+  rb_define_method (rb_cCairo_Surface, "write_to_png",
+                    cr_surface_write_to_png_generic, 1);
+#endif
+
   RB_CAIRO_DEF_SETTERS (rb_cCairo_Surface);
 
   /* Image-surface */
@@ -834,12 +839,6 @@ Init_cairo_surface (void)
                     cr_image_surface_get_height, 0);
   rb_define_method (rb_cCairo_ImageSurface, "stride",
                     cr_image_surface_get_stride, 0);
-
-#if CAIRO_HAS_PNG_FUNCTIONS
-  rb_define_method (rb_cCairo_ImageSurface, "write_to_png",
-                    cr_image_surface_write_to_png_generic, 1);
-#endif
-
 
 #define INIT_SURFACE(type, name)                                        \
   rb_cCairo_ ## name ## Surface =                                       \
