@@ -1,3 +1,10 @@
+2006-12-15  Kouhei Sutou  <kou@cozmixng.org>
+
+	* packages/cairo/lib/cairo/context/path.rb: ported Pango's
+	cairotwisted example as library.
+	* samples/text-on-path.rb: ported Pango's cairotwisted example by
+	using the library.
+
 2006-11-27  Kouhei Sutou  <kou@cozmixng.org>
 
 	* packages/cairo/ext/rb_cairo.h (CAIRO_CHECK_VERSION): added.
