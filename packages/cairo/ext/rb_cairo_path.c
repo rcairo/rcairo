@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2006-10-22 11:30:51 $
+ * $Date: 2006-12-15 08:45:19 $
  *
  * Copyright 2005 Kouhei Sutou <kou@cozmixng.org>
  *
@@ -34,7 +34,7 @@ cr_path_free (void *ptr)
 {
   if (ptr)
     {
-      cairo_path_destroy ((cairo_path_t *) ptr);
+      cairo_path_destroy ((cairo_path_t *)ptr);
     }
 }
 
