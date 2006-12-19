@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2006-10-15 07:12:33 $
+ * $Date: 2006-12-19 14:28:48 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -279,9 +279,8 @@ cr_pattern_get_matrix (VALUE self)
   return CRMATRIX2RVAL (&matrix);
 }
 
-/* Cairo::SurfacePattern */
 static VALUE
-cr_surface_pattern_set_extend (VALUE self, VALUE extend)
+cr_pattern_set_extend (VALUE self, VALUE extend)
 {
   cairo_pattern_set_extend (_SELF (self), RVAL2CREXTEND (extend));
   cr_pattern_check_status (_SELF (self));
@@ -289,13 +288,13 @@ cr_surface_pattern_set_extend (VALUE self, VALUE extend)
 }
 
 static VALUE
-cr_surface_pattern_get_extend (VALUE self)
+cr_pattern_get_extend (VALUE self)
 {
   return INT2NUM (cairo_pattern_get_extend (_SELF (self)));
 }
 
 static VALUE
-cr_surface_pattern_set_filter (VALUE self, VALUE filter)
+cr_pattern_set_filter (VALUE self, VALUE filter)
 {
   cairo_pattern_set_filter (_SELF (self), RVAL2CRFILTER (filter));
   cr_pattern_check_status (_SELF (self));
@@ -303,10 +302,13 @@ cr_surface_pattern_set_filter (VALUE self, VALUE filter)
 }
 
 static VALUE
-cr_surface_pattern_get_filter (VALUE self)
+cr_pattern_get_filter (VALUE self)
 {
   return INT2NUM (cairo_pattern_get_filter (_SELF (self)));
 }
+
+/* Cairo::SurfacePattern */
+/* none */
 
 void
 Init_cairo_pattern (void)
@@ -321,6 +323,11 @@ Init_cairo_pattern (void)
 
   rb_define_method (rb_cCairo_Pattern, "set_matrix", cr_pattern_set_matrix, 1);
   rb_define_method (rb_cCairo_Pattern, "matrix", cr_pattern_get_matrix, 0);
+  rb_define_method (rb_cCairo_Pattern, "set_extend", cr_pattern_set_extend, 1);
+  rb_alias (rb_cCairo_Pattern, rb_intern ("__extend__"), rb_intern ("extend"));
+  rb_define_method (rb_cCairo_Pattern, "extend", cr_pattern_get_extend, 0);
+  rb_define_method (rb_cCairo_Pattern, "set_filter", cr_pattern_set_filter, 1);
+  rb_define_method (rb_cCairo_Pattern, "filter", cr_pattern_get_filter, 0);
 
   RB_CAIRO_DEF_SETTERS (rb_cCairo_Pattern);
 
@@ -337,15 +344,6 @@ Init_cairo_pattern (void)
 
   rb_define_method (rb_cCairo_SurfacePattern, "initialize",
                     cr_surface_pattern_initialize, 1);
-
-  rb_define_method (rb_cCairo_SurfacePattern, "set_extend",
-                    cr_surface_pattern_set_extend, 1);
-  rb_define_method (rb_cCairo_SurfacePattern, "extend",
-                    cr_surface_pattern_get_extend, 0);
-  rb_define_method (rb_cCairo_SurfacePattern, "set_filter",
-                    cr_surface_pattern_set_filter, 1);
-  rb_define_method (rb_cCairo_SurfacePattern, "filter",
-                    cr_surface_pattern_get_filter, 0);
 
   RB_CAIRO_DEF_SETTERS (rb_cCairo_SurfacePattern);
 
