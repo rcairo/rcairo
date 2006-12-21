@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2006-05-31 05:02:41 $
+ * $Date: 2006-12-21 15:34:36 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -33,6 +33,10 @@ static VALUE rb_eCairo_InvalidVisualError;
 static VALUE rb_eCairo_FileNotFoundError;
 static VALUE rb_eCairo_InvalidDashError;
 static VALUE rb_eCairo_InvalidDscCommentError;
+#if CAIRO_CHECK_VERSION(1, 3, 0)
+static VALUE rb_eCairo_InvalidIndexError;
+static VALUE rb_eCairo_ClipNotRepresentableError;
+#endif
 
 void
 rb_cairo_check_status (cairo_status_t status)
@@ -103,6 +107,14 @@ rb_cairo_check_status (cairo_status_t status)
     case CAIRO_STATUS_INVALID_DSC_COMMENT:
       rb_raise (rb_eCairo_InvalidDscCommentError, string);
       break;
+#if CAIRO_CHECK_VERSION(1, 3, 0)
+    case CAIRO_STATUS_INVALID_INDEX:
+      rb_raise (rb_eCairo_InvalidIndexError, string);
+      break;
+    case CAIRO_STATUS_CLIP_NOT_REPRESENTABLE:
+      rb_raise (rb_eCairo_ClipNotRepresentableError, string);
+      break;
+#endif
     }
 }
 
@@ -168,5 +180,13 @@ Init_cairo_exception ()
                            rb_eArgError);
   rb_eCairo_InvalidDscCommentError =
     rb_define_class_under (rb_mCairo, "InvalidDscCommentError",
+                           rb_eArgError);
+#if CAIRO_CHECK_VERSION(1, 3, 0)
+  rb_eCairo_InvalidIndexError =
+    rb_define_class_under (rb_mCairo, "InvalidIndexError",
+                           rb_eArgError);
+  rb_eCairo_ClipNotRepresentableError =
+    rb_define_class_under (rb_mCairo, "ClipNotRepresentableError",
                            rb_eCairo_Error);
+#endif
 }

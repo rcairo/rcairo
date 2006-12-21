@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2006-12-19 14:28:48 $
+ * $Date: 2006-12-21 15:34:36 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -307,6 +307,83 @@ cr_pattern_get_filter (VALUE self)
   return INT2NUM (cairo_pattern_get_filter (_SELF (self)));
 }
 
+#if CAIRO_CHECK_VERSION(1, 3, 0)
+static VALUE
+cr_solid_pattern_get_rgba (VALUE self)
+{
+  double red, green, blue, alpha;
+
+  rb_cairo_check_status (cairo_pattern_get_rgba (_SELF (self),
+                                                 &red, &green, &blue, &alpha));
+  return rb_ary_new3 (4,
+                      rb_float_new (red), rb_float_new (green),
+                      rb_float_new (blue), rb_float_new (alpha));
+}
+
+static VALUE
+cr_surface_pattern_get_surface (VALUE self)
+{
+  cairo_surface_t *surface;
+
+  rb_cairo_check_status (cairo_pattern_get_surface (_SELF (self), &surface));
+  return CRSURFACE2RVAL (surface);
+}
+
+static VALUE
+cr_gradient_pattern_get_color_stop_rgba (VALUE self, VALUE index)
+{
+  cairo_status_t status;
+  double offset, red, green, blue, alpha;
+
+  status = cairo_pattern_get_color_stop_rgba (_SELF (self), NUM2INT (index),
+                                              &offset, &red, &green, &blue,
+                                              &alpha);
+  rb_cairo_check_status (status);
+  return rb_ary_new3 (5, rb_float_new (offset),
+                      rb_float_new (red), rb_float_new (green),
+                      rb_float_new (blue), rb_float_new (alpha));
+}
+
+static VALUE
+cr_gradient_pattern_get_color_stop_count (VALUE self)
+{
+  cairo_status_t status;
+  int count;
+
+  status = cairo_pattern_get_color_stop_count (_SELF (self), &count);
+  rb_cairo_check_status (status);
+  return INT2NUM (count);
+}
+
+static VALUE
+cr_linear_pattern_get_linear_points (VALUE self)
+{
+  cairo_status_t status;
+  double x0, y0, x1, y1;
+
+  status = cairo_pattern_get_linear_points (_SELF (self), &x0, &y0, &x1, &y1);
+  rb_cairo_check_status (status);
+  return rb_ary_new3 (4,
+                      rb_float_new (x0), rb_float_new (y0),
+                      rb_float_new (x1), rb_float_new (y1));
+}
+
+static VALUE
+cr_radial_pattern_get_radial_circles (VALUE self)
+{
+  cairo_status_t status;
+  double x0, y0, r0, x1, y1, r1;
+
+  status = cairo_pattern_get_radial_circles (_SELF (self),
+                                             &x0, &y0, &r0,
+                                             &x1, &y1, &r1);
+  rb_cairo_check_status (status);
+  return rb_ary_new3 (6,
+                      rb_float_new (x0), rb_float_new (y0), rb_float_new (r0),
+                      rb_float_new (x1), rb_float_new (y1), rb_float_new (r1));
+}
+#endif
+
 /* Cairo::SurfacePattern */
 /* none */
 
@@ -324,7 +401,7 @@ Init_cairo_pattern (void)
   rb_define_method (rb_cCairo_Pattern, "set_matrix", cr_pattern_set_matrix, 1);
   rb_define_method (rb_cCairo_Pattern, "matrix", cr_pattern_get_matrix, 0);
   rb_define_method (rb_cCairo_Pattern, "set_extend", cr_pattern_set_extend, 1);
-  rb_alias (rb_cCairo_Pattern, rb_intern ("__extend__"), rb_intern ("extend"));
+  rb_define_alias (rb_cCairo_Pattern, "__extend__", "extend");
   rb_define_method (rb_cCairo_Pattern, "extend", cr_pattern_get_extend, 0);
   rb_define_method (rb_cCairo_Pattern, "set_filter", cr_pattern_set_filter, 1);
   rb_define_method (rb_cCairo_Pattern, "filter", cr_pattern_get_filter, 0);
@@ -336,6 +413,10 @@ Init_cairo_pattern (void)
 
   rb_define_method (rb_cCairo_SolidPattern, "initialize",
                     cr_solid_pattern_initialize, -1);
+#if CAIRO_CHECK_VERSION(1, 3, 0)
+  rb_define_method (rb_cCairo_SolidPattern, "rgba",
+                    cr_solid_pattern_get_rgba, 0);
+#endif
 
   RB_CAIRO_DEF_SETTERS (rb_cCairo_SolidPattern);
 
@@ -344,6 +425,10 @@ Init_cairo_pattern (void)
 
   rb_define_method (rb_cCairo_SurfacePattern, "initialize",
                     cr_surface_pattern_initialize, 1);
+#if CAIRO_CHECK_VERSION(1, 3, 0)
+  rb_define_method (rb_cCairo_SurfacePattern, "surface",
+                    cr_surface_pattern_get_surface, 0);
+#endif
 
   RB_CAIRO_DEF_SETTERS (rb_cCairo_SurfacePattern);
 
@@ -356,6 +441,13 @@ Init_cairo_pattern (void)
                     cr_gradient_pattern_add_color_stop_rgba, -1);
   rb_define_alias (rb_cCairo_GradientPattern,
                    "add_color_stop", "add_color_stop_rgba");
+#if CAIRO_CHECK_VERSION(1, 3, 0)
+  rb_define_method (rb_cCairo_GradientPattern, "get_color_stop_rgba",
+                    cr_gradient_pattern_get_color_stop_rgba, 1);
+  rb_define_alias (rb_cCairo_GradientPattern, "[]", "get_color_stop_rgba");
+  rb_define_method (rb_cCairo_GradientPattern, "color_stop_count",
+                    cr_gradient_pattern_get_color_stop_count, 0);
+#endif
 
   RB_CAIRO_DEF_SETTERS (rb_cCairo_GradientPattern);
 
@@ -365,6 +457,10 @@ Init_cairo_pattern (void)
 
   rb_define_method (rb_cCairo_LinearPattern, "initialize",
                     cr_linear_pattern_initialize, 4);
+#if CAIRO_CHECK_VERSION(1, 3, 0)
+  rb_define_method (rb_cCairo_LinearPattern, "points",
+                    cr_linear_pattern_get_linear_points, 0);
+#endif
 
   RB_CAIRO_DEF_SETTERS (rb_cCairo_LinearPattern);
 
@@ -374,6 +470,10 @@ Init_cairo_pattern (void)
 
   rb_define_method (rb_cCairo_RadialPattern, "initialize",
                     cr_radial_pattern_initialize, 6);
+#if CAIRO_CHECK_VERSION(1, 3, 0)
+  rb_define_method (rb_cCairo_RadialPattern, "circles",
+                    cr_radial_pattern_get_radial_circles, 0);
+#endif
 
   RB_CAIRO_DEF_SETTERS (rb_cCairo_RadialPattern);
 }

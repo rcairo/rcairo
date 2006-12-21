@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2006-11-27 14:35:11 $
+ * $Date: 2006-12-21 15:34:36 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -13,6 +13,8 @@
  */
 
 #include "rb_cairo.h"
+#include "rb_cairo_private.h"
+
 #include "rubyio.h"
 
 #if CAIRO_HAS_PS_SURFACE || CAIRO_HAS_PDF_SURFACE || CAIRO_HAS_SVG_SURFACE
@@ -37,9 +39,6 @@ static cairo_user_data_key_t cr_klass_key;
 static cairo_user_data_key_t cr_closure_key;
 
 #define _SELF  (RVAL2CRSURFACE(self))
-
-#define CR_TRUE 1
-#define CR_FALSE 0
 
 static inline void
 cr_surface_check_status (cairo_surface_t *surface)
