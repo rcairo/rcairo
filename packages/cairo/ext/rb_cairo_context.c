@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2006-10-25 14:27:27 $
+ * $Date: 2006-12-21 15:34:36 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -20,6 +20,23 @@ VALUE rb_cCairo_Context;
 static ID cr_id_source_class;
 
 #define _SELF  (RVAL2CRCONTEXT(self))
+
+#if CAIRO_CHECK_VERSION(1, 3, 0)
+static VALUE rb_cCairo_Rectangle;
+static ID at_x, at_y, at_width, at_height;
+
+static VALUE
+cr_rectangle_initialize (VALUE self, VALUE x, VALUE y,
+                         VALUE width, VALUE height)
+{
+  rb_ivar_set (self, at_x, x);
+  rb_ivar_set (self, at_y, y);
+  rb_ivar_set (self, at_width, width);
+  rb_ivar_set (self, at_height, height);
+
+  return Qnil;
+}
+#endif
 
 static inline void
 cr_check_status (cairo_t *context)
@@ -826,6 +843,46 @@ cr_clip_preserve (VALUE self)
   return self;
 }
 
+#if CAIRO_CHECK_VERSION(1, 3, 0)
+static VALUE
+cr_clip_extents (VALUE self)
+{
+  double x1, y1, x2, y2;
+  cairo_clip_extents (_SELF, &x1, &y1, &x2, &y2);
+  cr_check_status (_SELF);
+  return rb_ary_new3 (4,
+                      rb_float_new (x1), rb_float_new (y1),
+                      rb_float_new (x2), rb_float_new (y2));
+}
+
+static VALUE
+cr_clip_rectangles (VALUE self)
+{
+  VALUE rb_rectangles;
+  cairo_rectangle_list_t *rectangles;
+  int i;
+
+  rectangles = cairo_copy_clip_rectangles (_SELF);
+  rb_cairo_check_status (rectangles->status);
+
+  rb_rectangles = rb_ary_new2 (rectangles->num_rectangles);
+  for (i = 0; i < rectangles->num_rectangles; i++) {
+    VALUE argv[4];
+    cairo_rectangle_t rectangle = rectangles->rectangles[i];
+
+    argv[0] = rb_float_new (rectangle.x);
+    argv[1] = rb_float_new (rectangle.y);
+    argv[2] = rb_float_new (rectangle.width);
+    argv[3] = rb_float_new (rectangle.height);
+    rb_ary_push (rb_rectangles,
+                 rb_class_new_instance (4, argv, rb_cCairo_Rectangle));
+  }
+  cairo_rectangle_list_destroy (rectangles);
+
+  return rb_rectangles;
+}
+#endif
+
 /* Font/Text functions */
 static   VALUE
 cr_select_font_face (int argc, VALUE *argv, VALUE self)
@@ -1067,6 +1124,34 @@ cr_get_miter_limit (VALUE self)
   return rb_float_new (cairo_get_miter_limit (_SELF));
 }
 
+#if CAIRO_CHECK_VERSION(1, 3, 0)
+static VALUE
+cr_get_dash_count (VALUE self)
+{
+  int count;
+  cairo_get_dash_count (_SELF, &count);
+  cr_check_status (_SELF);
+  return INT2NUM (count);
+}
+
+static VALUE
+cr_get_dash (VALUE self)
+{
+  int count;
+  double *dashes, offset;
+
+  cairo_get_dash_count (_SELF, &count);
+  cr_check_status (_SELF);
+
+  dashes = ALLOCA_N (double, count);
+  cairo_get_dash (_SELF, dashes, &offset);
+
+  return rb_ary_new3 (2,
+                      rb_cairo__float_array (dashes, count),
+                      rb_float_new (offset));
+}
+#endif
+
 static VALUE
 cr_get_matrix (VALUE self)
 {
@@ -1125,7 +1210,24 @@ void
 Init_cairo_context (void)
 {
   cr_id_source_class = rb_intern ("source_class");
-  
+
+#if CAIRO_CHECK_VERSION(1, 3, 0)
+  rb_cCairo_Rectangle =
+    rb_define_class_under (rb_mCairo, "Rectangle", rb_cObject);
+  at_x = rb_intern ("@x");
+  at_y = rb_intern ("@y");
+  at_width = rb_intern ("@width");
+  at_height = rb_intern ("@height");
+
+  rb_define_attr (rb_cCairo_Rectangle, "x", CR_TRUE, CR_TRUE);
+  rb_define_attr (rb_cCairo_Rectangle, "y", CR_TRUE, CR_TRUE);
+  rb_define_attr (rb_cCairo_Rectangle, "width", CR_TRUE, CR_TRUE);
+  rb_define_attr (rb_cCairo_Rectangle, "height", CR_TRUE, CR_TRUE);
+
+  rb_define_method (rb_cCairo_Rectangle, "initialize",
+                    cr_rectangle_initialize, 4);
+#endif
+
   rb_cCairo_Context =
     rb_define_class_under (rb_mCairo, "Context", rb_cObject);
 
@@ -1210,6 +1312,11 @@ Init_cairo_context (void)
   rb_define_method (rb_cCairo_Context, "reset_clip", cr_reset_clip, 0);
   rb_define_method (rb_cCairo_Context, "clip", cr_clip, 0);
   rb_define_method (rb_cCairo_Context, "clip_preserve", cr_clip_preserve, 0);
+#if CAIRO_CHECK_VERSION(1, 3, 0)
+  rb_define_method (rb_cCairo_Context, "clip_extents", cr_clip_extents, 0);
+  rb_define_method (rb_cCairo_Context, "clip_rectangles",
+                    cr_clip_rectangles, 0);
+#endif
 
   /* Font/Text functions */
   rb_define_method (rb_cCairo_Context, "select_font_face",
@@ -1246,6 +1353,10 @@ Init_cairo_context (void)
   rb_define_method (rb_cCairo_Context, "line_cap", cr_get_line_cap, 0);
   rb_define_method (rb_cCairo_Context, "line_join", cr_get_line_join, 0);
   rb_define_method (rb_cCairo_Context, "miter_limit", cr_get_miter_limit, 0);
+#if CAIRO_CHECK_VERSION(1, 3, 0)
+  rb_define_method (rb_cCairo_Context, "dash_count", cr_get_dash_count, 0);
+  rb_define_method (rb_cCairo_Context, "dash", cr_get_dash, 0);
+#endif
   rb_define_method (rb_cCairo_Context, "matrix", cr_get_matrix, 0);
   rb_define_method (rb_cCairo_Context, "target", cr_get_target, 0);
   rb_define_method (rb_cCairo_Context, "group_target", cr_get_group_target, 0);
