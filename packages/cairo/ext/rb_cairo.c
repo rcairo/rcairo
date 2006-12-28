@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2006-10-15 07:12:33 $
+ * $Date: 2006-12-28 04:03:46 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -70,7 +70,7 @@ Init_cairo ()
 
   rb_define_const (rb_mCairo, "BINDINGS_VERSION",
                    rb_ary_new3 (4,
-                                INT2FIX (1), INT2FIX (2), INT2FIX (0), Qnil));
+                                INT2FIX (1), INT2FIX (4), INT2FIX (0), Qnil));
 
   Init_cairo_constants ();
 
