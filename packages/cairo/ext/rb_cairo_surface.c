@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2006-12-21 15:34:36 $
+ * $Date: 2006-12-29 12:37:25 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -30,11 +30,9 @@ VALUE rb_cCairo_PDFSurface;
 VALUE rb_cCairo_PSSurface;
 VALUE rb_cCairo_SVGSurface;
 
+static ID cr_id_target;
 static ID cr_id_read;
 static ID cr_id_write;
-static ID cr_id_holder;
-static ID cr_id_closed;
-static ID cr_id_closure;
 static cairo_user_data_key_t cr_klass_key;
 static cairo_user_data_key_t cr_closure_key;
 
@@ -92,74 +90,26 @@ cr_surface_get_klass (cairo_surface_t *surface)
 typedef struct cr_io_callback_closure {
   VALUE target;
   VALUE error;
-  VALUE klass;
   unsigned char *data;
   unsigned int length;
-  cairo_bool_t is_file;
 } cr_io_callback_closure_t;
 
 #if HAS_CREATE_CR_CLOSURE_SURFACE
-static VALUE
-cr_closure_target_push (VALUE klass, VALUE obj)
-{
-  VALUE holder, key, objs;
-  
-  holder = rb_ivar_get (klass, cr_id_holder);
-  key = rb_obj_id (obj);
-  objs = rb_hash_aref (holder, key);
-
-  if (NIL_P (objs))
-    {
-      objs = rb_ary_new ();
-      rb_hash_aset (holder, key, objs);
-    }
-
-  rb_ary_push(objs, obj);
-
-  return Qnil;
-}
-
-static VALUE
-cr_closure_target_pop(VALUE klass, VALUE obj)
-{
-  VALUE holder, key, objs;
-  VALUE result = Qnil;
-
-  holder = rb_ivar_get (klass, cr_id_holder);
-  key = rb_obj_id (obj);
-  objs = rb_hash_aref (holder, key);
-
-  if (!NIL_P (objs))
-    {
-      result = rb_ary_pop (objs);
-      if (RARRAY (objs)->len == 0)
-        {
-          rb_hash_delete (holder, key);
-        }
-    }
-
-  return result;
-}
-
 static cr_io_callback_closure_t *
-cr_closure_new (VALUE target, cairo_bool_t is_file)
+cr_closure_new (VALUE target)
 {
   cr_io_callback_closure_t *closure;
   closure = ALLOC (cr_io_callback_closure_t);
 
   closure->target = target;
   closure->error = Qnil;
-  closure->is_file = is_file;
-  
+
   return closure;
 }
 
 static void
 cr_closure_destroy (cr_io_callback_closure_t *closure)
 {
-  if (closure->is_file)
-    cr_closure_target_pop (closure->klass, closure->target);
-
   free (closure);
 }
 
@@ -336,14 +286,6 @@ cr_surface_finish (VALUE self)
   
   cairo_surface_finish (_SELF);
 
-  if (closure && closure->is_file)
-    {
-      VALUE file;
-      file = closure->target;
-      if (!RTEST (rb_funcall (file, cr_id_closed, 0)))
-        rb_io_close (file);
-    }
-  
   if (closure && !NIL_P (closure->error))
     rb_exc_raise (closure->error);
   
@@ -373,7 +315,6 @@ cr_surface_write_to_png_stream (VALUE self, VALUE target)
 
   closure.target = target;
   closure.error = Qnil;
-  closure.is_file = CR_FALSE;
 
   status = cairo_surface_write_to_png_stream (_SELF, cr_surface_write_func,
                                               (void *)&closure);
@@ -385,21 +326,12 @@ cr_surface_write_to_png_stream (VALUE self, VALUE target)
 }
 
 static VALUE
-cr_surface_write_to_png_stream_invoke (VALUE info)
-{
-  return cr_surface_write_to_png_stream (rb_ary_entry (info, 0),
-                                         rb_ary_entry (info, 1));
-}
-
-static VALUE
 cr_surface_write_to_png (VALUE self, VALUE filename)
 {
-  VALUE info, file;
-
-  file = rb_file_open (StringValuePtr (filename), "wb");
-  info = rb_ary_new3 (2, self, file);
-  return rb_ensure (cr_surface_write_to_png_stream_invoke, info,
-                    rb_io_close, file);
+  cairo_status_t status;
+  status = cairo_surface_write_to_png (_SELF, StringValueCStr (filename));
+  rb_cairo_check_status (status);
+  return self;
 }
 
 static VALUE
@@ -493,7 +425,7 @@ cr_surface_set_fallback_resolution (VALUE self,
 
 /* Image-surface functions */
 #if CAIRO_HAS_PNG_FUNCTIONS
-static VALUE
+static cairo_surface_t *
 cr_image_surface_create_from_png_stream (VALUE target)
 {
   cr_io_callback_closure_t closure;
@@ -501,24 +433,19 @@ cr_image_surface_create_from_png_stream (VALUE target)
 
   closure.target = target;
   closure.error = Qnil;
-  closure.is_file = CR_FALSE;
-  
+
   surface = cairo_image_surface_create_from_png_stream (cr_surface_read_func,
                                                         (void *)&closure);
   if (!NIL_P (closure.error))
     rb_exc_raise (closure.error);
   
-  return (VALUE)surface;
+  return surface;
 }
 
-static VALUE
+static cairo_surface_t *
 cr_image_surface_create_from_png (VALUE filename)
 {
-  VALUE file;
-  file = rb_file_open (StringValuePtr (filename), "rb");
-  
-  return rb_ensure (cr_image_surface_create_from_png_stream, file,
-                    rb_io_close, file);
+  return cairo_image_surface_create_from_png (StringValueCStr (filename));
 }
 
 static VALUE
@@ -526,10 +453,11 @@ cr_image_surface_create_from_png_generic (VALUE klass, VALUE target)
 {
   VALUE rb_surface;
   cairo_surface_t *surface;
+
   if (rb_respond_to (target, cr_id_read))
-    surface = (cairo_surface_t *)cr_image_surface_create_from_png_stream (target);
+    surface = cr_image_surface_create_from_png_stream (target);
   else
-    surface = (cairo_surface_t *)cr_image_surface_create_from_png (target);
+    surface = cr_image_surface_create_from_png (target);
 
   cr_surface_check_status (surface);
   cr_surface_set_klass (surface, klass);
@@ -631,46 +559,52 @@ cr_image_surface_get_stride (VALUE self)
 
 
 /* Printing surfaces */
-#define DEFINE_SURFACE(type)                                              \
-static VALUE                                                              \
-cr_ ## type ## _surface_initialize (VALUE self, VALUE target,             \
-                                    VALUE rb_width_in_points,             \
-                                    VALUE rb_height_in_points)            \
-{                                                                         \
-  cr_io_callback_closure_t *closure;                                      \
-  cairo_surface_t *surface;                                               \
-  double width_in_points, height_in_points;                               \
-                                                                          \
-  if (rb_respond_to (target, cr_id_write))                                \
-    {                                                                     \
-      closure = cr_closure_new (target, CR_FALSE);                        \
-    }                                                                     \
-  else                                                                    \
-    {                                                                     \
-      VALUE file;                                                         \
-      file = rb_file_open (StringValuePtr (target), "wb");                \
-      closure = cr_closure_new (file, CR_TRUE);                           \
-      closure->klass = rb_obj_class (self);                               \
-      cr_closure_target_push (closure->klass, closure->target);           \
-    }                                                                     \
-                                                                          \
-  width_in_points = NUM2DBL (rb_width_in_points);                         \
-  height_in_points = NUM2DBL (rb_height_in_points);                       \
-  surface =                                                               \
-    cairo_ ## type ## _surface_create_for_stream (cr_surface_write_func,  \
-                                                  (void *) closure,       \
-                                                  width_in_points,        \
-                                                  height_in_points);      \
-                                                                          \
-  if (cairo_surface_status (surface))                                     \
-    cr_closure_destroy (closure);                                         \
-  else                                                                    \
-    cairo_surface_set_user_data (surface, &cr_closure_key,                \
-                                 closure, cr_closure_free);               \
-                                                                          \
-  cr_surface_check_status (surface);                                      \
-  DATA_PTR (self) = surface;                                              \
-  return Qnil;                                                            \
+#define DEFINE_SURFACE(type)                                            \
+static VALUE                                                            \
+cr_ ## type ## _surface_initialize (VALUE self, VALUE target,           \
+                                    VALUE rb_width_in_points,           \
+                                    VALUE rb_height_in_points)          \
+{                                                                       \
+  cairo_surface_t *surface;                                             \
+  double width_in_points, height_in_points;                             \
+                                                                        \
+  width_in_points = NUM2DBL (rb_width_in_points);                       \
+  height_in_points = NUM2DBL (rb_height_in_points);                     \
+                                                                        \
+  if (rb_respond_to (target, cr_id_write))                              \
+    {                                                                   \
+      cr_io_callback_closure_t *closure;                                \
+                                                                        \
+      closure = cr_closure_new (target);                                \
+      surface =                                                         \
+        cairo_ ## type ## _surface_create_for_stream (                  \
+          cr_surface_write_func,                                        \
+          (void *) closure,                                             \
+          width_in_points,                                              \
+          height_in_points);                                            \
+                                                                        \
+      if (cairo_surface_status (surface))                               \
+        {                                                               \
+          cr_closure_destroy (closure);                                 \
+        }                                                               \
+      else                                                              \
+        {                                                               \
+          rb_ivar_set (self, cr_id_target, target);                     \
+          cairo_surface_set_user_data (surface, &cr_closure_key,        \
+                                       closure, cr_closure_free);       \
+        }                                                               \
+    }                                                                   \
+  else                                                                  \
+    {                                                                   \
+      surface =                                                         \
+        cairo_ ## type ## _surface_create (StringValueCStr (target),    \
+                                           width_in_points,             \
+                                           height_in_points);           \
+    }                                                                   \
+                                                                        \
+  cr_surface_check_status (surface);                                    \
+  DATA_PTR (self) = surface;                                            \
+  return Qnil;                                                          \
 }
 
 
@@ -782,11 +716,9 @@ cr_svg_version_to_string (VALUE self, VALUE version)
 void
 Init_cairo_surface (void)
 {
+  cr_id_target = rb_intern ("target");
   cr_id_read = rb_intern ("read");
   cr_id_write = rb_intern ("write");
-  cr_id_closed = rb_intern ("closed?");
-  cr_id_closure = rb_intern ("closure");
-  cr_id_holder = rb_intern ("holder");
   
   rb_cCairo_Surface =
     rb_define_class_under (rb_mCairo, "Surface", rb_cObject);
@@ -843,9 +775,6 @@ Init_cairo_surface (void)
   rb_cCairo_ ## name ## Surface =                                       \
     rb_define_class_under (rb_mCairo, # name "Surface",                 \
                            rb_cCairo_Surface);                          \
-                                                                        \
-  rb_ivar_set (rb_cCairo_ ## name ## Surface,                           \
-               cr_id_holder, rb_hash_new ());                           \
                                                                         \
   rb_define_method (rb_cCairo_ ## name ## Surface, "initialize",        \
                     cr_ ## type ## _surface_initialize, 3);
