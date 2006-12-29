@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2006-12-21 15:34:36 $
+ * $Date: 2006-12-29 12:37:25 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -17,7 +17,7 @@
 
 VALUE rb_cCairo_Context;
 
-static ID cr_id_source_class;
+static ID cr_id_source, cr_id_source_class;
 
 #define _SELF  (RVAL2CRCONTEXT(self))
 
@@ -93,6 +93,7 @@ cr_initialize (VALUE self, VALUE target)
 
   cr = cairo_create (RVAL2CRSURFACE (target));
   cr_check_status (cr);
+  rb_ivar_set (self, cr_id_source, target);
   DATA_PTR(self) = cr;
   return Qnil;
 }
@@ -1165,10 +1166,19 @@ static VALUE
 cr_get_target (VALUE self)
 {
   cairo_surface_t *surface;
+  VALUE rb_surface;
 
   surface = cairo_get_target (_SELF);
   rb_cairo_check_status (cairo_surface_status (surface));
-  return CRSURFACE2RVAL (surface);
+
+  rb_surface = rb_ivar_get (self, cr_id_source);
+  if (NIL_P (rb_surface) || RVAL2CRSURFACE (rb_surface) != surface)
+    {
+      rb_surface = CRSURFACE2RVAL (surface);
+      rb_ivar_set (self, cr_id_source, rb_surface);
+    }
+
+  return rb_surface;
 }
 
 static VALUE
@@ -1209,6 +1219,7 @@ cr_copy_append_path (VALUE self, VALUE path)
 void
 Init_cairo_context (void)
 {
+  cr_id_source = rb_intern ("source");
   cr_id_source_class = rb_intern ("source_class");
 
 #if CAIRO_CHECK_VERSION(1, 3, 0)
