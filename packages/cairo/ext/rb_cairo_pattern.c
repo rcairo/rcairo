@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2006-12-21 15:34:36 $
+ * $Date: 2006-12-30 13:26:47 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -444,7 +444,8 @@ Init_cairo_pattern (void)
 #if CAIRO_CHECK_VERSION(1, 3, 0)
   rb_define_method (rb_cCairo_GradientPattern, "get_color_stop_rgba",
                     cr_gradient_pattern_get_color_stop_rgba, 1);
-  rb_define_alias (rb_cCairo_GradientPattern, "[]", "get_color_stop_rgba");
+  rb_define_alias (rb_cCairo_GradientPattern,
+                   "get_color_stop", "get_color_stop_rgba");
   rb_define_method (rb_cCairo_GradientPattern, "color_stop_count",
                     cr_gradient_pattern_get_color_stop_count, 0);
 #endif
