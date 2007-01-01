@@ -55,24 +55,28 @@ def setup_fade_out(cr, width)
   cr.set_source(fade_out)
 end
 
-def render_layout(cr, layout, initial_x, initial_y, initial_rest_height)
-  x = initial_x
-  y = initial_y
-  rest_height = initial_rest_height
+def render_layout(cr, layout, margin_left, margin_top, body_height)
+  x = margin_left
+  y = margin_top
+  rest_height = body_height
 
-  layout.lines.each do |line|
+  iter = layout.iter
+  prev_baseline = iter.baseline / Pango::SCALE
+  begin
+    line = iter.line
     ink_rect, logical_rect = line.pixel_extents
     line_height = logical_rect.height
+    baseline = iter.baseline / Pango::SCALE
     if rest_height < line_height
       cr.show_page
-      y = initial_y
-      rest_height = initial_rest_height
+      y = margin_top - prev_baseline
+      rest_height = body_height
     end
-    cr.move_to(x + logical_rect.x, y - logical_rect.y)
+    cr.move_to(x + logical_rect.x, y + baseline)
     cr.show_pango_layout_line(line)
-    y += line_height
     rest_height -= line_height
-  end
+    prev_baseline = baseline
+  end while iter.next_line!
 end
 
 def render(options, output, surface_class)
