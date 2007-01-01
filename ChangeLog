@@ -1,3 +1,8 @@
+2007-01-02  Kouhei Sutou  <kou@cozmixng.org>
+
+	* packages/cairo/ext/rb_cairo_context.c: cached Ruby object for
+	source.
+
 2007-01-01  Kouhei Sutou  <kou@cozmixng.org>
 
 	* samples/text2.rb: used Pango::LayoutIter.
