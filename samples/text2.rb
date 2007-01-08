@@ -58,23 +58,21 @@ end
 def render_layout(cr, layout, margin_left, margin_top, body_height)
   x = margin_left
   y = margin_top
-  rest_height = body_height
+  limit_y = margin_top + body_height
 
   iter = layout.iter
   prev_baseline = iter.baseline / Pango::SCALE
   begin
     line = iter.line
-    ink_rect, logical_rect = line.pixel_extents
-    line_height = logical_rect.height
-    baseline = iter.baseline / Pango::SCALE
-    if rest_height < line_height
+    ink_rect, logical_rect = iter.line_extents
+    y_begin, y_end = iter.line_yrange
+    if limit_y < (y + y_end / Pango::SCALE)
       cr.show_page
       y = margin_top - prev_baseline
-      rest_height = body_height
     end
-    cr.move_to(x + logical_rect.x, y + baseline)
+    baseline = iter.baseline / Pango::SCALE
+    cr.move_to(x + logical_rect.x / Pango::SCALE, y + baseline)
     cr.show_pango_layout_line(line)
-    rest_height -= line_height
     prev_baseline = baseline
   end while iter.next_line!
 end
