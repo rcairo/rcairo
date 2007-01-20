@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-01-01 15:33:20 $
+ * $Date: 2007-01-20 15:10:39 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -861,13 +861,13 @@ cr_clip_extents (VALUE self)
 }
 
 static VALUE
-cr_clip_rectangles (VALUE self)
+cr_clip_rectangle_list (VALUE self)
 {
   VALUE rb_rectangles;
   cairo_rectangle_list_t *rectangles;
   int i;
 
-  rectangles = cairo_copy_clip_rectangles (_SELF);
+  rectangles = cairo_copy_clip_rectangle_list (_SELF);
   rb_cairo_check_status (rectangles->status);
 
   rb_rectangles = rb_ary_new2 (rectangles->num_rectangles);
@@ -1145,10 +1145,7 @@ cr_get_miter_limit (VALUE self)
 static VALUE
 cr_get_dash_count (VALUE self)
 {
-  int count;
-  cairo_get_dash_count (_SELF, &count);
-  cr_check_status (_SELF);
-  return INT2NUM (count);
+  return INT2NUM (cairo_get_dash_count (_SELF));
 }
 
 static VALUE
@@ -1157,9 +1154,7 @@ cr_get_dash (VALUE self)
   int count;
   double *dashes, offset;
 
-  cairo_get_dash_count (_SELF, &count);
-  cr_check_status (_SELF);
-
+  count = cairo_get_dash_count (_SELF);
   dashes = ALLOCA_N (double, count);
   cairo_get_dash (_SELF, dashes, &offset);
 
@@ -1342,8 +1337,8 @@ Init_cairo_context (void)
   rb_define_method (rb_cCairo_Context, "clip_preserve", cr_clip_preserve, 0);
 #if CAIRO_CHECK_VERSION(1, 3, 0)
   rb_define_method (rb_cCairo_Context, "clip_extents", cr_clip_extents, 0);
-  rb_define_method (rb_cCairo_Context, "clip_rectangles",
-                    cr_clip_rectangles, 0);
+  rb_define_method (rb_cCairo_Context, "clip_rectangle_list",
+                    cr_clip_rectangle_list, 0);
 #endif
 
   /* Font/Text functions */
