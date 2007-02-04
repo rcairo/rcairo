@@ -1,8 +1,9 @@
 #!/usr/bin/env ruby
 
-base = File.expand_path(File.join(File.dirname(__FILE__), ".."))
-$LOAD_PATH.unshift File.join(base, "packages", "cairo", "ext")
-$LOAD_PATH.unshift File.join(base, "packages", "cairo", "lib")
+top = File.expand_path(File.join(File.dirname(__FILE__), ".."))
+base = File.join(top, "packages", "cairo")
+$LOAD_PATH.unshift File.join(base, "ext")
+$LOAD_PATH.unshift File.join(base, "lib")
 
 require 'cairo'
 require 'pango'
@@ -52,7 +53,7 @@ def render(surface)
 end
 
 def output
-  surface = Cairo::ImageSurface.new(Cairo::FORMAT_ARGB32, 500, 500)
+  surface = Cairo::ImageSurface.new(500, 500)
   render(surface)
   surface.write_to_png("text-on-path.png")
 end

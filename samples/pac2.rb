@@ -4,8 +4,10 @@
   Original: pac.rb in http://www.artima.com/rubycs/articles/pdf_writer3.html
 =end
 
-$LOAD_PATH.unshift "../packages/cairo/ext/"
-$LOAD_PATH.unshift "../packages/cairo/lib/"
+top = File.expand_path(File.join(File.dirname(__FILE__), ".."))
+base = File.join(top, "packages", "cairo")
+$LOAD_PATH.unshift File.join(base, "ext")
+$LOAD_PATH.unshift File.join(base, "lib")
 
 require "cairo"
 
@@ -155,7 +157,7 @@ end
 width = 841.889763779528
 height = 595.275590551181
 
-surface = Cairo::ImageSurface.new(Cairo::FORMAT_ARGB32, width, height)
+surface = Cairo::ImageSurface.new(width, height)
 cr = pac(surface, width, height)
 cr.target.write_to_png("pac2.png")
 

@@ -1,7 +1,9 @@
 #!/usr/bin/env ruby
 
-$LOAD_PATH.unshift "../packages/cairo/ext/"
-$LOAD_PATH.unshift "../packages/cairo/lib/"
+top = File.expand_path(File.join(File.dirname(__FILE__), ".."))
+base = File.join(top, "packages", "cairo")
+$LOAD_PATH.unshift File.join(base, "ext")
+$LOAD_PATH.unshift File.join(base, "lib")
 
 require 'cairo'
 require 'stringio'
