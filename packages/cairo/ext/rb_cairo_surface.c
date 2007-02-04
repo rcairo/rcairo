@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2006-12-29 12:37:25 $
+ * $Date: 2007-02-04 09:53:00 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -471,7 +471,9 @@ cr_image_surface_create_from_png_generic (VALUE klass, VALUE target)
 static cairo_surface_t *
 cr_image_surface_create (VALUE self, VALUE format, VALUE width, VALUE height)
 {
-  return cairo_image_surface_create (RVAL2CRFORMAT (format),
+  cairo_format_t cr_format;
+  cr_format = NIL_P (format) ? CAIRO_FORMAT_ARGB32 : RVAL2CRFORMAT (format);
+  return cairo_image_surface_create (cr_format,
                                      NUM2INT (width),
                                      NUM2INT (height));
 }
@@ -498,9 +500,11 @@ cr_image_surface_initialize (int argc, VALUE *argv, VALUE self)
   VALUE arg1, arg2, arg3, arg4, arg5;
   int n;
   
-  n = rb_scan_args (argc, argv, "32", &arg1, &arg2, &arg3, &arg4, &arg5);
+  n = rb_scan_args (argc, argv, "23", &arg1, &arg2, &arg3, &arg4, &arg5);
 
-  if (n == 3)
+  if (n == 2)
+    surface = cr_image_surface_create (self, Qnil, arg1, arg2);
+  else if (n == 3)
     surface = cr_image_surface_create (self, arg1, arg2, arg3);
   else if (n == 5)
     surface =
@@ -508,6 +512,7 @@ cr_image_surface_initialize (int argc, VALUE *argv, VALUE self)
   else
     rb_raise (rb_eArgError,
               "invalid argument (expect "
+              "(width, height) or "
               "(format, width, height) or "
               "(data, format, width, height, stride))");
 

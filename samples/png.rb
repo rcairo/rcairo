@@ -1,15 +1,16 @@
 #!/usr/bin/env ruby
 
-$LOAD_PATH.unshift "../packages/cairo/ext/"
-$LOAD_PATH.unshift "../packages/cairo/lib/"
+top = File.expand_path(File.join(File.dirname(__FILE__), ".."))
+base = File.join(top, "packages", "cairo")
+$LOAD_PATH.unshift File.join(base, "ext")
+$LOAD_PATH.unshift File.join(base, "lib")
 
 require 'cairo'
 
-format = Cairo::FORMAT_ARGB32
 width = 200
 height = 200
 
-surface = Cairo::ImageSurface.new(format, width, height)
+surface = Cairo::ImageSurface.new(width, height)
 cr = Cairo::Context.new(surface)
 
 # fill background with white
