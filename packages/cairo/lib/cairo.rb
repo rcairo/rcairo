@@ -1,5 +1,12 @@
 # vim: filetype=ruby:expandtab:shiftwidth=2:tabstop=8:softtabstop=2 :
 
+if /mingw|mswin|mswin32/ =~ RUBY_PLATFORM
+  require 'rbconfig'
+  ENV['PATH'] = %w(bin lib).collect do |dir|
+    "#{Config::CONFIG["prefix"]}\\lib\\GTK\\#{dir};"
+  end.join('') + ENV['PATH']
+end
+
 module Cairo
   def self.__add_one_arg_setter(klass)
     names = klass.instance_methods(false)
