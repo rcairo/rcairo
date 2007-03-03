@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-01-20 15:10:39 $
+ * $Date: 2007-03-03 13:53:29 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -965,6 +965,12 @@ cr_set_scaled_font (VALUE self, VALUE scaled_font)
 }
 
 static VALUE
+cr_get_scaled_font (VALUE self)
+{
+  return CRSCALEDFONT2RVAL (cairo_get_scaled_font (_SELF));
+}
+
+static VALUE
 cr_show_text (VALUE self, VALUE utf8)
 {
   cairo_show_text (_SELF, StringValuePtr (utf8));
@@ -1351,18 +1357,18 @@ Init_cairo_context (void)
   rb_define_method (rb_cCairo_Context, "set_font_options",
                     cr_set_font_options, 1);
   rb_define_method (rb_cCairo_Context, "font_options", cr_get_font_options, 0);
+  rb_define_method (rb_cCairo_Context, "set_font_face", cr_set_font_face, 1);
+  rb_define_method (rb_cCairo_Context, "font_face", cr_get_font_face, 0);
   rb_define_method (rb_cCairo_Context, "set_scaled_font",
                     cr_set_scaled_font, 1);
+  rb_define_method (rb_cCairo_Context, "scaled_font", cr_get_scaled_font, 0);
   rb_define_method (rb_cCairo_Context, "show_text", cr_show_text, 1);
   rb_define_method (rb_cCairo_Context, "show_glyphs", cr_show_glyphs, 1);
-  rb_define_method (rb_cCairo_Context, "font_face", cr_get_font_face, 0);
-  rb_define_method (rb_cCairo_Context, "font_extents",
-                    cr_font_extents, 0);
-  rb_define_method (rb_cCairo_Context, "set_font_face", cr_set_font_face, 1);
-  rb_define_method (rb_cCairo_Context, "text_extents", cr_text_extents, 1);
-  rb_define_method (rb_cCairo_Context, "glyph_extents", cr_glyph_extents, 1);
   rb_define_method (rb_cCairo_Context, "text_path", cr_text_path, 1);
   rb_define_method (rb_cCairo_Context, "glyph_path", cr_glyph_path, 1);
+  rb_define_method (rb_cCairo_Context, "text_extents", cr_text_extents, 1);
+  rb_define_method (rb_cCairo_Context, "glyph_extents", cr_glyph_extents, 1);
+  rb_define_method (rb_cCairo_Context, "font_extents", cr_font_extents, 0);
 
   /* Query functions */
   rb_define_method (rb_cCairo_Context, "operator", cr_get_operator, 0);
