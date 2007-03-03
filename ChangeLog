@@ -1,3 +1,15 @@
+2007-03-03  Kouhei Sutou  <kou@cozmixng.org>
+
+	* packages/cairo/ext/rb_cairo_context.c: supported cairo 1.3.16.
+
+	* packages/cairo/ext/rb_cairo.h: cleanup.
+
+	* packages/cairo/ext/rb_cairo_scaled_font.c
+	(rb_cairo_scaled_font_to_ruby_object): fixed a conversion bug.
+
+	* packages/cairo/ext/rb_cairo_constants.c
+	(Cairo::SURFACE_TYPE_OS2): added.
+
 2007-02-25  Kouhei Sutou  <kou@cozmixng.org>
 
 	* packages/cairo/lib/cairo.rb: supported Ruby-GNOME2 GUI Installer

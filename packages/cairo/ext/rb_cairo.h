@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2006-11-27 14:35:52 $
+ * $Date: 2007-03-03 13:53:29 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -85,10 +85,10 @@ RUBY_CAIRO_VAR VALUE rb_cCairo_Surface;
 #define CRFONTEXTENTS2RVAL(ext) (rb_cairo_font_extents_to_ruby_object(ext))
 
 #define RVAL2CRFONTOPTIONS(obj) (rb_cairo_font_options_from_ruby_object(obj))
-#define CRFONTOPTIONS2RVAL(ext) (rb_cairo_font_options_to_ruby_object(ext))
+#define CRFONTOPTIONS2RVAL(opt) (rb_cairo_font_options_to_ruby_object(opt))
 
-#define RVAL2CRSCALEDFONT(obj) (rb_cairo_scaled_font_from_ruby_object(obj))
-#define CRSCALEDFONT2RVAL(ext) (rb_cairo_scaled_font_to_ruby_object(ext))
+#define RVAL2CRSCALEDFONT(obj)  (rb_cairo_scaled_font_from_ruby_object(obj))
+#define CRSCALEDFONT2RVAL(font) (rb_cairo_scaled_font_to_ruby_object(font))
 
 #define RVAL2CRTEXTEXTENTS(obj) (rb_cairo_text_extents_from_ruby_object(obj))
 #define CRTEXTEXTENTS2RVAL(ext) (rb_cairo_text_extents_to_ruby_object(ext))

@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2006-12-21 15:34:36 $
+ * $Date: 2007-03-03 13:53:29 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -277,6 +277,10 @@ Init_cairo_constants (void)
                    INT2FIX (CAIRO_SURFACE_TYPE_DIRECTFB));
   rb_define_const (rb_mCairo, "SURFACE_TYPE_SVG",
                    INT2FIX (CAIRO_SURFACE_TYPE_SVG));
+#if CAIRO_CHECK_VERSION(1, 3, 0)
+  rb_define_const (rb_mCairo, "SURFACE_TYPE_OS2",
+                   INT2FIX (CAIRO_SURFACE_TYPE_OS2));
+#endif
 
   /* cairo_format_t */
   rb_define_const (rb_mCairo,    "FORMAT_ARGB32",
