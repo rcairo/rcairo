@@ -1,3 +1,10 @@
+Release 1.4.0 (2007-03-06 Kouhei Sutou <kou@cozmixng.org>)
+==========================================================
+
+Features
+--------
+  * All cairo 1.4.0 API are implemented.
+
 Release 1.2.0 (2006-07-01 Kouhei Sutou <kou@cozmixng.org>)
 ==========================================================
 
