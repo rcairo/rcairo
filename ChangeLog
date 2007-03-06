@@ -1,5 +1,7 @@
 2007-03-06  Kouhei Sutou  <kou@cozmixng.org>
 
+	* NEWS: added 1.4.0 entry.
+
 	* setup.rb: removed dependency on setup.rb. used Ruby-GNOME2
 	style.
 
