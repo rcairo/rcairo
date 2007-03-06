@@ -1,5 +1,7 @@
 2007-03-06  Kouhei Sutou  <kou@cozmixng.org>
 
+	* dist.sh: added release script.
+
 	* NEWS: added 1.4.0 entry.
 
 	* src/rb_cairo_context.c (cr_get_scaled_font): checked cairo
