@@ -15,12 +15,12 @@ cairo                  >= 1.2.0
 Compiling
 ---------
 
-% ruby setup.rb config    # to check for dependencies and create Makefiles
-% ruby setup.rb setup     # to compile
+% ruby extconf.rb    # to check for dependencies and create Makefiles
+% make               # to compile
 
-# ruby setup.rb install   # to install the cairo extension.
-                          # the samples in the samples folder should be able
-                          # to run before installation.
+# make install       # to install the cairo extension.
+                     # the samples in the samples folder should be able
+                     # to run before installation.
 
 Mailing list
 ------------
