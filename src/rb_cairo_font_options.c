@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2006-10-15 07:12:33 $
+ * $Date: 2007-03-06 12:17:34 $
  *
  * Copyright 2005 Kouhei Sutou <kou@cozmixng.org>
  *

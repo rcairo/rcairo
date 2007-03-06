@@ -1,3 +1,18 @@
+2007-03-06  Kouhei Sutou  <kou@cozmixng.org>
+
+	* setup.rb: removed dependency on setup.rb. used Ruby-GNOME2
+	style.
+
+	* extconf.rb: moved from packages/cairo/ext/.
+
+	* packages/cairo/ext: move to ...
+	* src/: ... here.
+
+	* packages/cairo/lib: move to ...
+	* src/lib: ... here.
+
+	* README, samples/: followed the changes.
+
 2007-03-03  Kouhei Sutou  <kou@cozmixng.org>
 
 	* packages/cairo/ext/rb_cairo_context.c: supported cairo 1.3.16.
