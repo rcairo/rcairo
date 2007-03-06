@@ -2,6 +2,9 @@
 
 	* NEWS: added 1.4.0 entry.
 
+	* src/rb_cairo_context.c (cr_get_scaled_font): checked cairo
+	version.
+
 	* setup.rb: removed dependency on setup.rb. used Ruby-GNOME2
 	style.
 
