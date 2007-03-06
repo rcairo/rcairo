@@ -3,8 +3,9 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-03-06 12:17:34 $
+ * $Date: 2007-03-06 14:21:37 $
  *
+ * Copyright 2006-2007 Kouhei Sutou <kou@cozmixng.org>
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
  *
@@ -63,14 +64,14 @@ Init_cairo ()
                                 INT2FIX (major),
                                 INT2FIX (minor),
                                 INT2FIX (micro)));
-  
+
   rb_define_const (rb_mCairo, "MAJOR_VERSION", INT2FIX (major));
   rb_define_const (rb_mCairo, "MINOR_VERSION", INT2FIX (minor));
   rb_define_const (rb_mCairo, "MICRO_VERSION", INT2FIX (micro));
 
   rb_define_const (rb_mCairo, "BINDINGS_VERSION",
                    rb_ary_new3 (4,
-                                INT2FIX (1), INT2FIX (4), INT2FIX (0), Qnil));
+                                INT2FIX (1), INT2FIX (6), INT2FIX (0), Qnil));
 
   Init_cairo_constants ();
 

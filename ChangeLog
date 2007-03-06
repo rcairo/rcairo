@@ -1,5 +1,7 @@
 2007-03-06  Kouhei Sutou  <kou@cozmixng.org>
 
+	* src/rb_cairo.c (Cairo::BINDINGS_VERSION): 1.4.0 -> 1.6.0.
+
 	* dist.sh: added release script.
 
 	* NEWS: added 1.4.0 entry.
