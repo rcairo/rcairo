@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-03-06 12:17:34 $
+ * $Date: 2007-03-06 12:35:40 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -964,11 +964,13 @@ cr_set_scaled_font (VALUE self, VALUE scaled_font)
   return self;
 }
 
+#if CAIRO_CHECK_VERSION(1, 3, 16)
 static VALUE
 cr_get_scaled_font (VALUE self)
 {
   return CRSCALEDFONT2RVAL (cairo_get_scaled_font (_SELF));
 }
+#endif
 
 static VALUE
 cr_show_text (VALUE self, VALUE utf8)
@@ -1361,7 +1363,9 @@ Init_cairo_context (void)
   rb_define_method (rb_cCairo_Context, "font_face", cr_get_font_face, 0);
   rb_define_method (rb_cCairo_Context, "set_scaled_font",
                     cr_set_scaled_font, 1);
+#if CAIRO_CHECK_VERSION(1, 3, 16)
   rb_define_method (rb_cCairo_Context, "scaled_font", cr_get_scaled_font, 0);
+#endif
   rb_define_method (rb_cCairo_Context, "show_text", cr_show_text, 1);
   rb_define_method (rb_cCairo_Context, "show_glyphs", cr_show_glyphs, 1);
   rb_define_method (rb_cCairo_Context, "text_path", cr_text_path, 1);
