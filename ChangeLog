@@ -1,3 +1,12 @@
+2007-03-10  Kouhei Sutou  <kou@cozmixng.org>
+
+	* NEWS: added 1.4.1 entry.
+
+	* pkg-config.rb: re-added.
+
+	* src/rb_cairo.c (Cairo::BINDINGS_VERSION): 1.6.0 -> 1.4.1 for
+	releasing 1.4.1.
+
 2007-03-06  Kouhei Sutou  <kou@cozmixng.org>
 
 	* src/rb_cairo.c (Cairo::BINDINGS_VERSION): 1.4.0 -> 1.6.0.
