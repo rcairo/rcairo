@@ -1,3 +1,10 @@
+Release 1.4.1 (2007-03-10 Kouhei Sutou <kou@cozmixng.org>)
+==========================================================
+
+Features
+--------
+  * Add missing pkg-config.rb.
+
 Release 1.4.0 (2007-03-06 Kouhei Sutou <kou@cozmixng.org>)
 ==========================================================
 
