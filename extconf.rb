@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 # vim: filetype=ruby:expandtab:shiftwidth=2:tabstop=8:softtabstop=2 :
 
+$LOAD_PATH.unshift(".")
 require 'mkmf'
 require 'pkg-config'
 require 'fileutils'

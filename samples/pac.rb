@@ -86,16 +86,17 @@ def pac(surface)
   cr.show_page
 end
 
-surface = Cairo::ImageSurface.new(WIDTH, HEIGHT)
-cr = pac(surface)
-cr.target.write_to_png("pac.png")
+Cairo::ImageSurface.new(WIDTH, HEIGHT) do |surface|
+  cr = pac(surface)
+  cr.target.write_to_png("pac.png")
+end
 
 def scalable_surface_output(surface_class_name, suffix)
   if Cairo.const_defined?(surface_class_name)
     surface_class = Cairo.const_get(surface_class_name)
-    surface = surface_class.new("pac.#{suffix}", WIDTH, HEIGHT)
-    cr = pac(surface)
-    cr.target.finish
+    surface_class.new("pac.#{suffix}", WIDTH, HEIGHT) do |surface|
+      pac(surface)
+    end
   else
     puts("#{surface_class_name} isn't supported.")
   end

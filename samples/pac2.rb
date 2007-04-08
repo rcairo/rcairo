@@ -157,16 +157,17 @@ end
 width = 841.889763779528
 height = 595.275590551181
 
-surface = Cairo::ImageSurface.new(width, height)
-cr = pac(surface, width, height)
-cr.target.write_to_png("pac2.png")
+Cairo::ImageSurface.new(width, height) do |surface|
+  cr = pac(surface, width, height)
+  cr.target.write_to_png("pac2.png")
+end
 
 scalable_surface_output = Proc.new do |surface_class_name, suffix|
   if Cairo.const_defined?(surface_class_name)
     surface_class = Cairo.const_get(surface_class_name)
-    surface = surface_class.new("pac2.#{suffix}", width, height)
-    cr = pac(surface, width, height)
-    cr.target.finish
+    surface_class.new("pac2.#{suffix}", width, height) do |surface|
+      pac(surface, width, height)
+    end
   else
     puts("#{surface_class_name} isn't supported.")
   end
