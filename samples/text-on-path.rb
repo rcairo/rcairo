@@ -48,14 +48,13 @@ def render(surface)
   cr.stroke
 
   cr.show_page
-
-  cr
 end
 
 def output
-  surface = Cairo::ImageSurface.new(500, 500)
-  render(surface)
-  surface.write_to_png("text-on-path.png")
+  Cairo::ImageSurface.new(500, 500) do |surface|
+    render(surface)
+    surface.write_to_png("text-on-path.png")
+  end
 end
 
 output

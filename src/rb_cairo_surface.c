@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-03-06 12:17:34 $
+ * $Date: 2007-04-08 06:04:02 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -294,6 +294,33 @@ cr_surface_finish (VALUE self)
 }
 
 static VALUE
+ensure_finish_proc (VALUE self)
+{
+  cairo_surface_t *surface;
+  cairo_status_t status;
+
+  surface = _SELF;
+
+  if (cairo_surface_status (surface))
+    return Qnil;
+
+  cairo_surface_finish (surface);
+
+  status = cairo_surface_status (surface);
+  if (status == CAIRO_STATUS_SUCCESS || status == CAIRO_STATUS_SURFACE_FINISHED)
+    return Qnil;
+
+  cr_surface_check_status (surface);
+  return Qnil;
+}
+
+static void
+ensure_finish (VALUE surface)
+{
+  rb_ensure (rb_yield, surface, ensure_finish_proc, surface);
+}
+
+static VALUE
 cr_surface_get_type (VALUE self)
 {
   return INT2NUM (cairo_surface_get_type (_SELF));
@@ -518,6 +545,8 @@ cr_image_surface_initialize (int argc, VALUE *argv, VALUE self)
 
   cr_surface_check_status (surface);
   DATA_PTR (self) = surface;
+  if (rb_block_given_p ())
+    ensure_finish (self);
   return Qnil;
 }
 
@@ -609,6 +638,8 @@ cr_ ## type ## _surface_initialize (VALUE self, VALUE target,           \
                                                                         \
   cr_surface_check_status (surface);                                    \
   DATA_PTR (self) = surface;                                            \
+  if (rb_block_given_p ())                                              \
+    ensure_finish (self);                                               \
   return Qnil;                                                          \
 }
 

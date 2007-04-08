@@ -93,22 +93,20 @@ def render(options, output, surface_class)
   body_width = width - margin_left - margin_right
   body_height = height - margin_top - margin_bottom
 
-  surface = surface_class.new(output, width, height)
-  cr = Cairo::Context.new(surface)
+  surface_class.new(output, width, height) do |surface|
+    cr = Cairo::Context.new(surface)
 
-  render_background(cr)
-  layout = make_layout(cr, text, body_width, font_description)
-  if fade_out
-    setup_fade_out(cr, body_width)
-  else
-    cr.set_source_rgba(0, 0, 0, 1)
+    render_background(cr)
+    layout = make_layout(cr, text, body_width, font_description)
+    if fade_out
+      setup_fade_out(cr, body_width)
+    else
+      cr.set_source_rgba(0, 0, 0, 1)
+    end
+    render_layout(cr, layout, margin_left, margin_top, body_height)
+
+    cr.show_page
   end
-  render_layout(cr, layout, margin_left, margin_top, body_height)
-
-  cr.show_page
-
-  cr.target.finish
-  cr
 end
 
 def output(options, surface_class_name, suffix)
