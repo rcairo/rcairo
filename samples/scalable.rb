@@ -31,6 +31,7 @@ def render(output, surface_class)
     cr.stroke
 
     cr.show_page
+    surface.finish
   end
 end
 

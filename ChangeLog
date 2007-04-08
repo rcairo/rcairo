@@ -1,5 +1,9 @@
 2007-04-08  Kouhei Sutou  <kou@cozmixng.org>
 
+	* src/rb_cairo_surface.c (yield_and_finish):
+	- renamed from ensure_finish_proc().
+	- don't use ensure.
+
 	* src/rb_cairo_surface.c (ensure_finish_proc): supported
 	Cairo::Surface.new with block. If block is exited, a surface is
 	finished automatically.
