@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-04-08 06:04:02 $
+ * $Date: 2007-04-08 06:12:50 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -264,6 +264,25 @@ cr_surface_allocate (VALUE klass)
 }
 
 /* Surface manipulation */
+static void
+yield_and_finish (VALUE self)
+{
+  cairo_surface_t *surface;
+  cairo_status_t status;
+
+  rb_yield (self);
+
+  surface = _SELF;
+  if (cairo_surface_status (surface))
+    return;
+  cairo_surface_finish (surface);
+  status = cairo_surface_status (surface);
+  if (status == CAIRO_STATUS_SUCCESS || status == CAIRO_STATUS_SURFACE_FINISHED)
+    return;
+
+  cr_surface_check_status (surface);
+}
+
 static VALUE
 cr_surface_create_similar (VALUE self, VALUE content,
                            VALUE width, VALUE height)
@@ -291,33 +310,6 @@ cr_surface_finish (VALUE self)
   
   cr_surface_check_status (_SELF);
   return self;
-}
-
-static VALUE
-ensure_finish_proc (VALUE self)
-{
-  cairo_surface_t *surface;
-  cairo_status_t status;
-
-  surface = _SELF;
-
-  if (cairo_surface_status (surface))
-    return Qnil;
-
-  cairo_surface_finish (surface);
-
-  status = cairo_surface_status (surface);
-  if (status == CAIRO_STATUS_SUCCESS || status == CAIRO_STATUS_SURFACE_FINISHED)
-    return Qnil;
-
-  cr_surface_check_status (surface);
-  return Qnil;
-}
-
-static void
-ensure_finish (VALUE surface)
-{
-  rb_ensure (rb_yield, surface, ensure_finish_proc, surface);
 }
 
 static VALUE
@@ -546,7 +538,7 @@ cr_image_surface_initialize (int argc, VALUE *argv, VALUE self)
   cr_surface_check_status (surface);
   DATA_PTR (self) = surface;
   if (rb_block_given_p ())
-    ensure_finish (self);
+    yield_and_finish (self);
   return Qnil;
 }
 
@@ -639,7 +631,7 @@ cr_ ## type ## _surface_initialize (VALUE self, VALUE target,           \
   cr_surface_check_status (surface);                                    \
   DATA_PTR (self) = surface;                                            \
   if (rb_block_given_p ())                                              \
-    ensure_finish (self);                                               \
+    yield_and_finish (self);                                            \
   return Qnil;                                                          \
 }
 
