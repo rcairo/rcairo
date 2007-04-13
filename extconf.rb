@@ -2,6 +2,8 @@
 # vim: filetype=ruby:expandtab:shiftwidth=2:tabstop=8:softtabstop=2 :
 
 $LOAD_PATH.unshift(".")
+
+require 'English'
 require 'mkmf'
 require 'pkg-config'
 require 'fileutils'
@@ -61,67 +63,53 @@ def setup_win32(target_name)
   set_output_lib(target_name)
 end
 
-def create_makefile_at_srcdir(pkg_name, srcdir, defs=nil)
-  begin
-    Dir.mkdir(srcdir) unless File.exist?(srcdir)
-    Dir.chdir(srcdir)
-
-    yield if block_given?
-
-    $defs << defs if defs
-    create_makefile(pkg_name, srcdir)
-  ensure
-    Dir.chdir('..')
-  end
-end
-
-def create_top_makefile(sub_dirs=["src"])
-  File.open("Makefile", "w") do |mfile|
-    if /mswin32/ =~ RUBY_PLATFORM
-      mfile.print <<MSWIN32_END
-
-all:
-#{sub_dirs.map{|d| "	@cd #{d}\n	@nmake -nologo all\n	@cd ..\n"}.join('')}
-install:
-#{sub_dirs.map{|d| "	@cd #{d}\n	@nmake -nologo install DESTDIR=$(DESTDIR)\n	@cd ..\n"}.join('')}
-site-install:
-#{sub_dirs.map{|d| "	@cd #{d}\n	@nmake -nologo site-install DESTDIR=$(DESTDIR)\n	@cd ..\n"}.join('')}
-clean:
-#{sub_dirs.map{|d| "	@cd #{d}\n	@nmake -nologo clean\n	@cd ..\n"}.join('')}	@if exist extconf.h del extconf.h
-	@if exist conftest.* del conftest.*
-	@if exist *.lib del *.lib
-	@if exist *~ del *~
-	@if exist mkmf.log del mkmf.log
-MSWIN32_END
-    else
-      mfile.print <<END
-all:
-#{sub_dirs.map{|d| "	@cd #{d}; make all\n"}.join('')}
-
-install:
-#{sub_dirs.map{|d| "	@cd #{d}; make install\n"}.join('')}
-site-install:
-#{sub_dirs.map{|d| "	@cd #{d}; make site-install\n"}.join('')}
-clean:
-#{sub_dirs.map{|d| "	@cd #{d}; make clean\n"}.join('')}
-distclean:	clean
-#{sub_dirs.map{|d| "	@cd #{d}; make distclean\n"}.join('')}
-	@rm -f Makefile extconf.h conftest.*
-	@rm -f core *~ mkmf.log
-END
-    end
-  end
-end
-
 
 pkg = "cairo"
 modname = "cairo"
-srcdir = File.join(File.expand_path(File.dirname(__FILE__)), "src")
+ext_dir_name = "src"
+srcdir = File.join(File.expand_path(File.dirname(__FILE__)), ext_dir_name)
 major, minor, micro = 1, 2, 0
 
 PKGConfig.have_package(pkg, major, minor, micro) or exit 1
 
 setup_win32(File.basename(modname))
-create_makefile_at_srcdir(modname, srcdir, "-DRUBY_CAIRO_COMPILATION")
+$defs << "-DRUBY_CAIRO_COMPILATION"
+create_makefile(modname, srcdir)
 
-create_top_makefile
+makefile = File.read("Makefile")
+File.open("Makefile", "w") do |f|
+  objs = []
+  co = nil
+  makefile.each do |line|
+    case line
+    when /^TARGET\s*=\s*/
+      f.print("TARGET = #{ext_dir_name}/#{$POSTMATCH}")
+    when /^(SRCS)\s*=\s*/
+      name = $1
+      vars = $POSTMATCH.split.collect {|var| "$(srcdir)/#{var}"}.join(" ")
+      f.puts("#{name} = #{vars}")
+    when /^(OBJS|CLEANLIBS|CLEANOBJS)\s*=\s*/
+      name = $1
+      vars = $POSTMATCH.split.collect {|var| "#{ext_dir_name}/#{var}"}
+      objs = vars if name == "OBJS"
+      vars = vars.join(" ")
+      f.puts("#{name} = #{vars}")
+    when /^\t\$\(CC\)/
+      line = "#{line.chomp} -o $@" if /-o/ !~ line
+      co = line
+      f.puts(line)
+    else
+      f.print(line)
+    end
+  end
+
+  if co and !objs.empty?
+    f.puts
+    objs.each do |obj|
+      f.puts "#{obj}: $(srcdir)/#{File.basename(obj).sub(/.o$/, '.c')}"
+      f.puts co
+    end
+  end
+end
+
+FileUtils.mkdir_p(ext_dir_name)
