@@ -1,5 +1,7 @@
 2007-04-13  Kouhei Sutou  <kou@cozmixng.org>
 
+	* Rakefile: supported 'rake release'.
+
 	* extconf.rb, Rakefile: supported RubyGems.
 
 2007-04-08  Kouhei Sutou  <kou@cozmixng.org>

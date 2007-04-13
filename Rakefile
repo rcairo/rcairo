@@ -21,7 +21,7 @@ manifest_contents = []
 base_dir_included_components = %w(AUTHORS COPYING ChangeLog GPL
                                   NEWS README Rakefile
                                   extconf.rb pkg-config.rb)
-excluded_components = %w(.cvsignore .gdb_history CVS depend Makefile)
+excluded_components = %w(.cvsignore .gdb_history CVS depend Makefile pkg)
 excluded_suffixes = %w(.png .ps .pdf .o .so .txt)
 Find.find(base_dir) do |target|
   target = truncate_base_dir[target]
@@ -41,7 +41,8 @@ at_exit do
   FileUtils.rm_f(manifest)
 end
 
-project = Hoe.new('cairo', Cairo.bindings_version) do |project|
+ENV["VERSION"] ||= Cairo.bindings_version
+project = Hoe.new('cairo', ENV["VERSION"]) do |project|
   project.rubyforge_name = 'cairo'
   authors = File.join(base_dir, "AUTHORS")
   project.author = File.readlines(authors).collect do |line|
@@ -63,6 +64,7 @@ project = Hoe.new('cairo', Cairo.bindings_version) do |project|
   news = File.join(base_dir, "NEWS")
   project.changes = project.paragraphs_of(news, 0..1).join("\n\n")
   project.description = "Ruby bindings for cairo"
+  project.need_tar = false
 end
 
 project.spec.dependencies.delete_if {|dependency| dependency.name == "hoe"}
