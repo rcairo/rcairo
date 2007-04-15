@@ -1,5 +1,10 @@
 2007-04-15  Kouhei Sutou  <kou@cozmixng.org>
 
+	* src/lib/cairo/context.rb, src/lib/cairo/context/blur.rb: added
+	Cairo::Context#pseudo_blur.
+
+	* samples/blur.rb: added a sample script for Cairo::Context#pseudo_blur.
+
 	* src/rb_cairo_context.c
 	(cr_pop_group): returned pattern.
 	(cr_push_group): returned popped pattern if not pop_to_source.
