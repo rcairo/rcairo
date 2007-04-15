@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-04-15 06:13:55 $
+ * $Date: 2007-04-15 06:37:27 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -163,14 +163,22 @@ cr_push_group (int argc, VALUE *argv, VALUE self)
 
   if (rb_block_given_p ())
     {
+      int state = 0;
+
       if (NIL_P (pop_to_source))
         pop_to_source = Qtrue;
 
-      result = rb_yield (self);
-      if (RTEST (pop_to_source))
-        cr_pop_group_to_source (self);
-      else
-        result = cr_pop_group (self);
+      result = rb_protect (rb_yield, self, &state);
+      if (cairo_status(_SELF) == CAIRO_STATUS_SUCCESS)
+        {
+          if (RTEST (pop_to_source))
+            cr_pop_group_to_source (self);
+          else
+            result = cr_pop_group (self);
+        }
+
+      if (state)
+        rb_jump_tag (state);
     }
 
   return result;
