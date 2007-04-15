@@ -1,3 +1,9 @@
+2007-04-15  Kouhei Sutou  <kou@cozmixng.org>
+
+	* src/rb_cairo_context.c
+	(cr_pop_group): returned pattern.
+	(cr_push_group): returned popped pattern if not pop_to_source.
+
 2007-04-13  Kouhei Sutou  <kou@cozmixng.org>
 
 	* Rakefile: supported 'rake release'.
