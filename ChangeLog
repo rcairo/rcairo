@@ -1,6 +1,8 @@
 2007-04-15  Kouhei Sutou  <kou@cozmixng.org>
 
-	* src/rb_cairo_context.c (cr_push_group): added error handling.
+	* src/rb_cairo_context.c
+	(cr_push_group): added error handling.
+	(cr_pop_group_to_source): updated source class.
 
 	* src/lib/cairo/context.rb, src/lib/cairo/context/blur.rb: added
 	Cairo::Context#pseudo_blur.
