@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-03-06 12:35:40 $
+ * $Date: 2007-04-15 06:13:55 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -122,9 +122,11 @@ cr_save (VALUE self)
 static VALUE
 cr_pop_group (VALUE self)
 {
-  cairo_pop_group (_SELF);
+  cairo_pattern_t *pattern;
+
+  pattern = cairo_pop_group (_SELF);
   cr_check_status (_SELF);
-  return Qnil;
+  return CRPATTERN2RVAL (pattern, rb_cCairo_SurfacePattern);
 }
 
 static VALUE
@@ -164,10 +166,11 @@ cr_push_group (int argc, VALUE *argv, VALUE self)
       if (NIL_P (pop_to_source))
         pop_to_source = Qtrue;
 
+      result = rb_yield (self);
       if (RTEST (pop_to_source))
-        result = rb_ensure (rb_yield, self, cr_pop_group_to_source, self);
+        cr_pop_group_to_source (self);
       else
-        result = rb_ensure (rb_yield, self, cr_pop_group, self);
+        result = cr_pop_group (self);
     }
 
   return result;
