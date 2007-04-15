@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-04-15 06:37:27 $
+ * $Date: 2007-04-15 06:45:25 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -134,6 +134,7 @@ cr_pop_group_to_source (VALUE self)
 {
   cairo_pop_group_to_source (_SELF);
   cr_check_status (_SELF);
+  rb_ivar_set (self, cr_id_source_class, rb_cCairo_SurfacePattern);
   return Qnil;
 }
 
