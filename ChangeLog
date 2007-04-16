@@ -1,5 +1,8 @@
 2007-04-16  Kouhei Sutou  <kou@cozmixng.org>
 
+	* misc/update-colors.rb: supported X11 color names.
+	* src/lib/cairo/colors.rb: updated.
+
 	* misc/update-colors.rb: added colors.rb generator that extracts
 	popular colors from Wikipedia:List_of_colors page.
 
