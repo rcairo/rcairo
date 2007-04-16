@@ -1,14 +1,31 @@
 module Cairo
   module Color
     class Base
+      attr_accessor :alpha
+
+      alias_method :a, :alpha
+      alias_method :a=, :alpha=
+
+      def initialize(a)
+        @alpha = a
+      end
     end
 
     class RGB < Base
+      attr_accessor :red, :green, :blue
+
+      alias_method :r, :red
+      alias_method :r=, :red=
+      alias_method :g, :green
+      alias_method :g=, :green=
+      alias_method :b, :blue
+      alias_method :b=, :blue=
+
       def initialize(r, g, b, a=1.0)
+        super(a)
         @red = r
         @green = g
         @blue = b
-        @alpha = a
       end
 
       def to_a
@@ -35,12 +52,23 @@ module Cairo
     end
 
     class CMYK < Base
+      attr_accessor :cyan, :magenta, :yellow, :key_plate
+
+      alias_method :c, :cyan
+      alias_method :c=, :cyan=
+      alias_method :m, :magenta
+      alias_method :m=, :magenta=
+      alias_method :y, :yellow
+      alias_method :y=, :yellow=
+      alias_method :k, :key_plate
+      alias_method :k=, :key_plate=
+
       def initialize(c, m, y, k, a=1.0)
+        super(a)
         @cyan = c
         @magenta = m
         @yellow = y
         @key_plate = k
-        @alpha = a
       end
 
       def to_a
