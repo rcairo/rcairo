@@ -7,7 +7,16 @@ module Cairo
       alias_method :a=, :alpha=
 
       def initialize(a)
+        assert_in_range(a, "alpha channel")
         @alpha = a
+      end
+
+      private
+      def assert_in_range(value, description)
+        unless (0.0..1.0).include?(value)
+          raise ArgumentError,
+                "#{description} value should be in [0.0, 1.0]: #{value.inspect}"
+        end
       end
     end
 
@@ -23,6 +32,9 @@ module Cairo
 
       def initialize(r, g, b, a=1.0)
         super(a)
+        assert_in_range(r, "red")
+        assert_in_range(g, "green")
+        assert_in_range(b, "blue")
         @red = r
         @green = g
         @blue = b
@@ -65,6 +77,10 @@ module Cairo
 
       def initialize(c, m, y, k, a=1.0)
         super(a)
+        assert_in_range(c, "cyan")
+        assert_in_range(m, "magenta")
+        assert_in_range(y, "yellow")
+        assert_in_range(k, "key plate")
         @cyan = c
         @magenta = m
         @yellow = y
