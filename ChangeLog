@@ -1,3 +1,10 @@
+2007-04-16  Kouhei Sutou  <kou@cozmixng.org>
+
+	* src/lib/cairo/color.rb: added high-level color class including
+	CMYK support.
+
+	* src/rb_cairo_pattern.c: supported Cairo::Color.
+
 2007-04-15  Kouhei Sutou  <kou@cozmixng.org>
 
 	* src/rb_cairo_context.c
