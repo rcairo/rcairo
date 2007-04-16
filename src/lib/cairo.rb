@@ -75,3 +75,4 @@ module Cairo
 end
 
 require 'cairo/context'
+require 'cairo/pattern'

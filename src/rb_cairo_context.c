@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-04-15 06:45:25 $
+ * $Date: 2007-04-16 03:12:49 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -414,7 +414,7 @@ cr_set_dash (VALUE self, VALUE dash_array, VALUE offset)
         }
       cairo_set_dash (_SELF, values, length, NUM2DBL (offset));
     }
-  
+
   cr_check_status (_SELF);
   return self;
 }
@@ -1000,7 +1000,7 @@ cr_show_glyphs (VALUE self, VALUE rb_glyphs)
 
   if (!rb_obj_is_kind_of (rb_glyphs, rb_cArray))
      rb_raise (rb_eTypeError, "expected array");
-    
+
   rb_cairo__glyphs_to_array (rb_glyphs, &glyphs, &count);
   cairo_show_glyphs (_SELF, glyphs, count);
   cr_check_status (_SELF);
@@ -1011,7 +1011,7 @@ static VALUE
 cr_get_font_face (VALUE self)
 {
   cairo_font_face_t *face;
-  
+
   face = cairo_get_font_face (_SELF);
   cr_check_status (_SELF);
   return CRFONTFACE2RVAL (face);
@@ -1073,7 +1073,7 @@ cr_glyph_path (VALUE self, VALUE rb_glyphs)
   rb_cairo__glyphs_to_array (rb_glyphs, &glyphs, &count);
   cairo_glyph_path (_SELF, glyphs, count);
   cr_check_status (_SELF);
-  
+
   return self;
 }
 
@@ -1275,7 +1275,7 @@ Init_cairo_context (void)
     rb_define_class_under (rb_mCairo, "Context", rb_cObject);
 
   rb_define_alloc_func (rb_cCairo_Context, cr_allocate);
-  
+
   /* Functions for manipulating state objects */
   rb_define_method (rb_cCairo_Context, "initialize", cr_initialize, 1);
 
@@ -1302,12 +1302,12 @@ Init_cairo_context (void)
   rb_define_method (rb_cCairo_Context, "set_dash", cr_set_dash, 2);
   rb_define_method (rb_cCairo_Context, "set_miter_limit",
                     cr_set_miter_limit, 1);
-  
+
   rb_define_method (rb_cCairo_Context, "translate", cr_translate, 2);
   rb_define_method (rb_cCairo_Context, "scale", cr_scale, 2);
   rb_define_method (rb_cCairo_Context, "rotate", cr_rotate, 1);
   rb_define_method (rb_cCairo_Context, "transform", cr_transform, 1);
-  
+
   rb_define_method (rb_cCairo_Context, "set_matrix", cr_set_matrix, 1);
   rb_define_method (rb_cCairo_Context, "identity_matrix",
                     cr_identity_matrix, 0);
@@ -1346,11 +1346,11 @@ Init_cairo_context (void)
   /* Insideness testing */
   rb_define_method (rb_cCairo_Context, "in_stroke?", cr_in_stroke, 2);
   rb_define_method (rb_cCairo_Context, "in_fill?", cr_in_fill, 2);
-  
+
   /* Rectangular extents */
   rb_define_method (rb_cCairo_Context, "stroke_extents", cr_stroke_extents, 0);
   rb_define_method (rb_cCairo_Context, "fill_extents", cr_fill_extents, 0);
-  
+
   /* Clipping */
   rb_define_method (rb_cCairo_Context, "reset_clip", cr_reset_clip, 0);
   rb_define_method (rb_cCairo_Context, "clip", cr_clip, 0);
