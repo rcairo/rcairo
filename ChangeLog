@@ -1,5 +1,11 @@
 2007-04-16  Kouhei Sutou  <kou@cozmixng.org>
 
+	* src/lib/cairo/color.rb, src/lib/cairo/pattern.rb,
+	src/lib/cairo/context/color.rb, src/rb_cairo_pattern.c: improved
+	Cairo::Color interface.
+
+	* sample/: used Cairo::Color.
+
 	* src/lib/cairo/color.rb: added validation.
 
 	* misc/update-colors.rb: supported X11 color names.

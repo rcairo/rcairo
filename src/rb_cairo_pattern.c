@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-04-16 03:12:49 $
+ * $Date: 2007-04-16 07:31:43 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -21,8 +21,9 @@ VALUE rb_cCairo_GradientPattern;
 VALUE rb_cCairo_LinearPattern;
 VALUE rb_cCairo_RadialPattern;
 
+static VALUE rb_mCairo_Color = 0;
 static VALUE rb_cCairo_Color_Base = 0;
-static ID id_Color, id_Base, id_to_rgb, id_to_a, id_inspect;
+static ID id_Color, id_Base, id_parse, id_to_rgb, id_to_a, id_inspect;
 
 #define _SELF(self)  (RVAL2CRPATTERN(self))
 
@@ -103,12 +104,21 @@ cr_solid_pattern_initialize (int argc, VALUE *argv, VALUE self)
 
   n = rb_scan_args (argc, argv, "13", &red, &green, &blue, &alpha);
 
-  if (!rb_cCairo_Color_Base)
-    rb_cCairo_Color_Base = rb_const_get (rb_const_get (rb_mCairo, id_Color),
-                                         id_Base);
+  if (!rb_mCairo_Color)
+    rb_mCairo_Color = rb_const_get (rb_mCairo, id_Color);
 
-  if (n == 1 && rb_obj_is_kind_of (red, rb_cCairo_Color_Base))
-    red = rb_funcall (rb_funcall (red, id_to_rgb, 0), id_to_a, 0);
+  if (n == 1)
+    {
+      VALUE parsed;
+
+      parsed = rb_funcall (rb_mCairo_Color, id_parse, 1, red);
+
+      if (!rb_cCairo_Color_Base)
+        rb_cCairo_Color_Base = rb_const_get (rb_mCairo_Color, id_Base);
+
+      if (rb_obj_is_kind_of (parsed, rb_cCairo_Color_Base))
+        red = rb_funcall (rb_funcall (parsed, id_to_rgb, 0), id_to_a, 0);
+    }
 
   if (n == 1 && rb_obj_is_kind_of (red, rb_cArray) &&
       (RARRAY (red)->len == 3 || RARRAY (red)->len == 4))
@@ -158,6 +168,8 @@ cr_solid_pattern_initialize (int argc, VALUE *argv, VALUE self)
 
       rb_raise (rb_eArgError,
                 "invalid argument (expect "
+                "(color_name), "
+                "(color_hex_triplet), "
                 "(Cairo::Color::RGB), "
                 "(Cairo::Color::CMYK), "
                 "(red, green, blue), "
@@ -431,6 +443,7 @@ Init_cairo_pattern (void)
 {
   id_Color = rb_intern ("Color");
   id_Base = rb_intern ("Base");
+  id_parse = rb_intern ("parse");
   id_to_rgb = rb_intern ("to_rgb");
   id_to_a = rb_intern ("to_a");
   id_inspect = rb_intern ("inspect");
