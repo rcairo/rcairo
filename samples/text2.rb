@@ -35,7 +35,7 @@ def parse(args=ARGV)
 end
 
 def render_background(cr)
-  cr.set_source_rgba(1.0, 1.0, 1.0)
+  cr.set_source_color(:white)
   cr.paint
 end
 
@@ -50,9 +50,9 @@ end
 
 def setup_fade_out(cr, width)
   fade_out = Cairo::LinearPattern.new(0, 0, width, 0)
-  fade_out.add_color_stop_rgba(0, 0, 0, 0, 1)
-  fade_out.add_color_stop_rgba(0.66, 0, 0, 0, 1)
-  fade_out.add_color_stop_rgba(1, 0, 0, 0, 0)
+  fade_out.add_color_stop(0, "#000f")
+  fade_out.add_color_stop(0.66, "#000f")
+  fade_out.add_color_stop(1, "#0000")
 
   cr.set_source(fade_out)
 end
@@ -101,7 +101,7 @@ def render(options, output, surface_class)
     if fade_out
       setup_fade_out(cr, body_width)
     else
-      cr.set_source_rgba(0, 0, 0, 1)
+      cr.set_source_color(:black)
     end
     render_layout(cr, layout, margin_left, margin_top, body_height)
 

@@ -1,5 +1,49 @@
 module Cairo
   module Color
+    module_function
+    def parse(value)
+      return value.dup if value.is_a?(Base)
+      case value
+      when Array
+        case value.first
+        when :cmyk, :cmyka
+          CMYK.new(*value[1..-1])
+        else
+          type, *value = value if [:rgb, :rgba].include?(value.first)
+          RGB.new(*value)
+        end
+      when /\A#/ #
+        parse_hex_color(value)
+      when String, Symbol
+        name = value.to_s.gsub(/[\s\-]+/, '_').upcase
+        begin
+          const_get(name).dup
+        rescue NameError
+          raise ArgumentError, "unknown color name: #{value}"
+        end
+      else
+        # can't parse. should raise?
+        value
+      end
+    end
+
+    HEX_RE = "(?i:[a-f\\d])"
+    def parse_hex_color(value)
+      case value
+      when /\A#((?:#{HEX_RE}){3,4})\z/ #
+        RGB.new(*$1.scan(/./).collect {|value| value.hex / 15.0})
+      when /\A#((?:#{HEX_RE}{2,2}){3,4})\z/ #
+        RGB.new(*$1.scan(/.{2,2}/).collect {|value| value.hex / 255.0})
+      when /\A#((?:#{HEX_RE}{4,4}){3,4})\z/ #
+        RGB.new(*$1.scan(/.{4,4}/).collect {|value| value.hex / 65535.0})
+      else
+        message = "invalid hex color format: #{value} should be "
+        message << "#RGB, #RGBA, #RRGGBB, #RRGGBBAA, #RRRRGGGGBBBB "
+        message << "or #RRRRGGGGBBBBAAAA"
+        raise ArgumentError, message
+      end
+    end
+
     class Base
       attr_accessor :alpha
 
@@ -44,6 +88,10 @@ module Cairo
         [@red, @green, @blue, @alpha]
       end
       alias_method :to_ary, :to_a
+
+      def to_s
+        "#%02X%02X%02X%02X" % to_a.collect {|v| (v * 255).ceil}
+      end
 
       def to_rgb
         clone

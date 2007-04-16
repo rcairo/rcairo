@@ -12,22 +12,15 @@ $LOAD_PATH.unshift File.join(src, "lib")
 require "cairo"
 
 def pac(surface, width, height)
-  white = [1, 1, 1]
-  black = [0, 0, 0]
-  magenta = [1, 0, 1]
-  cyan = [0, 1, 1]
-  yellow = [1, 1, 0]
-  blue = [0, 0, 1]
-  
   cr = Cairo::Context.new(surface)
 
   # NOTE: You may need to set line width when use Cairo::Context#scale
   cr.set_line_width(cr.line_width / [width, height].max)
-  
+
   cr.scale(width, height)
 
   cr.save do
-    cr.set_source_rgb(*black)
+    cr.set_source_color(:black)
     cr.rectangle(0, 0, 1, 1)
     cr.fill
   end
@@ -40,30 +33,30 @@ def pac(surface, width, height)
   wall1_y = 1 - 0.86
   wall2_y = wall1_y + wall_space
   wall_radius = 0.01
-  
-  cr.set_source_rgb(*magenta)
+
+  cr.set_source_color(:magenta)
   cr.rounded_rectangle(wall_x, wall1_y, wall_width, wall_height, wall_radius)
   cr.fill
-  cr.set_source_rgb(*cyan)
+  cr.set_source_color(:cyan)
   cr.rounded_rectangle(wall_x, wall1_y, wall_width, wall_height, wall_radius)
   cr.stroke
-  
-  cr.set_source_rgb(*magenta)
+
+  cr.set_source_color(:magenta)
   cr.rounded_rectangle(wall_x, wall2_y, wall_width, wall_height, wall_radius)
   cr.fill
-  cr.set_source_rgb(*cyan)
+  cr.set_source_color(:cyan)
   cr.rounded_rectangle(wall_x, wall2_y, wall_width, wall_height, wall_radius)
   cr.stroke
-  
+
   # Body
   body_x = 0.17
   body_y = 1 - 0.58
   body_width = 0.23
   body_height = 0.33
-  
+
   cr.save do
     cr.translate(body_x, body_y)
-    cr.set_source_rgb(*yellow)
+    cr.set_source_color(:yellow)
     cr.scale(body_width, body_height)
     cr.arc(0, 0, 0.5, 30 * (Math::PI / 180), 330 * (Math::PI / 180))
     cr.line_to(0, 0)
@@ -79,9 +72,9 @@ def pac(surface, width, height)
   dot_x = 0.29
   dot_y = 1 - 0.58
   dot_step = 0.05
-  
+
   cr.save do
-    cr.set_source_rgb(*yellow)
+    cr.set_source_color(:yellow)
     cr.save do
       cr.translate(dot_x, dot_y)
       cr.scale(dot_width, dot_height)
@@ -120,10 +113,10 @@ def pac(surface, width, height)
     i += 1
   end
   cr.close_path
-  
-  cr.set_source_rgb(*blue)
+
+  cr.set_source_color(:blue)
   cr.fill_preserve
-  cr.set_source_rgb(*cyan)
+  cr.set_source_color(:cyan)
   cr.stroke
 
   # Ghost Eyes
@@ -135,15 +128,15 @@ def pac(surface, width, height)
   black_eye_width = 0.01
   black_eye_height = 0.02
 
-  cr.set_source_rgb(*white)
+  cr.set_source_color(:white)
   cr.rectangle(eye_x, eye_y - white_eye_height,
                white_eye_width, white_eye_height)
   cr.fill
   cr.rectangle(eye_x + eye_space, eye_y - white_eye_height,
                white_eye_width, white_eye_height)
   cr.fill
-  
-  cr.set_source_rgb(*black)
+
+  cr.set_source_color(:black)
   cr.rectangle(eye_x, eye_y - black_eye_height,
                black_eye_width, black_eye_height)
   cr.fill

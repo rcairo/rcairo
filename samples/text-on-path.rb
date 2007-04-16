@@ -9,7 +9,7 @@ require 'cairo'
 require 'pango'
 
 def render_background(cr)
-  cr.set_source_rgba(1.0, 1.0, 1.0)
+  cr.set_source_color(:white)
   cr.paint
 end
 
@@ -28,7 +28,7 @@ def render(surface)
 
   render_background(cr)
 
-  cr.set_source_rgba(1, 0, 0, 1)
+  cr.set_source_color(:red)
   cr.move_to(25, 350)
   cr.line_to(150, 375)
   cr.curve_to(275, 400, 450, 350, 450, 200)

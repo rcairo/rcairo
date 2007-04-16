@@ -10,12 +10,12 @@ module Cairo
   end
 
   class GradientPattern
-    def add_color_stop(*args)
-      if args.size == 1 and args.first.is_a?(Color)
-        add_color_stop_rgba(*args.first.to_rgb.to_a)
-      else
-        add_color_stop_rgba(*args)
+    def add_color_stop(offset, *args)
+      if args.size == 1
+        color = Color.parse(args.first)
+        args = color.to_rgb.to_a
       end
+      add_color_stop_rgba(offset, *args)
     end
 
     if method_defined?(:get_color_stop_rgba)
