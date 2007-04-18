@@ -1,5 +1,9 @@
 2007-04-18  Kouhei Sutou  <kou@cozmixng.org>
 
+	* src/lib/cairo/color.rb (Cairo::Color.parse):
+	- supported :hsv and :hsva.
+	- added robust parse mode.
+
 	* samples/blur.rb: used convenience interface of Cairo::ImageSurface.new.
 
 	* src/lib/cairo/color.rb: supported HSV.

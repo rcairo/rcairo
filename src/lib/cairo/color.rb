@@ -1,13 +1,15 @@
 module Cairo
   module Color
     module_function
-    def parse(value)
+    def parse(value, robust=false)
       return value.dup if value.is_a?(Base)
       case value
       when Array
         case value.first
         when :cmyk, :cmyka
           CMYK.new(*value[1..-1])
+        when :hsv, :hsva
+          HSV.new(*value[1..-1])
         else
           type, *value = value if [:rgb, :rgba].include?(value.first)
           RGB.new(*value)
@@ -22,7 +24,9 @@ module Cairo
           raise ArgumentError, "unknown color name: #{value}"
         end
       else
-        # can't parse. should raise?
+        if robust
+          raise ArgumentError, "can't parse as color name: #{value.inspect}"
+        end
         value
       end
     end
