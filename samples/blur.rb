@@ -14,7 +14,7 @@ rectangle_height = 100
 width = rectangle_width + 2 * margin
 height = (rectangle_height + 2 * margin) * 3
 
-surface = Cairo::ImageSurface.new(Cairo::FORMAT_ARGB32, width, height)
+surface = Cairo::ImageSurface.new(width, height)
 context = Cairo::Context.new(surface)
 
 context.set_source_color(:white)
