@@ -1,5 +1,7 @@
 2007-04-18  Kouhei Sutou  <kou@cozmixng.org>
 
+	* samples/blur.rb: used convenience interface of Cairo::ImageSurface.new.
+
 	* src/lib/cairo/color.rb: supported HSV.
 
 2007-04-16  Kouhei Sutou  <kou@cozmixng.org>
