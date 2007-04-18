@@ -109,6 +109,32 @@ module Cairo
         cmyka = cmyk + [@alpha]
         CMYK.new(*cmyka)
       end
+
+      def to_hsv
+        max = [@red, @blue, @green].max
+        if max > 0
+          min = [@red, @blue, @green].min
+          max_min = max - min
+          case max
+          when @red
+            numerator = @green - @blue
+            angle = 0
+          when @blue
+            numerator = @blue - @red
+            angle = 120
+          when @green
+            numerator = @red - @green
+            angle = 240
+          end
+          h = max_min > 0 ? 60 * numerator / max_min + angle : 0.0
+          s = max_min / max
+        else
+          h = 0.0
+          s = 0.0
+        end
+        v = max
+        HSV.new(h, s, v, @alpha)
+      end
     end
 
     class CMYK < Base
@@ -152,6 +178,72 @@ module Cairo
       end
 
       def to_cmyk
+        clone
+      end
+
+      def to_hsv
+        to_rgb.to_hsv
+      end
+    end
+
+    class HSV < Base
+      attr_accessor :hue, :saturation, :value
+
+      alias_method :h, :hue
+      alias_method :h=, :hue=
+      alias_method :s, :saturation
+      alias_method :s=, :saturation=
+      alias_method :v, :value
+      alias_method :v=, :value=
+
+      def initialize(h, s, v, a=1.0)
+        super(a)
+        assert_in_range(s, "saturation")
+        assert_in_range(v, "value")
+        @hue = h.modulo(360.0)
+        @saturation = s
+        @value = v
+      end
+
+      def to_a
+        [@hue, @saturation, @value, @alpha]
+      end
+      alias_method :to_ary, :to_a
+
+      def to_rgb
+        if s > 0
+          h_60 = @hue / 60.0
+          hi = h_60.floor.modulo(6)
+          f = h_60 - hi
+          p = @value * (1 - @saturation)
+          q = @value * (1 - f * @saturation)
+          t = @value * (1 - (1 - f) * @saturation)
+          case hi
+          when 0
+            rgb = [@value, t, p]
+          when 1
+            rgb = [q, @value, p]
+          when 2
+            rgb = [p, @value, t]
+          when 3
+            rgb = [p, q, @value]
+          when 4
+            rgb = [t, p, @value]
+          when 5
+            rgb = [@value, p, q]
+          end
+          rgba = rgb + [@alpha]
+          RGB.new(*rgba)
+        else
+          RGB.new(@value, @value, @value, @alpha)
+        end
+      end
+
+      def to_cmyk
+        to_rgb.to_cmyk
+      end
+
+      def to_hsv
         clone
       end
     end
