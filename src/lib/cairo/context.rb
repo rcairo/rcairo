@@ -13,5 +13,17 @@ module Cairo
     include Path
     include Blur
     include Color
+
+    def stroke_preserve(&block)
+      stroke(true, &block)
+    end
+
+    def fill_preserve(&block)
+      fill(true, &block)
+    end
+
+    def clip_preserve(&block)
+      clip(true, &block)
+    end
   end
 end
