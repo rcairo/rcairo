@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-04-16 03:12:49 $
+ * $Date: 2007-04-19 12:40:35 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -707,57 +707,49 @@ cr_mask_generic (int argc, VALUE *argv, VALUE self)
 }
 
 static VALUE
-cr_stroke (VALUE self)
+cr_stroke (int argc, VALUE *argv, VALUE self)
 {
+  VALUE preserve;
+
+  rb_scan_args (argc, argv, "01", &preserve);
+
   if (rb_block_given_p ())
     {
       cr_new_path (self);
       rb_yield (self);
     }
-  cairo_stroke (_SELF);
+
+  if (RTEST (preserve))
+    cairo_stroke_preserve (_SELF);
+  else
+    cairo_stroke (_SELF);
+
   cr_check_status (_SELF);
   return self;
 }
 
 static VALUE
-cr_stroke_preserve (VALUE self)
+cr_fill (int argc, VALUE *argv, VALUE self)
 {
+  VALUE preserve;
+
+  rb_scan_args (argc, argv, "01", &preserve);
+
   if (rb_block_given_p ())
     {
       cr_new_path (self);
       rb_yield (self);
     }
-  cairo_stroke_preserve (_SELF);
+
+  if (RTEST (preserve))
+    cairo_fill_preserve (_SELF);
+  else
+    cairo_fill (_SELF);
+
   cr_check_status (_SELF);
   return self;
 }
 
-static VALUE
-cr_fill (VALUE self)
-{
-  if (rb_block_given_p ())
-    {
-      cr_new_path (self);
-      rb_yield (self);
-    }
-  cairo_fill (_SELF);
-  cr_check_status (_SELF);
-  return self;
-}
-
-
-static VALUE
-cr_fill_preserve (VALUE self)
-{
-  if (rb_block_given_p ())
-    {
-      cr_new_path (self);
-      rb_yield (self);
-    }
-  cairo_fill_preserve (_SELF);
-  cr_check_status (_SELF);
-  return self;
-}
 
 static VALUE
 cr_copy_page (VALUE self)
@@ -835,27 +827,23 @@ cr_reset_clip (VALUE self)
 }
 
 static VALUE
-cr_clip (VALUE self)
+cr_clip (int argc, VALUE *argv, VALUE self)
 {
-  if (rb_block_given_p ())
-    {
-      cr_new_path (self);
-      rb_yield (self);
-    }
-  cairo_clip (_SELF);
-  cr_check_status (_SELF);
-  return self;
-}
+  VALUE preserve;
 
-static VALUE
-cr_clip_preserve (VALUE self)
-{
+  rb_scan_args(argc, argv, "01", &preserve);
+
   if (rb_block_given_p ())
     {
       cr_new_path (self);
       rb_yield (self);
     }
-  cairo_clip_preserve (_SELF);
+
+  if (RTEST (preserve))
+    cairo_clip_preserve(_SELF);
+  else
+    cairo_clip (_SELF);
+
   cr_check_status (_SELF);
   return self;
 }
@@ -1335,11 +1323,8 @@ Init_cairo_context (void)
   /* Painting functions */
   rb_define_method (rb_cCairo_Context, "paint", cr_paint_generic, -1);
   rb_define_method (rb_cCairo_Context, "mask", cr_mask_generic, -1);
-  rb_define_method (rb_cCairo_Context, "stroke", cr_stroke, 0);
-  rb_define_method (rb_cCairo_Context, "stroke_preserve",
-                    cr_stroke_preserve, 0);
-  rb_define_method (rb_cCairo_Context, "fill", cr_fill, 0);
-  rb_define_method (rb_cCairo_Context, "fill_preserve", cr_fill_preserve, 0);
+  rb_define_method (rb_cCairo_Context, "stroke", cr_stroke, -1);
+  rb_define_method (rb_cCairo_Context, "fill", cr_fill, -1);
   rb_define_method (rb_cCairo_Context, "copy_page", cr_copy_page, 0);
   rb_define_method (rb_cCairo_Context, "show_page", cr_show_page, 0);
 
@@ -1353,8 +1338,7 @@ Init_cairo_context (void)
 
   /* Clipping */
   rb_define_method (rb_cCairo_Context, "reset_clip", cr_reset_clip, 0);
-  rb_define_method (rb_cCairo_Context, "clip", cr_clip, 0);
-  rb_define_method (rb_cCairo_Context, "clip_preserve", cr_clip_preserve, 0);
+  rb_define_method (rb_cCairo_Context, "clip", cr_clip, -1);
 #if CAIRO_CHECK_VERSION(1, 3, 0)
   rb_define_method (rb_cCairo_Context, "clip_extents", cr_clip_extents, 0);
   rb_define_method (rb_cCairo_Context, "clip_rectangle_list",
