@@ -1,5 +1,9 @@
 2007-04-30  Kouhei Sutou  <kou@cozmixng.org>
 
+	* src/lib/cairo/context.rb, src/lib/cairo/context/quad.rb: moved
+	quadratic Bézier curve support to ...
+	* src/rb_cairo_context.c: ... here.
+
 	* src/lib/cairo/context/path.rb
 	(Cairo::Context::Path#map_path_onto): fixed a boundary value bug.
 

@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-04-19 12:40:35 $
+ * $Date: 2007-04-30 10:48:09 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -18,12 +18,15 @@
 VALUE rb_cCairo_Context;
 
 static ID cr_id_surface, cr_id_source, cr_id_source_class;
+static ID cr_id_plus, cr_id_minus, cr_id_multi, cr_id_div;
 
 #define _SELF  (RVAL2CRCONTEXT(self))
 
 #if CAIRO_CHECK_VERSION(1, 3, 0)
 static VALUE rb_cCairo_Rectangle;
 static ID at_x, at_y, at_width, at_height;
+
+static VALUE cr_get_current_point (VALUE self);
 
 static VALUE
 cr_rectangle_initialize (VALUE self, VALUE x, VALUE y,
@@ -564,6 +567,59 @@ cr_curve_to (VALUE self, VALUE x1, VALUE y1,
 }
 
 static VALUE
+cr_quadratic_curve_to (VALUE self, VALUE x1, VALUE y1, VALUE x2, VALUE y2)
+{
+  VALUE current_point, x0, y0, cx1, cy1, cx2, cy2;
+
+  current_point = cr_get_current_point (self);
+  x0 = RARRAY (current_point)->ptr[0];
+  y0 = RARRAY (current_point)->ptr[1];
+
+  /* cx1 = x0 + 2 * ((x1 - x0) / 3.0) */
+  cx1 = rb_funcall (x0, cr_id_plus, 1,
+                    rb_funcall (INT2NUM(2), cr_id_multi, 1,
+                                rb_funcall (rb_funcall (x1, cr_id_minus, 1, x0),
+                                            cr_id_div, 1, rb_float_new (3.0))));
+  /* cy1 = y0 + 2 * ((y1 - y0) / 3.0) */
+  cy1 = rb_funcall (y0, cr_id_plus, 1,
+                    rb_funcall (INT2NUM(2), cr_id_multi, 1,
+                                rb_funcall (rb_funcall (y1, cr_id_minus, 1, y0),
+                                            cr_id_div, 1, rb_float_new (3.0))));
+  /* cx2 = cx1 + (x2 - x0) / 3.0 */
+  cx2 = rb_funcall (cx1, cr_id_plus, 1,
+                    rb_funcall (rb_funcall (x2, cr_id_minus, 1, x0),
+                                cr_id_div, 1, rb_float_new (3.0)));
+  /* cy2 = cy1 + (y2 - y0) / 3.0 */
+  cy2 = rb_funcall (cy1, cr_id_plus, 1,
+                    rb_funcall (rb_funcall (y2, cr_id_minus, 1, y0),
+                                cr_id_div, 1, rb_float_new (3.0)));
+  return cr_curve_to (self, cx1, cy1, cx2, cy2, x2, y2);
+}
+
+static VALUE
+cr_curve_to_generic (int argc, VALUE *argv, VALUE self)
+{
+  VALUE x1, y1, x2, y2, x3, y3;
+
+  rb_scan_args (argc, argv, "42", &x1, &y1, &x2, &y2, &x3, &y3);
+
+  if (!(argc == 4 || argc == 6))
+    {
+      VALUE inspected_arg = rb_inspect (rb_ary_new4 (argc, argv));
+      rb_raise (rb_eArgError,
+                "invalid argument: %s (expect "
+                "(x1, y1, x2, y2) (quadratic) or "
+                "(x1, y1, x2, y2, x3, y3) (cubic))",
+                StringValuePtr (inspected_arg));
+    }
+
+  if (argc == 4)
+    return cr_quadratic_curve_to (self, x1, y1, x2, y2);
+  else
+    return cr_curve_to (self, x1, y1, x2, y2, x3, y3);
+}
+
+static VALUE
 cr_arc (VALUE self, VALUE xc, VALUE yc, VALUE radius,
         VALUE angle1, VALUE angle2)
 {
@@ -600,13 +656,53 @@ cr_rel_line_to (VALUE self, VALUE x, VALUE y)
 }
 
 static VALUE
-cr_rel_curve_to (VALUE self, VALUE x1, VALUE y1,
-                 VALUE x2, VALUE y2, VALUE x3, VALUE y3)
+cr_rel_curve_to (VALUE self, VALUE dx1, VALUE dy1,
+                 VALUE dx2, VALUE dy2, VALUE dx3, VALUE dy3)
 {
-  cairo_rel_curve_to (_SELF, NUM2DBL (x1), NUM2DBL (y1),
-                      NUM2DBL (x2), NUM2DBL (y2), NUM2DBL (x3), NUM2DBL (y3));
+  cairo_rel_curve_to (_SELF, NUM2DBL (dx1), NUM2DBL (dy1),
+                      NUM2DBL (dx2), NUM2DBL (dy2),
+                      NUM2DBL (dx3), NUM2DBL (dy3));
   cr_check_status (_SELF);
   return self;
+}
+
+static VALUE
+cr_rel_quadratic_curve_to (VALUE self, VALUE dx1, VALUE dy1,
+                           VALUE dx2, VALUE dy2)
+{
+  VALUE current_point, x0, y0;
+
+  current_point = cr_get_current_point (self);
+  x0 = RARRAY (current_point)->ptr[0];
+  y0 = RARRAY (current_point)->ptr[1];
+  return cr_quadratic_curve_to (self,
+                                rb_funcall (dx1, cr_id_plus, 1, x0),
+                                rb_funcall (dy1, cr_id_plus, 1, y0),
+                                rb_funcall (dx2, cr_id_plus, 1, x0),
+                                rb_funcall (dy2, cr_id_plus, 1, y0));
+}
+
+static VALUE
+cr_rel_curve_to_generic (int argc, VALUE *argv, VALUE self)
+{
+  VALUE dx1, dy1, dx2, dy2, dx3, dy3;
+
+  rb_scan_args (argc, argv, "42", &dx1, &dy1, &dx2, &dy2, &dx3, &dy3);
+
+  if (!(argc == 4 || argc == 6))
+    {
+      VALUE inspected_arg = rb_inspect (rb_ary_new4 (argc, argv));
+      rb_raise (rb_eArgError,
+                "invalid argument: %s (expect "
+                "(dx1, dy1, dx2, dy2) (quadratic) or "
+                "(dx1, dy1, dx2, dy2, dx3, dy3) (cubic))",
+                StringValuePtr (inspected_arg));
+    }
+
+  if (argc == 4)
+    return cr_rel_quadratic_curve_to (self, dx1, dy1, dx2, dy2);
+  else
+    return cr_rel_curve_to (self, dx1, dy1, dx2, dy2, dx3, dy3);
 }
 
 static VALUE
@@ -1242,6 +1338,11 @@ Init_cairo_context (void)
   cr_id_source = rb_intern ("source");
   cr_id_source_class = rb_intern ("source_class");
 
+  cr_id_plus = rb_intern ("+");
+  cr_id_minus = rb_intern ("-");
+  cr_id_multi = rb_intern ("*");
+  cr_id_div = rb_intern ("/");
+
 #if CAIRO_CHECK_VERSION(1, 3, 0)
   rb_cCairo_Rectangle =
     rb_define_class_under (rb_mCairo, "Rectangle", rb_cObject);
@@ -1311,12 +1412,13 @@ Init_cairo_context (void)
   rb_define_method (rb_cCairo_Context, "move_to", cr_move_to, 2);
   rb_define_method (rb_cCairo_Context, "new_sub_path", cr_new_sub_path, 0);
   rb_define_method (rb_cCairo_Context, "line_to", cr_line_to, 2);
-  rb_define_method (rb_cCairo_Context, "curve_to", cr_curve_to, 6);
+  rb_define_method (rb_cCairo_Context, "curve_to", cr_curve_to_generic, -1);
   rb_define_method (rb_cCairo_Context, "arc", cr_arc, 5);
   rb_define_method (rb_cCairo_Context, "arc_negative", cr_arc_negative, 5);
   rb_define_method (rb_cCairo_Context, "rel_move_to", cr_rel_move_to, 2);
   rb_define_method (rb_cCairo_Context, "rel_line_to", cr_rel_line_to, 2);
-  rb_define_method (rb_cCairo_Context, "rel_curve_to", cr_rel_curve_to, 6);
+  rb_define_method (rb_cCairo_Context, "rel_curve_to",
+                    cr_rel_curve_to_generic, -1);
   rb_define_method (rb_cCairo_Context, "rectangle", cr_rectangle, 4);
   rb_define_method (rb_cCairo_Context, "close_path", cr_close_path, 0);
 
