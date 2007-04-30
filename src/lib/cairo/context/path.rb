@@ -15,12 +15,12 @@ module Cairo
           new_path
           path.each do |type, points|
             case type
-            when PATH_CURVE_TO
-              curve_to(*points.collect(&block).flatten)
             when PATH_MOVE_TO
               move_to(*points.collect(&block).flatten)
             when PATH_LINE_TO
               line_to(*points.collect(&block).flatten)
+            when PATH_CURVE_TO
+              curve_to(*points.collect(&block).flatten)
             when PATH_CLOSE_PATH
               close_path
             end
@@ -38,7 +38,7 @@ module Cairo
           type = points = nil
           path.each do |type, points|
             i += 1
-            break if d <= parameterized_path[i]
+            break if d < parameterized_path[i]
             d -= parameterized_path[i]
             case type
             when PATH_MOVE_TO

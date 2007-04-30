@@ -1,3 +1,8 @@
+2007-04-30  Kouhei Sutou  <kou@cozmixng.org>
+
+	* src/lib/cairo/context/path.rb
+	(Cairo::Context::Path#map_path_onto): fixed a boundary value bug.
+
 2007-04-19  Kouhei Sutou  <kou@cozmixng.org>
 
 	* src/rb_cairo_context.c (Cairo::Context#stroke,
