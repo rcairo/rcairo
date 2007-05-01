@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-03-06 12:17:34 $
+ * $Date: 2007-05-01 11:49:43 $
  *
  * Copyright 2005 Kouhei Sutou <kou@cozmixng.org>
  *
@@ -12,6 +12,9 @@
 */
 
 #include "rb_cairo.h"
+#include "rb_cairo_private.h"
+
+static ID id_normalize_const_name;
 
 VALUE
 rb_cairo__float_array (double *values, unsigned count)
@@ -49,3 +52,29 @@ rb_cairo__glyphs_to_array (VALUE rb_array, cairo_glyph_t **glyphs, int *length)
     }
 }
 
+VALUE
+rb_cairo__const_get (VALUE name, const char *prefix)
+{
+  VALUE rb_normalized_name;
+  char *const_name, *normalized_name;
+  size_t prefix_len, normalized_name_len;
+
+  rb_normalized_name = rb_funcall (rb_mCairo, id_normalize_const_name, 1, name);
+  normalized_name = RVAL2CSTR (rb_normalized_name);
+
+  prefix_len = strlen (prefix);
+  normalized_name_len = strlen (normalized_name);
+
+  const_name = ALLOCA_N (char, prefix_len + normalized_name_len + 1);
+  strncpy (const_name, prefix, prefix_len);
+  strncpy (const_name + prefix_len, normalized_name, normalized_name_len);
+  const_name[prefix_len + normalized_name_len] = '\0';
+
+  return rb_const_get (rb_mCairo, rb_intern (const_name));
+}
+
+void
+Init_cairo_private (void)
+{
+  id_normalize_const_name = rb_intern ("normalize_const_name");
+}

@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-03-10 11:56:46 $
+ * $Date: 2007-05-01 11:49:43 $
  *
  * Copyright 2006-2007 Kouhei Sutou <kou@cozmixng.org>
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
@@ -15,22 +15,9 @@
 
 
 #include "rb_cairo.h"
+#include "rb_cairo_private.h"
 
 VALUE rb_mCairo;
-
-extern void Init_cairo_context (void);
-extern void Init_cairo_path (void);
-extern void Init_cairo_matrix (void);
-extern void Init_cairo_surface (void);
-extern void Init_cairo_constants (void);
-extern void Init_cairo_exception (void);
-extern void Init_cairo_font (void);
-extern void Init_cairo_font_extents (void);
-extern void Init_cairo_font_options (void);
-extern void Init_cairo_scaled_font (void);
-extern void Init_cairo_text_extents (void);
-extern void Init_cairo_pattern (void);
-extern void Init_cairo_glyph (void);
 
 static ID id__add_one_arg_setter;
 
@@ -73,6 +60,7 @@ Init_cairo ()
                    rb_ary_new3 (4,
                                 INT2FIX (1), INT2FIX (6), INT2FIX (0), Qnil));
 
+  Init_cairo_private ();
   Init_cairo_constants ();
 
   Init_cairo_context ();

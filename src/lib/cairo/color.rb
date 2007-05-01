@@ -17,7 +17,7 @@ module Cairo
       when /\A#/ #
         parse_hex_color(value)
       when String, Symbol
-        name = value.to_s.gsub(/[\s\-]+/, '_').upcase
+        name = Cairo.normalize_const_name(value)
         begin
           const_get(name).dup
         rescue NameError
