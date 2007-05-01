@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-05-01 13:06:47 $
+ * $Date: 2007-05-01 13:12:58 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -357,19 +357,13 @@ cr_gradient_pattern_get_color_stop_rgba (VALUE self, VALUE index)
 static VALUE
 cr_gradient_pattern_get_color_stop_color (VALUE self, VALUE index)
 {
-  cairo_status_t status;
-  double offset, red, green, blue, alpha;
+  VALUE result, offset, rgba;
 
-  status = cairo_pattern_get_color_stop_rgba (_SELF (self), NUM2INT (index),
-                                              &offset, &red, &green, &blue,
-                                              &alpha);
-  rb_cairo_check_status (status);
-  return rb_ary_new3 (2, rb_float_new (offset),
-                      cr_color_parse (rb_ary_new3 (4,
-                                                   rb_float_new (red),
-                                                   rb_float_new (green),
-                                                   rb_float_new (blue),
-                                                   rb_float_new (alpha))));
+  result = cr_gradient_pattern_get_color_stop_rgba (self, index);
+  offset = rb_ary_shift (result);
+  rgba = result;
+
+  return rb_ary_new3 (2, offset, cr_color_parse (rgba));
 }
 
 static VALUE

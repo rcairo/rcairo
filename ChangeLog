@@ -1,5 +1,8 @@
 2007-05-01  Kouhei Sutou  <kou@cozmixng.org>
 
+	* src/rb_cairo_pattern.c
+	(cr_gradient_pattern_get_color_stop_color): cleanup.
+
 	* src/rb_cairo.[ch]: exported Cairo::Color and Cairo::Color::Base.
 	* src/lib/cairo.rb: require cairo/color before cairo.so to export
 	Cairo::Color to cairo.so.
