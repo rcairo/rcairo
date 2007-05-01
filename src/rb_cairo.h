@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-03-06 12:17:34 $
+ * $Date: 2007-05-01 13:06:47 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -65,6 +65,10 @@ RUBY_CAIRO_VAR VALUE rb_cCairo_ScaledFont;
 RUBY_CAIRO_VAR VALUE rb_cCairo_TextExtents;
 RUBY_CAIRO_VAR VALUE rb_cCairo_Glyph;
 RUBY_CAIRO_VAR VALUE rb_cCairo_Surface;
+
+RUBY_CAIRO_VAR VALUE rb_mCairo_Color;
+RUBY_CAIRO_VAR VALUE rb_cCairo_Color_Base;
+
 
 #define RVAL2CRCONTEXT(obj)     (rb_cairo_context_from_ruby_object(obj))
 #define CRCONTEXT2RVAL(cr)      (rb_cairo_context_to_ruby_object(cr))

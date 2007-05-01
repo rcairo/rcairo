@@ -26,6 +26,8 @@ module Cairo
   end
 end
 
+require 'cairo/color'
+
 require 'cairo.so'
 
 module Cairo
@@ -80,7 +82,5 @@ module Cairo
   end
 end
 
-require 'cairo/color'
 require 'cairo/colors'
 require 'cairo/context'
-require 'cairo/pattern'

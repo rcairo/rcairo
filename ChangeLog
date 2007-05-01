@@ -1,5 +1,14 @@
 2007-05-01  Kouhei Sutou  <kou@cozmixng.org>
 
+	* src/rb_cairo.[ch]: exported Cairo::Color and Cairo::Color::Base.
+	* src/lib/cairo.rb: require cairo/color before cairo.so to export
+	Cairo::Color to cairo.so.
+
+	* src/rb_cairo_pattern.c: implemented src/lib/cairo/patter.rb
+	methods in C.
+	* src/lib/cairo/pattern.rb: removed.
+	* src/lib/cairo.rb: removed cairo/pattern.
+
 	* src/rb_cairo_private.[ch] (rb_cairo__const_get,
 	Init_cairo_private): added.
 	* src/rb_cairo.c: moved Init_* declarations to rb_cairo_private.h.
