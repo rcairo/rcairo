@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-05-01 12:03:21 $
+ * $Date: 2007-05-01 13:06:47 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -13,6 +13,7 @@
  */
 
 #include "rb_cairo.h"
+#include "rb_cairo_private.h"
 
 VALUE rb_cCairo_Pattern;
 VALUE rb_cCairo_SolidPattern;
@@ -21,18 +22,14 @@ VALUE rb_cCairo_GradientPattern;
 VALUE rb_cCairo_LinearPattern;
 VALUE rb_cCairo_RadialPattern;
 
-static VALUE rb_mCairo_Color = 0;
-static VALUE rb_cCairo_Color_Base = 0;
-static ID id_Color, id_Base, id_parse, id_to_rgb, id_to_a, id_inspect;
+static ID id_parse, id_to_rgb, id_to_a, id_inspect;
 
 #define _SELF(self)  (RVAL2CRPATTERN(self))
 
-static const char *
-cr_inspect (VALUE object)
+static VALUE
+cr_color_parse (VALUE color)
 {
-  VALUE inspected;
-  inspected = rb_funcall (object, id_inspect, 0);
-  return StringValueCStr (inspected);
+  return rb_funcall (rb_mCairo_Color, id_parse, 1, color);
 }
 
 static inline void
@@ -104,20 +101,13 @@ cr_solid_pattern_initialize (int argc, VALUE *argv, VALUE self)
 
   n = rb_scan_args (argc, argv, "13", &red, &green, &blue, &alpha);
 
-  if (!rb_mCairo_Color)
-    rb_mCairo_Color = rb_const_get (rb_mCairo, id_Color);
-
   if (n == 1)
     {
-      VALUE parsed;
+      VALUE color = red;
 
-      parsed = rb_funcall (rb_mCairo_Color, id_parse, 1, red);
-
-      if (!rb_cCairo_Color_Base)
-        rb_cCairo_Color_Base = rb_const_get (rb_mCairo_Color, id_Base);
-
-      if (rb_obj_is_kind_of (parsed, rb_cCairo_Color_Base))
-        red = rb_funcall (rb_funcall (parsed, id_to_rgb, 0), id_to_a, 0);
+      color = cr_color_parse (color);
+      if (rb_obj_is_kind_of (color, rb_cCairo_Color_Base))
+        red = rb_funcall (rb_funcall (color, id_to_rgb, 0), id_to_a, 0);
     }
 
   if (n == 1 && rb_obj_is_kind_of (red, rb_cArray) &&
@@ -147,27 +137,12 @@ cr_solid_pattern_initialize (int argc, VALUE *argv, VALUE self)
     }
   else
     {
-      const char *inspected;
+      VALUE inspected;
 
-      if (argc == 1)
-        {
-          inspected = cr_inspect (red);
-        }
-      else
-        {
-          int i;
-          VALUE tmp_args;
-
-          tmp_args = rb_ary_new();
-          for (i = 0; i < argc; i++)
-            {
-              rb_ary_push (tmp_args, argv[i]);
-            }
-          inspected = cr_inspect (tmp_args);
-        }
-
+      inspected = rb_funcall (argc == 1 ? red : rb_ary_new4 (argc, argv),
+                              id_inspect, 0);
       rb_raise (rb_eArgError,
-                "invalid argument (expect "
+                "invalid argument: %s (expect "
                 "(color_name), "
                 "(color_hex_triplet), "
                 "(Cairo::Color::RGB), "
@@ -177,7 +152,8 @@ cr_solid_pattern_initialize (int argc, VALUE *argv, VALUE self)
                 "([red, green, blue]), "
                 "(red, green, blue, alpha) or "
                 "([red, green, blue, alpha])"
-                "): %s", inspected);
+                ")",
+                RVAL2CSTR (inspected));
     }
 
   cr_pattern_check_status (pattern);
@@ -226,51 +202,21 @@ cr_radial_pattern_initialize (VALUE self, VALUE cx0, VALUE cy0, VALUE radius0,
 
 /* Cairo::GradientPattern */
 static VALUE
-cr_gradient_pattern_add_color_stop_rgb (int argc, VALUE *argv, VALUE self)
-{
-  VALUE offset, red, green, blue;
-  int n;
-
-  n = rb_scan_args (argc, argv, "22", &offset, &red, &green, &blue);
-
-  if (n == 2 && rb_obj_is_kind_of (red, rb_cArray))
-    {
-      VALUE ary = red;
-      n = RARRAY (ary)->len + 1;
-
-      red = rb_ary_entry (ary, 0);
-      green = rb_ary_entry (ary, 1);
-      blue = rb_ary_entry (ary, 2);
-    }
-
-  if (n == 4)
-    {
-      cairo_pattern_add_color_stop_rgb (_SELF (self), NUM2DBL (offset),
-                                        NUM2DBL (red), NUM2DBL (green),
-                                        NUM2DBL (blue));
-    }
-  else
-    {
-      VALUE inspected_arg = rb_inspect (rb_ary_new4 (argc, argv));
-      rb_raise (rb_eArgError,
-                "invalid argument: %s (expect "
-                "(offset, red, green, blue) or "
-                "(offset, [red, green, blue])"
-                ")",
-                StringValuePtr (inspected_arg));
-    }
-
-  cr_pattern_check_status (_SELF (self));
-  return self;
-}
-
-static VALUE
-cr_gradient_pattern_add_color_stop_rgba (int argc, VALUE *argv, VALUE self)
+cr_gradient_pattern_add_color_stop_generic (int argc, VALUE *argv, VALUE self)
 {
   VALUE offset, red, green, blue, alpha;
   int n;
 
   n = rb_scan_args (argc, argv, "23", &offset, &red, &green, &blue, &alpha);
+
+  if (n == 2)
+    {
+      VALUE color = red;
+
+      color = cr_color_parse (color);
+      if (rb_obj_is_kind_of (color, rb_cCairo_Color_Base))
+        red = rb_funcall (rb_funcall (color, id_to_rgb, 0), id_to_a, 0);
+    }
 
   if (n == 2 && rb_obj_is_kind_of (red, rb_cArray))
     {
@@ -297,21 +243,27 @@ cr_gradient_pattern_add_color_stop_rgba (int argc, VALUE *argv, VALUE self)
     }
   else
     {
-      VALUE inspected_arg = rb_inspect (rb_ary_new4 (argc, argv));
+      VALUE inspected;
+
+      inspected = rb_funcall (rb_ary_new4 (argc, argv), id_inspect, 0);
       rb_raise (rb_eArgError,
                 "invalid argument: %s (expect "
+                "(offset, color_name), "
+                "(offset, color_hex_triplet), "
+                "(offset, Cairo::Color::RGB), "
+                "(offset, Cairo::Color::CMYK), "
+                "(offset, Cairo::Color::HSV), "
                 "(offset, red, green, blue), "
                 "(offset, [red, green, blue]), "
                 "(offset, red, green, blue, alpha) or "
                 "(offset, [red, green, blue, alpha])"
                 ")",
-                StringValuePtr (inspected_arg));
+                RVAL2CSTR (inspected));
     }
 
   cr_pattern_check_status (_SELF (self));
   return self;
 }
-
 
 /* Cairo::Pattern */
 static VALUE
@@ -373,6 +325,12 @@ cr_solid_pattern_get_rgba (VALUE self)
 }
 
 static VALUE
+cr_solid_pattern_get_color (VALUE self)
+{
+  return cr_color_parse (cr_solid_pattern_get_rgba (self));
+}
+
+static VALUE
 cr_surface_pattern_get_surface (VALUE self)
 {
   cairo_surface_t *surface;
@@ -394,6 +352,24 @@ cr_gradient_pattern_get_color_stop_rgba (VALUE self, VALUE index)
   return rb_ary_new3 (5, rb_float_new (offset),
                       rb_float_new (red), rb_float_new (green),
                       rb_float_new (blue), rb_float_new (alpha));
+}
+
+static VALUE
+cr_gradient_pattern_get_color_stop_color (VALUE self, VALUE index)
+{
+  cairo_status_t status;
+  double offset, red, green, blue, alpha;
+
+  status = cairo_pattern_get_color_stop_rgba (_SELF (self), NUM2INT (index),
+                                              &offset, &red, &green, &blue,
+                                              &alpha);
+  rb_cairo_check_status (status);
+  return rb_ary_new3 (2, rb_float_new (offset),
+                      cr_color_parse (rb_ary_new3 (4,
+                                                   rb_float_new (red),
+                                                   rb_float_new (green),
+                                                   rb_float_new (blue),
+                                                   rb_float_new (alpha))));
 }
 
 static VALUE
@@ -442,8 +418,6 @@ cr_radial_pattern_get_radial_circles (VALUE self)
 void
 Init_cairo_pattern (void)
 {
-  id_Color = rb_intern ("Color");
-  id_Base = rb_intern ("Base");
   id_parse = rb_intern ("parse");
   id_to_rgb = rb_intern ("to_rgb");
   id_to_a = rb_intern ("to_a");
@@ -475,6 +449,8 @@ Init_cairo_pattern (void)
 #if CAIRO_CHECK_VERSION(1, 3, 0)
   rb_define_method (rb_cCairo_SolidPattern, "rgba",
                     cr_solid_pattern_get_rgba, 0);
+  rb_define_method (rb_cCairo_SolidPattern, "color",
+                    cr_solid_pattern_get_color, 0);
 #endif
 
   RB_CAIRO_DEF_SETTERS (rb_cCairo_SolidPattern);
@@ -494,15 +470,17 @@ Init_cairo_pattern (void)
   rb_cCairo_GradientPattern =
     rb_define_class_under (rb_mCairo, "GradientPattern", rb_cCairo_Pattern);
 
-  rb_define_method (rb_cCairo_GradientPattern, "add_color_stop_rgb",
-                    cr_gradient_pattern_add_color_stop_rgb, -1);
-  rb_define_method (rb_cCairo_GradientPattern, "add_color_stop_rgba",
-                    cr_gradient_pattern_add_color_stop_rgba, -1);
+  rb_define_method (rb_cCairo_GradientPattern, "add_color_stop",
+                    cr_gradient_pattern_add_color_stop_generic, -1);
   rb_define_alias (rb_cCairo_GradientPattern,
-                   "add_color_stop", "add_color_stop_rgba");
+                   "add_color_stop_rgb", "add_color_stop");
+  rb_define_alias (rb_cCairo_GradientPattern,
+                   "add_color_stop_rgba", "add_color_stop");
 #if CAIRO_CHECK_VERSION(1, 3, 0)
   rb_define_method (rb_cCairo_GradientPattern, "get_color_stop_rgba",
                     cr_gradient_pattern_get_color_stop_rgba, 1);
+  rb_define_method (rb_cCairo_GradientPattern, "get_color_stop_color",
+                    cr_gradient_pattern_get_color_stop_color, 1);
   rb_define_method (rb_cCairo_GradientPattern, "color_stop_count",
                     cr_gradient_pattern_get_color_stop_count, 0);
 #endif
