@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-04-16 07:31:43 $
+ * $Date: 2007-05-01 12:03:21 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -172,6 +172,7 @@ cr_solid_pattern_initialize (int argc, VALUE *argv, VALUE self)
                 "(color_hex_triplet), "
                 "(Cairo::Color::RGB), "
                 "(Cairo::Color::CMYK), "
+                "(Cairo::Color::HSV), "
                 "(red, green, blue), "
                 "([red, green, blue]), "
                 "(red, green, blue, alpha) or "

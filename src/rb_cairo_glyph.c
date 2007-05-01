@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-03-06 12:17:34 $
+ * $Date: 2007-05-01 12:03:21 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -131,7 +131,7 @@ cr_glyph_to_s (VALUE self)
   rb_str_cat2 (ret, "y=");
   rb_str_concat (ret, rb_inspect (cr_glyph_y (self)));
   rb_str_cat2 (ret, ">");
-                 
+
   return ret;
 }
 
