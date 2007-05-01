@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-03-06 12:17:34 $
+ * $Date: 2007-05-01 11:49:43 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -14,6 +14,7 @@
 
 
 #include "rb_cairo.h"
+#include "rb_cairo_private.h"
 
 #define CAIRO_OPERATOR_MIN CAIRO_OPERATOR_CLEAR
 #define CAIRO_OPERATOR_MAX CAIRO_OPERATOR_SATURATE
@@ -63,23 +64,28 @@
 #define CAIRO_SVG_VERSION_MIN CAIRO_SVG_VERSION_1_1
 #define CAIRO_SVG_VERSION_MAX CAIRO_SVG_VERSION_1_2
 
-#define DEFINE_RVAL2ENUM(name, const_name)                  \
-cairo_ ## name ## _t                                        \
-rb_cairo_ ## name ## _from_ruby_object (VALUE rb_ ## name)  \
-{                                                           \
-  cairo_ ## name ## _t name;                                \
-  name = FIX2INT (rb_ ## name);                             \
-  if (name < CAIRO_ ## const_name ## _MIN ||                \
-      name > CAIRO_ ## const_name ## _MAX)                  \
-    {                                                       \
-      rb_raise (rb_eArgError,                               \
-                "invalid %s: %d (expect %d <= %s <= %d)",   \
-                #name, name,                                \
-                CAIRO_ ## const_name ## _MIN,               \
-                #name,                                      \
-                CAIRO_ ## const_name ## _MAX);              \
-    }                                                       \
-  return name;                                              \
+#define DEFINE_RVAL2ENUM(name, const_name)                      \
+cairo_ ## name ## _t                                            \
+rb_cairo_ ## name ## _from_ruby_object (VALUE rb_ ## name)      \
+{                                                               \
+  cairo_ ## name ## _t name;                                    \
+                                                                \
+  if (!rb_obj_is_kind_of (rb_ ## name, rb_cNumeric))            \
+    rb_ ## name = rb_cairo__const_get (rb_ ## name,             \
+                                       # const_name "_");       \
+                                                                \
+  name = FIX2INT (rb_ ## name);                                 \
+  if (name < CAIRO_ ## const_name ## _MIN ||                    \
+      name > CAIRO_ ## const_name ## _MAX)                      \
+    {                                                           \
+      rb_raise (rb_eArgError,                                   \
+                "invalid %s: %d (expect %d <= %s <= %d)",       \
+                #name, name,                                    \
+                CAIRO_ ## const_name ## _MIN,                   \
+                #name,                                          \
+                CAIRO_ ## const_name ## _MAX);                  \
+    }                                                           \
+  return name;                                                  \
 }
 
 DEFINE_RVAL2ENUM(operator, OPERATOR)

@@ -1,3 +1,17 @@
+2007-05-01  Kouhei Sutou  <kou@cozmixng.org>
+
+	* src/rb_cairo_private.[ch] (rb_cairo__const_get,
+	Init_cairo_private): added.
+	* src/rb_cairo.c: moved Init_* declarations to rb_cairo_private.h.
+	* src/rb_cairo_constants.c: supported abbrev notation for constant
+	name. We can write just like
+	  context.antialias = :none
+	instead of
+	  context.antialias = Cairo::ANTIALIAS_NONE
+
+	* src/lib/cairo.rb (Cairo.normalize_const_name): added.
+	* src/lib/cairo/color.rb: used Cairo.normalize_const_name.
+
 2007-04-30  Kouhei Sutou  <kou@cozmixng.org>
 
 	* src/lib/cairo/context.rb, src/lib/cairo/context/quad.rb: moved

@@ -8,14 +8,20 @@ if /mingw|mswin|mswin32/ =~ RUBY_PLATFORM
 end
 
 module Cairo
-  def self.__add_one_arg_setter(klass)
-    names = klass.instance_methods(false)
-    names.each do |name|
-      if /^set_(.*)/ =~ name and
-          not names.include? "#{$1}=" and
-          klass.instance_method(name).arity == 1
-        klass.module_eval("def #{$1}=(val); set_#{$1}(val); val; end")
+  class << self
+    def __add_one_arg_setter(klass)
+      names = klass.instance_methods(false)
+      names.each do |name|
+        if /^set_(.*)/ =~ name and
+            not names.include? "#{$1}=" and
+            klass.instance_method(name).arity == 1
+          klass.module_eval("def #{$1}=(val); set_#{$1}(val); val; end")
+        end
       end
+    end
+
+    def normalize_const_name(name)
+      name.to_s.upcase.gsub(/[\s\-_]+/, "_")
     end
   end
 end
