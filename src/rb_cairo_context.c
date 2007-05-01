@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-04-30 10:48:09 $
+ * $Date: 2007-05-01 12:03:21 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -747,7 +747,7 @@ cr_paint_generic(int argc, VALUE *argv, VALUE self)
 
   n = rb_scan_args (argc, argv, "01", &alpha);
 
-  if (n == 0 || (n == 1 && NIL_P(alpha)))
+  if (n == 0 || (n == 1 && NIL_P (alpha)))
     {
       return cr_paint (self);
     }
@@ -1004,12 +1004,12 @@ cr_select_font_face (int argc, VALUE *argv, VALUE self)
   else
     weight = RVAL2CRFONTWEIGHT (rb_weight);
 
-  cairo_select_font_face (_SELF, StringValueCStr (family), slant, weight);
+  cairo_select_font_face (_SELF, RVAL2CSTR (family), slant, weight);
   cr_check_status (_SELF);
   return self;
 }
 
-static   VALUE
+static VALUE
 cr_set_font_size (VALUE self, VALUE scale)
 {
   cairo_set_font_size (_SELF, NUM2DBL (scale));
@@ -1048,7 +1048,7 @@ cr_get_font_options (VALUE self)
   cairo_font_options_t *options = cairo_font_options_create ();
   rb_cairo_check_status (cairo_font_options_status (options));
   cairo_get_font_options (_SELF, options);
-  cr_check_status (_SELF);
+  rb_cairo_check_status (cairo_font_options_status (options));
   return CRFONTOPTIONS2RVAL (options);
 }
 
@@ -1071,7 +1071,7 @@ cr_get_scaled_font (VALUE self)
 static VALUE
 cr_show_text (VALUE self, VALUE utf8)
 {
-  cairo_show_text (_SELF, StringValuePtr (utf8));
+  cairo_show_text (_SELF, RVAL2CSTR (utf8));
   cr_check_status (_SELF);
   return self;
 }
