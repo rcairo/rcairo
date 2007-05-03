@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-05-03 02:47:39 $
+ * $Date: 2007-05-03 03:03:47 $
  *
  * Copyright 2005 Kouhei Sutou <kou@cozmixng.org>
  *
@@ -42,6 +42,34 @@ cr_path_data_initialize (VALUE self, VALUE type, VALUE points)
   rb_ivar_set (self, id_type, type);
   rb_ivar_set (self, id_points, points);
   return Qnil;
+}
+
+static VALUE
+cr_path_data_move_to_p (VALUE self)
+{
+  return CBOOL2RVAL (RVAL2CRPATHDATATYPE (rb_ivar_get (self, id_type)) ==
+                     CAIRO_PATH_MOVE_TO);
+}
+
+static VALUE
+cr_path_data_line_to_p (VALUE self)
+{
+  return CBOOL2RVAL (RVAL2CRPATHDATATYPE (rb_ivar_get (self, id_type)) ==
+                     CAIRO_PATH_LINE_TO);
+}
+
+static VALUE
+cr_path_data_curve_to_p (VALUE self)
+{
+  return CBOOL2RVAL (RVAL2CRPATHDATATYPE (rb_ivar_get (self, id_type)) ==
+                     CAIRO_PATH_CURVE_TO);
+}
+
+static VALUE
+cr_path_data_close_path_p (VALUE self)
+{
+  return CBOOL2RVAL (RVAL2CRPATHDATATYPE (rb_ivar_get (self, id_type)) ==
+                     CAIRO_PATH_CLOSE_PATH);
 }
 
 static VALUE
@@ -226,6 +254,13 @@ Init_cairo_path (void)
   rb_define_attr (rb_cCairo_PathData, "points", CR_TRUE, CR_FALSE);
   rb_define_method (rb_cCairo_PathData, "initialize",
                     cr_path_data_initialize, 2);
+
+  rb_define_method (rb_cCairo_PathData, "move_to?", cr_path_data_move_to_p, 0);
+  rb_define_method (rb_cCairo_PathData, "line_to?", cr_path_data_line_to_p, 0);
+  rb_define_method (rb_cCairo_PathData, "curve_to?",
+                    cr_path_data_curve_to_p, 0);
+  rb_define_method (rb_cCairo_PathData, "close_path?",
+                    cr_path_data_close_path_p, 0);
 
   rb_define_method (rb_cCairo_PathData, "each", cr_path_data_each, 0);
 
