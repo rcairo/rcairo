@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-05-01 12:03:21 $
+ * $Date: 2007-05-03 02:47:39 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -52,7 +52,7 @@ cairo_t *
 rb_cairo_context_from_ruby_object (VALUE obj)
 {
   cairo_t *context;
-  if (!RTEST (rb_obj_is_kind_of (obj, rb_cCairo_Context)))
+  if (!rb_cairo__is_kind_of (obj, rb_cCairo_Context))
     {
       rb_raise (rb_eTypeError, "not a cairo graphics context");
     }
@@ -146,7 +146,7 @@ cr_pop_group_generic (int argc, VALUE *argv, VALUE self)
 {
   VALUE to_source;
   rb_scan_args (argc, argv, "01", &to_source);
-  if (RTEST(to_source))
+  if (RVAL2CBOOL (to_source))
     return cr_pop_group_to_source (self);
   else
     return cr_pop_group (self);
@@ -175,7 +175,7 @@ cr_push_group (int argc, VALUE *argv, VALUE self)
       result = rb_protect (rb_yield, self, &state);
       if (cairo_status(_SELF) == CAIRO_STATUS_SUCCESS)
         {
-          if (RTEST (pop_to_source))
+          if (RVAL2CBOOL (pop_to_source))
             cr_pop_group_to_source (self);
           else
             result = cr_pop_group (self);
@@ -206,7 +206,7 @@ cr_set_source_rgb (int argc, VALUE *argv, VALUE self)
 
   n = rb_scan_args (argc, argv, "12", &red, &green, &blue);
 
-  if (n == 1 && RTEST (rb_obj_is_kind_of (red, rb_cArray)))
+  if (n == 1 && rb_cairo__is_kind_of (red, rb_cArray))
     {
       VALUE ary = red;
       n = RARRAY (ary)->len;
@@ -244,7 +244,7 @@ cr_set_source_rgba (int argc, VALUE *argv, VALUE self)
 
   n = rb_scan_args (argc, argv, "13", &red, &green, &blue, &alpha);
 
-  if (n == 1 && RTEST (rb_obj_is_kind_of (red, rb_cArray)))
+  if (n == 1 && rb_cairo__is_kind_of (red, rb_cArray))
     {
       VALUE ary = red;
       n = RARRAY (ary)->len;
@@ -316,7 +316,7 @@ cr_set_source_generic (int argc, VALUE *argv, VALUE self)
 
   n = rb_scan_args (argc, argv, "13", &arg1, &arg2, &arg3, &arg4);
 
-  if (n == 1 && RTEST (rb_obj_is_kind_of (arg1, rb_cArray)))
+  if (n == 1 && rb_cairo__is_kind_of (arg1, rb_cArray))
     {
       return cr_set_source_rgba (argc, argv, self);
     }
@@ -324,7 +324,7 @@ cr_set_source_generic (int argc, VALUE *argv, VALUE self)
     {
       return cr_set_source (self, arg1);
     }
-  else if (n == 3 && rb_obj_is_kind_of (arg1, rb_cCairo_Surface))
+  else if (n == 3 && rb_cairo__is_kind_of (arg1, rb_cCairo_Surface))
     {
       return cr_set_source_surface (self, arg1, arg2, arg3);
     }
@@ -815,7 +815,7 @@ cr_stroke (int argc, VALUE *argv, VALUE self)
       rb_yield (self);
     }
 
-  if (RTEST (preserve))
+  if (RVAL2CBOOL (preserve))
     cairo_stroke_preserve (_SELF);
   else
     cairo_stroke (_SELF);
@@ -837,7 +837,7 @@ cr_fill (int argc, VALUE *argv, VALUE self)
       rb_yield (self);
     }
 
-  if (RTEST (preserve))
+  if (RVAL2CBOOL (preserve))
     cairo_fill_preserve (_SELF);
   else
     cairo_fill (_SELF);
@@ -872,7 +872,7 @@ cr_in_stroke (VALUE self, VALUE x, VALUE y)
       cr_new_path (self);
       rb_yield (self);
     }
-  return cairo_in_stroke (_SELF, NUM2DBL (x), NUM2DBL (y)) ? Qtrue : Qfalse;
+  return CBOOL2RVAL (cairo_in_stroke (_SELF, NUM2DBL (x), NUM2DBL (y)));
 }
 
 static VALUE
@@ -883,7 +883,7 @@ cr_in_fill (VALUE self, VALUE x, VALUE y)
       cr_new_path (self);
       rb_yield (self);
     }
-  return cairo_in_fill (_SELF, NUM2DBL (x), NUM2DBL (y)) ? Qtrue : Qfalse;
+  return CBOOL2RVAL (cairo_in_fill (_SELF, NUM2DBL (x), NUM2DBL (y)));
 }
 
 /* Rectangular extents */
@@ -935,7 +935,7 @@ cr_clip (int argc, VALUE *argv, VALUE self)
       rb_yield (self);
     }
 
-  if (RTEST (preserve))
+  if (RVAL2CBOOL (preserve))
     cairo_clip_preserve(_SELF);
   else
     cairo_clip (_SELF);
@@ -1082,7 +1082,7 @@ cr_show_glyphs (VALUE self, VALUE rb_glyphs)
   int count;
   cairo_glyph_t *glyphs;
 
-  if (!rb_obj_is_kind_of (rb_glyphs, rb_cArray))
+  if (!rb_cairo__is_kind_of (rb_glyphs, rb_cArray))
      rb_raise (rb_eTypeError, "expected array");
 
   rb_cairo__glyphs_to_array (rb_glyphs, &glyphs, &count);

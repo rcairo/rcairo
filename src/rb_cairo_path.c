@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-05-03 02:35:42 $
+ * $Date: 2007-05-03 02:47:39 $
  *
  * Copyright 2005 Kouhei Sutou <kou@cozmixng.org>
  *
@@ -81,7 +81,7 @@ cairo_path_t *
 rb_cairo_path_from_ruby_object (VALUE obj)
 {
   cairo_path_t *path;
-  if (!RTEST (rb_obj_is_kind_of (obj, rb_cCairo_Path)))
+  if (!rb_cairo__is_kind_of (obj, rb_cCairo_Path))
     {
       rb_raise (rb_eTypeError, "not a cairo path");
     }
@@ -136,7 +136,7 @@ cr_path_empty_p (VALUE self)
 {
   cairo_path_t *path = _SELF (self);
 
-  return path->num_data == 0 ? Qtrue : Qfalse;
+  return CBOOL2RVAL (path->num_data == 0);
 }
 
 static int

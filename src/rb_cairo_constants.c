@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-05-01 11:49:43 $
+ * $Date: 2007-05-03 02:47:39 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -70,7 +70,7 @@ rb_cairo_ ## name ## _from_ruby_object (VALUE rb_ ## name)      \
 {                                                               \
   cairo_ ## name ## _t name;                                    \
                                                                 \
-  if (!rb_obj_is_kind_of (rb_ ## name, rb_cNumeric))            \
+  if (!rb_cairo__is_kind_of (rb_ ## name, rb_cNumeric))         \
     rb_ ## name = rb_cairo__const_get (rb_ ## name,             \
                                        # const_name "_");       \
                                                                 \

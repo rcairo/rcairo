@@ -1,5 +1,11 @@
 2007-05-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* src/rb_cairo_private.h
+	(CBOOL2RVAL, RVAL2CBOOL): added.
+	(rb_cairo__is_kind_of): added.
+	* src/*.c: used rb_cairo__is_kind_of() instead of
+	RTEST(rb_obj_is_kind_of(...)).
+
 	* src/rb_cairo_path.c
 	(Cairo::Path#size, Cairo::Path#length, Cairo::Path#empty?): added.
 	(Cairo::Path#[]): supported negative index.

@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-05-01 13:12:58 $
+ * $Date: 2007-05-03 02:47:39 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -42,7 +42,7 @@ cairo_pattern_t *
 rb_cairo_pattern_from_ruby_object (VALUE obj)
 {
   cairo_pattern_t *pattern;
-  if (!RTEST (rb_obj_is_kind_of (obj, rb_cCairo_Pattern)))
+  if (!rb_cairo__is_kind_of (obj, rb_cCairo_Pattern))
     {
       rb_raise (rb_eTypeError, "not a cairo pattern");
     }
@@ -106,11 +106,11 @@ cr_solid_pattern_initialize (int argc, VALUE *argv, VALUE self)
       VALUE color = red;
 
       color = cr_color_parse (color);
-      if (rb_obj_is_kind_of (color, rb_cCairo_Color_Base))
+      if (rb_cairo__is_kind_of (color, rb_cCairo_Color_Base))
         red = rb_funcall (rb_funcall (color, id_to_rgb, 0), id_to_a, 0);
     }
 
-  if (n == 1 && rb_obj_is_kind_of (red, rb_cArray) &&
+  if (n == 1 && rb_cairo__is_kind_of (red, rb_cArray) &&
       (RARRAY (red)->len == 3 || RARRAY (red)->len == 4))
     {
       VALUE ary = red;
@@ -214,11 +214,11 @@ cr_gradient_pattern_add_color_stop_generic (int argc, VALUE *argv, VALUE self)
       VALUE color = red;
 
       color = cr_color_parse (color);
-      if (rb_obj_is_kind_of (color, rb_cCairo_Color_Base))
+      if (rb_cairo__is_kind_of (color, rb_cCairo_Color_Base))
         red = rb_funcall (rb_funcall (color, id_to_rgb, 0), id_to_a, 0);
     }
 
-  if (n == 2 && rb_obj_is_kind_of (red, rb_cArray))
+  if (n == 2 && rb_cairo__is_kind_of (red, rb_cArray))
     {
       VALUE ary = red;
       n = RARRAY (ary)->len + 1;

@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-04-08 06:12:50 $
+ * $Date: 2007-05-03 02:47:39 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -224,7 +224,7 @@ cairo_surface_t *
 rb_cairo_surface_from_ruby_object (VALUE obj)
 {
   cairo_surface_t *surface;
-  if (!RTEST (rb_obj_is_kind_of (obj, rb_cCairo_Surface)))
+  if (!rb_cairo__is_kind_of (obj, rb_cCairo_Surface))
     {
       rb_raise (rb_eTypeError, "not a cairo surface");
     }
