@@ -1,5 +1,9 @@
 2007-05-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* src/rb_cairo_path.c
+	(Cairo::PathData#move_to?, Cairo::PathData#line_to?,
+	Cairo::PathData#curve_to?, Cairo::PathData#close_path?): added.
+
 	* src/rb_cairo_private.h
 	(CBOOL2RVAL, RVAL2CBOOL): added.
 	(rb_cairo__is_kind_of): added.
