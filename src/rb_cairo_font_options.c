@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-03-06 12:17:34 $
+ * $Date: 2007-05-03 02:47:39 $
  *
  * Copyright 2005 Kouhei Sutou <kou@cozmixng.org>
  *
@@ -12,6 +12,7 @@
  */
 
 #include "rb_cairo.h"
+#include "rb_cairo_private.h"
 
 #define _SELF(self) (RVAL2CRFONTOPTIONS(self))
 
@@ -27,7 +28,7 @@ cairo_font_options_t *
 rb_cairo_font_options_from_ruby_object (VALUE obj)
 {
   cairo_font_options_t *options;
-  if (!RTEST (rb_obj_is_kind_of (obj, rb_cCairo_FontOptions)))
+  if (!rb_cairo__is_kind_of (obj, rb_cCairo_FontOptions))
     {
       rb_raise (rb_eTypeError, "not a cairo font options");
     }
@@ -95,7 +96,7 @@ cr_options_merge (VALUE self, VALUE other)
 static VALUE
 cr_options_equal (VALUE self, VALUE other)
 {
-  return cairo_font_options_equal (_SELF (self), _SELF (other)) ? Qtrue : Qfalse;
+  return CBOOL2RVAL (cairo_font_options_equal (_SELF (self), _SELF (other)));
 }
 
 static VALUE

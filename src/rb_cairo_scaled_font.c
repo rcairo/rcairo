@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-03-06 12:17:34 $
+ * $Date: 2007-05-03 02:47:39 $
  *
  * Copyright 2005 Kouhei Sutou <kou@cozmixng.org>
  *
@@ -29,7 +29,7 @@ cairo_scaled_font_t *
 rb_cairo_scaled_font_from_ruby_object (VALUE obj)
 {
   cairo_scaled_font_t *font;
-  if (!RTEST (rb_obj_is_kind_of (obj, rb_cCairo_ScaledFont)))
+  if (!rb_cairo__is_kind_of (obj, rb_cCairo_ScaledFont))
     {
       rb_raise (rb_eTypeError, "not a cairo scaled font");
     }

@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-05-01 11:49:43 $
+ * $Date: 2007-05-03 02:47:39 $
  *
  * Copyright 2005 Kouhei Sutou <kou@cozmixng.org>
  *
@@ -19,6 +19,9 @@
 
 #define CSTR2RVAL(str) rb_str_new2(str)
 #define RVAL2CSTR(str) StringValueCStr(str)
+
+#define CBOOL2RVAL(bool) (bool ? Qtrue : Qfalse)
+#define RVAL2CBOOL(bool) RTEST(bool)
 
 extern void Init_cairo_private (void);
 extern void Init_cairo_constants (void);
@@ -40,5 +43,6 @@ VALUE rb_cairo__float_array (double *values, unsigned count);
 void rb_cairo__glyphs_to_array (VALUE rb_array, cairo_glyph_t **glyphs, int *length);
 
 VALUE rb_cairo__const_get (VALUE name, const char *prefix);
+cairo_bool_t rb_cairo__is_kind_of (VALUE object, VALUE klass);
 
 #endif
