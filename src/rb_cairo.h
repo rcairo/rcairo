@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-05-01 13:06:47 $
+ * $Date: 2007-05-03 02:03:06 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -50,7 +50,9 @@
 
 RUBY_CAIRO_VAR VALUE rb_mCairo;
 RUBY_CAIRO_VAR VALUE rb_cCairo_Context;
+RUBY_CAIRO_VAR VALUE rb_cCairo_Point;
 RUBY_CAIRO_VAR VALUE rb_cCairo_Path;
+RUBY_CAIRO_VAR VALUE rb_cCairo_PathData;
 RUBY_CAIRO_VAR VALUE rb_cCairo_Matrix;
 RUBY_CAIRO_VAR VALUE rb_cCairo_Pattern;
 RUBY_CAIRO_VAR VALUE rb_cCairo_SolidPattern;

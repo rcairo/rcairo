@@ -1,15 +1,6 @@
 module Cairo
   class Context
     module Path
-      module Point
-        module_function
-        def distance(a, b)
-          ax, ay = a
-          bx, by = b
-          Math.sqrt((bx - ax) ** 2 + (by - ay) ** 2)
-        end
-      end
-
       def transform_path(path, &block)
         save do
           new_path
@@ -110,12 +101,12 @@ module Cairo
           when PATH_MOVE_TO
             current_point = points[0]
           when PATH_LINE_TO
-            result = Point.distance(current_point, points[0])
+            result = current_point.distance(points[0])
             current_point = points[0]
           when PATH_CURVE_TO
-            result = Point.distance(current_point, points[0])
-            result += Point.distance(points[0], points[1])
-            result += Point.distance(points[1], points[2])
+            result = current_point.distance(points[0])
+            result += points[0].distance(points[1])
+            result += points[1].distance(points[2])
             current_point = points[2]
           when PATH_CLOSE_PATH
           end
