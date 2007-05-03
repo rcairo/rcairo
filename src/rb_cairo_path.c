@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-05-03 02:17:31 $
+ * $Date: 2007-05-03 02:35:42 $
  *
  * Copyright 2005 Kouhei Sutou <kou@cozmixng.org>
  *
@@ -132,27 +132,46 @@ cr_path_initialize (VALUE self)
 }
 
 static VALUE
-cr_path_each (VALUE self)
+cr_path_empty_p (VALUE self)
 {
-  cairo_path_t *path = _SELF(self);
-  int i;
+  cairo_path_t *path = _SELF (self);
 
-  for (i = 0; i < path->num_data; i += path->data[i].header.length)
-    {
-      rb_yield (cr_path_data_to_ruby_object (&(path->data[i])));
-    }
+  return path->num_data == 0 ? Qtrue : Qfalse;
+}
 
-  return self;
+static int
+cairo_path_get_size (cairo_path_t *path)
+{
+  int i, size;
+
+  for (i = 0, size = 0; i < path->num_data; i += path->data[i].header.length)
+    size++;
+
+  return size;
+}
+
+static VALUE
+cr_path_size (VALUE self)
+{
+  cairo_path_t *path = _SELF (self);
+  return INT2NUM (cairo_path_get_size (path));
 }
 
 static VALUE
 cr_path_ref (VALUE self, VALUE index)
 {
-  cairo_path_t *path = _SELF(self);
+  cairo_path_t *path = _SELF (self);
   int i, requested_index, real_index;
 
-#warning FIXME: support negative index
-  requested_index = NUM2INT(index);
+  requested_index = NUM2INT (index);
+  if (requested_index < 0)
+    {
+      requested_index += cairo_path_get_size (path);
+      if (requested_index < 0)
+        return Qnil;
+    }
+
+
   for (i = 0, real_index = 0; i < requested_index; i++)
     {
       if (real_index >= path->num_data)
@@ -164,6 +183,20 @@ cr_path_ref (VALUE self, VALUE index)
     return cr_path_data_to_ruby_object (&path->data[real_index]);
   else
     return Qnil;
+}
+
+static VALUE
+cr_path_each (VALUE self)
+{
+  cairo_path_t *path = _SELF(self);
+  int i;
+
+  for (i = 0; i < path->num_data; i += path->data[i].header.length)
+    {
+      rb_yield (cr_path_data_to_ruby_object (&(path->data[i])));
+    }
+
+  return self;
 }
 
 void
@@ -207,6 +240,9 @@ Init_cairo_path (void)
 
   rb_define_method (rb_cCairo_Path, "initialize", cr_path_initialize, 0);
 
+  rb_define_method (rb_cCairo_Path, "empty?", cr_path_empty_p, 0);
+  rb_define_method (rb_cCairo_Path, "size", cr_path_size, 0);
+  rb_define_alias (rb_cCairo_Path, "length", "size");
   rb_define_method (rb_cCairo_Path, "[]", cr_path_ref, 1);
 
   rb_define_method (rb_cCairo_Path, "each", cr_path_each, 0);
