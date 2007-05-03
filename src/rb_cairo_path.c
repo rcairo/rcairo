@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-05-03 02:03:06 $
+ * $Date: 2007-05-03 02:17:31 $
  *
  * Copyright 2005 Kouhei Sutou <kou@cozmixng.org>
  *
@@ -43,6 +43,13 @@ cr_path_data_initialize (VALUE self, VALUE type, VALUE points)
   rb_ivar_set (self, id_points, points);
   return Qnil;
 }
+
+static VALUE
+cr_path_data_each (VALUE self)
+{
+  return rb_ary_each (rb_ivar_get (self, id_points));
+}
+
 
 static VALUE
 cr_path_data_to_a (VALUE self)
@@ -180,10 +187,14 @@ Init_cairo_path (void)
 
   rb_cCairo_PathData = rb_define_class_under (rb_mCairo, "PathData", rb_cObject);
 
+  rb_include_module (rb_cCairo_PathData, rb_mEnumerable);
+
   rb_define_attr (rb_cCairo_PathData, "type", CR_TRUE, CR_FALSE);
   rb_define_attr (rb_cCairo_PathData, "points", CR_TRUE, CR_FALSE);
   rb_define_method (rb_cCairo_PathData, "initialize",
                     cr_path_data_initialize, 2);
+
+  rb_define_method (rb_cCairo_PathData, "each", cr_path_data_each, 0);
 
   rb_define_method (rb_cCairo_PathData, "to_a", cr_path_data_to_a, 0);
   rb_define_alias (rb_cCairo_PathData, "to_ary", "to_a");

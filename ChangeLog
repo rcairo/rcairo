@@ -1,5 +1,7 @@
 2007-05-03  Kouhei Sutou  <kou@cozmixng.org>
 
+	* src/rb_cairo_path.c (Cairo::PathData#each): added.
+
 	* src/rb_cairo.h, src/rb_cairo_path.c: added Cairo::Point and
 	Cairo::PathData.
 
