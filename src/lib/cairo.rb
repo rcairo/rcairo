@@ -85,3 +85,4 @@ end
 require 'cairo/point'
 require 'cairo/colors'
 require 'cairo/context'
+require 'cairo/path'
