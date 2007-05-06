@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-05-03 03:03:47 $
+ * $Date: 2007-05-06 10:10:50 $
  *
  * Copyright 2005 Kouhei Sutou <kou@cozmixng.org>
  *
@@ -20,62 +20,65 @@ VALUE rb_cCairo_Point;
 VALUE rb_cCairo_Path;
 VALUE rb_cCairo_PathData;
 
-static ID id_new, id_x, id_y, id_type, id_points;
+static ID id_new, id_current_path;
+static ID id_at_x, id_at_y, id_at_type, id_at_points, id_at_context;
 
 static VALUE
 cr_point_initialize (VALUE self, VALUE x, VALUE y)
 {
-  rb_ivar_set (self, id_x, x);
-  rb_ivar_set (self, id_y, y);
+  rb_ivar_set (self, id_at_x, x);
+  rb_ivar_set (self, id_at_y, y);
   return Qnil;
 }
 
 static VALUE
 cr_point_to_a (VALUE self)
 {
-  return rb_ary_new3 (2, rb_ivar_get (self, id_x), rb_ivar_get (self, id_y));
+  return rb_ary_new3 (2,
+                      rb_ivar_get (self, id_at_x),
+                      rb_ivar_get (self, id_at_y));
 }
 
 static VALUE
 cr_path_data_initialize (VALUE self, VALUE type, VALUE points)
 {
-  rb_ivar_set (self, id_type, type);
-  rb_ivar_set (self, id_points, points);
+  rb_ivar_set (self, id_at_type, type);
+  rb_ivar_set (self, id_at_points, points);
   return Qnil;
 }
 
 static VALUE
 cr_path_data_move_to_p (VALUE self)
 {
-  return CBOOL2RVAL (RVAL2CRPATHDATATYPE (rb_ivar_get (self, id_type)) ==
+  return CBOOL2RVAL (RVAL2CRPATHDATATYPE (rb_ivar_get (self, id_at_type)) ==
                      CAIRO_PATH_MOVE_TO);
 }
 
 static VALUE
 cr_path_data_line_to_p (VALUE self)
 {
-  return CBOOL2RVAL (RVAL2CRPATHDATATYPE (rb_ivar_get (self, id_type)) ==
+  return CBOOL2RVAL (RVAL2CRPATHDATATYPE (rb_ivar_get (self, id_at_type)) ==
                      CAIRO_PATH_LINE_TO);
 }
 
 static VALUE
 cr_path_data_curve_to_p (VALUE self)
 {
-  return CBOOL2RVAL (RVAL2CRPATHDATATYPE (rb_ivar_get (self, id_type)) ==
+  return CBOOL2RVAL (RVAL2CRPATHDATATYPE (rb_ivar_get (self, id_at_type)) ==
                      CAIRO_PATH_CURVE_TO);
 }
 
 static VALUE
 cr_path_data_close_path_p (VALUE self)
 {
-  return CBOOL2RVAL (RVAL2CRPATHDATATYPE (rb_ivar_get (self, id_type)) ==
+  return CBOOL2RVAL (RVAL2CRPATHDATATYPE (rb_ivar_get (self, id_at_type)) ==
                      CAIRO_PATH_CLOSE_PATH);
 }
 
 static VALUE
 cr_path_data_each (VALUE self)
 {
-  return rb_ary_each (rb_ivar_get (self, id_points));
+  return rb_ary_each (rb_ivar_get (self, id_at_points));
 }
 
 
@@ -83,8 +86,8 @@ static VALUE
 cr_path_data_to_a (VALUE self)
 {
   return rb_ary_new3 (2,
-                      rb_ivar_get (self, id_type),
-                      rb_ivar_get (self, id_points));
+                      rb_ivar_get (self, id_at_type),
+                      rb_ivar_get (self, id_at_points));
 }
 
 static VALUE
@@ -105,18 +108,6 @@ cr_path_data_to_ruby_object (cairo_path_data_t *data)
                      INT2FIX (data->header.type), points);
 }
 
-cairo_path_t *
-rb_cairo_path_from_ruby_object (VALUE obj)
-{
-  cairo_path_t *path;
-  if (!rb_cairo__is_kind_of (obj, rb_cCairo_Path))
-    {
-      rb_raise (rb_eTypeError, "not a cairo path");
-    }
-  Data_Get_Struct (obj, cairo_path_t, path);
-  return path;
-}
-
 static void
 cr_path_free (void *ptr)
 {
@@ -126,12 +117,59 @@ cr_path_free (void *ptr)
     }
 }
 
+cairo_path_t *
+rb_cairo_path_from_ruby_object (VALUE obj)
+{
+  VALUE context;
+  cairo_t *cr;
+  cairo_path_t *path, *copied_path;
+
+  if (!rb_cairo__is_kind_of (obj, rb_cCairo_Path))
+    {
+      rb_raise (rb_eTypeError, "not a cairo path");
+    }
+  Data_Get_Struct (obj, cairo_path_t, path);
+
+  context = rb_ivar_get (obj, id_at_context);
+  if (NIL_P (context))
+    return path;
+
+  cr = RVAL2CRCONTEXT (context);
+  if (cairo_status (cr) != CAIRO_STATUS_SUCCESS)
+    return path;
+
+  copied_path = cairo_copy_path (cr);
+  rb_ivar_set (obj, id_current_path, CRPATH2RVAL (copied_path));
+  return copied_path;
+}
+
+static void
+cr_path_ensure_internal_context (VALUE rb_path, cairo_path_t *path)
+{
+  cairo_surface_t *surface;
+  cairo_t *cr;
+
+  if (!NIL_P (rb_ivar_get (rb_path, id_at_context)))
+    return;
+
+  surface = cairo_image_surface_create (CAIRO_FORMAT_A1, 1, 1);
+  cr = cairo_create (surface);
+  if (path->num_data > 0)
+    cairo_append_path (cr, path);
+  rb_cairo_check_status (cairo_status (cr));
+  rb_ivar_set (rb_path, id_at_context, CRCONTEXT2RVAL (cr));
+  cairo_destroy (cr);
+}
+
 VALUE
 rb_cairo_path_to_ruby_object (cairo_path_t *path)
 {
   if (path)
     {
-      return Data_Wrap_Struct (rb_cCairo_Path, NULL, cr_path_free, path);
+      VALUE rb_path;
+      rb_path = Data_Wrap_Struct (rb_cCairo_Path, NULL, cr_path_free, path);
+      cr_path_ensure_internal_context (rb_path, path);
+      return rb_path;
     }
   else
     {
@@ -156,6 +194,8 @@ cr_path_initialize (VALUE self)
   path->num_data = 0;
 
   DATA_PTR (self) = path;
+  cr_path_ensure_internal_context (self, path);
+
   return Qnil;
 }
 
@@ -231,11 +271,13 @@ void
 Init_cairo_path (void)
 {
   id_new = rb_intern ("new");
+  id_current_path = rb_intern ("current_path");
 
-  id_x = rb_intern ("@x");
-  id_y = rb_intern ("@y");
-  id_type = rb_intern ("@type");
-  id_points = rb_intern ("@points");
+  id_at_x = rb_intern ("@x");
+  id_at_y = rb_intern ("@y");
+  id_at_type = rb_intern ("@type");
+  id_at_points = rb_intern ("@points");
+  id_at_context = rb_intern ("@context");
 
   rb_cCairo_Point = rb_define_class_under (rb_mCairo, "Point", rb_cObject);
   rb_define_attr (rb_cCairo_Point, "x", CR_TRUE, CR_FALSE);

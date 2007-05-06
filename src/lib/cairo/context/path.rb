@@ -2,22 +2,20 @@ module Cairo
   class Context
     module Path
       def transform_path(path, &block)
-        save do
-          new_path
-          path.each do |type, points|
-            case type
-            when PATH_MOVE_TO
-              move_to(*points.collect(&block).flatten)
-            when PATH_LINE_TO
-              line_to(*points.collect(&block).flatten)
-            when PATH_CURVE_TO
-              curve_to(*points.collect(&block).flatten)
-            when PATH_CLOSE_PATH
-              close_path
-            end
+        transformed_path = Cairo::Path.new
+        path.each do |type, points|
+          case type
+          when PATH_MOVE_TO
+            transformed_path.move_to(*points.collect(&block).flatten)
+          when PATH_LINE_TO
+            transformed_path.line_to(*points.collect(&block).flatten)
+          when PATH_CURVE_TO
+            transformed_path.curve_to(*points.collect(&block).flatten)
+          when PATH_CLOSE_PATH
+            transformed_path.close
           end
-          copy_path
         end
+        transformed_path
       end
 
       def map_path_onto(path)

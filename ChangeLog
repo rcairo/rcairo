@@ -1,3 +1,12 @@
+2007-05-06  Kouhei Sutou  <kou@cozmixng.org>
+
+	* src/rb_cairo_path.c, src/lib/cairo.rb, src/lib/cairo/path.rb:
+	added path related methods such as move_to, line_to and curve_to
+	to Cairo::Path.
+
+	* src/lib/cairo/context/path.rb
+	(Cairo::Context::Path#transform_path): multi-thread safe.
+
 2007-05-03  Kouhei Sutou  <kou@cozmixng.org>
 
 	* src/rb_cairo_path.c
