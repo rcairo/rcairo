@@ -1,3 +1,8 @@
+2007-05-10  Kouhei Sutou  <kou@cozmixng.org>
+
+	* src/rb_cairo_surface.c (cr_surface_create_similar): retrieved
+	corresponding Ruby class by cairo_surface_get_type().
+
 2007-05-06  Kouhei Sutou  <kou@cozmixng.org>
 
 	* src/rb_cairo_path.c, src/lib/cairo.rb, src/lib/cairo/path.rb:
