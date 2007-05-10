@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-05-03 02:47:39 $
+ * $Date: 2007-05-10 05:16:19 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -293,7 +293,7 @@ cr_surface_create_similar (VALUE self, VALUE content,
                                           RVAL2CRCONTENT (content),
                                           NUM2INT (width), NUM2INT (height));
   cr_surface_check_status (surface);
-  cr_surface_set_klass (surface, rb_obj_class (self));
+  cr_surface_set_klass (surface, cr_surface_get_klass (surface));
   return CRSURFACE2RVAL (surface);
 }
 
