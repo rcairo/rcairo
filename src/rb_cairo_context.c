@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-05-15 11:30:05 $
+ * $Date: 2007-05-15 12:09:28 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -1097,7 +1097,7 @@ cr_get_font_face (VALUE self)
   cairo_font_face_t *face;
 
   face = cairo_get_font_face (_SELF);
-  cr_check_status (_SELF);
+  rb_cairo_check_status (cairo_font_face_status (face));
   return CRFONTFACE2RVAL (face);
 }
 
