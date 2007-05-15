@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-05-15 11:28:23 $
+ * $Date: 2007-05-15 11:30:05 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -1113,7 +1113,7 @@ cr_font_extents (VALUE self)
 static VALUE
 cr_set_font_face (VALUE self, VALUE face)
 {
-  cairo_set_font_face (_SELF, RVAL2CRFONTFACE (face));
+  cairo_set_font_face (_SELF, NIL_P (face) ? NULL : RVAL2CRFONTFACE (face));
   cr_check_status (_SELF);
   return self;
 }
