@@ -1,5 +1,8 @@
 2007-05-15  Kouhei Sutou  <kou@cozmixng.org>
 
+	* src/rb_cairo_context.c (cr_get_font_face): checked status of got
+	font face not context.
+
 	* src/rb_cairo_context.c (cr_set_font_face): accepted nil as font
 	face.
 
