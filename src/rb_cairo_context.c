@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-05-03 02:47:39 $
+ * $Date: 2007-05-15 11:28:23 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -1310,17 +1310,21 @@ cr_get_group_target (VALUE self)
 static VALUE
 cr_copy_path (VALUE self)
 {
-  VALUE path = CRPATH2RVAL (cairo_copy_path (_SELF));
-  cr_check_status (_SELF);
-  return path;
+  cairo_path_t *path;
+
+  path = cairo_copy_path (_SELF);
+  rb_cairo_check_status (path->status);
+  return CRPATH2RVAL (path);
 }
 
 static VALUE
 cr_copy_path_flat (VALUE self)
 {
-  VALUE path = CRPATH2RVAL (cairo_copy_path_flat (_SELF));
-  cr_check_status (_SELF);
-  return path;
+  cairo_path_t *path;
+
+  path =  cairo_copy_path_flat (_SELF);
+  rb_cairo_check_status (path->status);
+  return CRPATH2RVAL (path);
 }
 
 static VALUE
