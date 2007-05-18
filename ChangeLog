@@ -1,4 +1,12 @@
+2007-05-18  Kouhei Sutou  <kou@cozmixng.org>
+
+	* src/rb_cairo_context.c (cr_set_dash):
+	- made offset optional.
+	- accepted a number for dash_array.
+
 2007-05-15  Kouhei Sutou  <kou@cozmixng.org>
+
+	* src/rb_cairo_context.c (cr_get_group_target): added NULL check.
 
 	* src/rb_cairo_context.c (cr_get_font_face): checked status of got
 	font face not context.

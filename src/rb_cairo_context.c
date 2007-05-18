@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-05-15 12:09:28 $
+ * $Date: 2007-05-18 12:24:59 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -390,16 +390,34 @@ cr_set_line_join (VALUE self, VALUE join)
 }
 
 static VALUE
-cr_set_dash (VALUE self, VALUE dash_array, VALUE offset)
+cr_set_dash (int argc, VALUE *argv, VALUE self)
 {
-  if (!NIL_P (dash_array))
+  VALUE dash_array, rb_offset;
+  double offset;
+  cairo_bool_t is_num;
+
+  rb_scan_args(argc, argv, "11", &dash_array, &rb_offset);
+
+  is_num = rb_cairo__is_kind_of (dash_array, rb_cNumeric));
+  if (!(NIL_P (dash_array) || is_num))
     {
       Check_Type (dash_array, T_ARRAY);
     }
 
-  if (NIL_P (dash_array) || RARRAY (dash_array)->len == 0)
+  if (NIL_P (rb_offset))
+    offset = 0.0;
+  else
+    offset = NUM2DBL (rb_offset);
+
+  if (is_num)
     {
-      cairo_set_dash (_SELF, NULL, 0, NUM2DBL (offset));
+      double values[1];
+      values[0] = NUM2DBL (dash_array);
+      cairo_set_dash (_SELF, values, 1, offset);
+    }
+  else if (NIL_P (dash_array) || RARRAY (dash_array)->len == 0)
+    {
+      cairo_set_dash (_SELF, NULL, 0, offset);
     }
   else
     {
@@ -415,7 +433,7 @@ cr_set_dash (VALUE self, VALUE dash_array, VALUE offset)
         {
           values[i] = NUM2DBL (RARRAY (dash_array)->ptr[i]);
         }
-      cairo_set_dash (_SELF, values, length, NUM2DBL (offset));
+      cairo_set_dash (_SELF, values, length, offset);
     }
 
   cr_check_status (_SELF);
@@ -1302,6 +1320,8 @@ cr_get_group_target (VALUE self)
   cairo_surface_t *surface;
 
   surface = cairo_get_group_target (_SELF);
+  if (!surface)
+    return Qnil;
   rb_cairo_check_status (cairo_surface_status (surface));
   return CRSURFACE2RVAL (surface);
 }
@@ -1392,7 +1412,7 @@ Init_cairo_context (void)
   rb_define_method (rb_cCairo_Context, "set_line_width", cr_set_line_width, 1);
   rb_define_method (rb_cCairo_Context, "set_line_cap", cr_set_line_cap, 1);
   rb_define_method (rb_cCairo_Context, "set_line_join", cr_set_line_join, 1);
-  rb_define_method (rb_cCairo_Context, "set_dash", cr_set_dash, 2);
+  rb_define_method (rb_cCairo_Context, "set_dash", cr_set_dash, -1);
   rb_define_method (rb_cCairo_Context, "set_miter_limit",
                     cr_set_miter_limit, 1);
 
