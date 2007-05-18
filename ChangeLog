@@ -1,5 +1,10 @@
 2007-05-18  Kouhei Sutou  <kou@cozmixng.org>
 
+	* src/rb_cairo_private.[ch] (rb_cairo__glyphs_to_array,
+	RB_CAIRO__GLYPHS_TO_ARRAY): fixed wrong memory allocation.
+	* src/rb_cairo_context.c, src/rb_cairo_scaled_font.c: used
+	RB_CAIRO__GLYPHS_TO_ARRAY instead of rb_cairo__glyphs_to_array().
+
 	* src/rb_cairo_context.c (cr_set_dash):
 	- made offset optional.
 	- accepted a number for dash_array.

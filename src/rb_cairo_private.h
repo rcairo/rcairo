@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-05-03 02:47:39 $
+ * $Date: 2007-05-18 14:07:48 $
  *
  * Copyright 2005 Kouhei Sutou <kou@cozmixng.org>
  *
@@ -39,8 +39,21 @@ extern void Init_cairo_text_extents (void);
 extern void Init_cairo_pattern (void);
 extern void Init_cairo_glyph (void);
 
+#define RB_CAIRO__GLYPHS_TO_ARRAY(rb_array, glyphs, length)     \
+do                                                              \
+  {                                                             \
+    Check_Type (rb_array, T_ARRAY);                             \
+    length = RARRAY (rb_array)->len;                            \
+    glyphs = ALLOCA_N (cairo_glyph_t, length);                  \
+                                                                \
+    if (!glyphs)                                                \
+      rb_cairo_check_status (CAIRO_STATUS_NO_MEMORY);           \
+                                                                \
+    rb_cairo__glyphs_to_array (rb_array, glyphs, length);       \
+  } while (0)
+
 VALUE rb_cairo__float_array (double *values, unsigned count);
-void rb_cairo__glyphs_to_array (VALUE rb_array, cairo_glyph_t **glyphs, int *length);
+void rb_cairo__glyphs_to_array (VALUE rb_array, cairo_glyph_t *glyphs, int length);
 
 VALUE rb_cairo__const_get (VALUE name, const char *prefix);
 cairo_bool_t rb_cairo__is_kind_of (VALUE object, VALUE klass);

@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-05-03 02:47:39 $
+ * $Date: 2007-05-18 14:07:48 $
  *
  * Copyright 2005 Kouhei Sutou <kou@cozmixng.org>
  *
@@ -114,7 +114,7 @@ cr_scaled_font_glyph_extents (VALUE self, VALUE rb_glyphs)
   cairo_glyph_t *glyphs;
   int count;
 
-  rb_cairo__glyphs_to_array (rb_glyphs, &glyphs, &count);
+  RB_CAIRO__GLYPHS_TO_ARRAY (rb_glyphs, glyphs, count);
   cairo_scaled_font_glyph_extents (_SELF (self), glyphs, count, &extents);
   cr_scaled_font_check_status (_SELF (self));
   return CRTEXTEXTENTS2RVAL (&extents);

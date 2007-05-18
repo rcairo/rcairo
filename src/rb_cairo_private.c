@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-05-03 02:47:39 $
+ * $Date: 2007-05-18 14:07:48 $
  *
  * Copyright 2005 Kouhei Sutou <kou@cozmixng.org>
  *
@@ -31,22 +31,13 @@ rb_cairo__float_array (double *values, unsigned count)
 }
 
 void
-rb_cairo__glyphs_to_array (VALUE rb_array, cairo_glyph_t **glyphs, int *length)
+rb_cairo__glyphs_to_array (VALUE rb_array, cairo_glyph_t *glyphs, int length)
 {
   int i;
-  
-  if (!rb_cairo__is_kind_of (rb_array, rb_cArray))
-     rb_raise (rb_eTypeError, "expected array");
 
-  *length = RARRAY(rb_array)->len;
-  *glyphs = ALLOCA_N (cairo_glyph_t, *length);
-
-  if (!*glyphs)
-    rb_cairo_check_status (CAIRO_STATUS_NO_MEMORY);
-
-  for (i = 0; i < *length; i++)
+  for (i = 0; i < length; i++)
     {
-      memcpy ((char *) &(*glyphs)[i],
+      memcpy ((char *) &glyphs[i],
               (char *) RVAL2CRGLYPH (rb_ary_entry (rb_array, i)),
               sizeof (cairo_glyph_t));
     }

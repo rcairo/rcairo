@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-05-18 12:24:59 $
+ * $Date: 2007-05-18 14:07:48 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -398,7 +398,7 @@ cr_set_dash (int argc, VALUE *argv, VALUE self)
 
   rb_scan_args(argc, argv, "11", &dash_array, &rb_offset);
 
-  is_num = rb_cairo__is_kind_of (dash_array, rb_cNumeric));
+  is_num = rb_cairo__is_kind_of (dash_array, rb_cNumeric);
   if (!(NIL_P (dash_array) || is_num))
     {
       Check_Type (dash_array, T_ARRAY);
@@ -1100,10 +1100,7 @@ cr_show_glyphs (VALUE self, VALUE rb_glyphs)
   int count;
   cairo_glyph_t *glyphs;
 
-  if (!rb_cairo__is_kind_of (rb_glyphs, rb_cArray))
-     rb_raise (rb_eTypeError, "expected array");
-
-  rb_cairo__glyphs_to_array (rb_glyphs, &glyphs, &count);
+  RB_CAIRO__GLYPHS_TO_ARRAY (rb_glyphs, glyphs, count);
   cairo_show_glyphs (_SELF, glyphs, count);
   cr_check_status (_SELF);
   return self;
@@ -1152,7 +1149,7 @@ cr_glyph_extents (VALUE self, VALUE rb_glyphs)
   cairo_glyph_t *glyphs;
   int length;
 
-  rb_cairo__glyphs_to_array (rb_glyphs, &glyphs, &length);
+  RB_CAIRO__GLYPHS_TO_ARRAY (rb_glyphs, glyphs, length);
   cairo_glyph_extents (_SELF, glyphs, length, &extents);
   cr_check_status (_SELF);
   return CRTEXTEXTENTS2RVAL (&extents);
@@ -1172,7 +1169,7 @@ cr_glyph_path (VALUE self, VALUE rb_glyphs)
   int count;
   cairo_glyph_t *glyphs;
 
-  rb_cairo__glyphs_to_array (rb_glyphs, &glyphs, &count);
+  RB_CAIRO__GLYPHS_TO_ARRAY (rb_glyphs, glyphs, count);
   cairo_glyph_path (_SELF, glyphs, count);
   cr_check_status (_SELF);
 
