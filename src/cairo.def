@@ -17,6 +17,13 @@ EXPORTS
     rb_cCairo_TextExtents     DATA
     rb_cCairo_Glyph           DATA
     rb_cCairo_Surface         DATA
+    rb_cCairo_ImageSurface    DATA
+    rb_cCairo_PDFSurface      DATA
+    rb_cCairo_PSSurface       DATA
+    rb_cCairo_SVGSurface      DATA
+    rb_cCairo_WIN32Surface    DATA
+    rb_mCairo_Color           DATA
+    rb_cCairo_Color_Base      DATA
     rb_cairo_context_from_ruby_object
     rb_cairo_context_to_ruby_object
     rb_cairo_path_from_ruby_object

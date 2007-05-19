@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-05-03 02:03:06 $
+ * $Date: 2007-05-19 00:25:42 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -28,6 +28,10 @@
 
 #if CAIRO_HAS_SVG_SURFACE
 #  include <cairo-svg.h>
+#endif
+
+#if CAIRO_HAS_WIN32_SURFACE
+#  include <cairo-win32.h>
 #endif
 
 #define CAIRO_CHECK_VERSION(major, minor, micro)    \
@@ -67,7 +71,11 @@ RUBY_CAIRO_VAR VALUE rb_cCairo_ScaledFont;
 RUBY_CAIRO_VAR VALUE rb_cCairo_TextExtents;
 RUBY_CAIRO_VAR VALUE rb_cCairo_Glyph;
 RUBY_CAIRO_VAR VALUE rb_cCairo_Surface;
-
+RUBY_CAIRO_VAR VALUE rb_cCairo_ImageSurface;
+RUBY_CAIRO_VAR VALUE rb_cCairo_PDFSurface;
+RUBY_CAIRO_VAR VALUE rb_cCairo_PSSurface;
+RUBY_CAIRO_VAR VALUE rb_cCairo_SVGSurface;
+RUBY_CAIRO_VAR VALUE rb_cCairo_WIN32Surface;
 RUBY_CAIRO_VAR VALUE rb_mCairo_Color;
 RUBY_CAIRO_VAR VALUE rb_cCairo_Color_Base;
 

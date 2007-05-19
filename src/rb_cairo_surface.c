@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-05-10 05:16:19 $
+ * $Date: 2007-05-19 00:25:42 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -29,6 +29,7 @@ VALUE rb_cCairo_ImageSurface;
 VALUE rb_cCairo_PDFSurface;
 VALUE rb_cCairo_PSSurface;
 VALUE rb_cCairo_SVGSurface;
+VALUE rb_cCairo_WIN32Surface;
 
 static ID cr_id_target;
 static ID cr_id_read;
@@ -76,6 +77,9 @@ cr_surface_get_klass (cairo_surface_t *surface)
           break;
         case CAIRO_SURFACE_TYPE_SVG:
           klass = rb_cCairo_SVGSurface;
+          break;
+        case CAIRO_SURFACE_TYPE_WIN32:
+          klass = rb_cCairo_WIN32Surface;
           break;
         default:
           klass = rb_cCairo_Surface;
@@ -536,6 +540,7 @@ cr_image_surface_initialize (int argc, VALUE *argv, VALUE self)
               "(data, format, width, height, stride))");
 
   cr_surface_check_status (surface);
+  cr_surface_set_klass (surface, cr_surface_get_klass (surface));
   DATA_PTR (self) = surface;
   if (rb_block_given_p ())
     yield_and_finish (self);
@@ -740,6 +745,101 @@ cr_svg_version_to_string (VALUE self, VALUE version)
 }
 #endif
 
+#if CAIRO_HAS_WIN32_SURFACE
+/* WIN32-surface functions */
+static VALUE
+cr_win32_surface_initialize (int argc, VALUE *argv, VALUE self)
+{
+  const char[] invalid_argument_message =
+    "invalid argument (expect "
+    "(hdc), "
+    "(hdc, width, height), "
+    "(hdc, format, width, height), "
+    "(width, height) or "
+    "(format, width, height)";
+  cairo_surface_t *surface;
+  cairo_format_t cr_format;
+  VALUE hdc, format, width, height;
+
+  rb_scan_args (argc, argv, "13", &hdc, &format, &width, &height);
+
+  switch (argc)
+    {
+    case 1:
+      surface = cairo_win32_surface_create ((HDC) NUM2UINT (hdc));
+      break;
+    case 2:
+      surface = cairo_win32_surface_create_with_dib (CAIRO_FORMAT_RGB24,
+                                                     NUM2INT (width),
+                                                     NUM2INT (height));
+      break;
+    case 3:
+      if (NIL_P (hdc) ||
+          (rb_cairo__is_kind_of (hdc, rb_cNumeric) &&
+           NUM2INT (hdc) != CAIRO_FORMAT_RGB24))
+        {
+          HDC win32_hdc = NIL_P (hdc) ? NULL : (HDC) NUM2UINT (hdc);
+          surface = cairo_win32_surface_create_with_ddb (hdc,
+                                                         CAIRO_FORMAT_ARGB32,
+                                                         NUM2INT (width),
+                                                         NUM2INT (height));
+        }
+      else
+        {
+          height = width;
+          width = format;
+          format = hdc;
+          surface = cairo_win32_surface_create_with_dib (RVAL2CRFORMAT (format),
+                                                         NUM2INT (width),
+                                                         NUM2INT (height));
+        }
+      break;
+    case 4:
+      {
+        HDC win32_hdc = NIL_P (hdc) ? NULL : (HDC) NUM2UINT (hdc);
+        surface = cairo_win32_surface_create_with_ddb (hdc,
+                                                       CAIRO_FORMAT_ARGB32,
+                                                       NUM2INT (width),
+                                                       NUM2INT (height));
+      }
+    }
+
+  if (!surface)
+    rb_cairo_check_status (CAIRO_STATUS_INVALID_FORMAT);
+  cr_surface_check_status (surface);
+  cr_surface_set_klass (surface, cr_surface_get_klass (surface));
+  DATA_PTR (self) = surface;
+  if (rb_block_given_p ())
+    yield_and_finish (self);
+  return Qnil;
+}
+
+static VALUE
+cr_win32_surface_get_hdc (VALUE self)
+{
+  HDC hdc;
+
+  hdc = cairo_win32_surface_get_dc (_SELF);
+  if (!hdc)
+    return Qnil;
+  else
+    return UINT2NUM ((unsigned int) hdc);
+}
+
+static VALUE
+cr_win32_surface_get_image (VALUE self)
+{
+  cairo_surface_t *surface;
+  VALUE rb_surface;
+
+  surface = cairo_win32_surface_get_image (_SELF);
+  if (!surface)
+    return Qnil;
+  rb_cairo_check_status (cairo_surface_status (surface));
+  return CRSURFACE2RVAL (surface);
+}
+#endif
+
 
 void
 Init_cairo_surface (void)
@@ -856,5 +956,20 @@ Init_cairo_surface (void)
   RB_CAIRO_DEF_SETTERS (rb_cCairo_SVGSurface);
 #else
   rb_cCairo_SVGSurface = Qnil;
+#endif
+
+#if CAIRO_HAS_WIN32_SURFACE
+  /* WIN32-surface */
+  rb_cCairo_WIN32Surface =
+    rb_define_class_under (rb_mCairo, "WIN32Surface", rb_cCairo_Surface);
+
+  rb_define_method (rb_cCairo_WIN32Surface, "initialize",
+                    cr_win32_surface_initialize, -1);
+  rb_define_method (rb_cCairo_WIN32Surface, "hdc",
+                    cr_win32_surface_get_hdc, 0);
+  rb_define_method (rb_cCairo_WIN32Surface, "image",
+                    cr_win32_surface_get_image, 0);
+#else
+  rb_cCairo_WIN32Surface = Qnil;
 #endif
 }

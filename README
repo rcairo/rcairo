@@ -30,3 +30,8 @@ it could be improved, please feel free to send a message to the cairo
 mailinglist at cairo@cairographics.org , which is archived at
 
   http://cairographics.org/cgi-bin/mailman/listinfo/cairo
+
+Thanks
+------
+
+  * Yoshinao Muramatsu: win32 surface support patch.
