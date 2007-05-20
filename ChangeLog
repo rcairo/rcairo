@@ -1,9 +1,18 @@
+2007-05-20  Kouhei Sutou  <kou@cozmixng.org>
+
+	* src/rb_cairo.h, src/cairo.def, src/rb_cairo_constants.rb:
+	added a module for each enum type.
+	* src/lib/cairo/constants.rb: kept the backward compatibility.
+
 2007-05-19  Kouhei Sutou  <kou@cozmixng.org>
+
+	* src/lib/cairo/context/circle.rb (Cairo::Context::Circle#circle):
+	renamed parameter name to be more self-descriptive.
 
 	* src/rb_cairo.h, src/cairo.def, src/rb_cairo_surface.c:
 	supported win32 surface. Thanks to Yoshinao Muramatsu!!!
 
-	* README: added entry for Yoshinao Muramatsu.
+	* README: added an entry for Yoshinao Muramatsu.
 
 2007-05-18  Kouhei Sutou  <kou@cozmixng.org>
 

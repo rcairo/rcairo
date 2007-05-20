@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-05-19 00:25:42 $
+ * $Date: 2007-05-20 02:45:40 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -939,11 +939,6 @@ Init_cairo_surface (void)
 #if CAIRO_HAS_SVG_SURFACE
   /* SVG-surface */
   INIT_SURFACE(svg, SVG)
-
-  rb_define_const (rb_cCairo_SVGSurface, "VERSION_1_1",
-                   rb_const_get (rb_mCairo, rb_intern ("SVG_VERSION_1_1")));
-  rb_define_const (rb_cCairo_SVGSurface, "VERSION_1_2",
-                   rb_const_get (rb_mCairo, rb_intern ("SVG_VERSION_1_2")));
 
   rb_define_singleton_method (rb_cCairo_SVGSurface, "versions",
                               cr_svg_get_versions, 0);

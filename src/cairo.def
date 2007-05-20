@@ -22,8 +22,30 @@ EXPORTS
     rb_cCairo_PSSurface       DATA
     rb_cCairo_SVGSurface      DATA
     rb_cCairo_WIN32Surface    DATA
+
+    rb_mCairo_Operator        DATA
+    rb_mCairo_Antialias       DATA
+    rb_mCairo_FillRule        DATA
+    rb_mCairo_LineCap         DATA
+    rb_mCairo_LineJoin        DATA
+    rb_mCairo_FontSlant       DATA
+    rb_mCairo_FontWeight      DATA
+    rb_mCairo_SubpixelOrder   DATA
+    rb_mCairo_HintStyle       DATA
+    rb_mCairo_HintMetrics     DATA
+    rb_mCairo_FontType        DATA
+    rb_mCairo_PathDataType    DATA
+    rb_mCairo_Content         DATA
+    rb_mCairo_SurfaceType     DATA
+    rb_mCairo_Format          DATA
+    rb_mCairo_PatternType     DATA
+    rb_mCairo_Extend          DATA
+    rb_mCairo_Filter          DATA
+    rb_mCairo_SVGVersion      DATA
+
     rb_mCairo_Color           DATA
     rb_cCairo_Color_Base      DATA
+
     rb_cairo_context_from_ruby_object
     rb_cairo_context_to_ruby_object
     rb_cairo_path_from_ruby_object

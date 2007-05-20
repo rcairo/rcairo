@@ -29,6 +29,7 @@ end
 require 'cairo/color'
 
 require 'cairo.so'
+require 'cairo/constants'
 
 module Cairo
   class << self
