@@ -1,5 +1,8 @@
 2007-05-20  Kouhei Sutou  <kou@cozmixng.org>
 
+	* src/rb_cairo.h, src/rb_cairo_surface.c: improved win32 surface
+	support. Thanks to Yoshinao Muramatsu!
+
 	* src/rb_cairo.h, src/cairo.def, src/rb_cairo_constants.rb:
 	added a module for each enum type.
 	* src/lib/cairo/constants.rb: kept the backward compatibility.

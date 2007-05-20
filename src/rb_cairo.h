@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-05-20 02:45:40 $
+ * $Date: 2007-05-20 03:03:02 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -31,7 +31,9 @@
 #endif
 
 #if CAIRO_HAS_WIN32_SURFACE
+#  define OpenFile OpenFile_win32
 #  include <cairo-win32.h>
+#  undef OpenFile
 #endif
 
 #define CAIRO_CHECK_VERSION(major, minor, micro)    \
