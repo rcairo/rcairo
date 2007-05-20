@@ -33,12 +33,9 @@ EXPORTS
     rb_mCairo_SubpixelOrder   DATA
     rb_mCairo_HintStyle       DATA
     rb_mCairo_HintMetrics     DATA
-    rb_mCairo_FontType        DATA
     rb_mCairo_PathDataType    DATA
     rb_mCairo_Content         DATA
-    rb_mCairo_SurfaceType     DATA
     rb_mCairo_Format          DATA
-    rb_mCairo_PatternType     DATA
     rb_mCairo_Extend          DATA
     rb_mCairo_Filter          DATA
     rb_mCairo_SVGVersion      DATA

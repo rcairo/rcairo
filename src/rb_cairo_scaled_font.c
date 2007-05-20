@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-05-18 14:07:48 $
+ * $Date: 2007-05-20 09:18:49 $
  *
  * Copyright 2005 Kouhei Sutou <kou@cozmixng.org>
  *
@@ -80,12 +80,6 @@ cr_scaled_font_initialize (VALUE self, VALUE face, VALUE matrix,
   cr_scaled_font_check_status (font);
   DATA_PTR (self) = font;
   return Qnil;
-}
-
-static VALUE
-cr_scaled_font_get_type (VALUE self)
-{
-  return INT2NUM (cairo_scaled_font_get_type ( _SELF (self)));
 }
 
 static VALUE
@@ -168,7 +162,6 @@ Init_cairo_scaled_font (void)
   rb_define_method (rb_cCairo_ScaledFont, "initialize",
                     cr_scaled_font_initialize, 4);
 
-  rb_define_method (rb_cCairo_ScaledFont, "type", cr_scaled_font_get_type, 0);
   rb_define_method (rb_cCairo_ScaledFont, "extents", cr_scaled_font_extents, 0);
   rb_define_method (rb_cCairo_ScaledFont, "text_extents",
                     cr_scaled_font_text_extents, 1);

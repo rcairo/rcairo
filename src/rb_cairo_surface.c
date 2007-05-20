@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-05-20 08:46:07 $
+ * $Date: 2007-05-20 09:18:49 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -299,12 +299,6 @@ cr_surface_finish (VALUE self)
   
   cr_surface_check_status (_SELF);
   return self;
-}
-
-static VALUE
-cr_surface_get_type (VALUE self)
-{
-  return INT2NUM (cairo_surface_get_type (_SELF));
 }
 
 static VALUE
@@ -842,7 +836,6 @@ Init_cairo_surface (void)
   rb_define_method (rb_cCairo_Surface, "create_similar",
                     cr_surface_create_similar, 3);
   rb_define_method (rb_cCairo_Surface, "finish", cr_surface_finish, 0);
-  rb_define_method (rb_cCairo_Surface, "type", cr_surface_get_type, 0);
   rb_define_method (rb_cCairo_Surface, "content", cr_surface_get_content, 0);
 
   rb_define_method (rb_cCairo_Surface, "font_options",
