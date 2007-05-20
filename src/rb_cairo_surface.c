@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-05-20 02:45:40 $
+ * $Date: 2007-05-20 03:03:02 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -750,45 +750,45 @@ cr_svg_version_to_string (VALUE self, VALUE version)
 static VALUE
 cr_win32_surface_initialize (int argc, VALUE *argv, VALUE self)
 {
-  const char[] invalid_argument_message =
-    "invalid argument (expect "
-    "(hdc), "
-    "(hdc, width, height), "
-    "(hdc, format, width, height), "
-    "(width, height) or "
-    "(format, width, height)";
-  cairo_surface_t *surface;
+  cairo_surface_t *surface = NULL;
   cairo_format_t cr_format;
+  VALUE arg1, arg2, arg3, arg4;
   VALUE hdc, format, width, height;
 
-  rb_scan_args (argc, argv, "13", &hdc, &format, &width, &height);
+  rb_scan_args (argc, argv, "13", &arg1, &arg2, &arg3, &arg4);
 
   switch (argc)
     {
     case 1:
+      hdc = arg1;
       surface = cairo_win32_surface_create ((HDC) NUM2UINT (hdc));
       break;
     case 2:
-      surface = cairo_win32_surface_create_with_dib (CAIRO_FORMAT_RGB24,
+      width = arg1;
+      height = arg3;
+      surface = cairo_win32_surface_create_with_dib (CAIRO_FORMAT_ARGB32,
                                                      NUM2INT (width),
                                                      NUM2INT (height));
       break;
     case 3:
-      if (NIL_P (hdc) ||
-          (rb_cairo__is_kind_of (hdc, rb_cNumeric) &&
-           NUM2INT (hdc) != CAIRO_FORMAT_RGB24))
+      if (NIL_P (arg1) ||
+          (rb_cairo__is_kind_of (arg1, rb_cNumeric) &&
+           NUM2INT (arg1) != CAIRO_FORMAT_RGB24))
         {
+          hdc = arg1;
+          width = arg2;
+          height = arg3;
           HDC win32_hdc = NIL_P (hdc) ? NULL : (HDC) NUM2UINT (hdc);
-          surface = cairo_win32_surface_create_with_ddb (hdc,
-                                                         CAIRO_FORMAT_ARGB32,
+          surface = cairo_win32_surface_create_with_ddb (win32_hdc,
+                                                         CAIRO_FORMAT_RGB24,
                                                          NUM2INT (width),
                                                          NUM2INT (height));
         }
       else
         {
-          height = width;
-          width = format;
-          format = hdc;
+          format = arg1;
+          width = arg2;
+          height = arg3;
           surface = cairo_win32_surface_create_with_dib (RVAL2CRFORMAT (format),
                                                          NUM2INT (width),
                                                          NUM2INT (height));
@@ -796,12 +796,18 @@ cr_win32_surface_initialize (int argc, VALUE *argv, VALUE self)
       break;
     case 4:
       {
-        HDC win32_hdc = NIL_P (hdc) ? NULL : (HDC) NUM2UINT (hdc);
-        surface = cairo_win32_surface_create_with_ddb (hdc,
-                                                       CAIRO_FORMAT_ARGB32,
+        HDC win32_hdc;
+        hdc = arg1;
+        format = arg2;
+        width = arg3;
+        height = arg4;
+        win32_hdc = NIL_P (hdc) ? NULL : (HDC) NUM2UINT (hdc);
+        surface = cairo_win32_surface_create_with_ddb (win32_hdc,
+                                                       RVAL2CRFORMAT (format),
                                                        NUM2INT (width),
                                                        NUM2INT (height));
       }
+      break;
     }
 
   if (!surface)
@@ -830,7 +836,6 @@ static VALUE
 cr_win32_surface_get_image (VALUE self)
 {
   cairo_surface_t *surface;
-  VALUE rb_surface;
 
   surface = cairo_win32_surface_get_image (_SELF);
   if (!surface)
