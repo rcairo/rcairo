@@ -1,5 +1,9 @@
 2007-05-20  Kouhei Sutou  <kou@cozmixng.org>
 
+	* src/rb_cairo.h, src/rb_cairo_pattern.c, src/rb_cairo_surface.c:
+	always detected surface and pattern type dynamically.
+	* src/rb_cairo_context.c: followed the above changes.
+
 	* src/rb_cairo.h, src/rb_cairo_surface.c: improved win32 surface
 	support. Thanks to Yoshinao Muramatsu!
 

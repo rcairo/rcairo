@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-05-03 02:47:39 $
+ * $Date: 2007-05-20 08:46:07 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -38,6 +38,36 @@ cr_pattern_check_status (cairo_pattern_t *pattern)
   rb_cairo_check_status (cairo_pattern_status (pattern));
 }
 
+static VALUE
+cr_pattern_get_klass (cairo_pattern_t *pattern)
+{
+  VALUE klass;
+  cairo_pattern_type_t type;
+
+  type = cairo_pattern_get_type (pattern);
+  switch (type)
+    {
+    case CAIRO_PATTERN_TYPE_SOLID:
+      klass = rb_cCairo_SolidPattern;
+      break;
+    case CAIRO_PATTERN_TYPE_SURFACE:
+      klass = rb_cCairo_SurfacePattern;
+      break;
+    case CAIRO_PATTERN_TYPE_LINEAR:
+      klass = rb_cCairo_LinearPattern;
+      break;
+    case CAIRO_PATTERN_TYPE_RADIAL:
+      klass = rb_cCairo_RadialPattern;
+      break;
+    default:
+      rb_raise (rb_eArgError, "unknown pattern type: %d", type);
+      break;
+    }
+
+  return klass;
+}
+
+
 cairo_pattern_t *
 rb_cairo_pattern_from_ruby_object (VALUE obj)
 {
@@ -60,10 +90,12 @@ cr_pattern_free (void *ptr)
 }
 
 VALUE
-rb_cairo_pattern_to_ruby_object (cairo_pattern_t *pattern, VALUE klass)
+rb_cairo_pattern_to_ruby_object (cairo_pattern_t *pattern)
 {
   if (pattern)
     {
+      VALUE klass;
+      klass = cr_pattern_get_klass (pattern);
       cairo_pattern_reference (pattern);
       return Data_Wrap_Struct (klass, NULL, cr_pattern_free, pattern);
     }
