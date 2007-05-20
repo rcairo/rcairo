@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-05-20 03:03:02 $
+ * $Date: 2007-05-20 08:46:07 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -34,7 +34,6 @@ VALUE rb_cCairo_WIN32Surface;
 static ID cr_id_target;
 static ID cr_id_read;
 static ID cr_id_write;
-static cairo_user_data_key_t cr_klass_key;
 static cairo_user_data_key_t cr_closure_key;
 
 #define _SELF  (RVAL2CRSURFACE(self))
@@ -45,46 +44,33 @@ cr_surface_check_status (cairo_surface_t *surface)
   rb_cairo_check_status (cairo_surface_status (surface));
 }
 
-static void
-cr_surface_set_klass (cairo_surface_t *surface, VALUE klass)
-{
-  cairo_status_t status;
-  status = cairo_surface_set_user_data (surface, &cr_klass_key,
-                                        (void *)klass, NULL);
-  rb_cairo_check_status (status);
-}
-
 static VALUE
 cr_surface_get_klass (cairo_surface_t *surface)
 {
   VALUE klass;
-  void *data = cairo_surface_get_user_data (surface, &cr_klass_key);
+  cairo_surface_type_t type;
 
-  if (data)
-    klass = (VALUE) data;
-  else
+  type = cairo_surface_get_type (surface);
+  switch (type)
     {
-      switch (cairo_surface_get_type (surface))
-        {
-        case CAIRO_SURFACE_TYPE_IMAGE:
-          klass = rb_cCairo_ImageSurface;
-          break;
-        case CAIRO_SURFACE_TYPE_PDF:
-          klass = rb_cCairo_PDFSurface;
-          break;
-        case CAIRO_SURFACE_TYPE_PS:
-          klass = rb_cCairo_PSSurface;
-          break;
-        case CAIRO_SURFACE_TYPE_SVG:
-          klass = rb_cCairo_SVGSurface;
-          break;
-        case CAIRO_SURFACE_TYPE_WIN32:
-          klass = rb_cCairo_WIN32Surface;
-          break;
-        default:
-          klass = rb_cCairo_Surface;
-          break;
-        }
+    case CAIRO_SURFACE_TYPE_IMAGE:
+      klass = rb_cCairo_ImageSurface;
+      break;
+    case CAIRO_SURFACE_TYPE_PDF:
+      klass = rb_cCairo_PDFSurface;
+      break;
+    case CAIRO_SURFACE_TYPE_PS:
+      klass = rb_cCairo_PSSurface;
+      break;
+    case CAIRO_SURFACE_TYPE_SVG:
+      klass = rb_cCairo_SVGSurface;
+      break;
+    case CAIRO_SURFACE_TYPE_WIN32:
+      klass = rb_cCairo_WIN32Surface;
+      break;
+    default:
+      rb_raise (rb_eArgError, "unknown source type: %d", type);
+      break;
     }
 
   return klass;
@@ -233,7 +219,6 @@ rb_cairo_surface_from_ruby_object (VALUE obj)
       rb_raise (rb_eTypeError, "not a cairo surface");
     }
   Data_Get_Struct (obj, cairo_surface_t, surface);
-  cr_surface_set_klass (surface, rb_obj_class (obj));
   return surface;
 }
 
@@ -251,7 +236,8 @@ rb_cairo_surface_to_ruby_object (cairo_surface_t *surface)
 {
   if (surface)
     {
-      VALUE klass = cr_surface_get_klass (surface);
+      VALUE klass;
+      klass = cr_surface_get_klass (surface);
       cairo_surface_reference (surface);
       return Data_Wrap_Struct (klass, NULL, cr_surface_free, surface);
     }
@@ -297,7 +283,6 @@ cr_surface_create_similar (VALUE self, VALUE content,
                                           RVAL2CRCONTENT (content),
                                           NUM2INT (width), NUM2INT (height));
   cr_surface_check_status (surface);
-  cr_surface_set_klass (surface, cr_surface_get_klass (surface));
   return CRSURFACE2RVAL (surface);
 }
 
@@ -483,7 +468,6 @@ cr_image_surface_create_from_png_generic (VALUE klass, VALUE target)
     surface = cr_image_surface_create_from_png (target);
 
   cr_surface_check_status (surface);
-  cr_surface_set_klass (surface, klass);
   rb_surface = cr_surface_allocate (klass);
   DATA_PTR (rb_surface) = surface;
   return rb_surface;
@@ -540,7 +524,6 @@ cr_image_surface_initialize (int argc, VALUE *argv, VALUE self)
               "(data, format, width, height, stride))");
 
   cr_surface_check_status (surface);
-  cr_surface_set_klass (surface, cr_surface_get_klass (surface));
   DATA_PTR (self) = surface;
   if (rb_block_given_p ())
     yield_and_finish (self);
@@ -813,7 +796,6 @@ cr_win32_surface_initialize (int argc, VALUE *argv, VALUE self)
   if (!surface)
     rb_cairo_check_status (CAIRO_STATUS_INVALID_FORMAT);
   cr_surface_check_status (surface);
-  cr_surface_set_klass (surface, cr_surface_get_klass (surface));
   DATA_PTR (self) = surface;
   if (rb_block_given_p ())
     yield_and_finish (self);

@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-05-20 03:03:02 $
+ * $Date: 2007-05-20 08:46:06 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -113,7 +113,7 @@ RUBY_CAIRO_VAR VALUE rb_cCairo_Color_Base;
 #define CRMATRIX2RVAL(matrix)   (rb_cairo_matrix_to_ruby_object(matrix))
 
 #define RVAL2CRPATTERN(obj)     (rb_cairo_pattern_from_ruby_object(obj))
-#define CRPATTERN2RVAL(pattern, klass) (rb_cairo_pattern_to_ruby_object(pattern, klass))
+#define CRPATTERN2RVAL(pattern) (rb_cairo_pattern_to_ruby_object(pattern))
 
 #define RVAL2CRFONTFACE(obj)    (rb_cairo_font_face_from_ruby_object(obj))
 #define CRFONTFACE2RVAL(face)   (rb_cairo_font_face_to_ruby_object(face))
@@ -146,7 +146,7 @@ cairo_matrix_t       *rb_cairo_matrix_from_ruby_object       (VALUE obj);
 VALUE                 rb_cairo_matrix_to_ruby_object         (cairo_matrix_t *matrix);
 
 cairo_pattern_t      *rb_cairo_pattern_from_ruby_object      (VALUE obj);
-VALUE                 rb_cairo_pattern_to_ruby_object        (cairo_pattern_t *pat, VALUE klass);
+VALUE                 rb_cairo_pattern_to_ruby_object        (cairo_pattern_t *pat);
 
 cairo_font_face_t    *rb_cairo_font_face_from_ruby_object    (VALUE obj);
 VALUE                 rb_cairo_font_face_to_ruby_object      (cairo_font_face_t *face);

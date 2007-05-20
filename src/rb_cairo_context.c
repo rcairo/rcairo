@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-05-18 14:07:48 $
+ * $Date: 2007-05-20 08:46:07 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -17,7 +17,7 @@
 
 VALUE rb_cCairo_Context;
 
-static ID cr_id_surface, cr_id_source, cr_id_source_class;
+static ID cr_id_surface, cr_id_source;
 static ID cr_id_plus, cr_id_minus, cr_id_multi, cr_id_div;
 
 #define _SELF  (RVAL2CRCONTEXT(self))
@@ -129,7 +129,7 @@ cr_pop_group (VALUE self)
 
   pattern = cairo_pop_group (_SELF);
   cr_check_status (_SELF);
-  return CRPATTERN2RVAL (pattern, rb_cCairo_SurfacePattern);
+  return CRPATTERN2RVAL (pattern);
 }
 
 static VALUE
@@ -137,7 +137,6 @@ cr_pop_group_to_source (VALUE self)
 {
   cairo_pop_group_to_source (_SELF);
   cr_check_status (_SELF);
-  rb_ivar_set (self, cr_id_source_class, rb_cCairo_SurfacePattern);
   return Qnil;
 }
 
@@ -232,7 +231,6 @@ cr_set_source_rgb (int argc, VALUE *argv, VALUE self)
     }
   cr_check_status (_SELF);
   rb_ivar_set (self, cr_id_source, Qnil);
-  rb_ivar_set (self, cr_id_source_class, rb_cCairo_SolidPattern);
   return self;
 }
 
@@ -281,7 +279,6 @@ cr_set_source_rgba (int argc, VALUE *argv, VALUE self)
     }
   cr_check_status (_SELF);
   rb_ivar_set (self, cr_id_source, Qnil);
-  rb_ivar_set (self, cr_id_source_class, rb_cCairo_SolidPattern);
   return self;
 }
 
@@ -294,7 +291,6 @@ cr_set_source_surface (VALUE self, VALUE surface, VALUE width, VALUE height)
                             NUM2INT (height));
   cr_check_status (_SELF);
   rb_ivar_set (self, cr_id_source, Qnil);
-  rb_ivar_set (self, cr_id_source_class, rb_cCairo_SurfacePattern);
   return self;
 }
 
@@ -304,7 +300,6 @@ cr_set_source (VALUE self, VALUE pattern)
   cairo_set_source (_SELF, RVAL2CRPATTERN (pattern));
   cr_check_status (_SELF);
   rb_ivar_set (self, cr_id_source, pattern);
-  rb_ivar_set (self, cr_id_source_class, rb_obj_class (pattern));
   return self;
 }
 
@@ -1190,14 +1185,13 @@ cr_get_source (VALUE self)
   cairo_pattern_t *source;
   source = cairo_get_source (_SELF);
 
-  rb_source = rb_ivar_get (self, cr_id_source);
   if (source)
     {
       rb_cairo_check_status (cairo_pattern_status (source));
+      rb_source = rb_ivar_get (self, cr_id_source);
       if (NIL_P (rb_source) || RVAL2CRPATTERN (rb_source) != source)
         {
-          rb_source =
-            CRPATTERN2RVAL (source, rb_ivar_get (self, cr_id_source_class));
+          rb_source = CRPATTERN2RVAL (source);
           rb_ivar_set (self, cr_id_source, rb_source);
         }
     }
@@ -1357,7 +1351,6 @@ Init_cairo_context (void)
 {
   cr_id_surface = rb_intern ("surface");
   cr_id_source = rb_intern ("source");
-  cr_id_source_class = rb_intern ("source_class");
 
   cr_id_plus = rb_intern ("+");
   cr_id_minus = rb_intern ("-");
