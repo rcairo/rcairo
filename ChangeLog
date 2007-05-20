@@ -1,5 +1,8 @@
 2007-05-20  Kouhei Sutou  <kou@cozmixng.org>
 
+	* src/cairo.def, src/rb_cairo_pattern.c, src/rb_cairo_surface.c,
+	src/rb_cairo_font_face.c: removed needless methods XXX#type.
+
 	* src/rb_cairo.h, src/rb_cairo_pattern.c, src/rb_cairo_surface.c:
 	always detected surface and pattern type dynamically.
 	* src/rb_cairo_context.c: followed the above changes.

@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-05-20 08:46:07 $
+ * $Date: 2007-05-20 09:18:49 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -116,12 +116,6 @@ cr_pattern_initialize (VALUE self)
 {
   rb_raise (rb_eTypeError, "abstract class");
   return Qnil;
-}
-
-static VALUE
-cr_pattern_get_type (VALUE self)
-{
-  return INT2NUM (cairo_pattern_get_type (_SELF (self)));
 }
 
 static VALUE
@@ -455,7 +449,6 @@ Init_cairo_pattern (void)
   rb_define_alloc_func (rb_cCairo_Pattern, cr_pattern_allocate);
 
   rb_define_method (rb_cCairo_Pattern, "initialize", cr_pattern_initialize, 0);
-  rb_define_method (rb_cCairo_Pattern, "type", cr_pattern_get_type, 0);
 
   rb_define_method (rb_cCairo_Pattern, "set_matrix", cr_pattern_set_matrix, 1);
   rb_define_method (rb_cCairo_Pattern, "matrix", cr_pattern_get_matrix, 0);
