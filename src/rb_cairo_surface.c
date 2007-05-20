@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-05-20 11:44:48 $
+ * $Date: 2007-05-20 23:31:57 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -724,6 +724,16 @@ cr_svg_version_to_string (VALUE self, VALUE version)
 
 #if CAIRO_HAS_WIN32_SURFACE
 /* WIN32-surface functions */
+
+/* from dl/dl.h (ruby 1.9) */
+#if SIZEOF_LONG == SIZEOF_VOIDP
+#  define PTR2NUM(x)   (ULONG2NUM((unsigned long)(x)))
+#  define NUM2PTR(x)   ((void *)(NUM2ULONG(x)))
+#else
+#  define PTR2NUM(x)   (ULL2NUM((unsigned long long)(x)))
+#  define NUM2PTR(x)   ((void *)(NUM2ULL(x)))
+#endif
+
 static VALUE
 cr_win32_surface_initialize (int argc, VALUE *argv, VALUE self)
 {
@@ -737,7 +747,7 @@ cr_win32_surface_initialize (int argc, VALUE *argv, VALUE self)
     {
     case 1:
       hdc = arg1;
-      surface = cairo_win32_surface_create ((HDC) NUM2UINT (hdc));
+      surface = cairo_win32_surface_create (NUM2PTR (hdc));
       break;
     case 2:
       width = arg1;
@@ -754,7 +764,7 @@ cr_win32_surface_initialize (int argc, VALUE *argv, VALUE self)
           hdc = arg1;
           width = arg2;
           height = arg3;
-          HDC win32_hdc = NIL_P (hdc) ? NULL : (HDC) NUM2UINT (hdc);
+          HDC win32_hdc = NIL_P (hdc) ? NULL : NUM2PTR (hdc);
           surface = cairo_win32_surface_create_with_ddb (win32_hdc,
                                                          CAIRO_FORMAT_RGB24,
                                                          NUM2INT (width),
@@ -804,7 +814,7 @@ cr_win32_surface_get_hdc (VALUE self)
   if (!hdc)
     return Qnil;
   else
-    return UINT2NUM ((unsigned int) hdc);
+    return PTR2NUM (hdc);
 }
 
 static VALUE
