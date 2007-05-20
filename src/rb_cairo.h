@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-05-19 00:25:42 $
+ * $Date: 2007-05-20 02:45:40 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -76,6 +76,27 @@ RUBY_CAIRO_VAR VALUE rb_cCairo_PDFSurface;
 RUBY_CAIRO_VAR VALUE rb_cCairo_PSSurface;
 RUBY_CAIRO_VAR VALUE rb_cCairo_SVGSurface;
 RUBY_CAIRO_VAR VALUE rb_cCairo_WIN32Surface;
+
+RUBY_CAIRO_VAR VALUE rb_mCairo_Operator;
+RUBY_CAIRO_VAR VALUE rb_mCairo_Antialias;
+RUBY_CAIRO_VAR VALUE rb_mCairo_FillRule;
+RUBY_CAIRO_VAR VALUE rb_mCairo_LineCap;
+RUBY_CAIRO_VAR VALUE rb_mCairo_LineJoin;
+RUBY_CAIRO_VAR VALUE rb_mCairo_FontSlant;
+RUBY_CAIRO_VAR VALUE rb_mCairo_FontWeight;
+RUBY_CAIRO_VAR VALUE rb_mCairo_SubpixelOrder;
+RUBY_CAIRO_VAR VALUE rb_mCairo_HintStyle;
+RUBY_CAIRO_VAR VALUE rb_mCairo_HintMetrics;
+RUBY_CAIRO_VAR VALUE rb_mCairo_FontType;
+RUBY_CAIRO_VAR VALUE rb_mCairo_PathDataType;
+RUBY_CAIRO_VAR VALUE rb_mCairo_Content;
+RUBY_CAIRO_VAR VALUE rb_mCairo_SurfaceType;
+RUBY_CAIRO_VAR VALUE rb_mCairo_Format;
+RUBY_CAIRO_VAR VALUE rb_mCairo_PatternType;
+RUBY_CAIRO_VAR VALUE rb_mCairo_Extend;
+RUBY_CAIRO_VAR VALUE rb_mCairo_Filter;
+RUBY_CAIRO_VAR VALUE rb_mCairo_SVGVersion;
+
 RUBY_CAIRO_VAR VALUE rb_mCairo_Color;
 RUBY_CAIRO_VAR VALUE rb_cCairo_Color_Base;
 

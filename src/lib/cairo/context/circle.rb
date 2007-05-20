@@ -1,8 +1,8 @@
 module Cairo
   class Context
     module Circle
-      def circle(x, y, radius)
-        arc(x, y, radius, 0, 2 * Math::PI)
+      def circle(center_x, center_y, radius)
+        arc(center_x, center_y, radius, 0, 2 * Math::PI)
       end
     end
   end

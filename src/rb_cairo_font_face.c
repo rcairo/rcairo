@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-05-03 02:47:39 $
+ * $Date: 2007-05-20 02:45:40 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -50,7 +50,7 @@ rb_cairo_font_face_to_ruby_object (cairo_font_face_t *face)
 static VALUE
 cr_font_face_get_type (VALUE self)
 {
-  return INT2NUM ( cairo_font_face_get_type (_SELF));
+  return INT2NUM (cairo_font_face_get_type (_SELF));
 }
 
 
