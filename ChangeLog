@@ -1,5 +1,8 @@
 2007-05-20  Kouhei Sutou  <kou@cozmixng.org>
 
+	* src/rb_cairo_font_face.c, src/lib/cairo/constants.rb: followed
+	up the previous commit.
+
 	* src/cairo.def, src/rb_cairo_pattern.c, src/rb_cairo_surface.c,
 	src/rb_cairo_font_face.c: removed needless methods XXX#type.
 
