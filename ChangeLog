@@ -1,3 +1,8 @@
+2007-05-21  Kouhei Sutou  <kou@cozmixng.org>
+
+	* src/rb_cairo_surface.c: supported 64bit platform. Thanks to
+	Yoshinao Muramatsu!
+
 2007-05-20  Kouhei Sutou  <kou@cozmixng.org>
 
 	* src/rb_cairo_surface.c (cr_win32_surface_initialize): fixed a
