@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-05-20 09:18:49 $
+ * $Date: 2007-05-20 11:44:48 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -728,7 +728,6 @@ static VALUE
 cr_win32_surface_initialize (int argc, VALUE *argv, VALUE self)
 {
   cairo_surface_t *surface = NULL;
-  cairo_format_t cr_format;
   VALUE arg1, arg2, arg3, arg4;
   VALUE hdc, format, width, height;
 
@@ -742,7 +741,7 @@ cr_win32_surface_initialize (int argc, VALUE *argv, VALUE self)
       break;
     case 2:
       width = arg1;
-      height = arg3;
+      height = arg2;
       surface = cairo_win32_surface_create_with_dib (CAIRO_FORMAT_ARGB32,
                                                      NUM2INT (width),
                                                      NUM2INT (height));
