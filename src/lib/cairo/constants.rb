@@ -8,8 +8,8 @@ module Cairo
   end
 
   %w(operator antialias fill_rule line_cap line_join font_slant
-     font_weight subpixel_order hint_style hint_metrics font_type
-     content surface_type format pattern_type extend filter).each do |name|
+     font_weight subpixel_order hint_style hint_metrics content
+     format extend filter).each do |name|
     module_name = name.split(/_/).collect {|component| component.capitalize}.join
     define_constants.call(const_get(module_name), name.upcase)
   end
