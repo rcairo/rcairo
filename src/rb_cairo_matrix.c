@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-05-03 02:47:39 $
+ * $Date: 2007-05-21 11:02:45 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -55,7 +55,7 @@ rb_cairo_matrix_to_ruby_object (cairo_matrix_t *matrix)
     {
       return Qnil;
     }
-}  
+}
 
 static VALUE
 cr_matrix_allocate (VALUE klass)
@@ -174,6 +174,85 @@ cr_matrix_transform_point (VALUE self, VALUE x, VALUE y)
 }
 
 
+/* Accessors */
+static VALUE
+cr_matrix_get_xx (VALUE self)
+{
+  return rb_float_new (_SELF->xx);
+}
+
+static VALUE
+cr_matrix_set_xx (VALUE self, VALUE xx)
+{
+  _SELF->xx = NUM2DBL (xx);
+  return Qnil;
+}
+
+static VALUE
+cr_matrix_get_yx (VALUE self)
+{
+  return rb_float_new (_SELF->yx);
+}
+
+static VALUE
+cr_matrix_set_yx (VALUE self, VALUE yx)
+{
+  _SELF->yx = NUM2DBL (yx);
+  return Qnil;
+}
+
+static VALUE
+cr_matrix_get_xy (VALUE self)
+{
+  return rb_float_new (_SELF->xy);
+}
+
+static VALUE
+cr_matrix_set_xy (VALUE self, VALUE xy)
+{
+  _SELF->xy = NUM2DBL (xy);
+  return Qnil;
+}
+
+static VALUE
+cr_matrix_get_yy (VALUE self)
+{
+  return rb_float_new (_SELF->yy);
+}
+
+static VALUE
+cr_matrix_set_yy (VALUE self, VALUE yy)
+{
+  _SELF->yy = NUM2DBL (yy);
+  return Qnil;
+}
+
+static VALUE
+cr_matrix_get_x0 (VALUE self)
+{
+  return rb_float_new (_SELF->x0);
+}
+
+static VALUE
+cr_matrix_set_x0 (VALUE self, VALUE x0)
+{
+  _SELF->x0 = NUM2DBL (x0);
+  return Qnil;
+}
+
+static VALUE
+cr_matrix_get_y0 (VALUE self)
+{
+  return rb_float_new (_SELF->y0);
+}
+
+static VALUE
+cr_matrix_set_y0 (VALUE self, VALUE y0)
+{
+  _SELF->y0 = NUM2DBL (y0);
+  return Qnil;
+}
+
 /* Utilities */
 static VALUE
 cr_matrix_set (VALUE self,
@@ -246,6 +325,20 @@ Init_cairo_matrix (void)
                     cr_matrix_transform_distance, 2);
   rb_define_method (rb_cCairo_Matrix, "transform_point",
                     cr_matrix_transform_point, 2);
+
+  /* Accessors */
+  rb_define_method (rb_cCairo_Matrix, "xx", cr_matrix_get_xx, 0);
+  rb_define_method (rb_cCairo_Matrix, "set_xx", cr_matrix_set_xx, 1);
+  rb_define_method (rb_cCairo_Matrix, "yx", cr_matrix_get_yx, 0);
+  rb_define_method (rb_cCairo_Matrix, "set_yx", cr_matrix_set_yx, 1);
+  rb_define_method (rb_cCairo_Matrix, "xy", cr_matrix_get_xy, 0);
+  rb_define_method (rb_cCairo_Matrix, "set_xy", cr_matrix_set_xy, 1);
+  rb_define_method (rb_cCairo_Matrix, "yy", cr_matrix_get_yy, 0);
+  rb_define_method (rb_cCairo_Matrix, "set_yy", cr_matrix_set_yy, 1);
+  rb_define_method (rb_cCairo_Matrix, "x0", cr_matrix_get_x0, 0);
+  rb_define_method (rb_cCairo_Matrix, "set_x0", cr_matrix_set_x0, 1);
+  rb_define_method (rb_cCairo_Matrix, "y0", cr_matrix_get_y0, 0);
+  rb_define_method (rb_cCairo_Matrix, "set_y0", cr_matrix_set_y0, 1);
 
   /* Utilities */
   rb_define_method (rb_cCairo_Matrix, "set", cr_matrix_set, 6);
