@@ -1,5 +1,8 @@
 2007-05-21  Kouhei Sutou  <kou@cozmixng.org>
 
+	* src/rb_cairo_matrix.c (Cairo::Matrix#transform_distance): fixed
+	a typo.
+
 	* src/rb_cairo_matrix.c: added accessors.
 
 	* src/rb_cairo_surface.c: supported 64bit platform. Thanks to

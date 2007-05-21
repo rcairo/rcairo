@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-05-21 11:02:45 $
+ * $Date: 2007-05-21 11:54:44 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -321,7 +321,7 @@ Init_cairo_matrix (void)
   rb_define_method (rb_cCairo_Matrix, "rotate!", cr_matrix_rotate, 1);
   rb_define_method (rb_cCairo_Matrix, "invert!", cr_matrix_invert, 0);
   rb_define_method (rb_cCairo_Matrix, "multiply!", cr_matrix_multiply, 1);
-  rb_define_method (rb_cCairo_Matrix, "matrix_distance",
+  rb_define_method (rb_cCairo_Matrix, "transform_distance",
                     cr_matrix_transform_distance, 2);
   rb_define_method (rb_cCairo_Matrix, "transform_point",
                     cr_matrix_transform_point, 2);
