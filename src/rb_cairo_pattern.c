@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-05-20 09:18:49 $
+ * $Date: 2007-05-22 14:24:34 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -426,9 +426,15 @@ cr_radial_pattern_get_radial_circles (VALUE self)
                                              &x0, &y0, &r0,
                                              &x1, &y1, &r1);
   rb_cairo_check_status (status);
-  return rb_ary_new3 (6,
-                      rb_float_new (x0), rb_float_new (y0), rb_float_new (r0),
-                      rb_float_new (x1), rb_float_new (y1), rb_float_new (r1));
+  return rb_ary_new3 (2,
+                      rb_ary_new3 (3,
+                                   rb_float_new (x0),
+                                   rb_float_new (y0),
+                                   rb_float_new (r0)),
+                      rb_ary_new3 (3,
+                                   rb_float_new (x1),
+                                   rb_float_new (y1),
+                                   rb_float_new (r1)));
 }
 #endif
 

@@ -1,5 +1,9 @@
 2007-05-22  Kouhei Sutou  <kou@cozmixng.org>
 
+	* src/rb_cairo_pattern.c (cr_radial_pattern_get_radial_circles):
+	returned [[x0, y0, r0], [x1, y1, r1]] instead of [x0, y0, r0, x1,
+	y1, r1].
+
 	* src/rb_cairo_path.c: used super.
 
 	* src/rb_cairo_path.c (Cairo::PathMoveTo, Cairo::PathLineTo,
