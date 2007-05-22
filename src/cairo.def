@@ -3,6 +3,11 @@ EXPORTS
     rb_mCairo                 DATA
     rb_cCairo_Context         DATA
     rb_cCairo_Path            DATA
+    rb_cCairo_PathData        DATA
+    rb_cCairo_PathMoveTo      DATA
+    rb_cCairo_PathLineTo      DATA
+    rb_cCairo_PathCurveTo     DATA
+    rb_cCairo_PathClosePath   DATA
     rb_cCairo_Matrix          DATA
     rb_cCairo_Pattern         DATA
     rb_cCairo_SolidPattern    DATA
