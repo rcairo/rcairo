@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-05-06 10:10:50 $
+ * $Date: 2007-05-22 11:25:39 $
  *
  * Copyright 2005 Kouhei Sutou <kou@cozmixng.org>
  *
@@ -19,9 +19,19 @@
 VALUE rb_cCairo_Point;
 VALUE rb_cCairo_Path;
 VALUE rb_cCairo_PathData;
+VALUE rb_cCairo_PathMoveTo;
+VALUE rb_cCairo_PathLineTo;
+VALUE rb_cCairo_PathCurveTo;
+VALUE rb_cCairo_PathClosePath;
 
 static ID id_new, id_current_path;
 static ID id_at_x, id_at_y, id_at_type, id_at_points, id_at_context;
+
+static VALUE
+cr_point_new (VALUE x, VALUE y)
+{
+  return rb_funcall (rb_cCairo_Point, id_new, 2, x, y);
+}
 
 static VALUE
 cr_point_initialize (VALUE self, VALUE x, VALUE y)
@@ -93,20 +103,125 @@ cr_path_data_to_a (VALUE self)
 static VALUE
 cr_path_data_to_ruby_object (cairo_path_data_t *data)
 {
+  VALUE rb_data = Qnil;
+
+  switch (data->header.type)
+    {
+    case CAIRO_PATH_MOVE_TO:
+      rb_data = rb_funcall (rb_cCairo_PathMoveTo, id_new, 2,
+                            rb_float_new (data[1].point.x),
+                            rb_float_new (data[1].point.y));
+      break;
+    case CAIRO_PATH_LINE_TO:
+      rb_data = rb_funcall (rb_cCairo_PathLineTo, id_new, 2,
+                            rb_float_new (data[1].point.x),
+                            rb_float_new (data[1].point.y));
+      break;
+    case CAIRO_PATH_CURVE_TO:
+      rb_data = rb_funcall (rb_cCairo_PathCurveTo, id_new, 6,
+                            rb_float_new (data[1].point.x),
+                            rb_float_new (data[1].point.y),
+                            rb_float_new (data[2].point.x),
+                            rb_float_new (data[2].point.y),
+                            rb_float_new (data[3].point.x),
+                            rb_float_new (data[3].point.y));
+      break;
+    case CAIRO_PATH_CLOSE_PATH:
+      rb_data = rb_funcall (rb_cCairo_PathClosePath, id_new, 0);
+      break;
+    }
+
+  return rb_data;
+
   int i;
   VALUE points;
 
   points = rb_ary_new ();
   for (i = 1; i < data->header.length; i++)
     {
-      rb_ary_push (points, rb_funcall (rb_cCairo_Point, id_new, 2,
-                                       rb_float_new (data[i].point.x),
-                                       rb_float_new (data[i].point.y)));
+      rb_ary_push (points, cr_point_new (rb_float_new (data[i].point.x),
+                                         rb_float_new (data[i].point.y)));
     }
 
   return rb_funcall (rb_cCairo_PathData, id_new, 2,
                      INT2FIX (data->header.type), points);
 }
+
+
+static VALUE
+cr_path_move_to_initialize (int argc, VALUE *argv, VALUE self)
+{
+  VALUE point, x, y;
+
+  rb_scan_args (argc, argv, "11", &x, &y);
+
+  if (argc == 1)
+    point = x;
+  else
+    point = cr_point_new (x, y);
+
+  return cr_path_data_initialize (self,
+                                  INT2NUM (CAIRO_PATH_MOVE_TO),
+                                  rb_ary_new3 (1, point));
+}
+
+static VALUE
+cr_path_line_to_initialize (int argc, VALUE *argv, VALUE self)
+{
+  VALUE point, x, y;
+
+  rb_scan_args (argc, argv, "11", &x, &y);
+
+  if (argc == 1)
+    point = x;
+  else
+    point = cr_point_new (x, y);
+
+  return cr_path_data_initialize (self,
+                                  INT2NUM (CAIRO_PATH_LINE_TO),
+                                  rb_ary_new3 (1, point));
+}
+
+static VALUE
+cr_path_curve_to_initialize (int argc, VALUE *argv, VALUE self)
+{
+  VALUE point1, point2, point3, x1, y1, x2, y2, x3, y3;
+
+  rb_scan_args (argc, argv, "33", &x1, &y1, &x2, &y2, &x3, &y3);
+
+  if (argc == 3)
+    {
+      point1 = x1;
+      point2 = y1;
+      point3 = x2;
+    }
+  else if (argc == 6)
+    {
+      point1 = cr_point_new (x1, y1);
+      point2 = cr_point_new (x2, y2);
+      point3 = cr_point_new (x3, y3);
+    }
+  else
+    {
+      VALUE inspected_arg = rb_inspect (rb_ary_new4 (argc, argv));
+      rb_raise (rb_eArgError,
+                "invalid argument: %s (expect "
+                "(point1, point2, point3) or "
+                "(x1, y1, x2, y2, x3, y3))",
+                StringValuePtr (inspected_arg));
+    }
+
+  return cr_path_data_initialize (self, INT2NUM (CAIRO_PATH_CURVE_TO),
+                                  rb_ary_new3 (3, point1, point2, point3));
+}
+
+static VALUE
+cr_path_close_path_initialize (VALUE self)
+{
+  return cr_path_data_initialize (self, INT2NUM (CAIRO_PATH_CLOSE_PATH),
+                                  rb_ary_new ());
+}
+
 
 static void
 cr_path_free (void *ptr)
@@ -308,6 +423,27 @@ Init_cairo_path (void)
 
   rb_define_method (rb_cCairo_PathData, "to_a", cr_path_data_to_a, 0);
   rb_define_alias (rb_cCairo_PathData, "to_ary", "to_a");
+
+
+  rb_cCairo_PathMoveTo =
+    rb_define_class_under (rb_mCairo, "PathMoveTo", rb_cCairo_PathData);
+  rb_define_method (rb_cCairo_PathMoveTo, "initialize",
+                    cr_path_move_to_initialize, -1);
+
+  rb_cCairo_PathLineTo =
+    rb_define_class_under (rb_mCairo, "PathLineTo", rb_cCairo_PathData);
+  rb_define_method (rb_cCairo_PathLineTo, "initialize",
+                    cr_path_line_to_initialize, -1);
+
+  rb_cCairo_PathCurveTo =
+    rb_define_class_under (rb_mCairo, "PathCurveTo", rb_cCairo_PathData);
+  rb_define_method (rb_cCairo_PathCurveTo, "initialize",
+                    cr_path_curve_to_initialize, -1);
+
+  rb_cCairo_PathClosePath =
+    rb_define_class_under (rb_mCairo, "PathClosePath", rb_cCairo_PathData);
+  rb_define_method (rb_cCairo_PathClosePath, "initialize",
+                    cr_path_close_path_initialize, 0);
 
 
   rb_cCairo_Path = rb_define_class_under (rb_mCairo, "Path", rb_cObject);
