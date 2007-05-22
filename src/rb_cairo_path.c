@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-05-22 11:25:39 $
+ * $Date: 2007-05-22 11:41:45 $
  *
  * Copyright 2005 Kouhei Sutou <kou@cozmixng.org>
  *
@@ -152,6 +152,7 @@ static VALUE
 cr_path_move_to_initialize (int argc, VALUE *argv, VALUE self)
 {
   VALUE point, x, y;
+  VALUE super_argv[2];
 
   rb_scan_args (argc, argv, "11", &x, &y);
 
@@ -160,15 +161,17 @@ cr_path_move_to_initialize (int argc, VALUE *argv, VALUE self)
   else
     point = cr_point_new (x, y);
 
-  return cr_path_data_initialize (self,
-                                  INT2NUM (CAIRO_PATH_MOVE_TO),
-                                  rb_ary_new3 (1, point));
+  super_argv[0] = INT2NUM (CAIRO_PATH_MOVE_TO);
+  super_argv[1] = rb_ary_new3 (1, point);
+  rb_call_super (2, super_argv);
+  return Qnil;
 }
 
 static VALUE
 cr_path_line_to_initialize (int argc, VALUE *argv, VALUE self)
 {
   VALUE point, x, y;
+  VALUE super_argv[2];
 
   rb_scan_args (argc, argv, "11", &x, &y);
 
@@ -177,15 +180,17 @@ cr_path_line_to_initialize (int argc, VALUE *argv, VALUE self)
   else
     point = cr_point_new (x, y);
 
-  return cr_path_data_initialize (self,
-                                  INT2NUM (CAIRO_PATH_LINE_TO),
-                                  rb_ary_new3 (1, point));
+  super_argv[0] = INT2NUM (CAIRO_PATH_LINE_TO);
+  super_argv[1] = rb_ary_new3 (1, point);
+  rb_call_super (2, super_argv);
+  return Qnil;
 }
 
 static VALUE
 cr_path_curve_to_initialize (int argc, VALUE *argv, VALUE self)
 {
   VALUE point1, point2, point3, x1, y1, x2, y2, x3, y3;
+  VALUE super_argv[2];
 
   rb_scan_args (argc, argv, "33", &x1, &y1, &x2, &y2, &x3, &y3);
 
@@ -211,15 +216,20 @@ cr_path_curve_to_initialize (int argc, VALUE *argv, VALUE self)
                 StringValuePtr (inspected_arg));
     }
 
-  return cr_path_data_initialize (self, INT2NUM (CAIRO_PATH_CURVE_TO),
-                                  rb_ary_new3 (3, point1, point2, point3));
+  super_argv[0] = INT2NUM (CAIRO_PATH_CURVE_TO);
+  super_argv[1] = rb_ary_new3 (3, point1, point2, point3);
+  rb_call_super (2, super_argv);
+  return Qnil;
 }
 
 static VALUE
 cr_path_close_path_initialize (VALUE self)
 {
-  return cr_path_data_initialize (self, INT2NUM (CAIRO_PATH_CLOSE_PATH),
-                                  rb_ary_new ());
+  VALUE super_argv[2];
+  super_argv[0] = INT2NUM (CAIRO_PATH_CLOSE_PATH);
+  super_argv[1] = rb_ary_new ();
+  rb_call_super (2, super_argv);
+  return Qnil;
 }
 
 

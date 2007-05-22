@@ -1,5 +1,7 @@
 2007-05-22  Kouhei Sutou  <kou@cozmixng.org>
 
+	* src/rb_cairo_path.c: used super.
+
 	* src/rb_cairo_path.c (Cairo::PathMoveTo, Cairo::PathLineTo,
 	Cairo::PathCurveTo, Cairo::PathClosePath): defined each path data
 	type as class.
