@@ -1,5 +1,8 @@
 2007-05-23  Kouhei Sutou  <kou@cozmixng.org>
 
+	* src/lib/cairo.rb (Cairo.normalize_const_name): treated "." as
+	ignore character.
+
 	* src/rb_cairo.c (Cairo::BINDINGS_VERSION): 1.6.0 -> 1.5.0.
 
 2007-05-22  Kouhei Sutou  <kou@cozmixng.org>

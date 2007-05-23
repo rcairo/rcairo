@@ -21,7 +21,7 @@ module Cairo
     end
 
     def normalize_const_name(name)
-      name.to_s.upcase.gsub(/[\s\-_]+/, "_")
+      name.to_s.upcase.gsub(/[\s\-_.]+/, "_")
     end
   end
 end
