@@ -81,6 +81,12 @@ module Cairo
     def multiply(other); dup.multiply!(other); end
     alias * multiply
   end
+
+  class FontOptions
+    def merge(other)
+      dup.merge!(other)
+    end
+  end
 end
 
 require 'cairo/point'

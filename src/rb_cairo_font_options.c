@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-05-03 02:47:39 $
+ * $Date: 2007-05-26 15:13:25 $
  *
  * Copyright 2005 Kouhei Sutou <kou@cozmixng.org>
  *
@@ -172,7 +172,8 @@ Init_cairo_font_options (void)
   rb_define_method (rb_cCairo_FontOptions, "initialize", cr_options_create, 0);
 
   rb_define_method (rb_cCairo_FontOptions, "dup", cr_options_copy, 0);
-  rb_define_method (rb_cCairo_FontOptions, "merge", cr_options_merge, 1);
+  rb_define_method (rb_cCairo_FontOptions, "merge!", cr_options_merge, 1);
+  rb_define_alias (rb_cCairo_FontOptions, "update", "merge!");
   rb_define_method (rb_cCairo_FontOptions, "eql?", cr_options_equal, 1);
   rb_define_method (rb_cCairo_FontOptions, "hash", cr_options_hash, 0);
   rb_define_method (rb_cCairo_FontOptions, "set_antialias",

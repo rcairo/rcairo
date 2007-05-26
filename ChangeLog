@@ -1,3 +1,11 @@
+2007-05-27  Kouhei Sutou  <kou@cozmixng.org>
+
+	* src/rb_cairo_font_options.c (Cairo::FontOptions#merge): renamed
+	to merge! because the method is destructive.
+
+	* src/lib/cairo.rb (Cairo::FontOptions#merge): added
+	non-destructive version.
+
 2007-05-23  Kouhei Sutou  <kou@cozmixng.org>
 
 	* src/lib/cairo.rb (Cairo.normalize_const_name): treated "." as
