@@ -45,7 +45,8 @@ at_exit do
 end
 
 ENV["VERSION"] ||= Cairo.bindings_version
-project = Hoe.new('cairo', ENV["VERSION"]) do |project|
+version = ENV["VERSION"]
+project = Hoe.new('cairo', version) do |project|
   project.rubyforge_name = 'cairo'
   authors = File.join(base_dir, "AUTHORS")
   project.author = File.readlines(authors).collect do |line|
@@ -109,7 +110,7 @@ end
 
 # for releasing
 task :dist do
-  sh "./dist.sh", ENV['version']
+  sh "./dist.sh", version
 end
 
 # for documentation
