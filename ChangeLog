@@ -1,5 +1,9 @@
 2007-05-27  Kouhei Sutou  <kou@cozmixng.org>
 
+        * README: added some links for documentation.
+
+	* src/rb_cairo.c: 1.5.0 -> 1.5.1.
+
 	* Rakefile: improved current release NEWS extraction.
 
 	* NEWS: updated.
