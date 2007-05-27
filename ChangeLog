@@ -1,5 +1,7 @@
 2007-05-27  Kouhei Sutou  <kou@cozmixng.org>
 
+	* src/depend (install-so): used install-so instead of install.
+
 	* src/rb_cairo_font_options.c (Cairo::FontOptions#merge): renamed
 	to merge! because the method is destructive.
 
