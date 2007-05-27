@@ -1,5 +1,9 @@
 2007-05-27  Kouhei Sutou  <kou@cozmixng.org>
 
+	* Rakefile: improved current release NEWS extraction.
+
+	* NEWS: updated.
+
 	* Rakefile: supported document update.
 
 	* src/depend (install-so): used install-so instead of install.
@@ -145,7 +149,7 @@
 	* src/lib/cairo.rb: require cairo/color before cairo.so to export
 	Cairo::Color to cairo.so.
 
-	* src/rb_cairo_pattern.c: implemented src/lib/cairo/patter.rb
+	* src/rb_cairo_pattern.c: implemented src/lib/cairo/pattern.rb
 	methods in C.
 	* src/lib/cairo/pattern.rb: removed.
 	* src/lib/cairo.rb: removed cairo/pattern.
@@ -174,7 +178,7 @@
 2007-04-19  Kouhei Sutou  <kou@cozmixng.org>
 
 	* src/rb_cairo_context.c (Cairo::Context#stroke,
-	Cairo::Context#fill, Cairo::Context#clip): accept 'prserve' option
+	Cairo::Context#fill, Cairo::Context#clip): accept 'preserve' option
 	to change XXX and XXX_preserve.
 	* src/lib/cairo/context.rb (Cairo::Context#stroke_preserve,
 	Cairo::Context#fill_preserve, Cairo::Context#clip_preserve): moved
