@@ -22,6 +22,18 @@ Compiling
                      # the samples in the samples folder should be able
                      # to run before installation.
 
+Documents
+---------
+
+  * Reference manual:
+      http://cairo.rubyforge.org/doc/
+
+    Repository of the reference manual:
+      http://www.cozmixng.org/repos/rcairo-doc/
+
+  * An article for rcairo on RubiMa (in Japanese):
+      http://jp.rubyist.net/magazine/?0019-cairo
+
 Mailing list
 ------------
 
