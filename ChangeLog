@@ -1,5 +1,7 @@
 2007-05-27  Kouhei Sutou  <kou@cozmixng.org>
 
+	* samples/agg/aa_test.rb: ported from AGG's example.
+
         * README: added some links for documentation.
 
 	* src/rb_cairo.c: 1.5.0 -> 1.5.1.
