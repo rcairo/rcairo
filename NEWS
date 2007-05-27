@@ -19,7 +19,7 @@ Features
 	To:
 	  context.set_source_color(:red)
 
-    * Support RGB/CMYK/HSV conversion.
+    * Support color type conversion between RGB, CMYK and HSV.
     * Many default color definitions.
   * Support path creation using Cairo::Path without
     Cairo::Context.
