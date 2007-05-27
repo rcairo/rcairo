@@ -1,3 +1,35 @@
+Release 1.5.0 (2007-05-27) Kouhei Sutou <kou@cozmixng.org>)
+==========================================================
+
+Many API improvement.
+
+Features
+--------
+  * Support Cairo::Surface.new with block.
+  * Support RubyGems.
+  * Add experimental API Cairo::Context#pseudo_blur. (API
+    may be changed.)
+  * Fix strange Cairo::Context#push_group and
+    Cairo::Context#pop_group behaviour.
+  * Fix Cairo::Context::Path#map_path_onto.
+  * Add high-level color interface. (Cairo::Color)
+    * Improve color related API. For example:
+	From:
+	  context.set_source_rgb(1, 0, 0)
+	To:
+	  context.set_source_color(:red)
+
+    * Support RGB/CMYK/HSV conversion.
+    * Many default color definitions.
+  * Support path creation using Cairo::Path without
+    Cairo::Context.
+  * Improve constant value specify API. For example:
+      From:
+        Cairo::ImageSurface.new(Cairo::FORMAT_ARGB32, 100, 100)
+      To:
+        Cairo::ImageSurface.new(:argb32, 100, 100)
+  * Support win32 surface. (Yoshinao Muramatsu)
+
 Release 1.4.1 (2007-03-10 Kouhei Sutou <kou@cozmixng.org>)
 ==========================================================
 

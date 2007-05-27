@@ -65,7 +65,7 @@ project = Hoe.new('cairo', ENV["VERSION"]) do |project|
     :has_rdoc => false,
   }
   news = File.join(base_dir, "NEWS")
-  project.changes = project.paragraphs_of(news, 0..1).join("\n\n")
+  project.changes = File.read(news).gsub(/\n+^Release(?m:.*)/, '')
   project.description = "Ruby bindings for cairo"
   project.need_tar = false
   project.remote_rdoc_dir = "doc"
@@ -107,6 +107,12 @@ task :uninstall do
 end
 
 
+# for releasing
+task :dist do
+  sh "./dist.sh", ENV['version']
+end
+
+# for documentation
 langs = [
   ["en", "English"],
   ["ja", "日本語"],
