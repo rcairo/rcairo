@@ -1,3 +1,10 @@
+2007-05-28  Kouhei Sutou  <kou@cozmixng.org>
+
+	* src/lib/cairo/context.rb, src/lib/cairo/context/triangle.rb:
+	added a convenience method.
+
+	* samples/agg/aa_test.rb: implemented random shapes test.
+
 2007-05-27  Kouhei Sutou  <kou@cozmixng.org>
 
 	* samples/agg/aa_test.rb: ported from AGG's example.
