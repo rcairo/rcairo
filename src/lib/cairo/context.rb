@@ -1,4 +1,5 @@
 require 'cairo/context/rectangle'
+require 'cairo/context/triangle'
 require 'cairo/context/circle'
 require 'cairo/context/path'
 require 'cairo/context/blur'
@@ -7,6 +8,7 @@ require 'cairo/context/color'
 module Cairo
   class Context
     include Rectangle
+    include Triangle
     include Circle
     include Path
     include Blur

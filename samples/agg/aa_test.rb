@@ -26,14 +26,36 @@ def stroke_line(context, x1, y1, x2, y2, line_width, dash_length)
   end
 end
 
+def fill_triangle(context, x1, y1, x2, y2, x3, y3)
+  context.save do
+    yield if block_given?
+    context.triangle(x1, y1, x2, y2, x3, y3)
+    context.fill
+  end
+end
+
+def set_gradient(context, x1, y1, x2, y2, color_stops)
+  pattern = Cairo::LinearPattern.new(x1, y1, x2, y2)
+  color_stops.each do |offset, color|
+    pattern.add_color_stop(offset, color)
+  end
+  context.set_source(pattern)
+end
+
 def stroke_gradient_line(context, x1, y1, x2, y2,
                          line_width, dash_length, color_stops)
   stroke_line(context, x1, y1, x2, y2, line_width, dash_length) do
-    pattern = Cairo::LinearPattern.new(x1, y1, x2, y2)
-    color_stops.each do |offset, color|
-      pattern.add_color_stop(offset, color)
-    end
-    context.set_source(pattern)
+    set_gradient(context, x1, y1, x2, y2, color_stops)
+  end
+end
+
+def fill_gradient_triangle(context, x1, y1, x2, y2, x3, y3, color_stops)
+  fill_triangle(context, x1, y1, x2, y2, x3, y3) do
+    set_gradient(context,
+                 x1, y1,
+                 x3 - (x3 - x2) / 2.0,
+                 y3 - (y3 - y2) / 2.0,
+                 color_stops)
   end
 end
 
@@ -181,12 +203,10 @@ def draw_right_triangles(context, i, w, h)
   end
 end
 
-area.signal_connect("expose-event") do |widget, event|
-  context = widget.window.create_cairo_context
+def draw_sample_shapes(context, w, h)
   context.set_source_color(:black)
   context.paint
 
-  x, y, w, h = widget.allocation.to_a
   draw_background_circle(context, w, h)
 
   1.upto(20) do |i|
@@ -201,7 +221,78 @@ area.signal_connect("expose-event") do |widget, event|
   1.upto(13) do |i|
     draw_right_triangles(context, i, w, h)
   end
+end
 
+def draw_random_shapes(context, w, h)
+  srand(123)
+
+  context.set_source_color(:black)
+  context.fill
+
+  n_circles = 20000
+  start = Time.now
+  n_circles.times do |i|
+    context.circle(rand(w), rand(h), rand(20.0) + 1.0)
+    context.set_source_color([rand, rand, rand, 0.5 + rand / 2])
+    context.fill
+  end
+  circle_draw_time = Time.now - start
+
+  n_lines = 2000
+  start = Time.now
+  n_lines.times do |i|
+    x1 = rand(w)
+    y1 = rand(h)
+    stroke_gradient_line(context,
+                         x1, y1,
+                         x1 + rand(w * 0.5) - w * 0.25,
+                         y1 + rand(h * 0.5) - h * 0.25,
+                         10.0, 0,
+                         [[0, [rand, rand, rand, 0.5 + rand / 2]],
+                          [1, [rand, rand, rand, rand]]])
+  end
+  line_draw_time = Time.now - start
+
+  n_triangles = 2000
+  start = Time.now
+  n_triangles.times do |i|
+    x1 = rand(w)
+    y1 = rand(h)
+    fill_gradient_triangle(context,
+                           x1, y1,
+                           x1 + rand(w * 0.4) - w * 0.2,
+                           y1 + rand(h * 0.4) - h * 0.2,
+                           x1 + rand(w * 0.4) - w * 0.2,
+                           y1 + rand(h * 0.4) - h * 0.2,
+                           [[0, [rand, rand, rand, 0.5 + rand / 2]],
+                            [0.5, [rand, rand, rand, rand]],
+                            [1, [rand, rand, rand, rand]]])
+  end
+  triangle_draw_time = Time.now - start
+
+  puts "Points=%.2fK/sec, Lines=%.2fK/sec, Triangles=%.2fK/sec" %
+    [n_circles.to_f / circle_draw_time,
+     n_lines.to_f / line_draw_time,
+     n_triangles.to_f / triangle_draw_time]
+end
+
+random_mode = false
+
+area.add_events(Gdk::Event::BUTTON_PRESS_MASK)
+area.signal_connect("button-press-event") do |widget, event|
+  random_mode = !random_mode
+  widget.queue_draw
+  false
+end
+
+area.signal_connect("expose-event") do |widget, event|
+  context = widget.window.create_cairo_context
+  x, y, w, h = widget.allocation.to_a
+  if random_mode
+    draw_random_shapes(context, w, h)
+  else
+    draw_sample_shapes(context, w, h)
+  end
   true
 end
 
