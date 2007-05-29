@@ -1,3 +1,9 @@
+2007-05-29  Kouhei Sutou  <kou@cozmixng.org>
+
+	* src/lib/cairo/context/path.rb: fixed typos.
+	Thanks to NANKI Haruo!!!
+	* README: added an entry for NANKI Haruo.
+
 2007-05-28  Kouhei Sutou  <kou@cozmixng.org>
 
 	* src/lib/cairo/context.rb, src/lib/cairo/context/triangle.rb:
