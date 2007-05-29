@@ -79,7 +79,7 @@ module Cairo
                   3 * cy1       * (    2 * ratio - 3 * ratio * ratio) +
                   3 * cy2       *      ratio  * ratio
 
-            ratio = y / Math.sqrt(dx ** 2, dy ** 2)
+            ratio = y / Math.sqrt(dx ** 2 + dy ** 2)
 
             [new_x + -dy * ratio, new_y + dx * ratio]
           when PATH_CLOSE_PATH
