@@ -227,7 +227,7 @@ def draw_random_shapes(context, w, h)
   srand(123)
 
   context.set_source_color(:black)
-  context.fill
+  context.paint
 
   n_circles = 20000
   start = Time.now
