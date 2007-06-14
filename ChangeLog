@@ -1,3 +1,7 @@
+2007-06-14  Kouhei Sutou  <kou@cozmixng.org>
+
+	* README: added Paul van Tilburg to Thanks list.
+
 2007-06-14  Paul van Tilburg  <paulvt@debian.org>
 
 	* extconf.rb: used String#each_line instead of String#each for
