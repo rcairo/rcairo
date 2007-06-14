@@ -80,7 +80,7 @@ makefile = File.read("Makefile")
 File.open("Makefile", "w") do |f|
   objs = []
   co = nil
-  makefile.each do |line|
+  makefile.each_line do |line|
     case line
     when /^TARGET\s*=\s*/
       f.print("TARGET = #{ext_dir_name}/#{$POSTMATCH}")
