@@ -1,5 +1,9 @@
 2007-06-14  Kouhei Sutou  <kou@cozmixng.org>
 
+	* extconf.rb, src/rb_cairo_surface.c, src/rb_cairo_private.h: used
+	rb_errinfo() and RSTRING_LEN() if available for supporting ruby
+	1.9. Thanks to Paul van Tilburg!!!
+
 	* README: added Paul van Tilburg to Thanks list.
 
 2007-06-14  Paul van Tilburg  <paulvt@debian.org>
