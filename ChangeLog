@@ -1,3 +1,8 @@
+2007-06-14  Paul van Tilburg  <paulvt@debian.org>
+
+	* extconf.rb: used String#each_line instead of String#each for
+	supporting ruby 1.9.
+
 2007-06-03  Kouhei Sutou  <kou@cozmixng.org>
 
 	* samples/agg/aa_test.rb: fixed wrong operation.
