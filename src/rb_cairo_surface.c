@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-05-20 23:31:57 $
+ * $Date: 2007-06-14 12:23:45 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -115,7 +115,7 @@ cr_surface_io_func_rescue (VALUE io_closure)
 {
   cr_io_callback_closure_t *closure;
   closure = (cr_io_callback_closure_t *)io_closure;
-  closure->error = ruby_errinfo;
+  closure->error = RB_ERRINFO;
   return Qnil;
 }
 
@@ -133,13 +133,13 @@ cr_surface_write_func_invoke (VALUE write_closure)
   output = closure->target;
   data = rb_str_new ((const char *)closure->data, closure->length);
 
-  length = RSTRING (data)->len;
+  length = RSTRING_LEN (data);
   while (length != 0)
     {
       VALUE rb_written_bytes = rb_funcall (output, cr_id_write, 1, data);
       written_bytes = NUM2LONG (rb_written_bytes);
       data = rb_str_substr (data, written_bytes,
-                            RSTRING (data)->len - written_bytes);
+                            RSTRING_LEN (data) - written_bytes);
       length -= written_bytes;
     }
   
@@ -180,7 +180,7 @@ cr_surface_read_func_invoke (VALUE read_closure)
   
   result = rb_str_new2 ("");
 
-  for (rest = length; rest != 0; rest = length - RSTRING (result)->len)
+  for (rest = length; rest != 0; rest = length - RSTRING_LEN (result))
     {
       rb_str_concat (result, rb_funcall (input, cr_id_read, 1, INT2NUM (rest)));
     }

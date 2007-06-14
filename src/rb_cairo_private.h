@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-05-18 14:07:48 $
+ * $Date: 2007-06-14 12:23:45 $
  *
  * Copyright 2005 Kouhei Sutou <kou@cozmixng.org>
  *
@@ -22,6 +22,16 @@
 
 #define CBOOL2RVAL(bool) (bool ? Qtrue : Qfalse)
 #define RVAL2CBOOL(bool) RTEST(bool)
+
+#ifndef RSTRING_LEN
+#  define RSTRING_LEN(string) (RSTRING(string)->len)
+#endif
+
+#ifdef HAVE_RB_ERRINFO
+#  define RB_ERRINFO (rb_errinfo())
+#else
+#  define RB_ERRINFO (ruby_errinfo)
+#endif
 
 extern void Init_cairo_private (void);
 extern void Init_cairo_constants (void);

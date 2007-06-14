@@ -72,6 +72,8 @@ major, minor, micro = 1, 2, 0
 
 PKGConfig.have_package(pkg, major, minor, micro) or exit 1
 
+have_func("rb_errinfo")
+
 setup_win32(File.basename(modname))
 $defs << "-DRUBY_CAIRO_COMPILATION"
 create_makefile(modname, srcdir)
