@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-05-20 08:46:07 $
+ * $Date: 2007-12-28 07:49:05 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -125,11 +125,14 @@ cr_save (VALUE self)
 static VALUE
 cr_pop_group (VALUE self)
 {
+  VALUE rb_pattern;
   cairo_pattern_t *pattern;
 
   pattern = cairo_pop_group (_SELF);
   cr_check_status (_SELF);
-  return CRPATTERN2RVAL (pattern);
+  rb_pattern = CRPATTERN2RVAL (pattern);
+  cairo_pattern_destroy (pattern);
+  return rb_pattern;
 }
 
 static VALUE

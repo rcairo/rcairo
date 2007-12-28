@@ -1,3 +1,10 @@
+2007-12-28  Kouhei Sutou  <kou@cozmixng.org>
+
+	* src/rb_cairo_context.c (cr_pop_group): fixed a memory leak bug.
+	Reported by Binzo. Thanks!!!
+
+	* README: added Binzo to Thanks list.
+
 2007-06-14  Kouhei Sutou  <kou@cozmixng.org>
 
 	* extconf.rb, src/rb_cairo_surface.c, src/rb_cairo_private.h: used
