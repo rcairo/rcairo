@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-12-28 07:49:05 $
+ * $Date: 2007-12-29 11:42:26 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -290,8 +290,8 @@ cr_set_source_surface (VALUE self, VALUE surface, VALUE width, VALUE height)
 {
   cairo_set_source_surface (_SELF,
                             RVAL2CRSURFACE (surface),
-                            NUM2INT (width),
-                            NUM2INT (height));
+                            NUM2DBL (width),
+                            NUM2DBL (height));
   cr_check_status (_SELF);
   rb_ivar_set (self, cr_id_source, Qnil);
   return self;
