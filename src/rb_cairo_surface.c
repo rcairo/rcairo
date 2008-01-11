@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-01-11 12:18:34 $
+ * $Date: 2008-01-11 12:19:44 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -67,7 +67,7 @@ cr_surface_get_klass (cairo_surface_t *surface)
       klass = rb_cCairo_SVGSurface;
       break;
     case CAIRO_SURFACE_TYPE_WIN32:
-      klass = rb_cCairo_WIN32Surface;
+      klass = rb_cCairo_Win32Surface;
       break;
     default:
       rb_raise (rb_eArgError, "unknown source type: %d", type);
