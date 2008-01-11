@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-01-11 08:03:39 $
+ * $Date: 2008-01-11 12:18:34 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -103,7 +103,9 @@ RB_CAIRO_VAR VALUE rb_cCairo_ImageSurface;
 RB_CAIRO_VAR VALUE rb_cCairo_PDFSurface;
 RB_CAIRO_VAR VALUE rb_cCairo_PSSurface;
 RB_CAIRO_VAR VALUE rb_cCairo_SVGSurface;
-RB_CAIRO_VAR VALUE rb_cCairo_WIN32Surface;
+RB_CAIRO_VAR VALUE rb_cCairo_Win32Surface;
+/* For backward compatibility*/
+#define rb_cCairo_WIN32Surface rb_cCairo_Win32Surface
 RB_CAIRO_VAR VALUE rb_cCairo_QuartzSurface;
 
 RB_CAIRO_VAR VALUE rb_mCairo_Operator;

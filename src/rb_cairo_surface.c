@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-01-11 11:28:26 $
+ * $Date: 2008-01-11 12:18:34 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -29,7 +29,7 @@ VALUE rb_cCairo_ImageSurface;
 VALUE rb_cCairo_PDFSurface = Qnil;
 VALUE rb_cCairo_PSSurface = Qnil;
 VALUE rb_cCairo_SVGSurface = Qnil;
-VALUE rb_cCairo_WIN32Surface = Qnil;
+VALUE rb_cCairo_Win32Surface = Qnil;
 VALUE rb_cCairo_QuartzSurface = Qnil;
 
 static ID cr_id_target;
@@ -1007,15 +1007,15 @@ Init_cairo_surface (void)
 #endif
 
 #if CAIRO_HAS_WIN32_SURFACE
-  /* WIN32-surface */
-  rb_cCairo_WIN32Surface =
-    rb_define_class_under (rb_mCairo, "WIN32Surface", rb_cCairo_Surface);
+  /* Win32-surface */
+  rb_cCairo_Win32Surface =
+    rb_define_class_under (rb_mCairo, "Win32Surface", rb_cCairo_Surface);
 
-  rb_define_method (rb_cCairo_WIN32Surface, "initialize",
+  rb_define_method (rb_cCairo_Win32Surface, "initialize",
                     cr_win32_surface_initialize, -1);
-  rb_define_method (rb_cCairo_WIN32Surface, "hdc",
+  rb_define_method (rb_cCairo_Win32Surface, "hdc",
                     cr_win32_surface_get_hdc, 0);
-  rb_define_method (rb_cCairo_WIN32Surface, "image",
+  rb_define_method (rb_cCairo_Win32Surface, "image",
                     cr_win32_surface_get_image, 0);
 #endif
 

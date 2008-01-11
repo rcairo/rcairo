@@ -93,3 +93,9 @@ require 'cairo/point'
 require 'cairo/colors'
 require 'cairo/context'
 require 'cairo/path'
+
+module Cairo
+  if const_defined?(:Win32Surface)
+    WIN32Surface = Win32Surface # For backward compatibility
+  end
+end
