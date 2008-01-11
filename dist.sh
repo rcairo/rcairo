@@ -9,7 +9,7 @@ fi
 VERSION=$1
 TAG=RELEASE_`echo $VERSION | sed -e 's/\./_/g'`
 
-dest=gabe.freedesktop.org:/home/srv/cairo.freedesktop.org/www/releases/
+dest=annarchy.freedesktop.org:/srv/cairo.freedesktop.org/www/releases/
 
 base=rcairo-$VERSION
 tgz=$base.tar.gz
