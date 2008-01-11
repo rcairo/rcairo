@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-05-22 11:25:39 $
+ * $Date: 2008-01-11 08:03:39 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -36,6 +36,10 @@
 #  undef OpenFile
 #endif
 
+#if CAIRO_HAS_QUARTZ_SURFACE
+#  include <cairo-quartz.h>
+#endif
+
 #define CAIRO_CHECK_VERSION(major, minor, micro)    \
     (CAIRO_VERSION_MAJOR > (major) || \
      (CAIRO_VERSION_MAJOR == (major) && CAIRO_VERSION_MINOR > (minor)) || \
@@ -44,67 +48,85 @@
 
 #include "ruby.h"
 
-#if defined(RUBY_CAIRO_PLATFORM_WIN32) && !defined(RUBY_CAIRO_STATIC_COMPILATION)
-#  ifdef RUBY_CAIRO_COMPILATION
-#    define RUBY_CAIRO_VAR __declspec(dllexport)
-#  else
-#    define RUBY_CAIRO_VAR extern __declspec(dllimport)
-#  endif
+#if defined(__cplusplus)
+#  define RB_CAIRO_BEGIN_DECLS extern "C" {
+#  define RB_CAIRO_END_DECLS }
 #else
-#  define RUBY_CAIRO_VAR extern
+#  define RB_CAIRO_BEGIN_DECLS
+#  define RB_CAIRO_END_DECLS
 #endif
 
-RUBY_CAIRO_VAR VALUE rb_mCairo;
-RUBY_CAIRO_VAR VALUE rb_cCairo_Context;
-RUBY_CAIRO_VAR VALUE rb_cCairo_Point;
-RUBY_CAIRO_VAR VALUE rb_cCairo_Path;
-RUBY_CAIRO_VAR VALUE rb_cCairo_PathData;
-RUBY_CAIRO_VAR VALUE rb_cCairo_PathMoveTo;
-RUBY_CAIRO_VAR VALUE rb_cCairo_PathLineTo;
-RUBY_CAIRO_VAR VALUE rb_cCairo_PathCurveTo;
-RUBY_CAIRO_VAR VALUE rb_cCairo_PathClosePath;
-RUBY_CAIRO_VAR VALUE rb_cCairo_Matrix;
-RUBY_CAIRO_VAR VALUE rb_cCairo_Pattern;
-RUBY_CAIRO_VAR VALUE rb_cCairo_SolidPattern;
-RUBY_CAIRO_VAR VALUE rb_cCairo_SurfacePattern;
-RUBY_CAIRO_VAR VALUE rb_cCairo_GradientPattern;
-RUBY_CAIRO_VAR VALUE rb_cCairo_LinearPattern;
-RUBY_CAIRO_VAR VALUE rb_cCairo_RadialPattern;
-RUBY_CAIRO_VAR VALUE rb_cCairo_FontFace;
-RUBY_CAIRO_VAR VALUE rb_cCairo_FontExtents;
-RUBY_CAIRO_VAR VALUE rb_cCairo_FontOptions;
-RUBY_CAIRO_VAR VALUE rb_cCairo_ScaledFont;
-RUBY_CAIRO_VAR VALUE rb_cCairo_TextExtents;
-RUBY_CAIRO_VAR VALUE rb_cCairo_Glyph;
-RUBY_CAIRO_VAR VALUE rb_cCairo_Surface;
-RUBY_CAIRO_VAR VALUE rb_cCairo_ImageSurface;
-RUBY_CAIRO_VAR VALUE rb_cCairo_PDFSurface;
-RUBY_CAIRO_VAR VALUE rb_cCairo_PSSurface;
-RUBY_CAIRO_VAR VALUE rb_cCairo_SVGSurface;
-RUBY_CAIRO_VAR VALUE rb_cCairo_WIN32Surface;
+RB_CAIRO_BEGIN_DECLS
 
-RUBY_CAIRO_VAR VALUE rb_mCairo_Operator;
-RUBY_CAIRO_VAR VALUE rb_mCairo_Antialias;
-RUBY_CAIRO_VAR VALUE rb_mCairo_FillRule;
-RUBY_CAIRO_VAR VALUE rb_mCairo_LineCap;
-RUBY_CAIRO_VAR VALUE rb_mCairo_LineJoin;
-RUBY_CAIRO_VAR VALUE rb_mCairo_FontSlant;
-RUBY_CAIRO_VAR VALUE rb_mCairo_FontWeight;
-RUBY_CAIRO_VAR VALUE rb_mCairo_SubpixelOrder;
-RUBY_CAIRO_VAR VALUE rb_mCairo_HintStyle;
-RUBY_CAIRO_VAR VALUE rb_mCairo_HintMetrics;
-RUBY_CAIRO_VAR VALUE rb_mCairo_FontType;
-RUBY_CAIRO_VAR VALUE rb_mCairo_PathDataType;
-RUBY_CAIRO_VAR VALUE rb_mCairo_Content;
-RUBY_CAIRO_VAR VALUE rb_mCairo_SurfaceType;
-RUBY_CAIRO_VAR VALUE rb_mCairo_Format;
-RUBY_CAIRO_VAR VALUE rb_mCairo_PatternType;
-RUBY_CAIRO_VAR VALUE rb_mCairo_Extend;
-RUBY_CAIRO_VAR VALUE rb_mCairo_Filter;
-RUBY_CAIRO_VAR VALUE rb_mCairo_SVGVersion;
+#if defined(RUBY_CAIRO_PLATFORM_WIN32) && !defined(RB_CAIRO_PLATFORM_WIN32)
+#  define RB_CAIRO_PLATFORM_WIN32 RUBY_CAIRO_PLATFORM_WIN32
+#endif
 
-RUBY_CAIRO_VAR VALUE rb_mCairo_Color;
-RUBY_CAIRO_VAR VALUE rb_cCairo_Color_Base;
+#if defined(RUBY_CAIRO_STATIC_COMPILATION) && !defined(RB_CAIRO_STATIC_COMPILATION)
+#  define RB_CAIRO_STATIC_COMPILATION RUBY_CAIRO_STATIC_COMPILATION
+#endif
+
+#if defined(RB_CAIRO_PLATFORM_WIN32) && !defined(RB_CAIRO_STATIC_COMPILATION)
+#  ifdef RB_CAIRO_COMPILATION
+#    define RB_CAIRO_VAR __declspec(dllexport)
+#  else
+#    define RB_CAIRO_VAR extern __declspec(dllimport)
+#  endif
+#else
+#  define RB_CAIRO_VAR extern
+#endif
+
+RB_CAIRO_VAR VALUE rb_mCairo;
+RB_CAIRO_VAR VALUE rb_cCairo_Context;
+RB_CAIRO_VAR VALUE rb_cCairo_Point;
+RB_CAIRO_VAR VALUE rb_cCairo_Path;
+RB_CAIRO_VAR VALUE rb_cCairo_PathData;
+RB_CAIRO_VAR VALUE rb_cCairo_PathMoveTo;
+RB_CAIRO_VAR VALUE rb_cCairo_PathLineTo;
+RB_CAIRO_VAR VALUE rb_cCairo_PathCurveTo;
+RB_CAIRO_VAR VALUE rb_cCairo_PathClosePath;
+RB_CAIRO_VAR VALUE rb_cCairo_Matrix;
+RB_CAIRO_VAR VALUE rb_cCairo_Pattern;
+RB_CAIRO_VAR VALUE rb_cCairo_SolidPattern;
+RB_CAIRO_VAR VALUE rb_cCairo_SurfacePattern;
+RB_CAIRO_VAR VALUE rb_cCairo_GradientPattern;
+RB_CAIRO_VAR VALUE rb_cCairo_LinearPattern;
+RB_CAIRO_VAR VALUE rb_cCairo_RadialPattern;
+RB_CAIRO_VAR VALUE rb_cCairo_FontFace;
+RB_CAIRO_VAR VALUE rb_cCairo_FontExtents;
+RB_CAIRO_VAR VALUE rb_cCairo_FontOptions;
+RB_CAIRO_VAR VALUE rb_cCairo_ScaledFont;
+RB_CAIRO_VAR VALUE rb_cCairo_TextExtents;
+RB_CAIRO_VAR VALUE rb_cCairo_Glyph;
+RB_CAIRO_VAR VALUE rb_cCairo_Surface;
+RB_CAIRO_VAR VALUE rb_cCairo_ImageSurface;
+RB_CAIRO_VAR VALUE rb_cCairo_PDFSurface;
+RB_CAIRO_VAR VALUE rb_cCairo_PSSurface;
+RB_CAIRO_VAR VALUE rb_cCairo_SVGSurface;
+RB_CAIRO_VAR VALUE rb_cCairo_WIN32Surface;
+RB_CAIRO_VAR VALUE rb_cCairo_QuartzSurface;
+
+RB_CAIRO_VAR VALUE rb_mCairo_Operator;
+RB_CAIRO_VAR VALUE rb_mCairo_Antialias;
+RB_CAIRO_VAR VALUE rb_mCairo_FillRule;
+RB_CAIRO_VAR VALUE rb_mCairo_LineCap;
+RB_CAIRO_VAR VALUE rb_mCairo_LineJoin;
+RB_CAIRO_VAR VALUE rb_mCairo_FontSlant;
+RB_CAIRO_VAR VALUE rb_mCairo_FontWeight;
+RB_CAIRO_VAR VALUE rb_mCairo_SubpixelOrder;
+RB_CAIRO_VAR VALUE rb_mCairo_HintStyle;
+RB_CAIRO_VAR VALUE rb_mCairo_HintMetrics;
+RB_CAIRO_VAR VALUE rb_mCairo_FontType;
+RB_CAIRO_VAR VALUE rb_mCairo_PathDataType;
+RB_CAIRO_VAR VALUE rb_mCairo_Content;
+RB_CAIRO_VAR VALUE rb_mCairo_SurfaceType;
+RB_CAIRO_VAR VALUE rb_mCairo_Format;
+RB_CAIRO_VAR VALUE rb_mCairo_PatternType;
+RB_CAIRO_VAR VALUE rb_mCairo_Extend;
+RB_CAIRO_VAR VALUE rb_mCairo_Filter;
+RB_CAIRO_VAR VALUE rb_mCairo_SVGVersion;
+RB_CAIRO_VAR VALUE rb_mCairo_Color;
+RB_CAIRO_VAR VALUE rb_cCairo_Color_Base;
 
 
 #define RVAL2CRCONTEXT(obj)     (rb_cairo_context_from_ruby_object(obj))
@@ -217,5 +239,7 @@ void rb_cairo_check_status (cairo_status_t status);
 
 #define RB_CAIRO_DEF_SETTERS(klass) rb_cairo_def_setters(klass);
 void rb_cairo_def_setters (VALUE klass);
+
+RB_CAIRO_END_DECLS
 
 #endif

@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-06-14 12:23:45 $
+ * $Date: 2008-01-11 08:03:39 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -26,10 +26,11 @@
 
 VALUE rb_cCairo_Surface;
 VALUE rb_cCairo_ImageSurface;
-VALUE rb_cCairo_PDFSurface;
-VALUE rb_cCairo_PSSurface;
-VALUE rb_cCairo_SVGSurface;
-VALUE rb_cCairo_WIN32Surface;
+VALUE rb_cCairo_PDFSurface = Qnil;
+VALUE rb_cCairo_PSSurface = Qnil;
+VALUE rb_cCairo_SVGSurface = Qnil;
+VALUE rb_cCairo_WIN32Surface = Qnil;
+VALUE rb_cCairo_QuartzSurface = Qnil;
 
 static ID cr_id_target;
 static ID cr_id_read;
@@ -830,6 +831,75 @@ cr_win32_surface_get_image (VALUE self)
 }
 #endif
 
+#if CAIRO_HAS_QUARTZ_SURFACE
+/* Quartz-surface functions */
+
+#include <objc/objc-runtime.h>
+
+VALUE ocobj_s_new (id ocid);
+id rbobj_get_ocid (VALUE obj);
+
+
+static VALUE
+cr_quartz_surface_initialize (int argc, VALUE *argv, VALUE self)
+{
+  id objc_object = nil;
+  CGContextRef context;
+  unsigned int width, height;
+  cairo_surface_t *surface = NULL;
+  cairo_format_t format = CAIRO_FORMAT_ARGB32;
+  VALUE arg1, arg2, arg3, rb_width, rb_height;
+
+  rb_scan_args (argc, argv, "21", &arg1, &arg2, &arg3);
+
+  if (argc == 2)
+    {
+      rb_width = arg1;
+      rb_height = arg2;
+    }
+  else
+    {
+      objc_object = rbobj_get_ocid (arg1);
+      if (objc_object == nil)
+        format = RVAL2CRFORMAT (arg1);
+
+      rb_width = arg2;
+      rb_height = arg3;
+    }
+
+  width = NUM2UINT (rb_width);
+  height = NUM2UINT (rb_height);
+
+  if (objc_object != nil)
+    {
+      context = (CGContextRef)objc_object;
+      surface = cairo_quartz_surface_create_for_cg_context (context,
+                                                            width, height);
+    }
+  else
+    {
+      surface = cairo_quartz_surface_create (format, width, height);
+    }
+
+  cr_surface_check_status (surface);
+  DATA_PTR (self) = surface;
+  if (rb_block_given_p ())
+    yield_and_finish (self);
+  return Qnil;
+}
+
+static VALUE
+cr_quartz_surface_get_cg_context (VALUE self)
+{
+  CGContextRef context;
+  id objc_object;
+
+  context = cairo_quartz_surface_get_cg_context (_SELF);
+  objc_object = (id)context;
+  return ocobj_s_new (objc_object);
+}
+#endif
+
 
 void
 Init_cairo_surface (void)
@@ -909,8 +979,6 @@ Init_cairo_surface (void)
                     cr_ps_surface_dsc_begin_page_setup, 0);
 
   RB_CAIRO_DEF_SETTERS (rb_cCairo_PSSurface);
-#else
-  rb_cCairo_PSSurface = Qnil;
 #endif
 
 #if CAIRO_HAS_PDF_SURFACE
@@ -921,8 +989,6 @@ Init_cairo_surface (void)
                     cr_pdf_surface_set_size, 2);
 
   RB_CAIRO_DEF_SETTERS (rb_cCairo_PDFSurface);
-#else
-  rb_cCairo_PDFSurface = Qnil;
 #endif
 
 #if CAIRO_HAS_SVG_SURFACE
@@ -938,8 +1004,6 @@ Init_cairo_surface (void)
                     cr_svg_surface_restrict_to_version, 1);
 
   RB_CAIRO_DEF_SETTERS (rb_cCairo_SVGSurface);
-#else
-  rb_cCairo_SVGSurface = Qnil;
 #endif
 
 #if CAIRO_HAS_WIN32_SURFACE
@@ -953,7 +1017,17 @@ Init_cairo_surface (void)
                     cr_win32_surface_get_hdc, 0);
   rb_define_method (rb_cCairo_WIN32Surface, "image",
                     cr_win32_surface_get_image, 0);
-#else
-  rb_cCairo_WIN32Surface = Qnil;
+#endif
+
+#if CAIRO_HAS_QUARTZ_SURFACE
+  /* Quartz-surface */
+
+  rb_cCairo_QuartzSurface =
+    rb_define_class_under (rb_mCairo, "QuartzSurface", rb_cCairo_Surface);
+
+  rb_define_method (rb_cCairo_QuartzSurface, "initialize",
+                    cr_quartz_surface_initialize, -1);
+  rb_define_method (rb_cCairo_QuartzSurface, "cg_context",
+                    cr_quartz_surface_get_cg_context, 0);
 #endif
 }

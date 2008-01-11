@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-06-14 12:23:45 $
+ * $Date: 2008-01-11 08:03:39 $
  *
  * Copyright 2005 Kouhei Sutou <kou@cozmixng.org>
  *
@@ -40,6 +40,7 @@ extern void Init_cairo_context (void);
 extern void Init_cairo_path (void);
 extern void Init_cairo_matrix (void);
 extern void Init_cairo_surface (void);
+extern void Init_cairo_quartz_surface (void);
 extern void Init_cairo_exception (void);
 extern void Init_cairo_font (void);
 extern void Init_cairo_font_extents (void);

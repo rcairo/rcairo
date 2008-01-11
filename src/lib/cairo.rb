@@ -93,3 +93,7 @@ require 'cairo/point'
 require 'cairo/colors'
 require 'cairo/context'
 require 'cairo/path'
+
+if Cairo.const_defined?(:QuartzSurface)
+  require 'osx/cocoa'
+end
