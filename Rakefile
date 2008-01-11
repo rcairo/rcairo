@@ -109,9 +109,10 @@ end
 
 
 # for releasing
-task :dist do
+task :dist => [:docs] do
   sh "./dist.sh", version
 end
+task :gem => [:docs]
 
 # for documentation
 langs = [
