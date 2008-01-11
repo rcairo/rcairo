@@ -20,26 +20,26 @@ else
   $cc_is_gcc = false
 end
 
-def check_win32()
-  STDOUT.print("checking for Win32 OS... ")
-  STDOUT.flush
-  if /cygwin|mingw|mswin32/ =~ RUBY_PLATFORM
-    $defs << "-DRUBY_CAIRO_PLATFORM_WIN32"
-    STDOUT.print "yes\n"
-    if $cc_is_gcc
-      if /^2\./ =~ `#{Config::CONFIG['CC']} -dumpversion`.chomp
-        $CFLAGS += ' -fnative-struct'
-      else
-        $CFLAGS += ' -mms-bitfields'
+def check_win32
+  checking_for("Win32 OS") do
+    win32_os = /cygwin|mingw|mswin32/ =~ RUBY_PLATFORM
+    if win32_os
+      $defs << "-DRUBY_CAIRO_PLATFORM_WIN32"
+      if $cc_is_gcc
+        if /^2\./ =~ `#{Config::CONFIG['CC']} -dumpversion`.chomp
+          $CFLAGS += ' -fnative-struct'
+        else
+          $CFLAGS += ' -mms-bitfields'
+        end
       end
     end
-  else
-    STDOUT.print "no\n"
+    win32_os
   end
 end
 
 def set_output_lib(target_name)
-  if /cygwin|mingw/ =~ RUBY_PLATFORM
+  case RUBY_PLATFORM
+  when /cygwin|mingw/
     filename = "libruby-#{target_name}.a"
     if RUBY_VERSION > "1.8.0"
       $DLDFLAGS << ",--out-implib=#{filename}" if filename
@@ -50,17 +50,16 @@ def set_output_lib(target_name)
       $DLDFLAGS.gsub!(/ --output-lib\s+[^ ]+/, '')
       $DLDFLAGS << " --output-lib #{filename}" if filename
     end
-  elsif /mswin32/ =~ RUBY_PLATFORM
-      filename = "libruby-#{target_name}.lib"
-      $DLDFLAGS.gsub!(/ --output-lib\s+[^ ]+/, '')
-      $DLDFLAGS.gsub!(/ \/IMPLIB:[^ ]+/, '')
-      $DLDFLAGS << " /IMPLIB:#{filename}" if filename
+  when /mswin32/
+    filename = "libruby-#{target_name}.lib"
+    $DLDFLAGS.gsub!(/ --output-lib\s+[^ ]+/, '')
+    $DLDFLAGS.gsub!(/ \/IMPLIB:[^ ]+/, '')
+    $DLDFLAGS << " /IMPLIB:#{filename}" if filename
+  when /darwin/
+    if have_macro("CAIRO_HAS_QUARTZ_SURFACE", ["cairo.h"])
+      $DLDFLAGS << " -Wl,-framework,RubyCocoa"
+    end
   end
-end
-
-def setup_win32(target_name)
-  check_win32
-  set_output_lib(target_name)
 end
 
 
@@ -74,7 +73,8 @@ PKGConfig.have_package(pkg, major, minor, micro) or exit 1
 
 have_func("rb_errinfo")
 
-setup_win32(File.basename(modname))
+check_win32
+set_output_lib(File.basename(modname))
 $defs << "-DRUBY_CAIRO_COMPILATION"
 create_makefile(modname, srcdir)
 

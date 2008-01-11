@@ -1,5 +1,7 @@
 2008-01-11  Kouhei Sutou  <kou@cozmixng.org>
 
+	* extconf.rb: added Quartz backend check for -framework RubyCocoa.
+
 	* src/rb_cairo.h:
 	- RUBY_XXX -> RB_XXX.
 	- added extern "C" {}.
