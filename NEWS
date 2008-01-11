@@ -8,6 +8,9 @@ Features
   * Fix a memory leak bug. (Binzo)
   * Support ruby 1.9.0. (Paul van Tilburg)
   * Fix typos. (NANKI Haruo)
+  * Rename Cairo::WIN32Surface to Cairo::Win32Surface
+    * Cairo::WIN32Surface is still available for backward compatibility but
+      don't use in newly written code.
 
 Release 1.5.0 (2007-05-27) Kouhei Sutou <kou@cozmixng.org>)
 ==========================================================
