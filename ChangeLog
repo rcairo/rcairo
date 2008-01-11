@@ -1,5 +1,7 @@
 2008-01-11  Kouhei Sutou  <kou@cozmixng.org>
 
+	* Rakefile: added docs task dependencies.
+
 	* dist.sh: updated update host.
 
 	* src/rb_cairo.c: 1.5.1 -> 1.5.2.
