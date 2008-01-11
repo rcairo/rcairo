@@ -1,3 +1,17 @@
+2008-01-11  Kouhei Sutou  <kou@cozmixng.org>
+
+	* src/rb_cairo.h:
+	- RUBY_XXX -> RB_XXX.
+	- added extern "C" {}.
+	- added rb_cCairo_QuartzSurface.
+
+	* src/cairo.def: rb_cCairo_QuartzSurface.
+
+	* src/rb_cairo_surface.c: supported Quartz backend.
+
+	* src/lib/cairo.rb: required 'osx/cocoa' if Cairo::QuartzSurface
+	is available.
+
 2007-12-29  Kouhei Sutou  <kou@cozmixng.org>
 
 	* src/rb_cairo_context.c (cr_set_source_surface): fixed wrong type

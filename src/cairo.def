@@ -27,6 +27,7 @@ EXPORTS
     rb_cCairo_PSSurface       DATA
     rb_cCairo_SVGSurface      DATA
     rb_cCairo_WIN32Surface    DATA
+    rb_cCairo_QuartzSurface   DATA
 
     rb_mCairo_Operator        DATA
     rb_mCairo_Antialias       DATA
