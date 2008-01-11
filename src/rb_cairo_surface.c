@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-01-11 08:03:39 $
+ * $Date: 2008-01-11 11:28:26 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -870,15 +870,15 @@ cr_quartz_surface_initialize (int argc, VALUE *argv, VALUE self)
   width = NUM2UINT (rb_width);
   height = NUM2UINT (rb_height);
 
-  if (objc_object != nil)
+  if (objc_object == nil)
     {
-      context = (CGContextRef)objc_object;
-      surface = cairo_quartz_surface_create_for_cg_context (context,
-                                                            width, height);
+      surface = cairo_quartz_surface_create (format, width, height);
     }
   else
     {
-      surface = cairo_quartz_surface_create (format, width, height);
+      context = (CGContextRef)objc_object;
+      surface =
+        cairo_quartz_surface_create_for_cg_context (context, width, height);
     }
 
   cr_surface_check_status (surface);
