@@ -1,3 +1,7 @@
+2008-01-18  Kouhei Sutou  <kou@cozmixng.org>
+
+	* extconf.rb: detected RubyCocoa.
+
 2008-01-11  Kouhei Sutou  <kou@cozmixng.org>
 
 	* Rakefile: added docs task dependencies.
