@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-01-18 04:57:20 $
+ * $Date: 2008-01-18 05:04:25 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -851,14 +851,13 @@ cr_win32_surface_get_image (VALUE self)
 }
 #endif
 
-#if CAIRO_HAS_QUARTZ_SURFACE
+#if CAIRO_HAS_QUARTZ_SURFACE && defined(HAVE_RUBY_COCOA)
 /* Quartz-surface functions */
 
 #include <objc/objc-runtime.h>
 
-VALUE ocobj_s_new (id ocid);
-id rbobj_get_ocid (VALUE obj);
-
+BOOL rbobj_to_nsobj (VALUE obj, id* nsobj);
+VALUE ocid_to_rbobj (VALUE context_obj, id ocid);
 
 static VALUE
 cr_quartz_surface_initialize (int argc, VALUE *argv, VALUE self)
@@ -869,6 +868,7 @@ cr_quartz_surface_initialize (int argc, VALUE *argv, VALUE self)
   cairo_surface_t *surface = NULL;
   cairo_format_t format = CAIRO_FORMAT_ARGB32;
   VALUE arg1, arg2, arg3, rb_width, rb_height;
+  static VALUE rb_cOSXCGContextRef = Qnil;
 
   rb_scan_args (argc, argv, "21", &arg1, &arg2, &arg3);
 
@@ -879,9 +879,32 @@ cr_quartz_surface_initialize (int argc, VALUE *argv, VALUE self)
     }
   else
     {
-      objc_object = rbobj_get_ocid (arg1);
-      if (objc_object == nil)
-        format = RVAL2CRFORMAT (arg1);
+      switch (TYPE (arg1))
+        {
+        case T_NIL:
+          break;
+        case T_STRING:
+        case T_SYMBOL:
+        case T_FIXNUM:
+          format = RVAL2CRFORMAT (arg1);
+          break;
+        default:
+          if (NIL_P (rb_cOSXCGContextRef))
+            rb_cOSXCGContextRef =
+              rb_const_get (rb_const_get (rb_cObject, rb_intern ("OSX")),
+                            rb_intern ("CGContextRef"));
+
+          if (RTEST (rb_obj_is_kind_of (arg1, rb_cOSXCGContextRef)))
+            rbobj_to_nsobj (arg1, &objc_object);
+          else
+            rb_raise (rb_eArgError,
+                      "invalid argument (expect "
+                      "(width, height), "
+                      "(format, width, height) or "
+                      "(cg_context, width, height)): %s",
+                      inspect (rb_ary_new3 (3, arg1, arg2, arg3)));
+          break;
+        }
 
       rb_width = arg2;
       rb_height = arg3;
@@ -916,7 +939,7 @@ cr_quartz_surface_get_cg_context (VALUE self)
 
   context = cairo_quartz_surface_get_cg_context (_SELF);
   objc_object = (id)context;
-  return ocobj_s_new (objc_object);
+  return ocid_to_rbobj (Qnil, objc_object);
 }
 #endif
 

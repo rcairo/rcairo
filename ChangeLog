@@ -1,5 +1,11 @@
 2008-01-18  Kouhei Sutou  <kou@cozmixng.org>
 
+	* src/rb_cairo_surface.c: used rbobj_to_nsobj() and
+	ocid_to_rbobj() instead of rbobj_get_ocid() and ocobj_s_new().
+	Suggested by kumura wataru. Thanks!!!
+
+	* README: added kumura wataru to Thanks list.
+
 	* src/rb_cairo_surface.c: fixed # of arguments for
 	Cairo::Surface#mark_dirty.
 
