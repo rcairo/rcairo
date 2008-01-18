@@ -1,5 +1,10 @@
 2008-01-18  Kouhei Sutou  <kou@cozmixng.org>
 
+	* src/rb_cairo_surface.c: fixed # of arguments for
+	Cairo::Surface#mark_dirty.
+
+	* src/rb_cairo_surface.c: improved argument error message.
+
 	* extconf.rb: detected RubyCocoa.
 
 2008-01-11  Kouhei Sutou  <kou@cozmixng.org>
