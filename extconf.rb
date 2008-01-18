@@ -57,7 +57,16 @@ def set_output_lib(target_name)
     $DLDFLAGS << " /IMPLIB:#{filename}" if filename
   when /darwin/
     if have_macro("CAIRO_HAS_QUARTZ_SURFACE", ["cairo.h"])
-      $DLDFLAGS << " -Wl,-framework,RubyCocoa"
+      checking_for("RubyCocoa") do
+        begin
+          require 'osx/cocoa'
+          $defs << "-DHAVE_RUBY_COCOA"
+          $DLDFLAGS << " -Wl,-framework,RubyCocoa"
+          true
+        rescue LoadError
+          false
+        end
+      end
     end
   end
 end
