@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-01-11 12:19:44 $
+ * $Date: 2008-01-18 04:57:20 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -35,6 +35,7 @@ VALUE rb_cCairo_QuartzSurface = Qnil;
 static ID cr_id_target;
 static ID cr_id_read;
 static ID cr_id_write;
+static ID cr_id_inspect;
 static cairo_user_data_key_t cr_closure_key;
 
 #define _SELF  (RVAL2CRSURFACE(self))
@@ -75,6 +76,14 @@ cr_surface_get_klass (cairo_surface_t *surface)
     }
 
   return klass;
+}
+
+static char *
+inspect (VALUE object)
+{
+  VALUE inspected;
+  inspected = rb_funcall (object, cr_id_inspect, 0);
+  return StringValueCStr(inspected);
 }
 
 /* read/write callback */
@@ -385,8 +394,18 @@ cr_surface_mark_dirty (int argc, VALUE *argv, VALUE self)
     }
   else
     {
+      int i;
+      VALUE args;
+
+      args = rb_ary_new2 (n);
+      for (i = 0; i < n; i++)
+        {
+          rb_ary_push (args, argv[i]);
+        }
+
       rb_raise (rb_eArgError,
-                "invalid argument (expect () or (x, y, width, height))");
+                "invalid argument (expect () or (x, y, width, height)): %s",
+                inspect (args));
     }
 
   cr_surface_check_status (_SELF);
@@ -516,7 +535,8 @@ cr_image_surface_initialize (int argc, VALUE *argv, VALUE self)
               "invalid argument (expect "
               "(width, height) or "
               "(format, width, height) or "
-              "(data, format, width, height, stride))");
+              "(data, format, width, height, stride)): %s",
+              inspect (rb_ary_new3 (4, arg1, arg2, arg3, arg4)));
 
   cr_surface_check_status (surface);
   DATA_PTR (self) = surface;
@@ -907,7 +927,8 @@ Init_cairo_surface (void)
   cr_id_target = rb_intern ("target");
   cr_id_read = rb_intern ("read");
   cr_id_write = rb_intern ("write");
-  
+  cr_id_inspect = rb_intern ("inspect");
+
   rb_cCairo_Surface =
     rb_define_class_under (rb_mCairo, "Surface", rb_cObject);
   rb_define_alloc_func (rb_cCairo_Surface, cr_surface_allocate);
@@ -920,7 +941,7 @@ Init_cairo_surface (void)
   rb_define_method (rb_cCairo_Surface, "font_options",
                     cr_surface_get_font_options, 0);
   rb_define_method (rb_cCairo_Surface, "flush", cr_surface_flush, 0);
-  rb_define_method (rb_cCairo_Surface, "mark_dirty", cr_surface_mark_dirty, 0);
+  rb_define_method (rb_cCairo_Surface, "mark_dirty", cr_surface_mark_dirty, -1);
   rb_define_method (rb_cCairo_Surface, "set_device_offset",
                     cr_surface_set_device_offset, 2);
   rb_define_method (rb_cCairo_Surface, "device_offset",
