@@ -1,3 +1,7 @@
+2008-02-21  Kouhei Sutou  <kou@cozmixng.org>
+
+	* src/: supported <= 1.5.10.
+
 2008-01-18  Kouhei Sutou  <kou@cozmixng.org>
 
 	* src/rb_cairo_surface.c: used rbobj_to_nsobj() and

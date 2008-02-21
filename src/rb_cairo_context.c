@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-12-29 11:42:26 $
+ * $Date: 2008-02-21 13:18:10 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -738,6 +738,19 @@ cr_close_path (VALUE self)
   return self;
 }
 
+#if CAIRO_CHECK_VERSION(1, 5, 8)
+static VALUE
+cr_path_extents (VALUE self)
+{
+  double x1, y1, x2, y2;
+  cairo_path_extents (_SELF, &x1, &y1, &x2, &y2);
+  cr_check_status (_SELF);
+  return rb_ary_new3 (4,
+                      rb_float_new(x1), rb_float_new(y1),
+                      rb_float_new(x2), rb_float_new(y2));
+}
+#endif
+
 /* Painting functions */
 static VALUE
 cr_paint (VALUE self)
@@ -1216,8 +1229,16 @@ cr_get_tolerance (VALUE self)
 static VALUE
 cr_get_antialias(VALUE self)
 {
-  return INT2NUM (cairo_get_antialias(_SELF));
+  return INT2NUM (cairo_get_antialias (_SELF));
 }
+
+#if CAIRO_CHECK_VERSION(1, 5, 10)
+static VALUE
+cr_has_current_point(VALUE self)
+{
+  return RTEST (cairo_has_current_point (_SELF));
+}
+#endif
 
 static VALUE
 cr_get_current_point (VALUE self)
@@ -1438,6 +1459,9 @@ Init_cairo_context (void)
                     cr_rel_curve_to_generic, -1);
   rb_define_method (rb_cCairo_Context, "rectangle", cr_rectangle, 4);
   rb_define_method (rb_cCairo_Context, "close_path", cr_close_path, 0);
+#if CAIRO_CHECK_VERSION(1, 5, 8)
+  rb_define_method (rb_cCairo_Context, "path_extents", cr_path_extents, 0);
+#endif
 
   /* Painting functions */
   rb_define_method (rb_cCairo_Context, "paint", cr_paint_generic, -1);
@@ -1494,6 +1518,12 @@ Init_cairo_context (void)
   rb_define_method (rb_cCairo_Context, "source", cr_get_source, 0);
   rb_define_method (rb_cCairo_Context, "tolerance", cr_get_tolerance, 0);
   rb_define_method (rb_cCairo_Context, "antialias", cr_get_antialias, 0);
+#if CAIRO_CHECK_VERSION(1, 5, 10)
+  rb_define_method (rb_cCairo_Context, "have_current_point?",
+                    cr_has_current_point, 0);
+  rb_define_alias (rb_cCairo_Context,
+                   "has_current_point?", "have_current_point?");
+#endif
   rb_define_method (rb_cCairo_Context, "current_point",
                     cr_get_current_point, 0);
   rb_define_method (rb_cCairo_Context, "fill_rule", cr_get_fill_rule, 0);

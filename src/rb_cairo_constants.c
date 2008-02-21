@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-05-20 09:18:49 $
+ * $Date: 2008-02-21 13:18:10 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -31,7 +31,8 @@ VALUE rb_mCairo_Content;
 VALUE rb_mCairo_Format;
 VALUE rb_mCairo_Extend;
 VALUE rb_mCairo_Filter;
-VALUE rb_mCairo_SVGVersion;
+VALUE rb_mCairo_SVGVersion = Qnil;
+VALUE rb_mCairo_PSLevel = Qnil;
 
 #define CAIRO_OPERATOR_MIN CAIRO_OPERATOR_CLEAR
 #define CAIRO_OPERATOR_MAX CAIRO_OPERATOR_SATURATE
@@ -81,6 +82,9 @@ VALUE rb_mCairo_SVGVersion;
 #define CAIRO_SVG_VERSION_MIN CAIRO_SVG_VERSION_1_1
 #define CAIRO_SVG_VERSION_MAX CAIRO_SVG_VERSION_1_2
 
+#define CAIRO_PS_LEVEL_MIN CAIRO_PS_LEVEL_2
+#define CAIRO_PS_LEVEL_MAX CAIRO_PS_LEVEL_3
+
 #define DEFINE_RVAL2ENUM(name, const_name)                      \
 cairo_ ## name ## _t                                            \
 rb_cairo_ ## name ## _from_ruby_object (VALUE rb_ ## name)      \
@@ -122,6 +126,96 @@ DEFINE_RVAL2ENUM(extend, EXTEND)
 DEFINE_RVAL2ENUM(filter, FILTER)
 #if CAIRO_HAS_SVG_SURFACE
 DEFINE_RVAL2ENUM(svg_version, SVG_VERSION)
+#endif
+#if CAIRO_HAS_PS_SURFACE
+#  if CAIRO_CHECK_VERSION(1, 5, 2)
+DEFINE_RVAL2ENUM(ps_level, PS_LEVEL)
+#  endif
+#endif
+
+
+#if CAIRO_HAS_SVG_SURFACE
+static VALUE
+cr_svg_get_versions (VALUE self)
+{
+  VALUE rb_versions;
+  int i, num_versions;
+  cairo_svg_version_t const *versions;
+
+  cairo_svg_get_versions (&versions, &num_versions);
+
+  rb_versions = rb_ary_new2 (num_versions);
+
+  for (i = 0; i < num_versions; i++)
+    {
+      rb_ary_push (rb_versions, INT2NUM (versions[i]));
+    }
+
+  return rb_versions;
+}
+
+static VALUE
+cr_svg_version_to_string (int argc, VALUE *argv, VALUE self)
+{
+  if (argc == 0)
+    {
+      return rb_call_super (argc, argv);
+    }
+  else
+    {
+      VALUE version;
+      const char *ver_str;
+      rb_scan_args (argc, argv, "1", &version);
+      ver_str = cairo_svg_version_to_string (RVAL2CRSVGVERSION(version));
+      return rb_str_new2 (ver_str);
+    }
+}
+#endif
+
+#if CAIRO_CHECK_VERSION(1, 5, 8)
+static VALUE
+cr_format_stride_for_width (VALUE self, VALUE format, VALUE width)
+{
+  return INT2NUM (cairo_format_stride_for_width (RVAL2CRFORMAT (format),
+                                                 NUM2INT (width)));
+}
+#endif
+
+#if CAIRO_HAS_PS_SURFACE
+#  if CAIRO_CHECK_VERSION(1, 5, 8)
+static VALUE
+cr_ps_get_levels (VALUE self)
+{
+  VALUE rb_levels;
+  const cairo_ps_level_t *levels;
+  int i, n_levels;
+
+  cairo_ps_get_levels (&levels, &n_levels);
+
+  rb_levels = rb_ary_new2 (n_levels);
+  for (i = 0; i < n_levels; i++)
+    {
+      rb_ary_push (rb_levels, INT2NUM (levels[i]));
+    }
+
+  return rb_levels;
+}
+
+static VALUE
+cr_ps_level_to_string (int argc, VALUE *argv, VALUE self)
+{
+  if (argc == 0)
+    {
+      return rb_call_super (argc, argv);
+    }
+  else
+    {
+      VALUE level;
+      rb_scan_args (argc, argv, "1", &level);
+      return rb_str_new2 (cairo_ps_level_to_string (RVAL2CRPSLEVEL (level)));
+    }
+}
+#  endif
 #endif
 
 void
@@ -295,6 +389,11 @@ Init_cairo_constants (void)
                    INT2FIX (CAIRO_FORMAT_RGB16_565));
 #endif
 
+#if CAIRO_CHECK_VERSION(1, 5, 8)
+  rb_define_singleton_method (rb_mCairo_Format, "stride_for_width",
+                              cr_format_stride_for_width, 2);
+#endif
+
 
   /* cairo_extend_t */
   rb_mCairo_Extend = rb_define_module_under (rb_mCairo, "Extend");
@@ -330,5 +429,24 @@ Init_cairo_constants (void)
                    INT2FIX (CAIRO_SVG_VERSION_1_1));
   rb_define_const (rb_mCairo_SVGVersion, "VERSION_1_2",
                    INT2FIX (CAIRO_SVG_VERSION_1_2));
+
+  rb_define_singleton_method (rb_mCairo_SVGVersion, "list",
+                              cr_svg_get_versions, 0);
+  rb_define_singleton_method (rb_mCairo_SVGVersion, "name",
+                              cr_svg_version_to_string, -1);
+#endif
+
+#if CAIRO_HAS_PS_SURFACE
+#  if CAIRO_CHECK_VERSION(1, 5, 2)
+  /* cairo_ps_level_t */
+  rb_mCairo_PSLevel = rb_define_module_under (rb_mCairo, "PSLevel");
+  rb_define_const (rb_mCairo_PSLevel, "LEVEL_2", INT2FIX (CAIRO_PS_LEVEL_2));
+  rb_define_const (rb_mCairo_PSLevel, "LEVEL_3", INT2FIX (CAIRO_PS_LEVEL_3));
+
+  rb_define_singleton_method (rb_mCairo_PSLevel, "list",
+                              cr_ps_get_levels, 0);
+  rb_define_singleton_method (rb_mCairo_PSLevel, "name",
+                              cr_ps_level_to_string, -1);
+#  endif
 #endif
 }

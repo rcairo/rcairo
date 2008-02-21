@@ -53,11 +53,39 @@ module Cairo
     end
   end
 
-  class SVGSurface
-    class << self
-      def versions_as_string
-        versions.collect do |version|
-          version_to_string(version)
+  if const_defined?("PSLevel")
+    module PSLevel
+      class << self
+        def names
+          list.collect {|version| name(version)}
+        end
+      end
+    end
+  end
+
+  if const_defined?("SVGVersion")
+    module SVGVersion
+      class << self
+        def names
+          list.collect {|version| name(version)}
+        end
+      end
+    end
+  end
+
+  if const_defined?("SVGSurface")
+    class SVGSurface
+      class << self
+        def versions_as_string
+          SVGVersion.names
+        end
+
+        def versions
+          SVGVersion.list
+        end
+
+        def version_to_string(version)
+          SVGVersion.name(version)
         end
       end
     end
