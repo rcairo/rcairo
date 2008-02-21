@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-02-21 13:18:10 $
+ * $Date: 2008-02-21 13:30:20 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -30,6 +30,7 @@ VALUE rb_cCairo_PDFSurface = Qnil;
 VALUE rb_cCairo_PSSurface = Qnil;
 VALUE rb_cCairo_SVGSurface = Qnil;
 VALUE rb_cCairo_Win32Surface = Qnil;
+VALUE rb_cCairo_Win32PrintingSurface = Qnil;
 VALUE rb_cCairo_QuartzSurface = Qnil;
 
 static ID cr_id_target;
@@ -833,6 +834,21 @@ cr_win32_surface_initialize (int argc, VALUE *argv, VALUE self)
   return Qnil;
 }
 
+#if CAIRO_CHECK_VERSION(1, 5, 2)
+static VALUE
+cr_win32_printing_surface_initialize (VALUE self, VALUE hdc)
+{
+  cairo_surface_t *surface = NULL;
+
+  surface = cairo_win32_printing_surface_create (NUM2PTR (hdc));
+  cr_surface_check_status (surface);
+  DATA_PTR (self) = surface;
+  if (rb_block_given_p ())
+    yield_and_finish (self);
+  return Qnil;
+}
+#endif
+
 static VALUE
 cr_win32_surface_get_hdc (VALUE self)
 {
@@ -1076,6 +1092,17 @@ Init_cairo_surface (void)
                     cr_win32_surface_get_hdc, 0);
   rb_define_method (rb_cCairo_Win32Surface, "image",
                     cr_win32_surface_get_image, 0);
+
+#  if CAIRO_CHECK_VERSION(1, 5, 2)
+  rb_cCairo_Win32PrintingSurface =
+    rb_define_class_under (rb_mCairo, "Win32PrintingSurface", rb_cCairo_Surface);
+
+  rb_define_method (rb_cCairo_Win32PrintingSurfaceSurface, "initialize",
+                    cr_win32_printing_surface_initialize, -1);
+  rb_define_method (rb_cCairo_Win32PrintingSurface, "hdc",
+                    cr_win32_surface_get_hdc, 0);
+#  endif
+
 #endif
 
 #if CAIRO_HAS_QUARTZ_SURFACE

@@ -1,5 +1,8 @@
 2008-02-21  Kouhei Sutou  <kou@cozmixng.org>
 
+	* src/cairo.def, src/rb_cairo.h, src/rb_cairo_surface.c:
+	Cairo::Win32PrintingSurface will work.
+
 	* src/: supported <= 1.5.10.
 
 2008-01-18  Kouhei Sutou  <kou@cozmixng.org>
