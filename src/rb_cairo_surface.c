@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-01-18 05:04:25 $
+ * $Date: 2008-02-21 13:18:10 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -444,6 +444,23 @@ cr_surface_set_fallback_resolution (VALUE self,
   return self;
 }
 
+#if CAIRO_CHECK_VERSION(1, 5, 2)
+static VALUE
+cr_surface_copy_page (VALUE self)
+{
+  cairo_surface_copy_page (_SELF);
+  cr_surface_check_status (_SELF);
+  return self;
+}
+
+static VALUE
+cr_surface_show_page (VALUE self)
+{
+  cairo_surface_show_page (_SELF);
+  cr_surface_check_status (_SELF);
+  return self;
+}
+#endif
 
 /* Image-surface functions */
 #if CAIRO_HAS_PNG_FUNCTIONS
@@ -487,7 +504,6 @@ cr_image_surface_create_from_png_generic (VALUE klass, VALUE target)
   return rb_surface;
 }
 #endif
-
 
 static cairo_surface_t *
 cr_image_surface_create (VALUE self, VALUE format, VALUE width, VALUE height)
@@ -684,6 +700,24 @@ cr_ps_surface_dsc_begin_page_setup (VALUE self)
   else
     return Qnil;
 }
+
+#  if CAIRO_CHECK_VERSION(1, 5, 2)
+static VALUE
+cr_ps_surface_restrict_to_level (VALUE self, VALUE level)
+{
+  cairo_ps_surface_restrict_to_level (_SELF, RVAL2CRPSLEVEL (level));
+  cr_surface_check_status (_SELF);
+  return Qnil;
+}
+
+static VALUE
+cr_ps_surface_set_eps (VALUE self, VALUE eps)
+{
+  cairo_ps_surface_set_eps (_SELF, RTEST (eps));
+  cr_surface_check_status (_SELF);
+  return Qnil;
+}
+#  endif
 #endif
 
 #if CAIRO_HAS_PDF_SURFACE
@@ -713,33 +747,6 @@ cr_svg_surface_restrict_to_version (VALUE self, VALUE version)
   cairo_svg_surface_restrict_to_version (_SELF, RVAL2CRSVGVERSION (version));
   cr_surface_check_status (_SELF);
   return Qnil;
-}
-
-static VALUE
-cr_svg_get_versions (VALUE self)
-{
-  VALUE rb_versions;
-  int i, num_versions;
-  cairo_svg_version_t const *versions;
-
-  cairo_svg_get_versions (&versions, &num_versions);
-
-  rb_versions = rb_ary_new2 (num_versions);
-
-  for (i = 0; i < num_versions; i++)
-    {
-      rb_ary_push (rb_versions, INT2NUM (versions[i]));
-    }
-
-  return rb_versions;
-}
-
-static VALUE
-cr_svg_version_to_string (VALUE self, VALUE version)
-{
-  const char *ver_str;
-  ver_str = cairo_svg_version_to_string (RVAL2CRSVGVERSION(version));
-  return rb_str_new2 (ver_str);
 }
 #endif
 
@@ -971,6 +978,12 @@ Init_cairo_surface (void)
                     cr_surface_get_device_offset, 0);
   rb_define_method (rb_cCairo_Surface, "set_fallback_resolution",
                     cr_surface_set_fallback_resolution, 2);
+#if CAIRO_CHECK_VERSION(1, 5, 2)
+  rb_define_method (rb_cCairo_Surface, "copy_page",
+                    cr_surface_copy_page, 2);
+  rb_define_method (rb_cCairo_Surface, "show_page",
+                    cr_surface_show_page, 2);
+#endif
 
 #if CAIRO_HAS_PNG_FUNCTIONS
   rb_define_method (rb_cCairo_Surface, "write_to_png",
@@ -1022,6 +1035,13 @@ Init_cairo_surface (void)
   rb_define_method (rb_cCairo_PSSurface, "dsc_begin_page_setup",
                     cr_ps_surface_dsc_begin_page_setup, 0);
 
+#if CAIRO_CHECK_VERSION(1, 5, 2)
+  rb_define_method (rb_cCairo_PSSurface, "restrict_to_level",
+                    cr_ps_surface_restrict_to_level, 1);
+  rb_define_method (rb_cCairo_PSSurface, "set_eps",
+                    cr_ps_surface_set_eps, 1);
+#endif
+
   RB_CAIRO_DEF_SETTERS (rb_cCairo_PSSurface);
 #endif
 
@@ -1038,11 +1058,6 @@ Init_cairo_surface (void)
 #if CAIRO_HAS_SVG_SURFACE
   /* SVG-surface */
   INIT_SURFACE(svg, SVG)
-
-  rb_define_singleton_method (rb_cCairo_SVGSurface, "versions",
-                              cr_svg_get_versions, 0);
-  rb_define_singleton_method (rb_cCairo_SVGSurface, "version_to_string",
-                              cr_svg_version_to_string, 1);
 
   rb_define_method (rb_cCairo_SVGSurface, "restrict_to_version",
                     cr_svg_surface_restrict_to_version, 1);

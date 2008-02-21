@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-01-11 12:18:34 $
+ * $Date: 2008-02-21 13:18:10 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -216,6 +216,11 @@ VALUE                 rb_cairo_surface_to_ruby_object        (cairo_surface_t *s
 #if CAIRO_HAS_SVG_SURFACE
 #define RVAL2CRSVGVERSION(obj)    (rb_cairo_svg_version_from_ruby_object(obj))
 #endif
+#if CAIRO_HAS_PS_SURFACE
+#  if CAIRO_CHECK_VERSION(1, 5, 2)
+#define RVAL2CRPSLEVEL(obj)       (rb_cairo_ps_level_from_ruby_object(obj))
+#  endif
+#endif
 
 cairo_operator_t       rb_cairo_operator_from_ruby_object       (VALUE obj);
 cairo_antialias_t      rb_cairo_antialias_from_ruby_object      (VALUE obj);
@@ -234,6 +239,11 @@ cairo_extend_t         rb_cairo_extend_from_ruby_object         (VALUE obj);
 cairo_filter_t         rb_cairo_filter_from_ruby_object         (VALUE obj);
 #if CAIRO_HAS_SVG_SURFACE
 cairo_svg_version_t    rb_cairo_svg_version_from_ruby_object    (VALUE obj);
+#endif
+#if CAIRO_HAS_PS_SURFACE
+#  if CAIRO_CHECK_VERSION(1, 5, 2)
+cairo_ps_level_t       rb_cairo_ps_level_from_ruby_object       (VALUE obj);
+#  endif
 #endif
 
 void rb_cairo_check_status (cairo_status_t status);

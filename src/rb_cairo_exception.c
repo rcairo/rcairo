@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-03-06 12:17:34 $
+ * $Date: 2008-02-21 13:18:10 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -36,6 +36,10 @@ static VALUE rb_eCairo_InvalidDscCommentError;
 #if CAIRO_CHECK_VERSION(1, 3, 0)
 static VALUE rb_eCairo_InvalidIndexError;
 static VALUE rb_eCairo_ClipNotRepresentableError;
+#endif
+#if CAIRO_CHECK_VERSION(1, 5, 6)
+static VALUE rb_eCairo_TempFileError;
+static VALUE rb_eCairo_InvalidStrideError;
 #endif
 
 void
@@ -115,6 +119,14 @@ rb_cairo_check_status (cairo_status_t status)
       rb_raise (rb_eCairo_ClipNotRepresentableError, string);
       break;
 #endif
+#if CAIRO_CHECK_VERSION(1, 5, 6)
+    case CAIRO_STATUS_TEMP_FILE_ERROR:
+      rb_raise (rb_eCairo_TempFileError, string);
+      break;
+    case CAIRO_STATUS_INVALID_STRIDE:
+      rb_raise (rb_eCairo_InvalidStringError, string);
+      break;
+#endif
     }
 }
 
@@ -188,5 +200,15 @@ Init_cairo_exception ()
   rb_eCairo_ClipNotRepresentableError =
     rb_define_class_under (rb_mCairo, "ClipNotRepresentableError",
                            rb_eCairo_Error);
+#endif
+
+#if CAIRO_CHECK_VERSION(1, 5, 6)
+  rb_eCairo_TempFileError =
+    rb_define_class_under (rb_mCairo, "TempFileError",
+                           rb_eCairo_Error);
+
+  rb_eCairo_InvalidStrideError =
+        rb_define_class_under (rb_mCairo, "InvalidStrideError",
+                               rb_eArgError);
 #endif
 }
