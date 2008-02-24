@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-02-21 13:30:20 $
+ * $Date: 2008-02-24 07:37:18 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -790,14 +790,21 @@ cr_win32_surface_initialize (int argc, VALUE *argv, VALUE self)
           (rb_cairo__is_kind_of (arg1, rb_cNumeric) &&
            NUM2INT (arg1) != CAIRO_FORMAT_RGB24))
         {
+#  if CAIRO_CHECK_VERSION(1, 4, 0)
+          HDC win32_hdc;
           hdc = arg1;
           width = arg2;
           height = arg3;
-          HDC win32_hdc = NIL_P (hdc) ? NULL : NUM2PTR (hdc);
+          win32_hdc = NIL_P (hdc) ? NULL : NUM2PTR (hdc);
           surface = cairo_win32_surface_create_with_ddb (win32_hdc,
                                                          CAIRO_FORMAT_RGB24,
                                                          NUM2INT (width),
                                                          NUM2INT (height));
+#  else
+          rb_raise (rb_eArgError,
+                    "Cairo::Win32Surface.new(hdc, width, height) "
+                    "is available since cairo >= 1.4.0");
+#  endif
         }
       else
         {
@@ -811,6 +818,7 @@ cr_win32_surface_initialize (int argc, VALUE *argv, VALUE self)
       break;
     case 4:
       {
+#  if CAIRO_CHECK_VERSION(1, 4, 0)
         HDC win32_hdc;
         hdc = arg1;
         format = arg2;
@@ -821,6 +829,11 @@ cr_win32_surface_initialize (int argc, VALUE *argv, VALUE self)
                                                        RVAL2CRFORMAT (format),
                                                        NUM2INT (width),
                                                        NUM2INT (height));
+#  else
+        rb_raise (rb_eArgError,
+                  "Cairo::Win32Surface.new(hdc, format, width, height) "
+                  "is available since cairo >= 1.4.0");
+#  endif
       }
       break;
     }
@@ -834,7 +847,7 @@ cr_win32_surface_initialize (int argc, VALUE *argv, VALUE self)
   return Qnil;
 }
 
-#if CAIRO_CHECK_VERSION(1, 5, 2)
+#  if CAIRO_CHECK_VERSION(1, 5, 2)
 static VALUE
 cr_win32_printing_surface_initialize (VALUE self, VALUE hdc)
 {
@@ -847,7 +860,7 @@ cr_win32_printing_surface_initialize (VALUE self, VALUE hdc)
     yield_and_finish (self);
   return Qnil;
 }
-#endif
+#  endif
 
 static VALUE
 cr_win32_surface_get_hdc (VALUE self)
@@ -861,6 +874,7 @@ cr_win32_surface_get_hdc (VALUE self)
     return PTR2NUM (hdc);
 }
 
+#  if CAIRO_CHECK_VERSION(1, 4, 0)
 static VALUE
 cr_win32_surface_get_image (VALUE self)
 {
@@ -872,6 +886,7 @@ cr_win32_surface_get_image (VALUE self)
   rb_cairo_check_status (cairo_surface_status (surface));
   return CRSURFACE2RVAL (surface);
 }
+#  endif
 #endif
 
 #if CAIRO_HAS_QUARTZ_SURFACE && defined(HAVE_RUBY_COCOA)
@@ -1090,8 +1105,10 @@ Init_cairo_surface (void)
                     cr_win32_surface_initialize, -1);
   rb_define_method (rb_cCairo_Win32Surface, "hdc",
                     cr_win32_surface_get_hdc, 0);
+#  if CAIRO_CHECK_VERSION(1, 4, 0)
   rb_define_method (rb_cCairo_Win32Surface, "image",
                     cr_win32_surface_get_image, 0);
+#  endif
 
 #  if CAIRO_CHECK_VERSION(1, 5, 2)
   rb_cCairo_Win32PrintingSurface =
