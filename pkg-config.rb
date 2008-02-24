@@ -171,6 +171,10 @@ module PKGConfig
     PackageConfig.new(pkg).cflags
   end
 
+  def cflags_only_I(pkg)
+    PackageConfig.new(pkg).cflags_only_I
+  end
+
   def modversion(pkg)
     PackageConfig.new(pkg).version
   end
