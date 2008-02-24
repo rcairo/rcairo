@@ -27,16 +27,12 @@ class PackageConfig
   end
 
   def cflags
-    all_cflags = (requires_private + requires.reverse).collect do |package|
-      self.class.new(package, @path, @msvc_syntax).cflags
-    end
-    all_cflags = [declaration("Cflags")] + all_cflags
-    all_cflags = all_cflags.join(" ").gsub(/-I /, '-I').split.uniq
-    path_flags, other_flags = all_cflags.partition {|flag| /\A-I/ =~ flag}
-    path_flags = path_flags.reject do |flag|
-      flag == "-I/usr/include"
-    end
+    path_flags, other_flags = collect_cflags
     (other_flags + path_flags).join(" ")
+  end
+
+  def cflags_only_I
+    collect_cflags[0].join(" ")
   end
 
   def libs
@@ -92,6 +88,19 @@ class PackageConfig
   def declaration(name)
     parse_pc if @declarations.nil?
     expand_value(@declarations[name])
+  end
+
+  def collect_cflags
+    all_cflags = (requires_private + requires.reverse).collect do |package|
+      self.class.new(package, @path, @msvc_syntax).cflags
+    end
+    all_cflags = [declaration("Cflags")] + all_cflags
+    all_cflags = all_cflags.join(" ").gsub(/-I /, '-I').split.uniq
+    path_flags, other_flags = all_cflags.partition {|flag| /\A-I/ =~ flag}
+    path_flags = path_flags.reject do |flag|
+      flag == "-I/usr/include"
+    end
+    [path_flags, other_flags]
   end
 
   IDENTIFIER_RE = /[\w\d_.]+/
