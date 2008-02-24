@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-02-21 13:18:10 $
+ * $Date: 2008-02-24 07:26:52 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -22,11 +22,11 @@ static ID cr_id_plus, cr_id_minus, cr_id_multi, cr_id_div;
 
 #define _SELF  (RVAL2CRCONTEXT(self))
 
+static VALUE cr_get_current_point (VALUE self);
+
 #if CAIRO_CHECK_VERSION(1, 3, 0)
 static VALUE rb_cCairo_Rectangle;
 static ID at_x, at_y, at_width, at_height;
-
-static VALUE cr_get_current_point (VALUE self);
 
 static VALUE
 cr_rectangle_initialize (VALUE self, VALUE x, VALUE y,
