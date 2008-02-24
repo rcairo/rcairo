@@ -84,7 +84,7 @@ have_func("rb_errinfo")
 
 check_win32
 set_output_lib(File.basename(modname))
-$defs << "-DRUBY_CAIRO_COMPILATION"
+$defs << "-DRB_CAIRO_COMPILATION"
 create_makefile(modname, srcdir)
 
 makefile = File.read("Makefile")

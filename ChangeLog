@@ -1,3 +1,11 @@
+2008-02-24  Kouhei Sutou  <kou@cozmixng.org>
+
+	* src/rb_cairo_context.c: fixed declaration position.
+
+	* extconf.rb: RUBY_ -> RB_.
+
+	* pkg-config.rb: implemented pkg-config for cross compiling with Wine.
+
 2008-02-21  Kouhei Sutou  <kou@cozmixng.org>
 
 	* src/cairo.def, src/rb_cairo.h, src/rb_cairo_surface.c:
