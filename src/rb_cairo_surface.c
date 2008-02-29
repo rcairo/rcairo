@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-02-24 07:37:18 $
+ * $Date: 2008-02-29 23:54:14 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -32,6 +32,7 @@ VALUE rb_cCairo_SVGSurface = Qnil;
 VALUE rb_cCairo_Win32Surface = Qnil;
 VALUE rb_cCairo_Win32PrintingSurface = Qnil;
 VALUE rb_cCairo_QuartzSurface = Qnil;
+VALUE rb_cCairo_QuartzImageSurface = Qnil;
 
 static ID cr_id_target;
 static ID cr_id_read;
@@ -65,16 +66,32 @@ cr_surface_get_klass (cairo_surface_t *surface)
     case CAIRO_SURFACE_TYPE_PS:
       klass = rb_cCairo_PSSurface;
       break;
-    case CAIRO_SURFACE_TYPE_SVG:
-      klass = rb_cCairo_SVGSurface;
+    case CAIRO_SURFACE_TYPE_QUARTZ:
+      klass = rb_cCairo_QuartzSurface;
       break;
     case CAIRO_SURFACE_TYPE_WIN32:
       klass = rb_cCairo_Win32Surface;
       break;
+    case CAIRO_SURFACE_TYPE_SVG:
+      klass = rb_cCairo_SVGSurface;
+      break;
+#if CAIRO_CHECK_VERSION(1, 5, 2)
+    case CAIRO_SURFACE_TYPE_WIN32_PRINTING:
+      klass = rb_cCairo_Win32PrintingSurface;
+      break;
+#endif
+#if CAIRO_CHECK_VERSION(1, 5, 12)
+    case CAIRO_SURFACE_TYPE_QUARTZ_IMAGE:
+      klass = rb_cCairo_QuartzImageSurface;
+      break;
+#endif
     default:
       rb_raise (rb_eArgError, "unknown source type: %d", type);
       break;
     }
+
+  if (NIL_P (klass))
+    rb_raise (rb_eArgError, "unknown source type: %d", type);
 
   return klass;
 }
@@ -883,7 +900,7 @@ cr_win32_surface_get_image (VALUE self)
   surface = cairo_win32_surface_get_image (_SELF);
   if (!surface)
     return Qnil;
-  rb_cairo_check_status (cairo_surface_status (surface));
+  cr_surface_check_status (surface);
   return CRSURFACE2RVAL (surface);
 }
 #  endif
@@ -979,6 +996,33 @@ cr_quartz_surface_get_cg_context (VALUE self)
   objc_object = (id)context;
   return ocid_to_rbobj (Qnil, objc_object);
 }
+
+#  if CAIRO_CHECK_VERSION(1, 5, 12)
+static VALUE
+cr_quartz_image_surface_initialize (VALUE self, VALUE image_surface)
+{
+  cairo_surface_t *surface;
+
+  surface = cairo_quartz_image_surface_create (RVAL2CRSURFACE (image_surface));
+  cr_surface_check_status (surface);
+  DATA_PTR (self) = surface;
+  if (rb_block_given_p ())
+    yield_and_finish (self);
+  return Qnil;
+}
+
+static VALUE
+cr_quartz_image_surface_get_image (VALUE self)
+{
+  cairo_surface_t *surface;
+
+  surface = cairo_quartz_image_surface_get_image (_SELF);
+  if (!surface)
+    return Qnil;
+  cr_surface_check_status (surface);
+  return CRSURFACE2RVAL (surface);
+}
+#  endif
 #endif
 
 
@@ -1114,7 +1158,7 @@ Init_cairo_surface (void)
   rb_cCairo_Win32PrintingSurface =
     rb_define_class_under (rb_mCairo, "Win32PrintingSurface", rb_cCairo_Surface);
 
-  rb_define_method (rb_cCairo_Win32PrintingSurfaceSurface, "initialize",
+  rb_define_method (rb_cCairo_Win32PrintingSurface, "initialize",
                     cr_win32_printing_surface_initialize, -1);
   rb_define_method (rb_cCairo_Win32PrintingSurface, "hdc",
                     cr_win32_surface_get_hdc, 0);
@@ -1132,5 +1176,16 @@ Init_cairo_surface (void)
                     cr_quartz_surface_initialize, -1);
   rb_define_method (rb_cCairo_QuartzSurface, "cg_context",
                     cr_quartz_surface_get_cg_context, 0);
+
+#  if CAIRO_CHECK_VERSION(1, 5, 12)
+  rb_cCairo_QuartzImageSurface =
+    rb_define_class_under (rb_mCairo, "QuartzImageSurface", rb_cCairo_Surface);
+
+  rb_define_method (rb_cCairo_QuartzImageSurface, "initialize",
+                    cr_quartz_image_surface_initialize, 1);
+  rb_define_method (rb_cCairo_Win32PrintingSurface, "hdc",
+                    cr_quartz_image_surfaceE_get_image, 0);
+#  endif
+
 #endif
 }
