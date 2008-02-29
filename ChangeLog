@@ -1,3 +1,7 @@
+2008-03-01  Kouhei Sutou  <kou@cozmixng.org>
+
+	* pkg-config.rb: searched default path too.
+
 2008-02-24  Kouhei Sutou  <kou@cozmixng.org>
 
 	* pkg-config.rb: implemented --cflags-only-I.
