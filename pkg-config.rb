@@ -9,7 +9,8 @@ class PackageConfig
   attr_accessor :msvc_syntax
   def initialize(name, path=nil, msvc_syntax=false)
     @name = name
-    @path = path || ENV["PKG_CONFIG_PATH"] || guess_path
+    @path = path || ENV["PKG_CONFIG_PATH"]
+    @path = [@path, guess_default_path].compact.join(separator)
     @msvc_syntax = msvc_syntax
     @variables = @declarations = nil
   end
@@ -105,6 +106,7 @@ class PackageConfig
 
   IDENTIFIER_RE = /[\w\d_.]+/
   def parse_pc
+    raise ".pc for #{@name} doesn't exist." unless exist?
     @variables = {}
     @declarations = {}
     File.open(pc) do |input|
@@ -134,7 +136,7 @@ class PackageConfig
     end
   end
 
-  def guess_path
+  def guess_default_path
     pkg_config = with_config("pkg-config", ENV["PKG_CONFIG"] || "pkg-config")
     pkg_config = Pathname.new(pkg_config)
     unless pkg_config.absolute?
