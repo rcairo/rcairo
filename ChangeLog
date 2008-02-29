@@ -1,5 +1,10 @@
 2008-03-01  Kouhei Sutou  <kou@cozmixng.org>
 
+	* src/rb_cairo_surface.c, src/cairo.def: Cairo::QuartzImageSurface
+	will work.
+
+	* src/rb_cairo_surface.c: supported <= 1.5.12.
+
 	* pkg-config.rb: searched default path too.
 
 2008-02-24  Kouhei Sutou  <kou@cozmixng.org>
