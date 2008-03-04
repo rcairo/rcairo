@@ -137,18 +137,27 @@ class PackageConfig
   end
 
   def guess_default_path
+    default_path = "/usr/local/lib/pkgconfig:/usr/lib/pkgconfig"
     pkg_config = with_config("pkg-config", ENV["PKG_CONFIG"] || "pkg-config")
     pkg_config = Pathname.new(pkg_config)
     unless pkg_config.absolute?
       require "dl/import"
       dln = Module.new
       dln.module_eval do
-        extend DL::Importable
-        dlload RbConfig::CONFIG["LIBRUBY"]
+        if DL.const_defined?(:Importer)
+          extend DL::Importer
+        else
+          extend DL::Importable
+        end
+        begin
+          dlload RbConfig::CONFIG["LIBRUBY"]
+        rescue DL::DLError
+          return default_path
+        end
         extern "const char *dln_find_exe(const char *, const char *)"
       end
       pkg_config = dln.dln_find_exe(pkg_config.to_s, nil)
-      return "/usr/local/lib/pkgconfig:/usr/lib/pkgconfig" if pkg_config.nil?
+      return default_path if pkg_config.nil?
       pkg_config = Pathname.new(pkg_config)
     end
     (pkg_config.parent.parent + "lib" + "pkgconfig").to_s

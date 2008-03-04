@@ -1,3 +1,7 @@
+2008-03-04  Kouhei Sutou  <kou@cozmixng.org>
+
+	* pkg-config.rb: supported building with ruby 1.9.1.
+
 2008-03-01  Kouhei Sutou  <kou@cozmixng.org>
 
 	* src/rb_cairo_surface.c, src/cairo.def: Cairo::QuartzImageSurface
