@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-02-24 07:26:52 $
+ * $Date: 2008-03-25 13:43:50 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -97,7 +97,7 @@ cr_initialize (VALUE self, VALUE target)
   cr = cairo_create (RVAL2CRSURFACE (target));
   cr_check_status (cr);
   rb_ivar_set (self, cr_id_surface, target);
-  DATA_PTR(self) = cr;
+  DATA_PTR (self) = cr;
   return Qnil;
 }
 
