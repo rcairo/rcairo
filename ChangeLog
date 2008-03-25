@@ -1,3 +1,9 @@
+2008-03-26  Kouhei Sutou  <kou@cozmixng.org>
+
+	* src/rb_cairo_surface.c: added missing HAVE_RUBY_COCOA check.
+	Thanks to OBATA Akio!!!
+	* README: added OBATA Akio to the thanks list.
+
 2008-03-25  Kouhei Sutou  <kou@cozmixng.org>
 
 	* src/rb_cairo_context.c (cr_initialize): fixed style.

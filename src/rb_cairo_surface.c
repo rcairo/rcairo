@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-02-29 23:54:14 $
+ * $Date: 2008-03-25 21:24:32 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -1166,7 +1166,7 @@ Init_cairo_surface (void)
 
 #endif
 
-#if CAIRO_HAS_QUARTZ_SURFACE
+#if CAIRO_HAS_QUARTZ_SURFACE && defined(HAVE_RUBY_COCOA)
   /* Quartz-surface */
 
   rb_cCairo_QuartzSurface =
