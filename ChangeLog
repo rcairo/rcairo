@@ -1,3 +1,7 @@
+2008-03-25  Kouhei Sutou  <kou@cozmixng.org>
+
+	* src/rb_cairo_context.c (cr_initialize): fixed style.
+
 2008-03-04  Kouhei Sutou  <kou@cozmixng.org>
 
 	* pkg-config.rb: supported building with ruby 1.9.1.
