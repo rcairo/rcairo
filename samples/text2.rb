@@ -19,14 +19,20 @@ def parse(args=ARGV)
   options.fade_out = false
 
   opts = OptionParser.new do |opts|
-    opts.on("--width=WIDTH", Integer, "paper width") {|options.width|}
-    opts.on("--height=HEIGHT", Integer, "paper height") {|options.height|}
+    opts.on("--width=WIDTH", Integer, "paper width") do |width|
+      options.width = width
+    end
+    opts.on("--height=HEIGHT", Integer, "paper height") do |height|
+      options.height = height
+    end
     opts.on("--font-description=DESCRIPTION",
             "font description (e.g. 'Monospace 14')") do |desc|
       options.font_description = desc
     end
     opts.on("--[no-]fade-out",
-            "fade-out one-third of page") {|options.fade_out|}
+            "fade-out one-third of page") do |fade_out|
+      options.fade_out = fade_out
+    end
   end
 
   opts.parse!(args)

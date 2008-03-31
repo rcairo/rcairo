@@ -1,5 +1,7 @@
 2008-04-01  Kouhei Sutou  <kou@cozmixng.org>
 
+	* samples/text2.rb: don't use block variable assignment.
+
 	* src/depend (install-so): use -run instead of ftools.
 
 2008-03-26  Kouhei Sutou  <kou@cozmixng.org>
