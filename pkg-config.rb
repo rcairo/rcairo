@@ -13,6 +13,8 @@ class PackageConfig
     @path = [@path, guess_default_path].compact.join(separator)
     @msvc_syntax = msvc_syntax
     @variables = @declarations = nil
+    override_variables = with_config("override-variables", "")
+    @override_variables = parse_override_variables(override_variables)
   end
 
   def exist?
@@ -68,6 +70,16 @@ class PackageConfig
     declaration("Version")
   end
 
+  def variable(name)
+    parse_pc if @variables.nil?
+    expand_value(@override_variables[name] || @variables[name])
+  end
+
+  def declaration(name)
+    parse_pc if @declarations.nil?
+    expand_value(@declarations[name])
+  end
+
   private
   def pc
     @path.split(separator).each do |path|
@@ -79,16 +91,6 @@ class PackageConfig
 
   def separator
     File.expand_path(".").index(":") ? ";" : ":"
-  end
-
-  def variable(name)
-    parse_pc if @variables.nil?
-    expand_value(@variables[name])
-  end
-
-  def declaration(name)
-    parse_pc if @declarations.nil?
-    expand_value(@declarations[name])
   end
 
   def collect_cflags
@@ -127,6 +129,15 @@ class PackageConfig
     return [] if requires.nil?
     requires_without_version = requires.gsub(/[<>]?=\s*[\d.]+\s*/, '')
     requires_without_version.split(/[,\s]+/)
+  end
+
+  def parse_override_variables(override_variables)
+    variables = {}
+    override_variables.split(",").each do |variable|
+      name, value = variable.split("=", 2)
+      variables[name] = value
+    end
+    variables
   end
 
   def expand_value(value)

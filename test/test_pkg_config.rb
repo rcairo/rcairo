@@ -59,6 +59,28 @@ class PkgConfigTest < Test::Unit::TestCase
     assert_pkg_config("cairo", ["--modversion"], @cairo.version)
   end
 
+  def test_parse_override_variables
+    assert_override_variables({}, nil)
+    assert_override_variables({"prefix" => "c:\\\\gtk-dev"},
+                              "prefix=c:\\\\gtk-dev")
+    assert_override_variables({
+                                "prefix" => "c:\\\\gtk-dev",
+                                "includdir" => "d:\\\\gtk\\include"
+                              },
+                              ["prefix=c:\\\\gtk-dev",
+                               "includdir=d:\\\\gtk\\include"].join(","))
+  end
+
+  def test_override_variables
+    overridden_prefix = "c:\\\\gtk-dev"
+    original_prefix = @cairo.variable("prefix")
+    assert_not_equal(overridden_prefix, original_prefix)
+    with_override_variables("prefix=#{overridden_prefix}") do
+      cairo = PackageConfig.new("cairo")
+      assert_equal(overridden_prefix, cairo.variable("prefix"))
+    end
+  end
+
   private
   def pkg_config(package, *args)
     args = args.collect {|arg| arg.dump}.join(' ')
@@ -69,5 +91,31 @@ class PkgConfigTest < Test::Unit::TestCase
     result = pkg_config(package, *pkg_config_args)
     result = nil if result.empty?
     assert_equal(result, actual)
+  end
+
+  def assert_override_variables(expected, override_variables)
+    with_override_variables(override_variables) do
+      cairo = PackageConfig.new("cairo")
+      assert_equal(expected, cairo.instance_variable_get("@override_variables"))
+    end
+  end
+
+  def with_override_variables(override_variables)
+    if override_variables.nil?
+      args = {}
+    else
+      args = {"--with-override-variables" => override_variables}
+    end
+    configure_args(args) do
+      yield
+    end
+  end
+
+  def configure_args(args)
+    original_configure_args = $configure_args
+    $configure_args = $configure_args.merge(args)
+    yield
+  ensure
+    $configure_args = original_configure_args
   end
 end
