@@ -93,8 +93,8 @@ File.open("Makefile", "w") do |f|
   co = nil
   makefile.each_line do |line|
     case line
-    when /^TARGET\s*=\s*/
-      f.print("TARGET = #{ext_dir_name}/#{$POSTMATCH}")
+    when /^DLLIB\s*=\s*/
+      f.print("DLLIB = #{ext_dir_name}/#{$POSTMATCH}")
     when /^(SRCS)\s*=\s*/
       name = $1
       vars = $POSTMATCH.split.collect {|var| "$(srcdir)/#{var}"}.join(" ")
@@ -106,14 +106,7 @@ File.open("Makefile", "w") do |f|
       vars = vars.join(" ")
       f.puts("#{name} = #{vars}")
     when /^\t\$\(CC\)/
-      if PKGConfig.msvc?
-        output_option = "/Fo"
-      else
-        output_option = "-o"
-      end
-      unless /#{Regexp.escape(output_option)}/ =~ line
-        line = "#{line.chomp} #{output_option}$@"
-      end
+      line = "#{line.chomp} -o $@" if /-o/ !~ line
       co = line
       f.puts(line)
     else
@@ -124,7 +117,7 @@ File.open("Makefile", "w") do |f|
   if co and !objs.empty?
     f.puts
     objs.each do |obj|
-      f.puts "#{obj}: $(srcdir)/#{File.basename(obj).sub(/\..+?$/, '.c')}"
+      f.puts "#{obj}: $(srcdir)/#{File.basename(obj).sub(/.o$/, '.c')}"
       f.puts co
     end
   end
