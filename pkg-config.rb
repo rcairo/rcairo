@@ -39,25 +39,12 @@ class PackageConfig
   end
 
   def libs
-    all_libs = requires.collect do |package|
-      self.class.new(package, @path, @msvc_syntax).libs
-    end
-    all_libs = [declaration("Libs")] + all_libs
-    all_libs = all_libs.join(" ").gsub(/-([Ll]) /, '\1').split.uniq
-    path_flags, other_flags = all_libs.partition {|flag| /\A-L/ =~ flag}
-    path_flags = path_flags.reject do |flag|
-      /\A-L\/usr\/lib(?:64)?\z/ =~ flag
-    end
-    libs = (other_flags + path_flags).join(" ")
-    if @msvc_syntax
-      libs = libs.gsub(/\A-L/, "/libpath:")
-      libs = libs.gsub(/\A-l(\S+)/) {"#{$1}.lib"}
-    end
-    libs
+    path_flags, other_flags = collect_libs
+    (other_flags + path_flags).join(" ")
   end
 
   def libs_only_l
-    libs.split.find_all do |arg|
+    collect_libs[1].find_all do |arg|
       if @msvc_syntax
         /\.lib\z/ =~ arg
       else
@@ -102,6 +89,36 @@ class PackageConfig
     path_flags, other_flags = all_cflags.partition {|flag| /\A-I/ =~ flag}
     path_flags = path_flags.reject do |flag|
       flag == "-I/usr/include"
+    end
+    if @msvc_syntax
+      path_flags = path_flags.collect do |flag|
+        flag.gsub(/\A-I/, "/I")
+      end
+    end
+    [path_flags, other_flags]
+  end
+
+  def collect_libs
+    all_libs = requires.collect do |package|
+      self.class.new(package, @path, @msvc_syntax).libs
+    end
+    all_libs = [declaration("Libs")] + all_libs
+    all_libs = all_libs.join(" ").gsub(/-([Ll]) /, '\1').split.uniq
+    path_flags, other_flags = all_libs.partition {|flag| /\A-L/ =~ flag}
+    path_flags = path_flags.reject do |flag|
+      /\A-L\/usr\/lib(?:64)?\z/ =~ flag
+    end
+    if @msvc_syntax
+      path_flags = path_flags.collect do |flag|
+        flag.gsub(/\A-L/, "/libpath:")
+      end
+      other_flags = other_flags.collect do |flag|
+        if /\A-l/ =~ flag
+          "#{$POSTMATCH}.lib"
+        else
+          flag
+        end
+      end
     end
     [path_flags, other_flags]
   end
