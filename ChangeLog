@@ -1,5 +1,7 @@
 2008-04-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* extconf.rb: fix object file extension substitution.
+
 	* pkg-config.rb: detect MSVC environment.
 
 	* pkg-config.rb: handle DL error.
