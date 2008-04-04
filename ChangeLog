@@ -1,5 +1,7 @@
 2008-04-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* pkg-config.rb: detect MSVC environment.
+
 	* pkg-config.rb: handle DL error.
 
 2008-04-03  Kouhei Sutou  <kou@cozmixng.org>

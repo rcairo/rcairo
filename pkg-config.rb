@@ -180,28 +180,36 @@ end
 
 module PKGConfig
   module_function
+  def msvc?
+    /mswin32/.match(RUBY_PLATFORM) and /^cl\b/.match(Config::CONFIG['CC'])
+  end
+
+  def package_config(package)
+    PackageConfig.new(package, nil, msvc?)
+  end
+
   def exist?(pkg)
-    PackageConfig.new(pkg).exist?
+    package_config(pkg).exist?
   end
 
   def libs(pkg)
-    PackageConfig.new(pkg).libs
+    package_config(pkg).libs
   end
 
   def libs_only_l(pkg)
-    PackageConfig.new(pkg).libs_only_l
+    package_config(pkg).libs_only_l
   end
 
   def cflags(pkg)
-    PackageConfig.new(pkg).cflags
+    package_config(pkg).cflags
   end
 
   def cflags_only_I(pkg)
-    PackageConfig.new(pkg).cflags_only_I
+    package_config(pkg).cflags_only_I
   end
 
   def modversion(pkg)
-    PackageConfig.new(pkg).version
+    package_config(pkg).version
   end
 
   def check_version?(pkg, major = 0, minor = 0, micro = 0)
