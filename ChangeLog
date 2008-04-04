@@ -1,5 +1,7 @@
 2008-04-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* extconf.rb: fix IMPLIB path.
+
 	* src/rb_cairo_constants.c: define dummy
 	rb_cairo_ps_level_from_ruby_object() just for creating cairo.lib.
 

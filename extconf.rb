@@ -51,10 +51,9 @@ def set_output_lib(target_name)
       $DLDFLAGS << " --output-lib #{filename}" if filename
     end
   when /mswin32/
-    filename = "libruby-#{target_name}.lib"
     $DLDFLAGS.gsub!(/ --output-lib\s+[^ ]+/, '')
     $DLDFLAGS.gsub!(/ \/IMPLIB:[^ ]+/, '')
-    $DLDFLAGS << " /IMPLIB:#{filename}" if filename
+    $DLDFLAGS << " /IMPLIB:$(IMPLIB)"
   when /darwin/
     if have_macro("CAIRO_HAS_QUARTZ_SURFACE", ["cairo.h"])
       checking_for("RubyCocoa") do
@@ -94,7 +93,9 @@ File.open("Makefile", "w") do |f|
   makefile.each_line do |line|
     case line
     when /^DLLIB\s*=\s*/
-      f.print("DLLIB = #{ext_dir_name}/#{$POSTMATCH}")
+      dllib = $POSTMATCH
+      f.print("DLLIB = #{ext_dir_name}/#{dllib}")
+      f.print("IMPLIB = #{ext_dir_name}/libruby-#{dllib.gsub(/\..+?$/, '.lib')}")
     when /^(SRCS)\s*=\s*/
       name = $1
       vars = $POSTMATCH.split.collect {|var| "$(srcdir)/#{var}"}.join(" ")
