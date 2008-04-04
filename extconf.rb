@@ -42,13 +42,13 @@ def set_output_lib(target_name)
   when /cygwin|mingw/
     filename = "libruby-#{target_name}.a"
     if RUBY_VERSION > "1.8.0"
-      $DLDFLAGS << ",--out-implib=#{filename}" if filename
+      $DLDFLAGS << ",--out-implib=#{filename}"
     elsif RUBY_VERSION > "1.8"
       $DLDFLAGS.gsub!(/ -Wl,--out-implib=[^ ]+/, '')
-      $DLDFLAGS << " -Wl,--out-implib=#{filename}" if filename
+      $DLDFLAGS << " -Wl,--out-implib=#{filename}"
     else
       $DLDFLAGS.gsub!(/ --output-lib\s+[^ ]+/, '')
-      $DLDFLAGS << " --output-lib #{filename}" if filename
+      $DLDFLAGS << " --output-lib #{filename}"
     end
   when /mswin32/
     $DLDFLAGS.gsub!(/ --output-lib\s+[^ ]+/, '')
@@ -82,20 +82,29 @@ PKGConfig.have_package(pkg, major, minor, micro) or exit 1
 have_func("rb_errinfo")
 
 check_win32
-set_output_lib(File.basename(modname))
+target_name = File.basename(modname)
+set_output_lib(target_name)
 $defs << "-DRB_CAIRO_COMPILATION"
 create_makefile(modname, srcdir)
+
+wine = with_config("wine", false)
 
 makefile = File.read("Makefile")
 File.open("Makefile", "w") do |f|
   objs = []
   co = nil
   makefile.each_line do |line|
+    if wine
+      line.gsub!(/\bgcc\b/, "i586-mingw32msvc-gcc")
+      line.gsub!(/C:/, "$(HOME)/.wine/drive_c")
+      line.gsub!(/Z:/, "")
+    end
+
     case line
     when /^DLLIB\s*=\s*/
       dllib = $POSTMATCH
-      f.print("DLLIB = #{ext_dir_name}/#{dllib}")
-      f.print("IMPLIB = #{ext_dir_name}/libruby-#{dllib.gsub(/\..+?$/, '.lib')}")
+      f.puts("DLLIB = #{ext_dir_name}/#{dllib}")
+      f.puts("IMPLIB = #{ext_dir_name}/libruby-#{dllib.gsub(/\..+?$/, '.lib')}")
     when /^(SRCS)\s*=\s*/
       name = $1
       vars = $POSTMATCH.split.collect {|var| "$(srcdir)/#{var}"}.join(" ")
@@ -106,6 +115,10 @@ File.open("Makefile", "w") do |f|
       objs = vars if name == "OBJS"
       vars = vars.join(" ")
       f.puts("#{name} = #{vars}")
+    when /^LDSHARED\s*=/
+      def_file = "#{ext_dir_name}/#{target_name}.def"
+      line.gsub!(/\b-shared\b/, "-shared #{def_file}") if wine
+      f.puts(line)
     when /^\t\$\(CC\)/
       if PKGConfig.msvc?
         output_option = "-Fo"
@@ -118,14 +131,14 @@ File.open("Makefile", "w") do |f|
       co = line
       f.puts(line)
     else
-      f.print(line)
+      f.puts(line)
     end
   end
 
   if co and !objs.empty?
     f.puts
     if PKGConfig.msvc?
-      f.puts "{$(srcdir)}.c{src}.obj:"
+      f.puts "{$(srcdir)}.c{#{ext_dir_name}}.obj:"
       f.puts co
     else
       objs.each do |obj|

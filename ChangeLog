@@ -1,5 +1,8 @@
 2008-04-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* extconf.rb: support building with Wine + MinGW on my Linux
+	environment.
+
 	* extconf.rb: use search path for nmake.
 
 	* extconf.rb: add the same directory of extconf.rb to load path.
