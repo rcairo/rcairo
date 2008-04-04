@@ -1,5 +1,8 @@
 2008-04-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* src/rb_cairo_constants.c: define dummy
+	rb_cairo_ps_level_from_ruby_object() just for creating cairo.lib.
+
 	* extconf.rb: substitute DLLIB not TARGET.
 
 	* pkg-config.rb: fix substitution for MSVC.
