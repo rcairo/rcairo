@@ -124,9 +124,14 @@ File.open("Makefile", "w") do |f|
 
   if co and !objs.empty?
     f.puts
-    objs.each do |obj|
-      f.puts "#{obj}: $(srcdir)/#{File.basename(obj).sub(/\..+?$/, '.c')}"
+    if PKGConfig.msvc?
+      f.puts "{$(srcdir)}.c{src}.obj:"
       f.puts co
+    else
+      objs.each do |obj|
+        f.puts "#{obj}: $(srcdir)/#{File.basename(obj).sub(/\..+?$/, '.c')}"
+        f.puts co
+      end
     end
   end
 end
