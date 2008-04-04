@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-02-21 13:18:10 $
+ * $Date: 2008-04-04 04:25:16 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -127,9 +127,15 @@ DEFINE_RVAL2ENUM(filter, FILTER)
 #if CAIRO_HAS_SVG_SURFACE
 DEFINE_RVAL2ENUM(svg_version, SVG_VERSION)
 #endif
-#if CAIRO_HAS_PS_SURFACE
-#  if CAIRO_CHECK_VERSION(1, 5, 2)
+#if CAIRO_HAS_PS_SURFACE && CAIRO_CHECK_VERSION(1, 5, 2)
 DEFINE_RVAL2ENUM(ps_level, PS_LEVEL)
+#else
+#  ifdef RB_CAIRO_PLATFORM_WIN32
+void
+rb_cairo_ps_level_from_ruby_object (VALUE rb_ps_level)
+{
+  /* dummy */
+}
 #  endif
 #endif
 
@@ -436,8 +442,7 @@ Init_cairo_constants (void)
                               cr_svg_version_to_string, -1);
 #endif
 
-#if CAIRO_HAS_PS_SURFACE
-#  if CAIRO_CHECK_VERSION(1, 5, 2)
+#if CAIRO_HAS_PS_SURFACE && CAIRO_CHECK_VERSION(1, 5, 2)
   /* cairo_ps_level_t */
   rb_mCairo_PSLevel = rb_define_module_under (rb_mCairo, "PSLevel");
   rb_define_const (rb_mCairo_PSLevel, "LEVEL_2", INT2FIX (CAIRO_PS_LEVEL_2));
@@ -447,6 +452,5 @@ Init_cairo_constants (void)
                               cr_ps_get_levels, 0);
   rb_define_singleton_method (rb_mCairo_PSLevel, "name",
                               cr_ps_level_to_string, -1);
-#  endif
 #endif
 }
