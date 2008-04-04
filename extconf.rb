@@ -107,7 +107,14 @@ File.open("Makefile", "w") do |f|
       vars = vars.join(" ")
       f.puts("#{name} = #{vars}")
     when /^\t\$\(CC\)/
-      line = "#{line.chomp} -o $@" if /-o/ !~ line
+      if PKGConfig.msvc?
+        output_option = "/Fo"
+      else
+        output_option = "-o"
+      end
+      unless /#{Regexp.escape(output_option)}/ =~ line
+        line = "#{line.chomp} #{output_option}$@"
+      end
       co = line
       f.puts(line)
     else
