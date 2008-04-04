@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-05-22 11:41:45 $
+ * $Date: 2008-04-04 03:52:31 $
  *
  * Copyright 2005 Kouhei Sutou <kou@cozmixng.org>
  *
@@ -132,19 +132,6 @@ cr_path_data_to_ruby_object (cairo_path_data_t *data)
     }
 
   return rb_data;
-
-  int i;
-  VALUE points;
-
-  points = rb_ary_new ();
-  for (i = 1; i < data->header.length; i++)
-    {
-      rb_ary_push (points, cr_point_new (rb_float_new (data[i].point.x),
-                                         rb_float_new (data[i].point.y)));
-    }
-
-  return rb_funcall (rb_cCairo_PathData, id_new, 2,
-                     INT2FIX (data->header.type), points);
 }
 
 
