@@ -108,7 +108,7 @@ File.open("Makefile", "w") do |f|
       f.puts("#{name} = #{vars}")
     when /^\t\$\(CC\)/
       if PKGConfig.msvc?
-        output_option = "/Fo"
+        output_option = "-Fo"
       else
         output_option = "-o"
       end
