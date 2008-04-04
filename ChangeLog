@@ -1,5 +1,7 @@
 2008-04-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* extconf.rb: cleanup libruby-cairo.a.
+
 	* extconf.rb: support building with Wine + MinGW on my Linux
 	environment.
 
