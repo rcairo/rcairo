@@ -1,5 +1,7 @@
 2008-04-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* extconf.rb: support output option for MSVC.
+
 	* src/rb_cairo_path.c: remove garbages.
 
 	* extconf.rb: fix object file extension substitution.
