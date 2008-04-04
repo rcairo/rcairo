@@ -37,10 +37,10 @@ def check_win32
   end
 end
 
-def set_output_lib(target_name)
+def set_output_lib(target_name, directory=nil)
   case RUBY_PLATFORM
   when /cygwin|mingw/
-    filename = "libruby-#{target_name}.a"
+    filename = File.join(*([directory, "libruby-#{target_name}.a"].compact))
     if RUBY_VERSION > "1.8.0"
       $DLDFLAGS << ",--out-implib=#{filename}"
     elsif RUBY_VERSION > "1.8"
@@ -50,6 +50,7 @@ def set_output_lib(target_name)
       $DLDFLAGS.gsub!(/ --output-lib\s+[^ ]+/, '')
       $DLDFLAGS << " --output-lib #{filename}"
     end
+    $cleanfiles << filename
   when /mswin32/
     $DLDFLAGS.gsub!(/ --output-lib\s+[^ ]+/, '')
     $DLDFLAGS.gsub!(/ \/IMPLIB:[^ ]+/, '')
@@ -83,7 +84,7 @@ have_func("rb_errinfo")
 
 check_win32
 target_name = File.basename(modname)
-set_output_lib(target_name)
+set_output_lib(target_name, ext_dir_name)
 $defs << "-DRB_CAIRO_COMPILATION"
 create_makefile(modname, srcdir)
 
