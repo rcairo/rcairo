@@ -1,5 +1,7 @@
 2008-04-04  Kouhei Sutou  <kou@cozmixng.org>
 
+	* extconf.rb: add the same directory of extconf.rb to load path.
+
 	* extconf.rb: fix IMPLIB path.
 
 	* src/rb_cairo_constants.c: define dummy
