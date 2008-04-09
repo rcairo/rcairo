@@ -1,3 +1,8 @@
+2008-04-09  Kouhei Sutou  <kou@cozmixng.org>
+
+	* src/lib/cairo/paper.rb, src/lib/cairo/papers.rb,
+	test/test_paper.rb: add.
+
 2008-04-04  Kouhei Sutou  <kou@cozmixng.org>
 
 	* extconf.rb: cleanup libruby-cairo.a.
