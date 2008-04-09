@@ -1,6 +1,6 @@
 module Cairo
   class Paper
-    class ParseError < StandardError
+    class ParseError < ArgumentError
     end
 
     class UnknownPaperName < ParseError
@@ -19,17 +19,33 @@ module Cairo
       end
     end
 
+    class UnrecognizedPaperDescription < ParseError
+      attr_reader :description
+      def initialize(description)
+        @description = description
+        super("unrecognized paper description: #{description.inspect}")
+      end
+    end
+
     class << self
-      def parse(paper_description)
+      def parse(paper_description, robust=false)
         case paper_description
+        when Paper
+          return paper_description.dup
         when Symbol
           paper = resolve_constant(paper_description)
-          raise UnknownPaperName.new(paper_description) if paper.nil?
-          paper
+          return paper.dup if paper
+          raise UnknownPaperName.new(paper_description)
         when String
           paper = resolve_constant(paper_description)
           paper ||= parse_size(paper_description.gsub(/#.*\z/, ''))
+          return paper.dup if paper
+        when Array
+          return new(*paper_description)
         end
+
+        raise UnrecognizedPaperDescription.new(paper_description) if robust
+        nil
       end
 
       @@unit_resolvers = []

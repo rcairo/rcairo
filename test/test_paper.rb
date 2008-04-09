@@ -1,6 +1,11 @@
 require 'cairo'
 
 class PaperTest < Test::Unit::TestCase
+  def test_parse_paper
+    a4 = Cairo::Paper::A4
+    assert_parse(a4, a4)
+  end
+
   def test_parse_name
     assert_parse(:A4, "A4")
     assert_parse(:A4, "A4")
@@ -23,11 +28,23 @@ class PaperTest < Test::Unit::TestCase
     assert_parse(paper(100.5, 200.9), "100.5mmx200.9")
     assert_parse(paper(100.5, 200.9), "100.5mmx200.9")
     assert_parse(paper(25.4, 215.9), "1inchx8.5inch")
+    assert_parse(paper(100, 200), [100, 200])
 
     exception = assert_raise(Cairo::Paper::UnknownUnit) do
       Cairo::Paper.parse("100kmx100")
     end
     assert_equal("km", exception.unit)
+  end
+
+  def test_unrecognized_input
+    assert_nothing_raised do
+      Cairo::Paper.parse({})
+    end
+
+    exception = assert_raise(Cairo::Paper::UnrecognizedPaperDescription) do
+      Cairo::Paper.parse({}, true)
+    end
+    assert_equal({}, exception.description)
   end
 
   private
