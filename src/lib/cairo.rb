@@ -119,6 +119,7 @@ end
 
 require 'cairo/point'
 require 'cairo/colors'
+require 'cairo/papers'
 require 'cairo/context'
 require 'cairo/path'
 
