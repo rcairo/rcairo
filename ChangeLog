@@ -1,5 +1,7 @@
 2008-04-09  Kouhei Sutou  <kou@cozmixng.org>
 
+	* src/lib/cairo/paper.rb, test/test_paper.rb: improve parser.
+
 	* src/lib/cairo/paper.rb, src/lib/cairo/papers.rb,
 	test/test_paper.rb: add.
 
