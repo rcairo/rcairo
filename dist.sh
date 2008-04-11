@@ -18,6 +18,7 @@ tgz=$base.tar.gz
 cvs tag $TAG
 mkdir -p tmp
 cvs export -r $TAG -d tmp/$base rcairo
+cp -rp doc tmp/$base/
 tar cvfz $tgz -C tmp $base
 md5sum $tgz > $tgz.md5
 sha1sum $tgz > $tgz.sha1
