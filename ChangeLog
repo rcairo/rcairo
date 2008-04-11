@@ -1,5 +1,7 @@
 2008-04-11  Kouhei Sutou  <kou@cozmixng.org>
 
+	* src/rb_cairo_surface.c: don't change paper's unit.
+
 	* src/lib/cairo/papers.rb: add landscape papers.
 
 	* test/test_paper.rb, src/lib/cairo/paper.rb: support name parsing.

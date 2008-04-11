@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-04-11 03:01:33 $
+ * $Date: 2008-04-11 05:23:19 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -57,8 +57,7 @@ cr_paper_to_size_in_points (VALUE paper_description, VALUE *width, VALUE *height
   VALUE paper, size;
 
   paper = cr_paper_parse (paper_description);
-  rb_funcall (paper, cr_id_set_unit, 1, rb_str_new2 ("pt"));
-  size = rb_funcall (paper, cr_id_size, 0);
+  size = rb_funcall (paper, cr_id_size, 1, rb_str_new2 ("pt"));
   *width = RARRAY_PTR (size)[0];
   *height = RARRAY_PTR (size)[1];
 }
