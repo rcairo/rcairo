@@ -1,5 +1,7 @@
 2008-04-11  Kouhei Sutou  <kou@cozmixng.org>
 
+	* dist.sh: include documents.
+
 	* Rakefile:
 	- follow the recent Hoe's changes.
 	- fix dependencies.
