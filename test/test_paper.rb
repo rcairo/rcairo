@@ -8,7 +8,7 @@ class PaperTest < Test::Unit::TestCase
 
   def test_parse_name
     assert_parse(:A4, "A4")
-    assert_parse(:A4, "A4")
+    assert_parse(:A4_LANDSCAPE, "A4 landscape")
     assert_parse(:A4, :A4)
     assert_parse(:A4, :a4)
 
@@ -36,6 +36,11 @@ class PaperTest < Test::Unit::TestCase
     assert_equal("km", exception.unit)
   end
 
+  def test_parse_size_with_name
+    assert_parse(paper(28.346456664, 24094.488168, nil, "Name"),
+                 "1cmx8.5m#Name")
+  end
+
   def test_unrecognized_input
     assert_nothing_raised do
       Cairo::Paper.parse({})
@@ -60,8 +65,8 @@ class PaperTest < Test::Unit::TestCase
   end
 
   private
-  def paper(width, height)
-    Cairo::Paper.new(width, height)
+  def paper(width, height, *rest)
+    Cairo::Paper.new(width, height, *rest)
   end
 
   def parse(paper_description)
@@ -71,23 +76,6 @@ class PaperTest < Test::Unit::TestCase
   def assert_parse(expected, paper_description, message=nil)
     expected = Cairo::Paper.const_get(expected) if expected.is_a?(Symbol)
     actual_paper = parse(paper_description)
-    assert_equal_paper(expected, actual_paper, message)
-  end
-
-  def assert_equal_paper(expected, actual, message=nil)
-    delta = 0.01
-    assert_block(build_message(message,
-                               "<?> expected but was\n<?>.",
-                               expected, actual)) do
-      if actual.nil?
-        expected.nil?
-      else
-        (expected.width - delta < actual.width and
-         actual.width < expected.width + delta) and
-          (expected.height - delta < actual.height and
-           actual.height < expected.height + delta) and
-          expected.name == actual.name
-      end
-    end
+    assert_equal(expected, actual_paper, message)
   end
 end
