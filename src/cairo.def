@@ -51,6 +51,7 @@ EXPORTS
 
     rb_mCairo_Color           DATA
     rb_cCairo_Color_Base      DATA
+    rb_cCairo_Paper           DATA
 
     rb_cairo_context_from_ruby_object
     rb_cairo_context_to_ruby_object

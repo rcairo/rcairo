@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-04-11 01:40:25 $
+ * $Date: 2008-04-11 03:01:33 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -131,6 +131,7 @@ RB_CAIRO_VAR VALUE rb_mCairo_Filter;
 RB_CAIRO_VAR VALUE rb_mCairo_SVGVersion;
 RB_CAIRO_VAR VALUE rb_mCairo_Color;
 RB_CAIRO_VAR VALUE rb_cCairo_Color_Base;
+RB_CAIRO_VAR VALUE rb_cCairo_Paper;
 
 
 #define RVAL2CRCONTEXT(obj)     (rb_cairo_context_from_ruby_object(obj))

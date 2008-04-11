@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-04-11 01:40:26 $
+ * $Date: 2008-04-11 03:01:33 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -38,9 +38,30 @@ static ID cr_id_target;
 static ID cr_id_read;
 static ID cr_id_write;
 static ID cr_id_inspect;
+static ID cr_id_parse;
+static ID cr_id_size;
+static ID cr_id_set_unit;
 static cairo_user_data_key_t cr_closure_key;
 
 #define _SELF  (RVAL2CRSURFACE(self))
+
+static VALUE
+cr_paper_parse (VALUE paper_description)
+{
+  return rb_funcall (rb_cCairo_Paper, cr_id_parse, 2, paper_description, Qtrue);
+}
+
+static void
+cr_paper_to_size_in_points (VALUE paper_description, VALUE *width, VALUE *height)
+{
+  VALUE paper, size;
+
+  paper = cr_paper_parse (paper_description);
+  rb_funcall (paper, cr_id_set_unit, 1, rb_str_new2 ("pt"));
+  size = rb_funcall (paper, cr_id_size, 0);
+  *width = RARRAY_PTR (size)[0];
+  *height = RARRAY_PTR (size)[1];
+}
 
 static inline void
 cr_surface_check_status (cairo_surface_t *surface)
@@ -312,8 +333,7 @@ yield_and_finish (VALUE self)
 }
 
 static VALUE
-cr_surface_create_similar (VALUE self, VALUE content,
-                           VALUE width, VALUE height)
+cr_surface_create_similar (VALUE self, VALUE content, VALUE width, VALUE height)
 {
   cairo_surface_t *surface;
 
@@ -634,12 +654,28 @@ cr_image_surface_get_stride (VALUE self)
 /* Printing surfaces */
 #define DEFINE_SURFACE(type)                                            \
 static VALUE                                                            \
-cr_ ## type ## _surface_initialize (VALUE self, VALUE target,           \
-                                    VALUE rb_width_in_points,           \
-                                    VALUE rb_height_in_points)          \
+cr_ ## type ## _surface_initialize (int argc, VALUE *argv, VALUE self)  \
 {                                                                       \
+  VALUE target, rb_width_in_points, rb_height_in_points;                \
+  VALUE arg2, arg3;                                                     \
   cairo_surface_t *surface;                                             \
   double width_in_points, height_in_points;                             \
+                                                                        \
+  rb_scan_args (argc, argv, "21", &target, &arg2, &arg3);               \
+  if (argc == 2)                                                        \
+    {                                                                   \
+      VALUE paper;                                                      \
+                                                                        \
+      paper = arg2;                                                     \
+      cr_paper_to_size_in_points (paper,                                \
+                                  &rb_width_in_points,                  \
+                                  &rb_height_in_points);                \
+    }                                                                   \
+  else                                                                  \
+    {                                                                   \
+      rb_width_in_points = arg2;                                        \
+      rb_height_in_points = arg3;                                       \
+    }                                                                   \
                                                                         \
   width_in_points = NUM2DBL (rb_width_in_points);                       \
   height_in_points = NUM2DBL (rb_height_in_points);                     \
@@ -682,22 +718,40 @@ cr_ ## type ## _surface_initialize (VALUE self, VALUE target,           \
   return Qnil;                                                          \
 }
 
+#define DEFINE_SURFACE_SET_SIZE(type)                                   \
+static VALUE                                                            \
+cr_ ## type ## _surface_set_size (int argc, VALUE *argv, VALUE self)    \
+{                                                                       \
+  VALUE arg1, arg2;                                                     \
+  VALUE width_in_points, height_in_points;                              \
+                                                                        \
+  rb_scan_args(argc, argv, "11", &arg1, &arg2);                         \
+  if (argc == 1)                                                        \
+    {                                                                   \
+      VALUE paper;                                                      \
+                                                                        \
+      paper = arg1;                                                     \
+      cr_paper_to_size_in_points (paper,                                \
+                                  &width_in_points,                     \
+                                  &height_in_points);                   \
+    }                                                                   \
+  else                                                                  \
+    {                                                                   \
+      width_in_points = arg1;                                           \
+      height_in_points = arg2;                                          \
+    }                                                                   \
+                                                                        \
+  cairo_ ## type ## _surface_set_size (_SELF,                           \
+                                       NUM2DBL (width_in_points),       \
+                                       NUM2DBL (height_in_points));     \
+  cr_surface_check_status (_SELF);                                      \
+  return Qnil;                                                          \
+}
 
 #if CAIRO_HAS_PS_SURFACE
 /* PS-surface functions */
 DEFINE_SURFACE(ps)
-
-static VALUE
-cr_ps_surface_set_size (VALUE self,
-                        VALUE width_in_points,
-                        VALUE height_in_points)
-{
-  cairo_ps_surface_set_size (_SELF,
-                             NUM2DBL (width_in_points),
-                             NUM2DBL (height_in_points));
-  cr_surface_check_status (_SELF);
-  return Qnil;
-}
+DEFINE_SURFACE_SET_SIZE(ps)
 
 static VALUE
 cr_ps_surface_dsc_comment (VALUE self, VALUE comment)
@@ -751,18 +805,7 @@ cr_ps_surface_set_eps (VALUE self, VALUE eps)
 #if CAIRO_HAS_PDF_SURFACE
 /* PDF-surface functions */
 DEFINE_SURFACE(pdf)
-
-static VALUE
-cr_pdf_surface_set_size (VALUE self,
-                         VALUE width_in_points,
-                         VALUE height_in_points)
-{
-  cairo_pdf_surface_set_size (_SELF,
-                              NUM2DBL (width_in_points),
-                              NUM2DBL (height_in_points));
-  cr_surface_check_status (_SELF);
-  return Qnil;
-}
+DEFINE_SURFACE_SET_SIZE(pdf)
 #endif
 
 #if CAIRO_HAS_SVG_SURFACE
@@ -1043,6 +1086,9 @@ Init_cairo_surface (void)
   cr_id_read = rb_intern ("read");
   cr_id_write = rb_intern ("write");
   cr_id_inspect = rb_intern ("inspect");
+  cr_id_parse = rb_intern ("parse");
+  cr_id_size = rb_intern ("size");
+  cr_id_set_unit = rb_intern ("unit=");
 
   rb_cCairo_Surface =
     rb_define_class_under (rb_mCairo, "Surface", rb_cObject);
@@ -1106,13 +1152,13 @@ Init_cairo_surface (void)
                            rb_cCairo_Surface);                          \
                                                                         \
   rb_define_method (rb_cCairo_ ## name ## Surface, "initialize",        \
-                    cr_ ## type ## _surface_initialize, 3);
+                    cr_ ## type ## _surface_initialize, -1);
 
 #if CAIRO_HAS_PS_SURFACE
   /* PS-surface */
   INIT_SURFACE(ps, PS)
 
-  rb_define_method (rb_cCairo_PSSurface, "set_size", cr_ps_surface_set_size, 2);
+  rb_define_method (rb_cCairo_PSSurface, "set_size", cr_ps_surface_set_size, -1);
   rb_define_method (rb_cCairo_PSSurface, "dsc_comment",
                     cr_ps_surface_dsc_comment, 1);
   rb_define_method (rb_cCairo_PSSurface, "dsc_begin_setup",
@@ -1135,7 +1181,7 @@ Init_cairo_surface (void)
   INIT_SURFACE(pdf, PDF)
 
   rb_define_method (rb_cCairo_PDFSurface, "set_size",
-                    cr_pdf_surface_set_size, 2);
+                    cr_pdf_surface_set_size, -1);
 
   RB_CAIRO_DEF_SETTERS (rb_cCairo_PDFSurface);
 #endif
