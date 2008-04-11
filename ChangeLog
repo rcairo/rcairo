@@ -1,5 +1,7 @@
 2008-04-11  Kouhei Sutou  <kou@cozmixng.org>
 
+	* src/lib/cairo/papers.rb: fix unit.
+
 	* src/cairo.def, src/rb_cairo.c, src/rb_cairo.h, src/lib/cairo.rb,
 	src/rb_cairo_surface.c: Cairo::PSSurface.new,
 	Cairo::PDFSurface.new, Cairo::SVGSurface.new,
