@@ -1,5 +1,11 @@
 2008-04-11  Kouhei Sutou  <kou@cozmixng.org>
 
+	* src/lib/cairo/papers.rb: add landscape papers.
+
+	* test/test_paper.rb, src/lib/cairo/paper.rb: support name parsing.
+
+	* src/lib/cairo/paper.rb: improve unit handling.
+
 	* src/rb_cairo.c:
 	- BINDINGS_VERSION: 1.5.2 -> 1.6.0.
 	- support <= 1.6.0.

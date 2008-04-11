@@ -38,7 +38,7 @@ module Cairo
           raise UnknownPaperName.new(paper_description)
         when String
           paper = resolve_constant(paper_description)
-          paper ||= parse_size(paper_description.gsub(/#.*\z/, ''))
+          paper ||= parse_size(paper_description)
           return paper.dup if paper
         when Array
           return new(*paper_description)
@@ -48,18 +48,36 @@ module Cairo
         nil
       end
 
-      @@unit_resolvers = []
-      def register_unit_resolver(name, *aliases, &resolver)
-        ([name] + aliases).each do |unit|
-          @@unit_resolvers << [unit, resolver]
+      @@default_unit = nil
+      def default_unit
+        @@default_unit
+      end
+
+      def default_unit=(unit)
+        @@default_unit = unit
+      end
+
+      @@unit_resolvers = {}
+      def register_unit_resolver(from_units, to_units, &resolver)
+        from_units = [from_units] unless from_units.is_a?(Array)
+        to_units = [to_units] unless to_units.is_a?(Array)
+        from_units.each do |from_unit|
+          @@unit_resolvers[from_unit] ||= []
+          to_units.each do |unit|
+            @@unit_resolvers[from_unit] << [unit, resolver]
+          end
         end
       end
 
-      def resolve_unit(size, target_unit)
-        @@unit_resolvers.each do |unit, resolver|
-          return resolver.call(size) if target_unit == unit
+      def resolve_unit(size, from_unit, to_unit)
+        from_unit ||= default_unit
+        return size if from_unit == to_unit
+        from_units = @@unit_resolvers[from_unit] || []
+        raise UnknownUnit.new(from_unit) if from_units.empty?
+        from_units.each do |unit, resolver|
+          return resolver.call(size) if to_unit == unit
         end
-        raise UnknownUnit.new(target_unit)
+        raise UnknownUnit.new(to_unit)
       end
 
       private
@@ -75,7 +93,9 @@ module Cairo
       def parse_size(size)
         size_re = /(\d+(\.\d*)?)/
         unit_re = /([a-zA-Z]+?)/
-        return nil if /\A#{size_re}#{unit_re}?x#{size_re}#{unit_re}?\z/ !~ size
+        if /\A#{size_re}#{unit_re}?x#{size_re}#{unit_re}?(?:#(.*))?\z/ !~ size
+          return nil
+        end
 
         width = $1
         width_fractional = $2
@@ -83,62 +103,81 @@ module Cairo
         height = $4
         height_fractional = $5
         height_unit = $6
+        name = $7
         width = width_fractional ? Float(width) : Integer(width)
         height = height_fractional ?  Float(height) : Integer(height)
-        new(resolve_unit(width, width_unit),
-            resolve_unit(height, height_unit))
+        new(resolve_unit(width, width_unit, "pt"),
+            resolve_unit(height, height_unit, "pt"),
+            nil, name)
       end
     end
 
-    register_unit_resolver(nil) {|size| size}
-    register_unit_resolver("pt") {|size| size}
-    register_unit_resolver("in", "inch") {|size| size * 72}
-    register_unit_resolver("mm") {|size| size / 25.4 * 72}
-    register_unit_resolver("cm") {|size| size / 2.54 * 72}
-    register_unit_resolver("m") {|size| size / 0.0254 * 72}
+    self.default_unit = "pt"
+    register_unit_resolver("pt", ["in", "inch"]) {|size| size / 72.0}
+    register_unit_resolver(["in", "inch"], "pt") {|size| size * 72}
+    register_unit_resolver("pt", "mm") {|size| size * 25.4 / 72.0}
+    register_unit_resolver("mm", "pt") {|size| size / 25.4 * 72}
+    register_unit_resolver("pt", "cm") {|size| size * 2.54 / 72.0}
+    register_unit_resolver("cm", "pt") {|size| size / 2.54 * 72}
+    register_unit_resolver("pt", "m") {|size| size * 0.0254 / 72.0}
+    register_unit_resolver("m", "pt") {|size| size / 0.0254 * 72}
 
-    attr_reader :width, :height, :unit
+    attr_reader :unit
+    attr_writer :width, :height
     attr_accessor :name
     def initialize(width, height, unit=nil, name=nil)
+      @width = width
+      @height = height
       @unit = unit
-      self.width = width
-      self.height = height
       @name = name
     end
 
-    def width=(width)
-      @width = self.class.resolve_unit(width, @unit)
-      width
-    end
-
-    def height=(height)
-      @height = self.class.resolve_unit(height, @unit)
-      height
-    end
-
     def unit=(unit)
-      original_unit = @unit
-      @unit = unit
-      if original_unit != @unit
-        self.width = width
-        self.height = height
+      if @unit != unit
+        @width = self.class.resolve_unit(width, @unit, unit)
+        @height = self.class.resolve_unit(height, @unit, unit)
       end
-      unit
+      @unit = unit
     end
 
-    def size
-      [@width, @height]
+    def width(unit=nil)
+      return @width if unit.nil?
+      self.class.resolve_unit(@width, @unit, unit)
+    end
+
+    def height(unit=nil)
+      return @height if unit.nil?
+      self.class.resolve_unit(@height, @unit, unit)
+    end
+
+    def size(unit=nil)
+      [width(unit), height(unit)]
     end
 
     def ==(other)
-      other.is_a?(self.class) and
-        [@width, @height, @name] == [other.width, other.height, other.name]
+      other.is_a?(self.class) and @name == other.name and
+        width_in_delta?(other.width(@unit)) and
+        height_in_delta?(other.height(@unit))
     end
 
     def to_s
       string = "#{@width}#{@unit}x#{@height}#{@unit}"
       string << "\##{@name}" if @name
       string
+    end
+
+    private
+    def width_in_delta?(value, delta=nil)
+      in_delta?(@width, delta, value)
+    end
+
+    def height_in_delta?(value, delta=nil)
+      in_delta?(@height, delta, value)
+    end
+
+    def in_delta?(value, delta, other)
+      delta ||= 0.001
+      value - delta < other and other < value + delta
     end
   end
 end
