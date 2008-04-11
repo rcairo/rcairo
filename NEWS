@@ -1,5 +1,19 @@
+Release 1.6.0 (2008-04-11) Kouhei Sutou <kou@cozmixng.org>)
+===========================================================
+
+Features
+--------
+  * Support cairo 1.6.0.
+  * Improve Quartz surface support. (thanks to kimura wataru, OBATA Akio)
+  * Support Cairo::Win32PrintingSurface.
+  * Support Cairo::QuartzImageSurface.
+  * Support ruby 1.9.1.
+  * Add Cairo::Paper.
+    * Improve size specification of Cairo::PSSurface,
+      Cairo::PDFSurface, Cairo::SVGSurface.
+
 Release 1.5.1 (2008-01-11) Kouhei Sutou <kou@cozmixng.org>)
-==========================================================
+===========================================================
 
 Features
 --------
@@ -13,7 +27,7 @@ Features
       don't use in newly written code.
 
 Release 1.5.0 (2007-05-27) Kouhei Sutou <kou@cozmixng.org>)
-==========================================================
+===========================================================
 
 Many API improvement.
 
