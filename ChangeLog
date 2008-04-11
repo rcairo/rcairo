@@ -1,5 +1,7 @@
 2008-04-11  Kouhei Sutou  <kou@cozmixng.org>
 
+	* src/rb_cairo.c: 1.6.0 -> 1.7.0.
+
 	* dist.sh: include documents.
 
 	* Rakefile:
