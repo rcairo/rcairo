@@ -1,5 +1,9 @@
 2008-04-11  Kouhei Sutou  <kou@cozmixng.org>
 
+	* src/rb_cairo.c:
+	- BINDINGS_VERSION: 1.5.2 -> 1.6.0.
+	- support <= 1.6.0.
+
 	* src/lib/cairo/papers.rb: fix unit.
 
 	* src/cairo.def, src/rb_cairo.c, src/rb_cairo.h, src/lib/cairo.rb,
