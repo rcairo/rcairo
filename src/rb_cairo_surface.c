@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-03-25 21:24:32 $
+ * $Date: 2008-04-11 01:40:26 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -275,6 +275,16 @@ rb_cairo_surface_to_ruby_object (cairo_surface_t *surface)
     }
 }
 
+VALUE
+rb_cairo_surface_to_ruby_object_with_destroy (cairo_surface_t *surface)
+{
+  VALUE rb_surface;
+  rb_surface = rb_cairo_surface_to_ruby_object (surface);
+  if (surface)
+    cairo_surface_destroy (surface);
+  return rb_surface;
+}
+
 static VALUE
 cr_surface_allocate (VALUE klass)
 {
@@ -311,7 +321,7 @@ cr_surface_create_similar (VALUE self, VALUE content,
                                           RVAL2CRCONTENT (content),
                                           NUM2INT (width), NUM2INT (height));
   cr_surface_check_status (surface);
-  return CRSURFACE2RVAL (surface);
+  return CRSURFACE2RVAL_WITH_DESTROY (surface);
 }
 
 static VALUE
