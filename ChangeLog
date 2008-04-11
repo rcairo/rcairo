@@ -1,5 +1,7 @@
 2008-04-11  Kouhei Sutou  <kou@cozmixng.org>
 
+	* samples/png.rb: use convenience notation.
+
 	* samples/pac.rb, samples/pac2.rb: use Cairo::Paper.
 
 	* src/rb_cairo_surface.c: don't change paper's unit.

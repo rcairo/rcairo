@@ -40,7 +40,6 @@ Cairo::ImageSurface.new(width, height) do |surface|
   stride = cr.target.stride
 end
 
-Cairo::ImageSurface.new(data, Cairo::FORMAT_ARGB32,
-                        width, height, stride) do |surface|
+Cairo::ImageSurface.new(data, :argb32, width, height, stride) do |surface|
   surface.write_to_png("test-renew.png")
 end
