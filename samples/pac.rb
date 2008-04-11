@@ -11,14 +11,13 @@ $LOAD_PATH.unshift File.join(src, "lib")
 
 require "cairo"
 
-WIDTH = 841.889763779528
-HEIGHT = 595.275590551181
+paper = Cairo::Paper::A4_LANDSCAPE
 
 def pac(surface)
   cr = Cairo::Context.new(surface)
 
   cr.set_source_color(:black)
-  cr.rectangle(0, 0, WIDTH, HEIGHT).fill
+  cr.paint
 
   # Wall
   cr.set_source_color(:magenta)
@@ -79,15 +78,15 @@ def pac(surface)
   cr.show_page
 end
 
-Cairo::ImageSurface.new(WIDTH, HEIGHT) do |surface|
+Cairo::ImageSurface.new(*paper.size("pt")) do |surface|
   cr = pac(surface)
   cr.target.write_to_png("pac.png")
 end
 
-def scalable_surface_output(surface_class_name, suffix)
+def scalable_surface_output(surface_class_name, paper, suffix)
   if Cairo.const_defined?(surface_class_name)
     surface_class = Cairo.const_get(surface_class_name)
-    surface_class.new("pac.#{suffix}", WIDTH, HEIGHT) do |surface|
+    surface_class.new("pac.#{suffix}", paper) do |surface|
       pac(surface)
     end
   else
@@ -95,6 +94,6 @@ def scalable_surface_output(surface_class_name, suffix)
   end
 end
 
-scalable_surface_output("PSSurface", "ps")
-scalable_surface_output("PDFSurface", "pdf")
-scalable_surface_output("SVGSurface", "svg")
+scalable_surface_output("PSSurface", paper, "ps")
+scalable_surface_output("PDFSurface", paper, "pdf")
+scalable_surface_output("SVGSurface", paper, "svg")
