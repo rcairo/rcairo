@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # -*- ruby -*-
 
 require 'English'
@@ -25,7 +26,7 @@ base_dir_included_components = %w(AUTHORS COPYING ChangeLog GPL
                                   NEWS README Rakefile
                                   extconf.rb pkg-config.rb)
 excluded_components = %w(.cvsignore .gdb_history CVS depend Makefile pkg)
-excluded_suffixes = %w(.png .ps .pdf .o .so .txt)
+excluded_suffixes = %w(.png .ps .pdf .o .so .txt .~)
 Find.find(base_dir) do |target|
   target = truncate_base_dir[target]
   components = target.split(File::SEPARATOR)
@@ -40,7 +41,13 @@ end
 File.open(manifest, "w") do |f|
   f.puts manifest_contents.sort.join("\n")
 end
+
+# For Hoe's no user friendly default behavior. :<
+File.open("README.txt", "w") {|file| file << "= Dummy README\n== XXX\n"}
+FileUtils.cp("NEWS", "History.txt")
 at_exit do
+  FileUtils.rm_f("README.txt")
+  FileUtils.rm_f("History.txt")
   FileUtils.rm_f(manifest)
 end
 
