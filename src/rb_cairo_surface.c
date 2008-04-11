@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-04-11 05:23:19 $
+ * $Date: 2008-04-11 11:07:10 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -792,6 +792,12 @@ cr_ps_surface_restrict_to_level (VALUE self, VALUE level)
 }
 
 static VALUE
+cr_ps_surface_get_eps (VALUE self)
+{
+  return cairo_ps_surface_get_eps (_SELF) ? Qtrue : Qfalse;
+}
+
+static VALUE
 cr_ps_surface_set_eps (VALUE self, VALUE eps)
 {
   cairo_ps_surface_set_eps (_SELF, RTEST (eps));
@@ -1168,8 +1174,8 @@ Init_cairo_surface (void)
 #if CAIRO_CHECK_VERSION(1, 5, 2)
   rb_define_method (rb_cCairo_PSSurface, "restrict_to_level",
                     cr_ps_surface_restrict_to_level, 1);
-  rb_define_method (rb_cCairo_PSSurface, "set_eps",
-                    cr_ps_surface_set_eps, 1);
+  rb_define_method (rb_cCairo_PSSurface, "eps?", cr_ps_surface_get_eps, 0);
+  rb_define_method (rb_cCairo_PSSurface, "set_eps", cr_ps_surface_set_eps, 1);
 #endif
 
   RB_CAIRO_DEF_SETTERS (rb_cCairo_PSSurface);
