@@ -49,8 +49,17 @@ module Cairo
       end
 
       @@unit_resolvers = []
-      def register_unit_resolver(name, resolver=Proc.new)
-        @@unit_resolvers << [name, resolver]
+      def register_unit_resolver(name, *aliases, &resolver)
+        ([name] + aliases).each do |unit|
+          @@unit_resolvers << [unit, resolver]
+        end
+      end
+
+      def resolve_unit(size, target_unit)
+        @@unit_resolvers.each do |unit, resolver|
+          return resolver.call(size) if target_unit == unit
+        end
+        raise UnknownUnit.new(target_unit)
       end
 
       private
@@ -79,24 +88,42 @@ module Cairo
         new(resolve_unit(width, width_unit),
             resolve_unit(height, height_unit))
       end
-
-      def resolve_unit(size, target_unit)
-        @@unit_resolvers.each do |unit, resolver|
-          return resolver.call(size) if target_unit == unit
-        end
-        raise UnknownUnit.new(target_unit)
-      end
     end
 
     register_unit_resolver(nil) {|size| size}
-    register_unit_resolver("mm") {|size| size}
-    register_unit_resolver("inch") {|size| size * 25.4}
+    register_unit_resolver("pt") {|size| size}
+    register_unit_resolver("in", "inch") {|size| size * 72}
+    register_unit_resolver("mm") {|size| size / 25.4 * 72}
+    register_unit_resolver("cm") {|size| size / 2.54 * 72}
+    register_unit_resolver("m") {|size| size / 0.0254 * 72}
 
-    attr_accessor :width, :height, :name
-    def initialize(width, height, name=nil)
-      @width = width
-      @height = height
+    attr_reader :width, :height, :unit
+    attr_accessor :name
+    def initialize(width, height, unit=nil, name=nil)
+      @unit = unit
+      self.width = width
+      self.height = height
       @name = name
+    end
+
+    def width=(width)
+      @width = self.class.resolve_unit(width, @unit)
+      width
+    end
+
+    def height=(height)
+      @height = self.class.resolve_unit(height, @unit)
+      height
+    end
+
+    def unit=(unit)
+      original_unit = @unit
+      @unit = unit
+      if original_unit != @unit
+        self.width = width
+        self.height = height
+      end
+      unit
     end
 
     def size
@@ -109,7 +136,7 @@ module Cairo
     end
 
     def to_s
-      string = "#{@width}x#{@height}"
+      string = "#{@width}#{@unit}x#{@height}#{@unit}"
       string << "\##{@name}" if @name
       string
     end
