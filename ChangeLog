@@ -1,5 +1,7 @@
 2008-04-11  Kouhei Sutou  <kou@cozmixng.org>
 
+	* src/lib/cairo/paper.rb, test/test_paper.rb: use pt as default unit.
+
 	* src/cairo.def, src/rb_cairo.h, src/rb_cairo_surface.c: add
 	CRSURFACE2RVAL_WITH_DESTROY() and
 	rb_cairo_surface_to_ruby_object_with_destroy().
