@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-# -*- ruby -*-
+# -*- coding: utf-8; mode: ruby -*-
 
 require 'English'
 
@@ -136,11 +135,11 @@ doc_css = File.join(doc_dir, "doc.css")
 doc_title_image = File.join(doc_dir, "rcairo-title.png")
 task(doc_index).instance_variable_get("@actions").clear
 
-file doc_index => doc_dir do
+file doc_dir do
   mkdir_p doc_dir
 end
 
-file doc_title_image => rcairo_doc_title_image do
+file doc_title_image => [doc_dir, rcairo_doc_title_image] do
   cp rcairo_doc_title_image, doc_title_image
 end
 
@@ -181,9 +180,13 @@ EOH
 end
 
 langs.each do |lang,|
-  lang_doc_index = File.join(doc_dir, lang, "index.html")
+  lang_doc_dir = File.join(doc_dir, lang)
+  file lang_doc_dir do
+    mkdir_p lang_doc_dir
+  end
+  lang_doc_index = File.join(lang_doc_dir, "index.html")
   task doc_index => lang_doc_index
-  file lang_doc_index do
+  file lang_doc_index => [lang_doc_dir] do
     lang_doc_dir = File.join(doc_dir, lang)
     lang_rcairo_doc_dir = File.join(rcairo_doc_dir, lang)
     mkdir_p lang_doc_dir
