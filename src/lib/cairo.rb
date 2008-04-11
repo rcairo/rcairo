@@ -27,6 +27,7 @@ module Cairo
 end
 
 require 'cairo/color'
+require 'cairo/paper'
 
 require 'cairo.so'
 require 'cairo/constants'

@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-01-11 13:20:19 $
+ * $Date: 2008-04-11 03:01:33 $
  *
  * Copyright 2006-2007 Kouhei Sutou <kou@cozmixng.org>
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
@@ -17,7 +17,7 @@
 #include "rb_cairo.h"
 #include "rb_cairo_private.h"
 
-VALUE rb_mCairo, rb_mCairo_Color, rb_cCairo_Color_Base;
+VALUE rb_mCairo, rb_mCairo_Color, rb_cCairo_Color_Base, rb_cCairo_Paper;
 
 static ID id__add_one_arg_setter;
 
@@ -62,6 +62,7 @@ Init_cairo ()
 
   rb_mCairo_Color = rb_const_get (rb_mCairo, rb_intern ("Color"));
   rb_cCairo_Color_Base = rb_const_get (rb_mCairo_Color, rb_intern ("Base"));
+  rb_cCairo_Paper = rb_const_get (rb_mCairo, rb_intern ("Paper"));
 
   Init_cairo_private ();
   Init_cairo_constants ();
