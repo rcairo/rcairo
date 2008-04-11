@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-02-29 23:54:13 $
+ * $Date: 2008-04-11 01:40:25 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -165,6 +165,8 @@ RB_CAIRO_VAR VALUE rb_cCairo_Color_Base;
 
 #define RVAL2CRSURFACE(obj)     (rb_cairo_surface_from_ruby_object(obj))
 #define CRSURFACE2RVAL(surface) (rb_cairo_surface_to_ruby_object(surface))
+#define CRSURFACE2RVAL_WITH_DESTROY(surface) \
+  (rb_cairo_surface_to_ruby_object_with_destroy(surface))
 
 cairo_t              *rb_cairo_context_from_ruby_object      (VALUE obj);
 VALUE                 rb_cairo_context_to_ruby_object        (cairo_t *cr);
@@ -198,6 +200,8 @@ VALUE                 rb_cairo_glyph_to_ruby_object          (cairo_glyph_t *gly
 
 cairo_surface_t      *rb_cairo_surface_from_ruby_object      (VALUE obj);
 VALUE                 rb_cairo_surface_to_ruby_object        (cairo_surface_t *surface);
+VALUE                 rb_cairo_surface_to_ruby_object_with_destroy
+                                                             (cairo_surface_t *surface);
 
 
 #define RVAL2CROPERATOR(obj)      (rb_cairo_operator_from_ruby_object(obj))
