@@ -1,5 +1,7 @@
 2008-04-11  Kouhei Sutou  <kou@cozmixng.org>
 
+	* Rakefile: follow the recent Hoe's changes.
+
 	* src/rb_cairo_surface.c: implemented Cairo::PSSurface#eps?.
 
 	* samples/png.rb: use convenience notation.
