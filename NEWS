@@ -7,7 +7,7 @@ Features
   * Improve Quartz surface support. (thanks to kimura wataru, OBATA Akio)
   * Support Cairo::Win32PrintingSurface.
   * Support Cairo::QuartzImageSurface.
-  * Support ruby 1.9.1.
+  * Support ruby 1.9.0.
   * Add Cairo::Paper.
     * Improve size specification of Cairo::PSSurface,
       Cairo::PDFSurface, Cairo::SVGSurface.
