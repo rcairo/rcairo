@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-04-11 11:07:10 $
+ * $Date: 2008-04-16 14:48:23 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -1244,8 +1244,8 @@ Init_cairo_surface (void)
 
   rb_define_method (rb_cCairo_QuartzImageSurface, "initialize",
                     cr_quartz_image_surface_initialize, 1);
-  rb_define_method (rb_cCairo_Win32PrintingSurface, "hdc",
-                    cr_quartz_image_surfaceE_get_image, 0);
+  rb_define_method (rb_cCairo_QuartzImageSurface, "image",
+                    cr_quartz_image_surface_get_image, 0);
 #  endif
 
 #endif
