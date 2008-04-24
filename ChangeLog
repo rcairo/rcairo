@@ -1,5 +1,7 @@
 2008-04-24  Kouhei Sutou  <kou@cozmixng.org>
 
+	* Rakefile: include libruby-cairo.a into gem for mswin32.
+
 	* index.html: update information for Windows users.
 
 	* src/rb_cairo.c: 1.6.1 -> 1.7.0.
