@@ -1,3 +1,12 @@
+Release 1.6.1 (2008-04-24) Kouhei Sutou <kou@cozmixng.org>)
+===========================================================
+
+Features
+--------
+  * Fix Quartz related bugs. (thanks to kimura wataru)
+  * Support PKG_CONFIG_LIBDIR. (thanks to OBATA Akio)
+  * Support RubyGems for mswin32.
+
 Release 1.6.0 (2008-04-11) Kouhei Sutou <kou@cozmixng.org>)
 ===========================================================
 
