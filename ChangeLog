@@ -1,5 +1,7 @@
 2008-04-24  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/test_pkg_config.rb: update expected result.
+
 	* NEWS: update.
 
 	* Rakefile: fix platform detection.
