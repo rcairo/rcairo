@@ -1,5 +1,7 @@
 2008-04-24  Kouhei Sutou  <kou@cozmixng.org>
 
+	* src/rb_cairo.c: 1.7.0 -> 1.6.1.
+
 	* Rakefile, src/lib/cairo.rb: support gem for mswin32.
 
 	* README (Windows): add.
