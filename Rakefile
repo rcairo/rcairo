@@ -23,6 +23,9 @@ def guess_rcairo_version
   Cairo.bindings_version
 end
 
+cairo_win32_dir = "cairo"
+FileUtils.rm_rf(cairo_win32_dir)
+
 manifest = File.join(base_dir, "Manifest.txt")
 manifest_contents = []
 base_dir_included_components = %w(AUTHORS COPYING ChangeLog GPL
@@ -83,6 +86,19 @@ project = Hoe.new('cairo', version) do |project|
 end
 
 project.spec.dependencies.delete_if {|dependency| dependency.name == "hoe"}
+
+if project.spec.platform.os == "mswin32"
+  project.spec.extensions = []
+  project.spec.files += ["src/cairo.so"]
+
+  FileUtils.cp_r(File.expand_path("~/.wine/drive_c/cairo-dev"),
+                 cairo_win32_dir)
+  cairo_files = []
+  Find.find(cairo_win32_dir) do |f|
+    cairo_files << f
+  end
+  project.spec.files += cairo_files
+end
 
 # fix Hoe's incorrect guess.
 project.spec.executables.clear
