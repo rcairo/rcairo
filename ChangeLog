@@ -1,5 +1,7 @@
 2008-04-24  Kouhei Sutou  <kou@cozmixng.org>
 
+	* Rakefile: don't require 'cairo' if needless.
+
 	* pkg-config.rb (PackageConfig#guess_default_path): ignore
 	require 'dl/import' error.
 

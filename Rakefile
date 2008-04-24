@@ -17,7 +17,11 @@ cairo_lib_dir = File.join(cairo_ext_dir, 'lib')
 $LOAD_PATH.unshift(cairo_ext_dir)
 $LOAD_PATH.unshift(cairo_lib_dir)
 ENV["RUBYLIB"] = "#{cairo_lib_dir}:#{cairo_ext_dir}:#{ENV['RUBYLIB']}"
-require 'cairo'
+
+def guess_rcairo_version
+  require 'cairo'
+  Cairo.bindings_version
+end
 
 manifest = File.join(base_dir, "Manifest.txt")
 manifest_contents = []
@@ -50,7 +54,7 @@ at_exit do
   FileUtils.rm_f(manifest)
 end
 
-ENV["VERSION"] ||= Cairo.bindings_version
+ENV["VERSION"] ||= guess_rcairo_version
 version = ENV["VERSION"]
 project = Hoe.new('cairo', version) do |project|
   project.rubyforge_name = 'cairo'
