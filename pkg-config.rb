@@ -171,7 +171,11 @@ class PackageConfig
     pkg_config = with_config("pkg-config", ENV["PKG_CONFIG"] || "pkg-config")
     pkg_config = Pathname.new(pkg_config)
     unless pkg_config.absolute?
-      require "dl/import"
+      begin
+        require "dl/import"
+      rescue LoadError
+        return default_path
+      end
       dln = Module.new
       dln.module_eval do
         if DL.const_defined?(:Importer)
