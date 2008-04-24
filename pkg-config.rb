@@ -166,6 +166,8 @@ class PackageConfig
 
   def guess_default_path
     default_path = "/usr/local/lib/pkgconfig:/usr/lib/pkgconfig"
+    libdir = ENV["PKG_CONFIG_LIBDIR"]
+    default_path = "#{libdir}:#{default_path}" if libdir
     pkg_config = with_config("pkg-config", ENV["PKG_CONFIG"] || "pkg-config")
     pkg_config = Pathname.new(pkg_config)
     unless pkg_config.absolute?
@@ -191,7 +193,8 @@ class PackageConfig
       return default_path if pkg_config.nil?
       pkg_config = Pathname.new(pkg_config)
     end
-    (pkg_config.parent.parent + "lib" + "pkgconfig").to_s
+    [(pkg_config.parent.parent + "lib" + "pkgconfig").to_s,
+     default_path].join(":")
   end
 end
 
