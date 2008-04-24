@@ -1,5 +1,7 @@
 2008-04-24  Kouhei Sutou  <kou@cozmixng.org>
 
+	* extconf.rb: don't substitute prefixed gcc.
+
 	* Rakefile: include libruby-cairo.a into gem for mswin32.
 
 	* index.html: update information for Windows users.
