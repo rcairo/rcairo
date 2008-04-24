@@ -96,7 +96,7 @@ File.open("Makefile", "w") do |f|
   co = nil
   makefile.each_line do |line|
     if wine
-      line.gsub!(/\bgcc\b/, "i586-mingw32msvc-gcc")
+      line.gsub!(/\s+gcc\b/, " i586-mingw32msvc-gcc")
       line.gsub!(/C:/, "$(HOME)/.wine/drive_c")
       line.gsub!(/Z:/, "")
     end
