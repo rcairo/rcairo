@@ -87,7 +87,7 @@ end
 
 project.spec.dependencies.delete_if {|dependency| dependency.name == "hoe"}
 
-if project.spec.platform.os == "mswin32"
+if /mswin32/ =~ project.spec.platform.to_s
   project.spec.extensions = []
   project.spec.files += ["src/cairo.so"]
 
