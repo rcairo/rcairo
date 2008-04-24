@@ -1,10 +1,20 @@
 # vim: filetype=ruby:expandtab:shiftwidth=2:tabstop=8:softtabstop=2 :
 
 if /mingw|mswin|mswin32/ =~ RUBY_PLATFORM
-  require 'rbconfig'
-  ENV['PATH'] = %w(bin lib).collect do |dir|
-    "#{Config::CONFIG["prefix"]}\\lib\\GTK\\#{dir};"
-  end.join('') + ENV['PATH']
+  require 'pathname'
+  base_dir = Pathname(File.dirname(__FILE__))
+  base_dir = base_dir.parent.parent + "cairo"
+  if base_dir.exist?
+    base_dir = base_dir.to_s.gsub(/\//, "\\")
+    ENV['PATH'] = %w(bin lib).collect do |dir|
+      "#{base_dir}\\#{dir};"
+    end.join('') + ENV['PATH']
+  else
+    require 'rbconfig'
+    ENV['PATH'] = %w(bin lib).collect do |dir|
+      "#{Config::CONFIG["prefix"]}\\lib\\GTK\\#{dir};"
+    end.join('') + ENV['PATH']
+  end
 end
 
 module Cairo
