@@ -32,7 +32,7 @@ base_dir_included_components = %w(AUTHORS COPYING ChangeLog GPL
                                   NEWS README Rakefile
                                   extconf.rb pkg-config.rb)
 excluded_components = %w(.cvsignore .gdb_history CVS depend Makefile pkg)
-excluded_suffixes = %w(.png .ps .pdf .o .so .txt .~)
+excluded_suffixes = %w(.png .ps .pdf .o .so .a .txt .~)
 Find.find(base_dir) do |target|
   target = truncate_base_dir[target]
   components = target.split(File::SEPARATOR)
@@ -89,7 +89,7 @@ project.spec.dependencies.delete_if {|dependency| dependency.name == "hoe"}
 
 if /mswin32/ =~ project.spec.platform.to_s
   project.spec.extensions = []
-  project.spec.files += ["src/cairo.so"]
+  project.spec.files += ["src/cairo.so", "src/libruby-cairo.a"]
 
   FileUtils.cp_r(File.expand_path("~/.wine/drive_c/cairo-dev"),
                  cairo_win32_dir)
