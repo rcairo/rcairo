@@ -1,3 +1,7 @@
+2008-04-26  Kouhei Sutou  <kou@cozmixng.org>
+
+	* Rakefile: fix document dependency.
+
 2008-04-24  Kouhei Sutou  <kou@cozmixng.org>
 
 	* extconf.rb: don't substitute prefixed gcc.

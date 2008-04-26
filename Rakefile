@@ -201,15 +201,12 @@ end
 
 langs.each do |lang,|
   lang_doc_dir = File.join(doc_dir, lang)
-  file lang_doc_dir do
-    mkdir_p lang_doc_dir
-  end
+  directory lang_doc_dir
   lang_doc_index = File.join(lang_doc_dir, "index.html")
-  task doc_index => lang_doc_index
+  file doc_index => lang_doc_index
   file lang_doc_index => [lang_doc_dir] do
     lang_doc_dir = File.join(doc_dir, lang)
     lang_rcairo_doc_dir = File.join(rcairo_doc_dir, lang)
-    mkdir_p lang_doc_dir
     cp Dir[File.join(lang_rcairo_doc_dir, "*.rd")], lang_doc_dir
     ruby File.join(rcairo_doc_dir, "update-html.rb"), lang_doc_dir
     ruby File.join(rcairo_doc_dir, "update-html.rb"), lang_doc_dir
