@@ -1,3 +1,7 @@
+2008-04-30  Kouhei Sutou  <kou@cozmixng.org>
+
+	* pkg-config.rb (PackageConfig#guess_default_path): handle DL exception.
+
 2008-04-26  Kouhei Sutou  <kou@cozmixng.org>
 
 	* Rakefile: fix document dependency.
