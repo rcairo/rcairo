@@ -81,6 +81,7 @@ major, minor, micro = 1, 2, 0
 PKGConfig.have_package(pkg, major, minor, micro) or exit 1
 
 have_func("rb_errinfo")
+have_type("enum ruby_value_type", "ruby.h")
 
 check_win32
 target_name = File.basename(modname)

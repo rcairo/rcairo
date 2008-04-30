@@ -1,5 +1,9 @@
 2008-04-30  Kouhei Sutou  <kou@cozmixng.org>
 
+	* extconf.rb: check enum ruby_value_type availability that is
+	defined in Ruby 1.9 with RUBY_T_DATA.
+	guard T_DATA macro for old Mac OS X environment.
+
 	* pkg-config.rb (PackageConfig#guess_default_path): handle DL exception.
 
 2008-04-26  Kouhei Sutou  <kou@cozmixng.org>
