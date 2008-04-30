@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-04-30 04:57:51 $
+ * $Date: 2008-04-30 05:03:06 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -27,7 +27,7 @@
 #  ifndef HAVE_TYPE_ENUM_RUBY_VALUE_TYPE
 enum ruby_value_type {
   RUBY_T_DATA = T_DATA
-}
+};
 #  endif
 #  undef T_DATA
 #  include <cairo-quartz.h>
