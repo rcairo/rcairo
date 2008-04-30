@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-04-11 03:01:33 $
+ * $Date: 2008-04-30 04:57:51 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -28,16 +28,6 @@
 
 #if CAIRO_HAS_SVG_SURFACE
 #  include <cairo-svg.h>
-#endif
-
-#if CAIRO_HAS_WIN32_SURFACE
-#  define OpenFile OpenFile_win32
-#  include <cairo-win32.h>
-#  undef OpenFile
-#endif
-
-#if CAIRO_HAS_QUARTZ_SURFACE
-#  include <cairo-quartz.h>
 #endif
 
 #define CAIRO_CHECK_VERSION(major, minor, micro)    \
