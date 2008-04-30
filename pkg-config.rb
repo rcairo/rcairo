@@ -187,6 +187,7 @@ class PackageConfig
           dlload RbConfig::CONFIG["LIBRUBY"]
         rescue RuntimeError
           return default_path if $!.message == "unknown error"
+          return default_path if /: image not found\z/ =~ $!.message
           raise
         rescue DL::DLError
           return default_path
