@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-01-11 08:03:39 $
+ * $Date: 2008-06-12 10:59:54 $
  *
  * Copyright 2005 Kouhei Sutou <kou@cozmixng.org>
  *
@@ -25,6 +25,14 @@
 
 #ifndef RSTRING_LEN
 #  define RSTRING_LEN(string) (RSTRING(string)->len)
+#endif
+
+#ifndef RARRAY_PTR
+#  define RARRAY_PTR(array) (RARRAY(array)->ptr)
+#endif
+
+#ifndef RARRAY_LEN
+#  define RARRAY_LEN(array) (RARRAY(array)->len)
 #endif
 
 #ifdef HAVE_RB_ERRINFO
@@ -54,7 +62,7 @@ extern void Init_cairo_glyph (void);
 do                                                              \
   {                                                             \
     Check_Type (rb_array, T_ARRAY);                             \
-    length = RARRAY (rb_array)->len;                            \
+    length = RARRAY_LEN (rb_array);                             \
     glyphs = ALLOCA_N (cairo_glyph_t, length);                  \
                                                                 \
     if (!glyphs)                                                \
