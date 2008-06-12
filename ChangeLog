@@ -1,5 +1,7 @@
 2008-06-12  Kouhei Sutou  <kou@cozmixng.org>
 
+	* extconf.rb: include <ruby.h>.
+
 	* src/rb_cairo_private.h: add fallback RARRAY_PTR and RARRAY_LEN.
 
 	* src/rb_cairo_context.c, src/rb_cairo_pattern.c: use RARRAY_PTR
