@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-03-25 13:43:50 $
+ * $Date: 2008-06-12 10:59:54 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -211,7 +211,7 @@ cr_set_source_rgb (int argc, VALUE *argv, VALUE self)
   if (n == 1 && rb_cairo__is_kind_of (red, rb_cArray))
     {
       VALUE ary = red;
-      n = RARRAY (ary)->len;
+      n = RARRAY_LEN (ary);
       red = rb_ary_entry (ary, 0);
       green = rb_ary_entry (ary, 1);
       blue = rb_ary_entry (ary, 2);
@@ -248,7 +248,7 @@ cr_set_source_rgba (int argc, VALUE *argv, VALUE self)
   if (n == 1 && rb_cairo__is_kind_of (red, rb_cArray))
     {
       VALUE ary = red;
-      n = RARRAY (ary)->len;
+      n = RARRAY_LEN (ary);
       red = rb_ary_entry (ary, 0);
       green = rb_ary_entry (ary, 1);
       blue = rb_ary_entry (ary, 2);
@@ -413,7 +413,7 @@ cr_set_dash (int argc, VALUE *argv, VALUE self)
       values[0] = NUM2DBL (dash_array);
       cairo_set_dash (_SELF, values, 1, offset);
     }
-  else if (NIL_P (dash_array) || RARRAY (dash_array)->len == 0)
+  else if (NIL_P (dash_array) || RARRAY_LEN (dash_array) == 0)
     {
       cairo_set_dash (_SELF, NULL, 0, offset);
     }
@@ -421,7 +421,7 @@ cr_set_dash (int argc, VALUE *argv, VALUE self)
     {
       int i, length;
       double *values;
-      length = RARRAY (dash_array)->len;
+      length = RARRAY_LEN (dash_array);
       values = ALLOCA_N (double, length);
       if (!values)
         {
@@ -429,7 +429,7 @@ cr_set_dash (int argc, VALUE *argv, VALUE self)
         }
       for (i = 0; i < length; i++)
         {
-          values[i] = NUM2DBL (RARRAY (dash_array)->ptr[i]);
+          values[i] = NUM2DBL (RARRAY_PTR (dash_array)[i]);
         }
       cairo_set_dash (_SELF, values, length, offset);
     }
@@ -588,8 +588,8 @@ cr_quadratic_curve_to (VALUE self, VALUE x1, VALUE y1, VALUE x2, VALUE y2)
   VALUE current_point, x0, y0, cx1, cy1, cx2, cy2;
 
   current_point = cr_get_current_point (self);
-  x0 = RARRAY (current_point)->ptr[0];
-  y0 = RARRAY (current_point)->ptr[1];
+  x0 = RARRAY_PTR (current_point)[0];
+  y0 = RARRAY_PTR (current_point)[1];
 
   /* cx1 = x0 + 2 * ((x1 - x0) / 3.0) */
   cx1 = rb_funcall (x0, cr_id_plus, 1,
@@ -689,8 +689,8 @@ cr_rel_quadratic_curve_to (VALUE self, VALUE dx1, VALUE dy1,
   VALUE current_point, x0, y0;
 
   current_point = cr_get_current_point (self);
-  x0 = RARRAY (current_point)->ptr[0];
-  y0 = RARRAY (current_point)->ptr[1];
+  x0 = RARRAY_PTR (current_point)[0];
+  y0 = RARRAY_PTR (current_point)[1];
   return cr_quadratic_curve_to (self,
                                 rb_funcall (dx1, cr_id_plus, 1, x0),
                                 rb_funcall (dy1, cr_id_plus, 1, y0),
