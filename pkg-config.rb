@@ -197,8 +197,9 @@ class PackageConfig
         end
         extern "const char *dln_find_exe(const char *, const char *)"
       end
-      pkg_config = dln.dln_find_exe(pkg_config.to_s, nil)
+      pkg_config = dln.dln_find_exe(pkg_config.to_s, ".")
       return default_path if pkg_config.nil?
+      return default_path if pkg_config.size.zero?
       pkg_config = Pathname.new(pkg_config)
     end
     [(pkg_config.parent.parent + "lib" + "pkgconfig").to_s,
