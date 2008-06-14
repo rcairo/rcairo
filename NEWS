@@ -1,3 +1,13 @@
+Release 1.6.2 (2008-06-14) Kouhei Sutou <kou@cozmixng.org>)
+===========================================================
+
+Features
+--------
+  * Fix build failure on MacOS X.
+  * Fix build failure on 64bit Linux.
+  * Fix build failure with old Ruby.
+  * Fix build failure with Ruby 1.9.
+
 Release 1.6.1 (2008-04-24) Kouhei Sutou <kou@cozmixng.org>)
 ===========================================================
 
