@@ -1,5 +1,7 @@
 2008-06-14  Kouhei Sutou  <kou@cozmixng.org>
 
+	* NEWS: add an entry for 1.6.2.
+
 	* pkg-config.rb: work with ruby 1.9.
 
 	* src/rb_cairo.c: 1.7.0 -> 1.6.2.
