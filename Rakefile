@@ -108,6 +108,8 @@ project.lib_files = project.spec.files.grep(%r|^src/lib/|)
 task(:install).instance_variable_get("@actions").clear
 task(:uninstall).instance_variable_get("@actions").clear
 
+task(:release).prerequisites.reject! {|name| name == "clean"}
+
 task :install do
   [
    [project.lib_files, "lib", Hoe::RUBYLIB, 0444],
