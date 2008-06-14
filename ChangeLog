@@ -1,5 +1,7 @@
 2008-06-14  Kouhei Sutou  <kou@cozmixng.org>
 
+	* src/rb_cairo.c: 1.6.2 -> 1.7.0.
+
 	* Rakefile: don't clean on release target to keep generated document.
 
 	* src/rb_cairo_surface.c: rename OpenFile before include rubyio.h.
