@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-04-04 04:25:16 $
+ * $Date: 2008-06-19 13:00:18 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -124,23 +124,27 @@ DEFINE_RVAL2ENUM(content, CONTENT)
 DEFINE_RVAL2ENUM(format, FORMAT)
 DEFINE_RVAL2ENUM(extend, EXTEND)
 DEFINE_RVAL2ENUM(filter, FILTER)
-#if CAIRO_HAS_SVG_SURFACE
+#ifdef CAIRO_HAS_SVG_SURFACE
 DEFINE_RVAL2ENUM(svg_version, SVG_VERSION)
 #endif
-#if CAIRO_HAS_PS_SURFACE && CAIRO_CHECK_VERSION(1, 5, 2)
+
+#ifdef CAIRO_HAS_PS_SURFACE
+#  if CAIRO_CHECK_VERSION(1, 5, 2)
 DEFINE_RVAL2ENUM(ps_level, PS_LEVEL)
-#else
-#  ifdef RB_CAIRO_PLATFORM_WIN32
+#define PS_LEVEL_ENUM_DEFINED 1
+#  endif
+#endif
+
+#if defined(RB_CAIRO_PLATFORM_WIN32) && !defined(PS_LEVEL_ENUM_DEFINED)
 void
 rb_cairo_ps_level_from_ruby_object (VALUE rb_ps_level)
 {
   /* dummy */
 }
-#  endif
 #endif
 
 
-#if CAIRO_HAS_SVG_SURFACE
+#ifdef CAIRO_HAS_SVG_SURFACE
 static VALUE
 cr_svg_get_versions (VALUE self)
 {
@@ -187,7 +191,7 @@ cr_format_stride_for_width (VALUE self, VALUE format, VALUE width)
 }
 #endif
 
-#if CAIRO_HAS_PS_SURFACE
+#ifdef CAIRO_HAS_PS_SURFACE
 #  if CAIRO_CHECK_VERSION(1, 5, 8)
 static VALUE
 cr_ps_get_levels (VALUE self)
@@ -428,7 +432,7 @@ Init_cairo_constants (void)
   rb_define_const (rb_mCairo_Filter,    "GAUSSIAN",
                    INT2FIX (CAIRO_FILTER_GAUSSIAN));
 
-#if CAIRO_HAS_SVG_SURFACE
+#ifdef CAIRO_HAS_SVG_SURFACE
   /* cairo_svg_version_t */
   rb_mCairo_SVGVersion = rb_define_module_under (rb_mCairo, "SVGVersion");
   rb_define_const (rb_mCairo_SVGVersion, "VERSION_1_1",
@@ -442,7 +446,8 @@ Init_cairo_constants (void)
                               cr_svg_version_to_string, -1);
 #endif
 
-#if CAIRO_HAS_PS_SURFACE && CAIRO_CHECK_VERSION(1, 5, 2)
+#ifdef CAIRO_HAS_PS_SURFACE
+#  if CAIRO_CHECK_VERSION(1, 5, 2)
   /* cairo_ps_level_t */
   rb_mCairo_PSLevel = rb_define_module_under (rb_mCairo, "PSLevel");
   rb_define_const (rb_mCairo_PSLevel, "LEVEL_2", INT2FIX (CAIRO_PS_LEVEL_2));
@@ -452,5 +457,6 @@ Init_cairo_constants (void)
                               cr_ps_get_levels, 0);
   rb_define_singleton_method (rb_mCairo_PSLevel, "name",
                               cr_ps_level_to_string, -1);
+#  endif
 #endif
 }

@@ -1,5 +1,7 @@
 2008-06-19  Kouhei Sutou  <kou@cozmixng.org>
 
+	* src/: use #ifdef for CAIRO_HAS_*.
+
 	* src/rb_cairo_surface.c: guard custom write surfaces from GC to
 	avoid writing in GC.
 	Reported by James Healy. Thanks!!!
