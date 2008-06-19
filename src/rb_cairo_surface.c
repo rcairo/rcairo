@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-06-19 12:52:31 $
+ * $Date: 2008-06-19 13:00:19 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -15,7 +15,7 @@
 #include "rb_cairo.h"
 #include "rb_cairo_private.h"
 
-#if CAIRO_HAS_WIN32_SURFACE
+#ifdef CAIRO_HAS_WIN32_SURFACE
 #  define OpenFile OpenFile_win32
 #  include <cairo-win32.h>
 #  undef OpenFile
@@ -23,7 +23,7 @@
 
 #include <rubyio.h>
 
-#if CAIRO_HAS_QUARTZ_SURFACE
+#ifdef CAIRO_HAS_QUARTZ_SURFACE
 #  ifndef HAVE_TYPE_ENUM_RUBY_VALUE_TYPE
 enum ruby_value_type {
   RUBY_T_DATA = T_DATA
@@ -34,7 +34,9 @@ enum ruby_value_type {
 #  define T_DATA RUBY_T_DATA
 #endif
 
-#if CAIRO_HAS_PS_SURFACE || CAIRO_HAS_PDF_SURFACE || CAIRO_HAS_SVG_SURFACE
+#if defined(CAIRO_HAS_PS_SURFACE) || \
+  defined(CAIRO_HAS_PDF_SURFACE) || \
+  defined(CAIRO_HAS_SVG_SURFACE)
 #  define HAS_CREATE_CR_CLOSURE_SURFACE 1
 #else
 #  define HAS_CREATE_CR_CLOSURE_SURFACE 0
@@ -418,7 +420,7 @@ cr_surface_get_content (VALUE self)
 }
 
 
-#if CAIRO_HAS_PNG_FUNCTIONS
+#ifdef CAIRO_HAS_PNG_FUNCTIONS
 static VALUE
 cr_surface_write_to_png_stream (VALUE self, VALUE target)
 {
@@ -563,7 +565,7 @@ cr_surface_show_page (VALUE self)
 #endif
 
 /* Image-surface functions */
-#if CAIRO_HAS_PNG_FUNCTIONS
+#ifdef CAIRO_HAS_PNG_FUNCTIONS
 static cairo_surface_t *
 cr_image_surface_create_from_png_stream (VALUE target)
 {
@@ -803,7 +805,7 @@ cr_ ## type ## _surface_set_size (int argc, VALUE *argv, VALUE self)    \
   return Qnil;                                                          \
 }
 
-#if CAIRO_HAS_PS_SURFACE
+#ifdef CAIRO_HAS_PS_SURFACE
 /* PS-surface functions */
 DEFINE_SURFACE(ps)
 DEFINE_SURFACE_SET_SIZE(ps)
@@ -863,13 +865,13 @@ cr_ps_surface_set_eps (VALUE self, VALUE eps)
 #  endif
 #endif
 
-#if CAIRO_HAS_PDF_SURFACE
+#ifdef CAIRO_HAS_PDF_SURFACE
 /* PDF-surface functions */
 DEFINE_SURFACE(pdf)
 DEFINE_SURFACE_SET_SIZE(pdf)
 #endif
 
-#if CAIRO_HAS_SVG_SURFACE
+#ifdef CAIRO_HAS_SVG_SURFACE
 /* SVG-surface functions */
 DEFINE_SURFACE(svg)
 
@@ -882,7 +884,7 @@ cr_svg_surface_restrict_to_version (VALUE self, VALUE version)
 }
 #endif
 
-#if CAIRO_HAS_WIN32_SURFACE
+#ifdef CAIRO_HAS_WIN32_SURFACE
 /* WIN32-surface functions */
 
 /* from dl/dl.h (ruby 1.9) */
@@ -1020,7 +1022,7 @@ cr_win32_surface_get_image (VALUE self)
 #  endif
 #endif
 
-#if CAIRO_HAS_QUARTZ_SURFACE && defined(HAVE_RUBY_COCOA)
+#if defined(CAIRO_HAS_QUARTZ_SURFACE) && defined(HAVE_RUBY_COCOA)
 /* Quartz-surface functions */
 
 #include <objc/objc-runtime.h>
@@ -1181,7 +1183,7 @@ Init_cairo_surface (void)
                     cr_surface_show_page, 2);
 #endif
 
-#if CAIRO_HAS_PNG_FUNCTIONS
+#ifdef CAIRO_HAS_PNG_FUNCTIONS
   rb_define_method (rb_cCairo_Surface, "write_to_png",
                     cr_surface_write_to_png_generic, 1);
 #endif
@@ -1192,7 +1194,7 @@ Init_cairo_surface (void)
   rb_cCairo_ImageSurface =
     rb_define_class_under (rb_mCairo, "ImageSurface", rb_cCairo_Surface);
   
-#if CAIRO_HAS_PNG_FUNCTIONS
+#ifdef CAIRO_HAS_PNG_FUNCTIONS
   rb_define_singleton_method (rb_cCairo_ImageSurface, "from_png",
                               cr_image_surface_create_from_png_generic, 1);
 #endif
@@ -1219,7 +1221,7 @@ Init_cairo_surface (void)
   rb_define_method (rb_cCairo_ ## name ## Surface, "initialize",        \
                     cr_ ## type ## _surface_initialize, -1);
 
-#if CAIRO_HAS_PS_SURFACE
+#ifdef CAIRO_HAS_PS_SURFACE
   /* PS-surface */
   INIT_SURFACE(ps, PS)
 
@@ -1231,17 +1233,17 @@ Init_cairo_surface (void)
   rb_define_method (rb_cCairo_PSSurface, "dsc_begin_page_setup",
                     cr_ps_surface_dsc_begin_page_setup, 0);
 
-#if CAIRO_CHECK_VERSION(1, 5, 2)
+#  if CAIRO_CHECK_VERSION(1, 5, 2)
   rb_define_method (rb_cCairo_PSSurface, "restrict_to_level",
                     cr_ps_surface_restrict_to_level, 1);
   rb_define_method (rb_cCairo_PSSurface, "eps?", cr_ps_surface_get_eps, 0);
   rb_define_method (rb_cCairo_PSSurface, "set_eps", cr_ps_surface_set_eps, 1);
-#endif
+#  endif
 
   RB_CAIRO_DEF_SETTERS (rb_cCairo_PSSurface);
 #endif
 
-#if CAIRO_HAS_PDF_SURFACE
+#ifdef CAIRO_HAS_PDF_SURFACE
   /* PDF-surface */
   INIT_SURFACE(pdf, PDF)
 
@@ -1251,7 +1253,7 @@ Init_cairo_surface (void)
   RB_CAIRO_DEF_SETTERS (rb_cCairo_PDFSurface);
 #endif
 
-#if CAIRO_HAS_SVG_SURFACE
+#ifdef CAIRO_HAS_SVG_SURFACE
   /* SVG-surface */
   INIT_SURFACE(svg, SVG)
 
@@ -1261,7 +1263,7 @@ Init_cairo_surface (void)
   RB_CAIRO_DEF_SETTERS (rb_cCairo_SVGSurface);
 #endif
 
-#if CAIRO_HAS_WIN32_SURFACE
+#ifdef CAIRO_HAS_WIN32_SURFACE
   /* Win32-surface */
   rb_cCairo_Win32Surface =
     rb_define_class_under (rb_mCairo, "Win32Surface", rb_cCairo_Surface);
@@ -1287,7 +1289,7 @@ Init_cairo_surface (void)
 
 #endif
 
-#if CAIRO_HAS_QUARTZ_SURFACE && defined(HAVE_RUBY_COCOA)
+#if defined(CAIRO_HAS_QUARTZ_SURFACE) && defined(HAVE_RUBY_COCOA)
   /* Quartz-surface */
 
   rb_cCairo_QuartzSurface =
