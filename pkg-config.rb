@@ -168,7 +168,8 @@ class PackageConfig
     default_path = ["/usr/local/lib64/pkgconfig",
                     "/usr/local/lib/pkgconfig",
                     "/usr/lib64/pkgconfig",
-                    "/usr/lib/pkgconfig"].join(":")
+                    "/usr/lib/pkgconfig",
+                    "/usr/share/pkgconfig"].join(":")
     libdir = ENV["PKG_CONFIG_LIBDIR"]
     default_path = "#{libdir}:#{default_path}" if libdir
     pkg_config = with_config("pkg-config", ENV["PKG_CONFIG"] || "pkg-config")
