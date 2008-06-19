@@ -1,5 +1,9 @@
 2008-06-19  Kouhei Sutou  <kou@cozmixng.org>
 
+	* src/rb_cairo_surface.c: guard custom write surfaces from GC to
+	avoid writing in GC.
+	Reported by James Healy. Thanks!!!
+
 	* README: add James Healy to Thanks list.
 
 	* pkg-config.rb (PackageConfig#guess_default_path): add

@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-06-14 12:38:25 $
+ * $Date: 2008-06-19 12:52:31 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -58,7 +58,9 @@ static ID cr_id_inspect;
 static ID cr_id_parse;
 static ID cr_id_size;
 static ID cr_id_set_unit;
+static ID cr_id_instances;
 static cairo_user_data_key_t cr_closure_key;
+static cairo_user_data_key_t cr_object_holder_key;
 
 #define _SELF  (RVAL2CRSURFACE(self))
 
@@ -165,7 +167,7 @@ cr_closure_new (VALUE target)
 static void
 cr_closure_destroy (cr_io_callback_closure_t *closure)
 {
-  free (closure);
+  xfree (closure);
 }
 
 static void
@@ -288,12 +290,52 @@ rb_cairo_surface_from_ruby_object (VALUE obj)
 }
 
 static void
+add_gc_guard (VALUE self)
+{
+  rb_hash_aset (rb_ivar_get (rb_cCairo_Surface, cr_id_instances),
+                self, Qnil);
+}
+
+static void
+remove_gc_guard (VALUE self)
+{
+  rb_hash_delete (rb_ivar_get (rb_cCairo_Surface, cr_id_instances),
+                  self);
+}
+
+typedef struct cr_object_holder {
+  VALUE object;
+} cr_object_holder_t;
+
+static cr_object_holder_t *
+cr_object_holder_new (VALUE object)
+{
+  cr_object_holder_t *holder;
+
+  holder = ALLOC(cr_object_holder_t);
+  add_gc_guard (object);
+  holder->object = object;
+  return holder;
+}
+
+static void
+cr_object_holder_free (void *ptr)
+{
+  cr_object_holder_t *holder = ptr;
+
+  if (!NIL_P (holder->object))
+    remove_gc_guard (holder->object);
+
+  xfree (holder);
+}
+
+static void
 cr_surface_free (void *ptr)
 {
-  if (ptr)
-    {
-      cairo_surface_destroy ((cairo_surface_t *) ptr);
-    }
+  cairo_surface_t *surface = ptr;
+
+  if (surface)
+    cairo_surface_destroy (surface);
 }
 
 VALUE
@@ -316,9 +358,11 @@ VALUE
 rb_cairo_surface_to_ruby_object_with_destroy (cairo_surface_t *surface)
 {
   VALUE rb_surface;
+
   rb_surface = rb_cairo_surface_to_ruby_object (surface);
   if (surface)
     cairo_surface_destroy (surface);
+
   return rb_surface;
 }
 
@@ -329,23 +373,30 @@ cr_surface_allocate (VALUE klass)
 }
 
 /* Surface manipulation */
+static VALUE
+cr_surface_finish (VALUE self)
+{
+  cairo_surface_t *surface;
+  cr_io_callback_closure_t *closure;
+
+  surface = _SELF;
+  closure = cairo_surface_get_user_data (surface, &cr_closure_key);
+
+  cairo_surface_finish (surface);
+  cairo_surface_set_user_data (surface, &cr_object_holder_key, NULL, NULL);
+
+  if (closure && !NIL_P (closure->error))
+    rb_exc_raise (closure->error);
+  cr_surface_check_status (surface);
+
+  return self;
+}
+
 static void
 yield_and_finish (VALUE self)
 {
-  cairo_surface_t *surface;
-  cairo_status_t status;
-
   rb_yield (self);
-
-  surface = _SELF;
-  if (cairo_surface_status (surface))
-    return;
-  cairo_surface_finish (surface);
-  status = cairo_surface_status (surface);
-  if (status == CAIRO_STATUS_SUCCESS || status == CAIRO_STATUS_SURFACE_FINISHED)
-    return;
-
-  cr_surface_check_status (surface);
+  cr_surface_finish (self);
 }
 
 static VALUE
@@ -358,21 +409,6 @@ cr_surface_create_similar (VALUE self, VALUE content, VALUE width, VALUE height)
                                           NUM2INT (width), NUM2INT (height));
   cr_surface_check_status (surface);
   return CRSURFACE2RVAL_WITH_DESTROY (surface);
-}
-
-static VALUE
-cr_surface_finish (VALUE self)
-{
-  cr_io_callback_closure_t *closure;
-  closure = cairo_surface_get_user_data (_SELF, &cr_closure_key);
-  
-  cairo_surface_finish (_SELF);
-
-  if (closure && !NIL_P (closure->error))
-    rb_exc_raise (closure->error);
-  
-  cr_surface_check_status (_SELF);
-  return self;
 }
 
 static VALUE
@@ -717,6 +753,9 @@ cr_ ## type ## _surface_initialize (int argc, VALUE *argv, VALUE self)  \
           rb_ivar_set (self, cr_id_target, target);                     \
           cairo_surface_set_user_data (surface, &cr_closure_key,        \
                                        closure, cr_closure_free);       \
+          cairo_surface_set_user_data (surface, &cr_object_holder_key,  \
+                                       cr_object_holder_new(self),      \
+                                       cr_object_holder_free);          \
         }                                                               \
     }                                                                   \
   else                                                                  \
@@ -1111,11 +1150,15 @@ Init_cairo_surface (void)
   cr_id_parse = rb_intern ("parse");
   cr_id_size = rb_intern ("size");
   cr_id_set_unit = rb_intern ("unit=");
+  cr_id_instances = rb_intern ("instances");
 
   rb_cCairo_Surface =
     rb_define_class_under (rb_mCairo, "Surface", rb_cObject);
   rb_define_alloc_func (rb_cCairo_Surface, cr_surface_allocate);
-  
+
+  rb_ivar_set (rb_cCairo_Surface, cr_id_instances, rb_hash_new ());
+
+
   rb_define_method (rb_cCairo_Surface, "create_similar",
                     cr_surface_create_similar, 3);
   rb_define_method (rb_cCairo_Surface, "finish", cr_surface_finish, 0);
