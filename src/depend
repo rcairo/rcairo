@@ -1,2 +1,2 @@
 install-so:
-	$(RUBY) -run -e install -- -m 0644 $(srcdir)/rb_cairo.h $(sitearchdir)$(target_prefix)
+	$(INSTALL_DATA) $(srcdir)/rb_cairo.h $(RUBYARCHDIR)
