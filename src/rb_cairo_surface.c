@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-06-19 13:00:19 $
+ * $Date: 2008-06-20 01:56:47 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -14,6 +14,8 @@
 
 #include "rb_cairo.h"
 #include "rb_cairo_private.h"
+
+#include <st.h>
 
 #ifdef CAIRO_HAS_WIN32_SURFACE
 #  define OpenFile OpenFile_win32
@@ -61,6 +63,7 @@ static ID cr_id_parse;
 static ID cr_id_size;
 static ID cr_id_set_unit;
 static ID cr_id_instances;
+static ID cr_id_dup;
 static cairo_user_data_key_t cr_closure_key;
 static cairo_user_data_key_t cr_object_holder_key;
 
@@ -1141,6 +1144,21 @@ cr_quartz_image_surface_get_image (VALUE self)
 #  endif
 #endif
 
+static int
+cr_finish_all_guarded_surfaces_at_end_iter (VALUE key, VALUE value, VALUE data)
+{
+  cr_surface_finish (key);
+  return ST_CONTINUE;
+}
+
+static void
+cr_finish_all_guarded_surfaces_at_end (VALUE data)
+{
+  rb_hash_foreach (rb_funcall (rb_ivar_get (rb_cCairo_Surface, cr_id_instances),
+                               cr_id_dup, 0),
+                   cr_finish_all_guarded_surfaces_at_end_iter,
+                   Qnil);
+}
 
 void
 Init_cairo_surface (void)
@@ -1153,6 +1171,9 @@ Init_cairo_surface (void)
   cr_id_size = rb_intern ("size");
   cr_id_set_unit = rb_intern ("unit=");
   cr_id_instances = rb_intern ("instances");
+  cr_id_dup = rb_intern ("dup");
+
+  rb_set_end_proc(cr_finish_all_guarded_surfaces_at_end, Qnil);
 
   rb_cCairo_Surface =
     rb_define_class_under (rb_mCairo, "Surface", rb_cObject);
