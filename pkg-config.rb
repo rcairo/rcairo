@@ -202,6 +202,7 @@ class PackageConfig
   def guess_default_path
     default_path = ["/usr/local/lib64/pkgconfig",
                     "/usr/local/lib/pkgconfig",
+                    "/usr/local/libdata/pkgconfig",
                     "/opt/local/lib/pkgconfig",
                     "/usr/lib64/pkgconfig",
                     "/usr/lib/pkgconfig",
@@ -222,6 +223,7 @@ class PackageConfig
 
     return default_path unless pkg_config.absolute?
     [(pkg_config.parent.parent + "lib" + "pkgconfig").to_s,
+     (pkg_config.parent.parent + "libdata" + "pkgconfig").to_s,
      default_path].join(separator)
   end
 end
