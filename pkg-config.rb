@@ -164,47 +164,65 @@ class PackageConfig
     end
   end
 
+  def search_pkg_config_from_path(pkg_config)
+    (ENV["PATH"] || "").split(separator).each do |path|
+      try_pkg_config = Pathname(path) + pkg_config
+      return try_pkg_config if try_pkg_config.exist?
+    end
+    nil
+  end
+
+  def search_pkg_config_by_dln_find_exe(pkg_config)
+    begin
+      require "dl/import"
+    rescue LoadError
+      return nil
+    end
+    dln = Module.new
+    dln.module_eval do
+      if DL.const_defined?(:Importer)
+        extend DL::Importer
+      else
+        extend DL::Importable
+      end
+      begin
+        dlload RbConfig::CONFIG["LIBRUBY"]
+      rescue RuntimeError
+        return nil if $!.message == "unknown error"
+        return nil if /: image not found\z/ =~ $!.message
+        raise
+      rescue DL::DLError
+        return nil
+      end
+      extern "const char *dln_find_exe(const char *, const char *)"
+    end
+    dln.dln_find_exe(pkg_config.to_s, ".")
+  end
+
   def guess_default_path
     default_path = ["/usr/local/lib64/pkgconfig",
                     "/usr/local/lib/pkgconfig",
+                    "/opt/local/lib/pkgconfig",
                     "/usr/lib64/pkgconfig",
                     "/usr/lib/pkgconfig",
-                    "/usr/share/pkgconfig"].join(":")
+                    "/usr/share/pkgconfig"].join(separator)
     libdir = ENV["PKG_CONFIG_LIBDIR"]
-    default_path = "#{libdir}:#{default_path}" if libdir
+    default_path = [libdir, default_path].join(separator) if libdir
+
     pkg_config = with_config("pkg-config", ENV["PKG_CONFIG"] || "pkg-config")
     pkg_config = Pathname.new(pkg_config)
     unless pkg_config.absolute?
-      begin
-        require "dl/import"
-      rescue LoadError
-        return default_path
-      end
-      dln = Module.new
-      dln.module_eval do
-        if DL.const_defined?(:Importer)
-          extend DL::Importer
-        else
-          extend DL::Importable
-        end
-        begin
-          dlload RbConfig::CONFIG["LIBRUBY"]
-        rescue RuntimeError
-          return default_path if $!.message == "unknown error"
-          return default_path if /: image not found\z/ =~ $!.message
-          raise
-        rescue DL::DLError
-          return default_path
-        end
-        extern "const char *dln_find_exe(const char *, const char *)"
-      end
-      pkg_config = dln.dln_find_exe(pkg_config.to_s, ".")
-      return default_path if pkg_config.nil?
-      return default_path if pkg_config.size.zero?
-      pkg_config = Pathname.new(pkg_config)
+      found_pkg_config = search_pkg_config_from_path(pkg_config)
+      pkg_config = found_pkg_config if found_pkg_config
     end
+    unless pkg_config.absolute?
+      found_pkg_config = search_pkg_config_by_dln_find_exe(pkg_config)
+      pkg_config = found_pkg_config if found_pkg_config
+    end
+
+    return default_path unless pkg_config.absolute?
     [(pkg_config.parent.parent + "lib" + "pkgconfig").to_s,
-     default_path].join(":")
+     default_path].join(separator)
   end
 end
 

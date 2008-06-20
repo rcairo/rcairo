@@ -1,5 +1,12 @@
 2008-06-20  Kouhei Sutou  <kou@cozmixng.org>
 
+	* pkg-config.rb:
+	- add /opt/local/lib/pkgconfig as default path.
+	- improve default path guess.
+	Suggested by Carsten Bormann. Thanks!!!
+
+	* README: add Carsten Bormann to thanks list. Thanks!!!
+
 	* test/test_surface.rb: add.
 
 	* src/rb_cairo_surface.c (yield_and_finish): don't finish if it
