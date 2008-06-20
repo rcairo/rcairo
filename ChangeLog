@@ -1,5 +1,7 @@
 2008-06-20  Kouhei Sutou  <kou@cozmixng.org>
 
+	* pkg-config.rb: add libdata.
+
 	* pkg-config.rb:
 	- add /opt/local/lib/pkgconfig as default path.
 	- improve default path guess.
