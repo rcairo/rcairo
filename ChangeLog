@@ -1,5 +1,7 @@
 2008-06-20  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/test_surface.rb: add.
+
 	* src/rb_cairo_surface.c (yield_and_finish): don't finish if it
 	isn't needed.
 
