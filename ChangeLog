@@ -1,5 +1,8 @@
 2008-06-20  Kouhei Sutou  <kou@cozmixng.org>
 
+	* src/rb_cairo_surface.c (yield_and_finish): don't finish if it
+	isn't needed.
+
 	* src/rb_cairo_surface.c: finish all guarded surfaces at end.
 
 2008-06-19  Kouhei Sutou  <kou@cozmixng.org>

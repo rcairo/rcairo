@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-06-20 01:56:47 $
+ * $Date: 2008-06-20 02:01:53 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -66,6 +66,7 @@ static ID cr_id_instances;
 static ID cr_id_dup;
 static cairo_user_data_key_t cr_closure_key;
 static cairo_user_data_key_t cr_object_holder_key;
+static cairo_user_data_key_t cr_finished_key;
 
 #define _SELF  (RVAL2CRSURFACE(self))
 
@@ -388,6 +389,7 @@ cr_surface_finish (VALUE self)
   closure = cairo_surface_get_user_data (surface, &cr_closure_key);
 
   cairo_surface_finish (surface);
+  cairo_surface_set_user_data (surface, &cr_finished_key, (void *)CR_TRUE, NULL);
   cairo_surface_set_user_data (surface, &cr_object_holder_key, NULL, NULL);
 
   if (closure && !NIL_P (closure->error))
@@ -400,8 +402,13 @@ cr_surface_finish (VALUE self)
 static void
 yield_and_finish (VALUE self)
 {
+  cairo_surface_t *surface;
+
   rb_yield (self);
-  cr_surface_finish (self);
+
+  surface = _SELF;
+  if (!cairo_surface_get_user_data (surface, &cr_finished_key))
+    cr_surface_finish (self);
 }
 
 static VALUE
