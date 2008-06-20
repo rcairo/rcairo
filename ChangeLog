@@ -1,5 +1,10 @@
 2008-06-20  Kouhei Sutou  <kou@cozmixng.org>
 
+	* README: update OBATA Akio's entry.
+
+	* src/depend (install-so): use INSTALL_DATA and RUBYARCHDIR.
+	Suggested by OBATA Akio. Thanks!!!
+
 	* pkg-config.rb: add libdata.
 
 	* pkg-config.rb:
