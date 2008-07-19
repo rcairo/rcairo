@@ -1,3 +1,13 @@
+Release 1.6.3 (2008-07-19) Kouhei Sutou <kou@cozmixng.org>)
+===========================================================
+
+Features
+--------
+  * Fix build failure on Debian GNU/Linux. (reported by James Healy)
+  * Fix GC failure with Ruby 1.8.7. (reported by James Healy)
+  * Improve building on MacOS X. (suggested by Carsten Bormann)
+  * Fix install location of cairo.so. (suggested by OBATA Akio)
+
 Release 1.6.2 (2008-06-14) Kouhei Sutou <kou@cozmixng.org>)
 ===========================================================
 
