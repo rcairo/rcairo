@@ -1,6 +1,8 @@
 2008-07-19  Kouhei Sutou  <kou@cozmixng.org>
 
-	* NEWS: update.
+	* src/rb_cairo.c: 1.6.3 -> 1.7.0.
+
+	* NEWS: add a new entry for 1.6.3.
 
 	* src/rb_cairo.c: 1.7.0 -> 1.6.3.
 
