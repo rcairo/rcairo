@@ -1,3 +1,7 @@
+2008-07-19  Kouhei Sutou  <kou@cozmixng.org>
+
+	* src/rb_cairo.c: 1.7.0 -> 1.6.3.
+
 2008-06-20  Kouhei Sutou  <kou@cozmixng.org>
 
 	* README: update OBATA Akio's entry.
@@ -49,7 +53,6 @@
 
 	* src/rb_cairo.c: 1.7.0 -> 1.6.2.
 
->>>>>>> 1.265
 2008-06-13  Kouhei Sutou  <kou@cozmixng.org>
 
 	* pkg-config.rb: add PREFIX/lib64/pkgconfig to default path list.
