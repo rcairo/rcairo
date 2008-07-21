@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-06-12 10:59:54 $
+ * $Date: 2008-07-21 00:45:11 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -318,6 +318,12 @@ cr_set_source_generic (int argc, VALUE *argv, VALUE self)
     {
       return cr_set_source_rgba (argc, argv, self);
     }
+  else if (n == 1 && rb_cairo__is_kind_of (arg1, rb_cCairo_Surface))
+    {
+      return cr_set_source_surface (self, arg1,
+                                    rb_float_new (0),
+                                    rb_float_new (0));
+    }
   else if (n == 1)
     {
       return cr_set_source (self, arg1);
@@ -336,7 +342,7 @@ cr_set_source_generic (int argc, VALUE *argv, VALUE self)
                 "invalid argument (expect "
                 "(red, green, blue), (red, green, blue, alpha), "
                 "([red, green, blue]), ([red, green, blue, alpha]), "
-                "(pattern) or (surface, x, y))");
+                "(surface), (pattern) or (surface, x, y))");
     }
 }
 
