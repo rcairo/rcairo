@@ -1,3 +1,8 @@
+2008-07-21  Kouhei Sutou  <kou@cozmixng.org>
+
+	* src/rb_cairo_context.c (cr_set_source_generic): accept surface
+	without width and height.
+
 2008-07-19  Kouhei Sutou  <kou@cozmixng.org>
 
 	* src/rb_cairo.c: 1.6.3 -> 1.7.0.
