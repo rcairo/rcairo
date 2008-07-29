@@ -1,3 +1,7 @@
+2008-07-29  Kouhei Sutou  <kou@cozmixng.org>
+
+	* src/rb_cairo_context.c: expose Cairo::Context#destroy.
+
 2008-07-21  Kouhei Sutou  <kou@cozmixng.org>
 
 	* src/rb_cairo_context.c (cr_set_source_generic): accept surface

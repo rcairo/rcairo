@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-07-21 00:45:11 $
+ * $Date: 2008-07-29 01:26:54 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -57,6 +57,8 @@ rb_cairo_context_from_ruby_object (VALUE obj)
       rb_raise (rb_eTypeError, "not a cairo graphics context");
     }
   Data_Get_Struct (obj, cairo_t, context);
+  if (!context)
+    rb_cairo_check_status (CAIRO_STATUS_NULL_POINTER);
   return context;
 }
 
@@ -98,6 +100,14 @@ cr_initialize (VALUE self, VALUE target)
   cr_check_status (cr);
   rb_ivar_set (self, cr_id_surface, target);
   DATA_PTR (self) = cr;
+  return Qnil;
+}
+
+static VALUE
+cr_destroy (VALUE self)
+{
+  cairo_destroy (_SELF);
+  DATA_PTR (self) = NULL;
   return Qnil;
 }
 
@@ -1411,6 +1421,7 @@ Init_cairo_context (void)
 
   /* Functions for manipulating state objects */
   rb_define_method (rb_cCairo_Context, "initialize", cr_initialize, 1);
+  rb_define_method (rb_cCairo_Context, "destroy", cr_destroy, 0);
 
   rb_define_method (rb_cCairo_Context, "save", cr_save, 0);
   rb_define_method (rb_cCairo_Context, "restore", cr_restore, 0);
