@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-08-02 01:29:08 $
+ * $Date: 2008-08-02 07:49:19 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -135,7 +135,7 @@ cr_surface_get_klass (cairo_surface_t *surface)
       break;
 #endif
     default:
-      rb_raise (rb_eArgError, "unknown source type: %d", type);
+      klass = rb_cCairo_Surface;
       break;
     }
 
@@ -296,6 +296,8 @@ rb_cairo_surface_from_ruby_object (VALUE obj)
       rb_raise (rb_eTypeError, "not a cairo surface");
     }
   Data_Get_Struct (obj, cairo_surface_t, surface);
+  if (!surface)
+    rb_cairo_check_status (CAIRO_STATUS_NULL_POINTER);
   return surface;
 }
 
@@ -383,6 +385,18 @@ cr_surface_allocate (VALUE klass)
 }
 
 /* Surface manipulation */
+static VALUE
+cr_surface_destroy (VALUE self)
+{
+  cairo_surface_t *surface;
+
+  surface = _SELF;
+  cairo_surface_destroy (surface);
+  DATA_PTR (self) = NULL;
+
+  return self;
+}
+
 static VALUE
 cr_surface_finish (VALUE self)
 {
@@ -1195,6 +1209,7 @@ Init_cairo_surface (void)
 
   rb_define_method (rb_cCairo_Surface, "create_similar",
                     cr_surface_create_similar, 3);
+  rb_define_method (rb_cCairo_Surface, "destroy", cr_surface_destroy, 0);
   rb_define_method (rb_cCairo_Surface, "finish", cr_surface_finish, 0);
   rb_define_method (rb_cCairo_Surface, "content", cr_surface_get_content, 0);
 

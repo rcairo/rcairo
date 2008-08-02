@@ -1,5 +1,10 @@
 2008-08-02  Kouhei Sutou  <kou@cozmixng.org>
 
+	* src/rb_cairo_surface.c: handle unknown surface type as
+	Cairo::Surface.
+
+	* src/rb_cairo_surface.c: add Cairo::Surface#destroy.
+
 	* README: update Paul van Tilburg's entry.
 
 	* extconf.rb: check ruby/st.h availability.
