@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-06-20 02:01:53 $
+ * $Date: 2008-08-02 01:29:08 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -15,7 +15,11 @@
 #include "rb_cairo.h"
 #include "rb_cairo_private.h"
 
-#include <st.h>
+#ifdef HAVE_RUBY_ST_H
+#  include <ruby/st.h>
+#else
+#  include <st.h>
+#endif
 
 #ifdef CAIRO_HAS_WIN32_SURFACE
 #  define OpenFile OpenFile_win32

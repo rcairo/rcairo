@@ -1,3 +1,12 @@
+2008-08-02  Kouhei Sutou  <kou@cozmixng.org>
+
+	* README: update Paul van Tilburg's entry.
+
+	* extconf.rb: check ruby/st.h availability.
+	Suggested by Paul van Tilburg.
+
+	* src/rb_cairo_surface.c: use HAVE_RUBY_ST_H.
+
 2008-07-29  Kouhei Sutou  <kou@cozmixng.org>
 
 	* src/rb_cairo_context.c: expose Cairo::Context#destroy.
