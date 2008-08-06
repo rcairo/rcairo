@@ -1,3 +1,10 @@
+2008-08-06  Kouhei Sutou  <kou@cozmixng.org>
+
+	* README: update sample scripts dependency description.
+	Suggested by Davide Rambaldi.
+
+	* README: add a Davide Rambaldi's entry.
+
 2008-08-02  Kouhei Sutou  <kou@cozmixng.org>
 
 	* src/rb_cairo_surface.c: handle unknown surface type as
