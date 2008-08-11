@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-08-02 07:49:19 $
+ * $Date: 2008-08-11 12:53:33 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -66,8 +66,6 @@ static ID cr_id_inspect;
 static ID cr_id_parse;
 static ID cr_id_size;
 static ID cr_id_set_unit;
-static ID cr_id_instances;
-static ID cr_id_dup;
 static cairo_user_data_key_t cr_closure_key;
 static cairo_user_data_key_t cr_object_holder_key;
 static cairo_user_data_key_t cr_finished_key;
@@ -301,44 +299,16 @@ rb_cairo_surface_from_ruby_object (VALUE obj)
   return surface;
 }
 
-static void
-add_gc_guard (VALUE self)
-{
-  rb_hash_aset (rb_ivar_get (rb_cCairo_Surface, cr_id_instances),
-                self, Qnil);
-}
-
-static void
-remove_gc_guard (VALUE self)
-{
-  rb_hash_delete (rb_ivar_get (rb_cCairo_Surface, cr_id_instances),
-                  self);
-}
-
-typedef struct cr_object_holder {
-  VALUE object;
-} cr_object_holder_t;
-
-static cr_object_holder_t *
+static rb_cairo__object_holder_t *
 cr_object_holder_new (VALUE object)
 {
-  cr_object_holder_t *holder;
-
-  holder = ALLOC(cr_object_holder_t);
-  add_gc_guard (object);
-  holder->object = object;
-  return holder;
+  return rb_cairo__object_holder_new (rb_cCairo_Surface, object);
 }
 
 static void
 cr_object_holder_free (void *ptr)
 {
-  cr_object_holder_t *holder = ptr;
-
-  if (!NIL_P (holder->object))
-    remove_gc_guard (holder->object);
-
-  xfree (holder);
+  rb_cairo__object_holder_free (rb_cCairo_Surface, ptr);
 }
 
 static void
@@ -1179,8 +1149,7 @@ cr_finish_all_guarded_surfaces_at_end_iter (VALUE key, VALUE value, VALUE data)
 static void
 cr_finish_all_guarded_surfaces_at_end (VALUE data)
 {
-  rb_hash_foreach (rb_funcall (rb_ivar_get (rb_cCairo_Surface, cr_id_instances),
-                               cr_id_dup, 0),
+  rb_hash_foreach (rb_cairo__gc_guarded_objects (rb_cCairo_Surface),
                    cr_finish_all_guarded_surfaces_at_end_iter,
                    Qnil);
 }
@@ -1195,16 +1164,13 @@ Init_cairo_surface (void)
   cr_id_parse = rb_intern ("parse");
   cr_id_size = rb_intern ("size");
   cr_id_set_unit = rb_intern ("unit=");
-  cr_id_instances = rb_intern ("instances");
-  cr_id_dup = rb_intern ("dup");
-
-  rb_set_end_proc(cr_finish_all_guarded_surfaces_at_end, Qnil);
 
   rb_cCairo_Surface =
     rb_define_class_under (rb_mCairo, "Surface", rb_cObject);
   rb_define_alloc_func (rb_cCairo_Surface, cr_surface_allocate);
 
-  rb_ivar_set (rb_cCairo_Surface, cr_id_instances, rb_hash_new ());
+  rb_cairo__initialize_gc_guard_holder_class (rb_cCairo_Surface);
+  rb_set_end_proc(cr_finish_all_guarded_surfaces_at_end, Qnil);
 
 
   rb_define_method (rb_cCairo_Surface, "create_similar",

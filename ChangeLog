@@ -1,3 +1,19 @@
+2008-08-11  Kouhei Sutou  <kou@cozmixng.org>
+
+	* test/test_context.rb: add.
+
+	* test/run-test.rb: don't use at_exit test runner because rcairo
+	uses at_exit based GC guard mechanism.
+
+	* src/rb_cairo_context.c: free all alive Cairo::Context before
+	stop GC like Cairo::Surface.
+
+	* src/rb_cairo_private.[ch]: abstract explicit free before stop GC
+	used by Cairo::Surface.
+
+	* src/rb_cairo_surface.c: use abstracted explicit free before stop
+	GC.
+
 2008-08-06  Kouhei Sutou  <kou@cozmixng.org>
 
 	* README: update sample scripts dependency description.
@@ -21,7 +37,7 @@
 
 2008-07-29  Kouhei Sutou  <kou@cozmixng.org>
 
-	* src/rb_cairo_context.c: expose Cairo::Context#destroy.
+	* src/rb_cairo_context.c: export Cairo::Context#destroy.
 
 2008-07-21  Kouhei Sutou  <kou@cozmixng.org>
 

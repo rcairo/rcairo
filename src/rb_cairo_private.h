@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-06-12 10:59:54 $
+ * $Date: 2008-08-11 12:53:33 $
  *
  * Copyright 2005 Kouhei Sutou <kou@cozmixng.org>
  *
@@ -76,5 +76,18 @@ void rb_cairo__glyphs_to_array (VALUE rb_array, cairo_glyph_t *glyphs, int lengt
 
 VALUE rb_cairo__const_get (VALUE name, const char *prefix);
 cairo_bool_t rb_cairo__is_kind_of (VALUE object, VALUE klass);
+
+typedef struct rb_cairo__object_holder {
+  VALUE object;
+} rb_cairo__object_holder_t;
+
+rb_cairo__object_holder_t *rb_cairo__object_holder_new (VALUE klass, VALUE object);
+void rb_cairo__object_holder_free (VALUE klass, void *ptr);
+
+
+void rb_cairo__initialize_gc_guard_holder_class (VALUE klass);
+void rb_cairo__gc_guard_add (VALUE klass, VALUE object);
+void rb_cairo__gc_guard_remove (VALUE klass, VALUE object);
+VALUE rb_cairo__gc_guarded_objects (VALUE klass);
 
 #endif

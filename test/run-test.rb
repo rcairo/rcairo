@@ -13,3 +13,5 @@ require 'test/unit'
 Dir.glob("test/**/test_*.rb") do |file|
   require file.sub(/\.rb$/, '')
 end
+
+exit Test::Unit::AutoRunner.run(false)

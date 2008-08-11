@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-07-29 01:26:54 $
+ * $Date: 2008-08-11 12:53:33 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -15,10 +15,17 @@
 #include "rb_cairo.h"
 #include "rb_cairo_private.h"
 
+#ifdef HAVE_RUBY_ST_H
+#  include <ruby/st.h>
+#else
+#  include <st.h>
+#endif
+
 VALUE rb_cCairo_Context;
 
 static ID cr_id_surface, cr_id_source;
 static ID cr_id_plus, cr_id_minus, cr_id_multi, cr_id_div;
+static cairo_user_data_key_t cr_object_holder_key;
 
 #define _SELF  (RVAL2CRCONTEXT(self))
 
@@ -62,6 +69,18 @@ rb_cairo_context_from_ruby_object (VALUE obj)
   return context;
 }
 
+static rb_cairo__object_holder_t *
+cr_object_holder_new (VALUE object)
+{
+  return rb_cairo__object_holder_new (rb_cCairo_Context, object);
+}
+
+static void
+cr_object_holder_free (void *ptr)
+{
+  rb_cairo__object_holder_free (rb_cCairo_Context, ptr);
+}
+
 static void
 cr_context_free (void *ptr)
 {
@@ -92,23 +111,42 @@ cr_allocate (VALUE klass)
 }
 
 static VALUE
-cr_initialize (VALUE self, VALUE target)
+cr_destroy (VALUE self)
 {
   cairo_t *cr;
 
-  cr = cairo_create (RVAL2CRSURFACE (target));
-  cr_check_status (cr);
-  rb_ivar_set (self, cr_id_surface, target);
-  DATA_PTR (self) = cr;
+  cr = _SELF;
+  cairo_set_user_data (cr, &cr_object_holder_key, NULL, NULL); /* needed? */
+  cairo_destroy (cr);
+
+  DATA_PTR (self) = NULL;
   return Qnil;
 }
 
 static VALUE
-cr_destroy (VALUE self)
+cr_destroy_with_destroy_check (VALUE self)
 {
-  cairo_destroy (_SELF);
-  DATA_PTR (self) = NULL;
+  if (DATA_PTR (self))
+    cr_destroy (self);
   return Qnil;
+}
+
+static VALUE
+cr_initialize (VALUE self, VALUE target)
+{
+  cairo_t *cr;
+  VALUE result = Qnil;
+
+  cr = cairo_create (RVAL2CRSURFACE (target));
+  cr_check_status (cr);
+  rb_ivar_set (self, cr_id_surface, target);
+  cairo_set_user_data (cr, &cr_object_holder_key,
+                       cr_object_holder_new(self),
+                       cr_object_holder_free);
+  DATA_PTR (self) = cr;
+  if (rb_block_given_p ())
+    result = rb_ensure (rb_yield, self, cr_destroy_with_destroy_check, self);
+  return result;
 }
 
 static VALUE
@@ -1386,6 +1424,21 @@ cr_copy_append_path (VALUE self, VALUE path)
   return self;
 }
 
+static int
+cr_destroy_all_guarded_contexts_at_end_iter (VALUE key, VALUE value, VALUE data)
+{
+  cr_destroy (key);
+  return ST_CONTINUE;
+}
+
+static void
+cr_destroy_all_guarded_contexts_at_end (VALUE data)
+{
+  rb_hash_foreach (rb_cairo__gc_guarded_objects (rb_cCairo_Context),
+                   cr_destroy_all_guarded_contexts_at_end_iter,
+                   Qnil);
+}
+
 void
 Init_cairo_context (void)
 {
@@ -1418,6 +1471,9 @@ Init_cairo_context (void)
     rb_define_class_under (rb_mCairo, "Context", rb_cObject);
 
   rb_define_alloc_func (rb_cCairo_Context, cr_allocate);
+
+  rb_cairo__initialize_gc_guard_holder_class (rb_cCairo_Context);
+  rb_set_end_proc(cr_destroy_all_guarded_contexts_at_end, Qnil);
 
   /* Functions for manipulating state objects */
   rb_define_method (rb_cCairo_Context, "initialize", cr_initialize, 1);
