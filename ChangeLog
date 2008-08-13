@@ -1,5 +1,7 @@
 2008-08-13  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/run-test.rb: use Test::Unit 2.x.
+
 	* test-unit: imported Test::Unit 2.x.
 
 2008-08-11  Kouhei Sutou  <kou@cozmixng.org>
