@@ -1,5 +1,17 @@
 2008-08-13  Kouhei Sutou  <kou@cozmixng.org>
 
+	* src/lib/cairo/constants.rb (Cairo::LCD_FILTER_*): define.
+
+	* src/rb_cairo.h (RVAL2CRLCDFILTER,
+	rb_cairo_lcd_filter_from_ruby_object): add.
+
+	* src/cairo.def (rb_cairo_lcd_filter_from_ruby_object): add.
+
+	* src/rb_cairo_font_options.c (Cairo::FontOptions#lcd_filter,
+	Cairo::FontOptions#lcd_filter=): add.
+
+	* test/test_font_options.rb: add.
+
 	* src/rb_cairo.h, src/cairo.def, src/rb_cairo_constants.c
 	(Cairo::LCDFilter): add.
 
