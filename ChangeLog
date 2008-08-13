@@ -1,5 +1,10 @@
 2008-08-13  Kouhei Sutou  <kou@cozmixng.org>
 
+	* src/rb_cairo.h, src/cairo.def, src/rb_cairo_constants.c
+	(Cairo::LCDFilter): add.
+
+	* test/test_constants.rb: add.
+
 	* src/rb_cairo_exception.c: support new statuses appeared since
 	cairo 1.7.2.
 
