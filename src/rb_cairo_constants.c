@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-06-19 13:00:18 $
+ * $Date: 2008-08-13 12:05:29 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -33,6 +33,7 @@ VALUE rb_mCairo_Extend;
 VALUE rb_mCairo_Filter;
 VALUE rb_mCairo_SVGVersion = Qnil;
 VALUE rb_mCairo_PSLevel = Qnil;
+VALUE rb_mCairo_LCDFilter = Qnil;
 
 #define CAIRO_OPERATOR_MIN CAIRO_OPERATOR_CLEAR
 #define CAIRO_OPERATOR_MAX CAIRO_OPERATOR_SATURATE
@@ -85,6 +86,9 @@ VALUE rb_mCairo_PSLevel = Qnil;
 #define CAIRO_PS_LEVEL_MIN CAIRO_PS_LEVEL_2
 #define CAIRO_PS_LEVEL_MAX CAIRO_PS_LEVEL_3
 
+#define CAIRO_LCD_FILTER_MIN CAIRO_LCD_FILTER_DEFAULT
+#define CAIRO_LCD_FILTER_MAX CAIRO_LCD_FILTER_FIR5
+
 #define DEFINE_RVAL2ENUM(name, const_name)                      \
 cairo_ ## name ## _t                                            \
 rb_cairo_ ## name ## _from_ruby_object (VALUE rb_ ## name)      \
@@ -133,6 +137,10 @@ DEFINE_RVAL2ENUM(svg_version, SVG_VERSION)
 DEFINE_RVAL2ENUM(ps_level, PS_LEVEL)
 #define PS_LEVEL_ENUM_DEFINED 1
 #  endif
+#endif
+
+#if CAIRO_CHECK_VERSION(1, 7, 2)
+DEFINE_RVAL2ENUM(lcd_filter, LCD_FILTER)
 #endif
 
 #if defined(RB_CAIRO_PLATFORM_WIN32) && !defined(PS_LEVEL_ENUM_DEFINED)
@@ -458,5 +466,19 @@ Init_cairo_constants (void)
   rb_define_singleton_method (rb_mCairo_PSLevel, "name",
                               cr_ps_level_to_string, -1);
 #  endif
+#endif
+
+#if CAIRO_CHECK_VERSION(1, 7, 2)
+  rb_mCairo_LCDFilter = rb_define_module_under (rb_mCairo, "LCDFilter");
+  rb_define_const (rb_mCairo_LCDFilter, "DEFAULT",
+                   INT2FIX (CAIRO_LCD_FILTER_DEFAULT));
+  rb_define_const (rb_mCairo_LCDFilter, "NONE",
+                   INT2FIX (CAIRO_LCD_FILTER_NONE));
+  rb_define_const (rb_mCairo_LCDFilter, "INTRA_PIXEL",
+                   INT2FIX (CAIRO_LCD_FILTER_INTRA_PIXEL));
+  rb_define_const (rb_mCairo_LCDFilter, "FIR3",
+                   INT2FIX (CAIRO_LCD_FILTER_FIR3));
+  rb_define_const (rb_mCairo_LCDFilter, "FIR5",
+                   INT2FIX (CAIRO_LCD_FILTER_FIR5));
 #endif
 }

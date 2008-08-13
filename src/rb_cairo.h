@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-06-19 13:00:18 $
+ * $Date: 2008-08-13 12:05:29 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -118,6 +118,9 @@ RB_CAIRO_VAR VALUE rb_mCairo_Format;
 RB_CAIRO_VAR VALUE rb_mCairo_PatternType;
 RB_CAIRO_VAR VALUE rb_mCairo_Extend;
 RB_CAIRO_VAR VALUE rb_mCairo_Filter;
+RB_CAIRO_VAR VALUE rb_mCairo_SVGVersion;
+RB_CAIRO_VAR VALUE rb_mCairo_PSLevel;
+RB_CAIRO_VAR VALUE rb_mCairo_LCDFilter;
 RB_CAIRO_VAR VALUE rb_mCairo_SVGVersion;
 RB_CAIRO_VAR VALUE rb_mCairo_Color;
 RB_CAIRO_VAR VALUE rb_cCairo_Color_Base;
