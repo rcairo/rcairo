@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-02-21 13:18:10 $
+ * $Date: 2008-08-13 08:27:44 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -40,6 +40,15 @@ static VALUE rb_eCairo_ClipNotRepresentableError;
 #if CAIRO_CHECK_VERSION(1, 5, 6)
 static VALUE rb_eCairo_TempFileError;
 static VALUE rb_eCairo_InvalidStrideError;
+#endif
+#if CAIRO_CHECK_VERSION(1, 7, 2)
+static VALUE rb_eCairo_FontTypeMismatch;
+static VALUE rb_eCairo_UserFontImmutable;
+static VALUE rb_eCairo_UserFontError;
+static VALUE rb_eCairo_NegativeCount;
+static VALUE rb_eCairo_InvalidClusters;
+static VALUE rb_eCairo_InvalidSlant;
+static VALUE rb_eCairo_InvalidWeight;
 #endif
 
 void
@@ -127,6 +136,29 @@ rb_cairo_check_status (cairo_status_t status)
       rb_raise (rb_eCairo_InvalidStringError, string);
       break;
 #endif
+#if CAIRO_CHECK_VERSION(1, 7, 2)
+    case CAIRO_STATUS_FONT_TYPE_MISMATCH:
+      rb_raise (rb_eCairo_FontTypeMismatch, string);
+      break;
+    case CAIRO_STATUS_USER_FONT_IMMUTABLE:
+      rb_raise (rb_eCairo_UserFontImmutable, string);
+      break;
+    case CAIRO_STATUS_USER_FONT_ERROR:
+      rb_raise (rb_eCairo_UserFontError, string);
+      break;
+    case CAIRO_STATUS_NEGATIVE_COUNT:
+      rb_raise (rb_eCairo_NegativeCount, string);
+      break;
+    case CAIRO_STATUS_INVALID_CLUSTERS:
+      rb_raise (rb_eCairo_InvalidClusters, string);
+      break;
+    case CAIRO_STATUS_INVALID_SLANT:
+      rb_raise (rb_eCairo_InvalidSlant, string);
+      break;
+    case CAIRO_STATUS_INVALID_WEIGHT:
+      rb_raise (rb_eCairo_InvalidWeight, string);
+      break;
+#endif
     }
 }
 
@@ -208,7 +240,37 @@ Init_cairo_exception ()
                            rb_eCairo_Error);
 
   rb_eCairo_InvalidStrideError =
-        rb_define_class_under (rb_mCairo, "InvalidStrideError",
-                               rb_eArgError);
+    rb_define_class_under (rb_mCairo, "InvalidStrideError",
+                           rb_eArgError);
+#endif
+
+#if CAIRO_CHECK_VERSION(1, 7, 2)
+  rb_eCairo_FontTypeMismatch =
+    rb_define_class_under (rb_mCairo, "FontTypeMismatch",
+                           rb_eCairo_Error);
+
+  rb_eCairo_UserFontImmutable =
+    rb_define_class_under (rb_mCairo, "UserFontImmutable",
+                           rb_eCairo_Error);
+
+  rb_eCairo_UserFontError =
+    rb_define_class_under (rb_mCairo, "UserFontError",
+                           rb_eCairo_Error);
+
+  rb_eCairo_NegativeCount =
+    rb_define_class_under (rb_mCairo, "NegativeCount",
+                           rb_eCairo_Error);
+
+  rb_eCairo_InvalidClusters =
+    rb_define_class_under (rb_mCairo, "InvalidClusters",
+                           rb_eArgError);
+
+  rb_eCairo_InvalidSlant =
+    rb_define_class_under (rb_mCairo, "InvalidSlant",
+                           rb_eCairo_Error);
+
+  rb_eCairo_InvalidWeight =
+    rb_define_class_under (rb_mCairo, "InvalidWeight",
+                           rb_eArgError);
 #endif
 }
