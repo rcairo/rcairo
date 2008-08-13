@@ -3,8 +3,9 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-08-13 12:05:29 $
+ * $Date: 2008-08-13 12:27:39 $
  *
+ * Copyright 2006-2008 Kouhei Sutou <kou@cozmixng.org>
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
  *
@@ -221,6 +222,9 @@ VALUE                 rb_cairo_surface_to_ruby_object_with_destroy
 #define RVAL2CRPSLEVEL(obj)       (rb_cairo_ps_level_from_ruby_object(obj))
 #  endif
 #endif
+#if CAIRO_CHECK_VERSION(1, 7, 2)
+#define RVAL2CRLCDFILTER(obj)     (rb_cairo_lcd_filter_from_ruby_object(obj))
+#endif
 
 cairo_operator_t       rb_cairo_operator_from_ruby_object       (VALUE obj);
 cairo_antialias_t      rb_cairo_antialias_from_ruby_object      (VALUE obj);
@@ -244,6 +248,9 @@ cairo_svg_version_t    rb_cairo_svg_version_from_ruby_object    (VALUE obj);
 #  if CAIRO_CHECK_VERSION(1, 5, 2)
 cairo_ps_level_t       rb_cairo_ps_level_from_ruby_object       (VALUE obj);
 #  endif
+#endif
+#if CAIRO_CHECK_VERSION(1, 7, 2)
+cairo_lcd_filter_t     rb_cairo_lcd_filter_from_ruby_object     (VALUE obj);
 #endif
 
 void rb_cairo_check_status (cairo_status_t status);

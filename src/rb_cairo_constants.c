@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-08-13 12:05:29 $
+ * $Date: 2008-08-13 12:27:39 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -469,6 +469,7 @@ Init_cairo_constants (void)
 #endif
 
 #if CAIRO_CHECK_VERSION(1, 7, 2)
+  /* cairo_lcd_filter_t */
   rb_mCairo_LCDFilter = rb_define_module_under (rb_mCairo, "LCDFilter");
   rb_define_const (rb_mCairo_LCDFilter, "DEFAULT",
                    INT2FIX (CAIRO_LCD_FILTER_DEFAULT));

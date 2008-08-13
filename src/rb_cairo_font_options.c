@@ -3,9 +3,9 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-05-26 15:13:25 $
+ * $Date: 2008-08-13 12:27:40 $
  *
- * Copyright 2005 Kouhei Sutou <kou@cozmixng.org>
+ * Copyright 2005-2008 Kouhei Sutou <kou@cozmixng.org>
  *
  * This file is made available under the same terms as Ruby
  *
@@ -160,6 +160,20 @@ cr_options_get_hint_metrics (VALUE self)
   return INT2NUM (cairo_font_options_get_hint_metrics (_SELF (self)));
 }
 
+static VALUE
+cr_options_set_lcd_filter (VALUE self, VALUE lcd_filter)
+{
+  cairo_font_options_set_lcd_filter (_SELF (self),
+                                     RVAL2CRLCDFILTER (lcd_filter));
+  return self;
+}
+
+static VALUE
+cr_options_get_lcd_filter (VALUE self)
+{
+  return INT2NUM (cairo_font_options_get_lcd_filter (_SELF (self)));
+}
+
 
 void
 Init_cairo_font_options (void)
@@ -192,6 +206,10 @@ Init_cairo_font_options (void)
                     cr_options_set_hint_metrics, 1);
   rb_define_method (rb_cCairo_FontOptions, "hint_metrics",
                     cr_options_get_hint_metrics, 0);
+  rb_define_method (rb_cCairo_FontOptions, "set_lcd_filter",
+                    cr_options_set_lcd_filter, 1);
+  rb_define_method (rb_cCairo_FontOptions, "lcd_filter",
+                    cr_options_get_lcd_filter, 0);
 
   RB_CAIRO_DEF_SETTERS (rb_cCairo_FontOptions);
 }
