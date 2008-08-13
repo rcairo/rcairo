@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-07-19 11:17:02 $
+ * $Date: 2008-08-13 08:27:44 $
  *
  * Copyright 2006-2008 Kouhei Sutou <kou@cozmixng.org>
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
@@ -25,6 +25,24 @@ void
 rb_cairo_def_setters (VALUE klass)
 {
   rb_funcall (rb_mCairo, id__add_one_arg_setter, 1, klass);
+}
+
+static VALUE
+rb_cairo_satisfied_version (int argc, VALUE *argv, VALUE self)
+{
+  VALUE major, minor, micro;
+
+  rb_scan_args (argc, argv, "21", &major, &minor, &micro);
+
+  if (NIL_P (micro))
+    micro = UINT2NUM (0);
+
+  return CBOOL2RVAL (CAIRO_VERSION_MAJOR > NUM2UINT(major) ||
+                     (CAIRO_VERSION_MAJOR == NUM2UINT(major) &&
+                      CAIRO_VERSION_MINOR > NUM2UINT(minor)) ||
+                     (CAIRO_VERSION_MAJOR == NUM2UINT(major) &&
+                      CAIRO_VERSION_MINOR == NUM2UINT(minor) &&
+                      CAIRO_VERSION_MICRO >= NUM2UINT(micro)));
 }
 
 void
@@ -59,6 +77,9 @@ Init_cairo ()
   rb_define_const (rb_mCairo, "BINDINGS_VERSION",
                    rb_ary_new3 (4,
                                 INT2FIX (1), INT2FIX (7), INT2FIX (0), Qnil));
+
+  rb_define_module_function (rb_mCairo, "satisfied_version?",
+                             rb_cairo_satisfied_version, -1);
 
   rb_mCairo_Color = rb_const_get (rb_mCairo, rb_intern ("Color"));
   rb_cCairo_Color_Base = rb_const_get (rb_mCairo_Color, rb_intern ("Base"));

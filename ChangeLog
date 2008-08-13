@@ -1,5 +1,14 @@
 2008-08-13  Kouhei Sutou  <kou@cozmixng.org>
 
+	* src/rb_cairo_exception.c: support new statuses appeared since
+	cairo 1.7.2.
+
+	* src/rb_cairo.c (Cairo.satisfied_version?): add.
+
+	* test/test_exception.rb: add.
+
+	* test/cairo-test-utils.rb: add.
+
 	* test/run-test.rb: use Test::Unit 2.x.
 
 	* test-unit: imported Test::Unit 2.x.
