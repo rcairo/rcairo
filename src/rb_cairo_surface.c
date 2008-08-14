@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-08-11 12:53:33 $
+ * $Date: 2008-08-14 08:21:57 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -543,6 +543,23 @@ cr_surface_set_fallback_resolution (VALUE self,
   cr_surface_check_status (_SELF);
   return self;
 }
+
+#if CAIRO_CHECK_VERSION(1, 7, 2)
+static VALUE
+cr_surface_get_fallback_resolution (VALUE self)
+{
+  double x_pixels_per_inch, y_pixels_per_inch;
+
+  cairo_surface_get_fallback_resolution (_SELF,
+                                         &x_pixels_per_inch,
+                                         &y_pixels_per_inch);
+  cr_surface_check_status (_SELF);
+  return rb_ary_new3 (2,
+                      rb_float_new (x_pixels_per_inch),
+                      rb_float_new (y_pixels_per_inch));
+}
+#endif
+
 
 #if CAIRO_CHECK_VERSION(1, 5, 2)
 static VALUE
@@ -1189,6 +1206,10 @@ Init_cairo_surface (void)
                     cr_surface_get_device_offset, 0);
   rb_define_method (rb_cCairo_Surface, "set_fallback_resolution",
                     cr_surface_set_fallback_resolution, 2);
+#if CAIRO_CHECK_VERSION(1, 7, 2)
+  rb_define_method (rb_cCairo_Surface, "fallback_resolution",
+                    cr_surface_get_fallback_resolution, 0);
+#endif
 #if CAIRO_CHECK_VERSION(1, 5, 2)
   rb_define_method (rb_cCairo_Surface, "copy_page",
                     cr_surface_copy_page, 2);

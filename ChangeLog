@@ -1,5 +1,10 @@
 2008-08-14  Kouhei Sutou  <kou@cozmixng.org>
 
+	* src/rb_cairo_surface.c: support Cairo::Surface#fallback_resolution.
+
+	* test/test_surface.rb (SurfaceTest#test_fallback_resolution): add
+	a test for Cairo::Surface#fallback_resolution.
+
 	* test/test_context.rb (ContextTest#test_font_face): add a test
 	for Cairo::Context#font_face{,=}.
 
