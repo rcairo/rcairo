@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-08-13 12:27:39 $
+ * $Date: 2008-08-14 08:11:11 $
  *
  * Copyright 2006-2008 Kouhei Sutou <kou@cozmixng.org>
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
@@ -84,6 +84,8 @@ RB_CAIRO_VAR VALUE rb_cCairo_GradientPattern;
 RB_CAIRO_VAR VALUE rb_cCairo_LinearPattern;
 RB_CAIRO_VAR VALUE rb_cCairo_RadialPattern;
 RB_CAIRO_VAR VALUE rb_cCairo_FontFace;
+RB_CAIRO_VAR VALUE rb_cCairo_ToyFontFace;
+RB_CAIRO_VAR VALUE rb_cCairo_UserFontFace;
 RB_CAIRO_VAR VALUE rb_cCairo_FontExtents;
 RB_CAIRO_VAR VALUE rb_cCairo_FontOptions;
 RB_CAIRO_VAR VALUE rb_cCairo_ScaledFont;

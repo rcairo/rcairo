@@ -3,9 +3,9 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-08-11 12:53:33 $
+ * $Date: 2008-08-14 08:11:13 $
  *
- * Copyright 2005 Kouhei Sutou <kou@cozmixng.org>
+ * Copyright 2005-2008 Kouhei Sutou <kou@cozmixng.org>
  *
  * This file is made available under the same terms as Ruby
  *
@@ -17,6 +17,7 @@
 static ID cr_id_normalize_const_name;
 static ID cr_id_objects;
 static ID cr_id_dup;
+static ID cr_id_inspect;
 
 VALUE
 rb_cairo__float_array (double *values, unsigned count)
@@ -119,10 +120,20 @@ rb_cairo__gc_guarded_objects (VALUE klass)
   return rb_funcall (rb_ivar_get (klass, cr_id_objects), cr_id_dup, 0);
 }
 
+const char *
+rb_cairo__inspect (VALUE object)
+{
+  VALUE inspected;
+
+  inspected = rb_funcall (object, cr_id_inspect, 0);
+  return RSTRING_PTR (inspected);
+}
+
 void
 Init_cairo_private (void)
 {
   cr_id_normalize_const_name = rb_intern ("normalize_const_name");
   cr_id_objects = rb_intern ("objects");
   cr_id_dup = rb_intern ("dup");
+  cr_id_inspect = rb_intern ("inspect");
 }
