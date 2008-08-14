@@ -1,5 +1,11 @@
 2008-08-14  Kouhei Sutou  <kou@cozmixng.org>
 
+	* src/rb_cairo_scaled_font.c: support Cairo::ScaledFont#scale_matrix.
+
+	* test/test_scaled_font.rb: add.
+
+	* src/rb_cairo_matrix.c (cr_matrix_equal): add Cairo::Matrix#==.
+
 	* src/rb_cairo_surface.c: support Cairo::Surface#fallback_resolution.
 
 	* test/test_surface.rb (SurfaceTest#test_fallback_resolution): add

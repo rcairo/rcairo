@@ -2,6 +2,8 @@ require 'cairo'
 require 'stringio'
 
 class SurfaceTest < Test::Unit::TestCase
+  include CairoTestUtils
+
   def test_new
     output = StringIO.new
     surface = Cairo::PDFSurface.new(output, 10, 10)

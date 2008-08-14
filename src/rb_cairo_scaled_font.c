@@ -3,9 +3,9 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-05-20 09:18:49 $
+ * $Date: 2008-08-14 12:37:51 $
  *
- * Copyright 2005 Kouhei Sutou <kou@cozmixng.org>
+ * Copyright 2005-2008 Kouhei Sutou <kou@cozmixng.org>
  *
  * This file is made available under the same terms as Ruby
  *
@@ -144,12 +144,26 @@ cr_scaled_font_get_ctm (VALUE self)
 static VALUE
 cr_scaled_font_get_font_options (VALUE self)
 {
-  cairo_font_options_t *options = cairo_font_options_create();
+  cairo_font_options_t *options;
+
+  options = cairo_font_options_create();
   cairo_scaled_font_get_font_options (_SELF (self), options);
   cr_scaled_font_check_status (_SELF (self));
   rb_cairo_check_status (cairo_font_options_status (options));
   return CRFONTOPTIONS2RVAL (options);
 }
+
+#if CAIRO_CHECK_VERSION(1, 7, 2)
+static VALUE
+cr_scaled_font_get_scale_matrix (VALUE self)
+{
+  cairo_matrix_t matrix;
+
+  cairo_scaled_font_get_scale_matrix (_SELF (self), &matrix);
+  cr_scaled_font_check_status (_SELF (self));
+  return CRMATRIX2RVAL (&matrix);
+}
+#endif
 
 void
 Init_cairo_scaled_font (void)
@@ -174,4 +188,8 @@ Init_cairo_scaled_font (void)
   rb_define_method (rb_cCairo_ScaledFont, "ctm", cr_scaled_font_get_ctm, 0);
   rb_define_method (rb_cCairo_ScaledFont, "font_options",
                     cr_scaled_font_get_font_options, 0);
+#if CAIRO_CHECK_VERSION(1, 7, 2)
+  rb_define_method (rb_cCairo_ScaledFont, "scale_matrix",
+                    cr_scaled_font_get_scale_matrix, 0);
+#endif
 }
