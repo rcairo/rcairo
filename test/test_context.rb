@@ -30,4 +30,18 @@ class ContextTest < Test::Unit::TestCase
       end
     end
   end
+
+  def test_font_face
+    context = Cairo::Context.new(@surface)
+
+    assert_kind_of(Cairo::FontFace, context.font_face)
+
+    face = Cairo::ToyFontFace.new("serif")
+    context.font_face = face
+    assert_equal("serif", context.font_face.family)
+
+    face = Cairo::ToyFontFace.new("sans")
+    context.font_face = face
+    assert_equal("sans", context.font_face.family)
+  end
 end
