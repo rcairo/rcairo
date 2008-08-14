@@ -3,8 +3,9 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-05-21 11:54:44 $
+ * $Date: 2008-08-14 12:37:50 $
  *
+ * Copyright 2006-2008 Kouhei Sutou <kou@cozmixng.org>
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
  *
@@ -17,6 +18,8 @@
 #include "rb_cairo_private.h"
 
 VALUE rb_cCairo_Matrix;
+
+static ID cr_id_equal;
 
 #define _SELF  (RVAL2CRMATRIX(self))
 
@@ -295,10 +298,22 @@ cr_matrix_to_s(VALUE self)
   return ret;
 }
 
+static VALUE
+cr_matrix_equal (VALUE self, VALUE other)
+{
+  if (!rb_cairo__is_kind_of (other, rb_cCairo_Matrix))
+    return Qfalse;
+
+  return rb_funcall (cr_matrix_to_a (self),
+                     cr_id_equal, 1,
+                     cr_matrix_to_a (other));
+}
 
 void
 Init_cairo_matrix (void)
 {
+  cr_id_equal = rb_intern ("==");
+
   rb_cCairo_Matrix =
     rb_define_class_under (rb_mCairo, "Matrix", rb_cObject);
 
@@ -344,6 +359,7 @@ Init_cairo_matrix (void)
   rb_define_method (rb_cCairo_Matrix, "set", cr_matrix_set, 6);
   rb_define_method (rb_cCairo_Matrix, "to_a", cr_matrix_to_a, 0);
   rb_define_method (rb_cCairo_Matrix, "to_s", cr_matrix_to_s, 0);
+  rb_define_method (rb_cCairo_Matrix, "==", cr_matrix_equal, 1);
 
 
   RB_CAIRO_DEF_SETTERS (rb_cCairo_Matrix);
