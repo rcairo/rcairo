@@ -1,5 +1,8 @@
 2008-08-16  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/test_pkg_config.rb (PkgConfigTest#test_requires_private):
+	work on my environment.
+
 	* src/lib/cairo.rb (Cairo.exit_application): add.
 
 	* src/rb_cairo_surface.c: use rb_cairo__invoke_callback().
