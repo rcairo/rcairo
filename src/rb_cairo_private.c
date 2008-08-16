@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-08-16 08:34:18 $
+ * $Date: 2008-08-16 12:52:16 $
  *
  * Copyright 2005-2008 Kouhei Sutou <kou@cozmixng.org>
  *
@@ -18,6 +18,7 @@ static ID cr_id_normalize_const_name;
 static ID cr_id_objects;
 static ID cr_id_dup;
 static ID cr_id_inspect;
+static ID cr_id_exit_application;
 
 VALUE
 rb_cairo__float_array (double *values, unsigned count)
@@ -148,11 +149,19 @@ void
 rb_cairo__glyphs_from_ruby_object (VALUE rb_glyphs,
                                    cairo_glyph_t **glyphs, int *num_glyphs)
 {
-  int i;
+  int i, len;
 
-  *num_glyphs = RARRAY_LEN (rb_glyphs);
-  *glyphs = cairo_glyph_allocate (*num_glyphs);
-  for (i = 0; i < *num_glyphs; i++)
+  if (NIL_P (rb_glyphs))
+    {
+      *num_glyphs = 0;
+      return;
+    }
+
+  len = RARRAY_LEN (rb_glyphs);
+  if (*num_glyphs < len)
+    *glyphs = cairo_glyph_allocate (len);
+  *num_glyphs = len;
+  for (i = 0; i < len; i++)
     {
       cairo_glyph_t *glyph;
 
@@ -182,17 +191,42 @@ rb_cairo__text_clusters_from_ruby_object (VALUE rb_clusters,
                                           cairo_text_cluster_t **clusters,
                                           int *num_clusters)
 {
-  int i;
+  int i, len;
 
-  *num_clusters = RARRAY_LEN (rb_clusters);
-  *clusters = cairo_text_cluster_allocate (*num_clusters);
-  for (i = 0; i < *num_clusters; i++)
+  if (NIL_P (rb_clusters))
+    {
+      *num_clusters = 0;
+      return;
+    }
+
+  len = RARRAY_LEN (rb_clusters);
+  if (*num_clusters < len)
+    *clusters = cairo_text_cluster_allocate (len);
+  *num_clusters = len;
+  for (i = 0; i < len; i++)
     {
       cairo_text_cluster_t *cluster;
 
       cluster = *clusters + i;
       *cluster = *(RVAL2CRTEXTCLUSTER (RARRAY_PTR (rb_clusters)[i]));
     }
+}
+
+VALUE
+rb_cairo__invoke_callback (cr_callback_func_t func, VALUE data)
+{
+  int state = 0;
+  VALUE result, exception;
+
+  result = rb_protect (func, data, &state);
+  if (state)
+    {
+      exception = RB_ERRINFO;
+      if (exception)
+        rb_funcall (rb_mCairo, cr_id_exit_application, 2,
+                    exception, INT2NUM (EXIT_FAILURE));
+    }
+  return result;
 }
 
 void
@@ -202,4 +236,5 @@ Init_cairo_private (void)
   cr_id_objects = rb_intern ("objects");
   cr_id_dup = rb_intern ("dup");
   cr_id_inspect = rb_intern ("inspect");
+  cr_id_exit_application = rb_intern ("exit_application");
 }

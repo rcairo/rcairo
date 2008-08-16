@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-08-16 08:34:18 $
+ * $Date: 2008-08-16 12:52:16 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -1185,10 +1185,10 @@ cr_show_text_glyphs (VALUE self, VALUE rb_utf8, VALUE rb_glyphs,
   cairo_t *cr;
   const char *utf8;
   int utf8_len;
-  cairo_glyph_t *glyphs;
-  int num_glyphs;
-  cairo_text_cluster_t *clusters;
-  int num_clusters;
+  cairo_glyph_t *glyphs = NULL;
+  int num_glyphs = 0;
+  cairo_text_cluster_t *clusters = NULL;
+  int num_clusters = 0;
   cairo_bool_t backward;
 
   cr = _SELF;
@@ -1202,8 +1202,10 @@ cr_show_text_glyphs (VALUE self, VALUE rb_utf8, VALUE rb_glyphs,
                           glyphs, num_glyphs,
                           clusters, num_clusters,
                           backward);
-  cairo_glyph_free (glyphs);
-  cairo_text_cluster_free (clusters);
+  if (glyphs)
+    cairo_glyph_free (glyphs);
+  if (clusters)
+    cairo_text_cluster_free (clusters);
 
   return self;
 }

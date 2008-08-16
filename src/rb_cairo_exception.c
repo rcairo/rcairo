@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-08-13 08:27:44 $
+ * $Date: 2008-08-16 12:52:16 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -13,6 +13,7 @@
 */
 
 #include "rb_cairo.h"
+#include "rb_cairo_private.h"
 
 static VALUE rb_eCairo_InvalidRestoreError;
 static VALUE rb_eCairo_InvalidPopGroupError;
@@ -160,6 +161,83 @@ rb_cairo_check_status (cairo_status_t status)
       break;
 #endif
     }
+}
+
+cairo_status_t
+rb_cairo__exception_to_status (VALUE exception)
+{
+  if (NIL_P (exception))
+    return CAIRO_STATUS_SUCCESS;
+  else if (rb_cairo__is_kind_of (exception, rb_eNoMemError))
+    return CAIRO_STATUS_NO_MEMORY;
+  else if (rb_cairo__is_kind_of (exception, rb_eCairo_InvalidRestoreError))
+    return CAIRO_STATUS_INVALID_RESTORE;
+  else if (rb_cairo__is_kind_of (exception, rb_eCairo_InvalidPopGroupError))
+    return CAIRO_STATUS_INVALID_POP_GROUP;
+  else if (rb_cairo__is_kind_of (exception, rb_eCairo_NoCurrentPointError))
+    return CAIRO_STATUS_NO_CURRENT_POINT;
+  else if (rb_cairo__is_kind_of (exception, rb_eCairo_InvalidMatrixError))
+    return CAIRO_STATUS_INVALID_MATRIX;
+  else if (rb_cairo__is_kind_of (exception, rb_eCairo_InvalidStatusError))
+    return CAIRO_STATUS_INVALID_STATUS;
+  else if (rb_cairo__is_kind_of (exception, rb_eCairo_NullPointerError))
+    return CAIRO_STATUS_NULL_POINTER;
+  else if (rb_cairo__is_kind_of (exception, rb_eCairo_InvalidStringError))
+    return CAIRO_STATUS_INVALID_STRING;
+  else if (rb_cairo__is_kind_of (exception, rb_eCairo_InvalidPathDataError))
+    return CAIRO_STATUS_INVALID_PATH_DATA;
+  else if (rb_cairo__is_kind_of (exception, rb_eCairo_ReadError))
+    return CAIRO_STATUS_READ_ERROR;
+  else if (rb_cairo__is_kind_of (exception, rb_eCairo_WriteError))
+    return CAIRO_STATUS_WRITE_ERROR;
+  else if (rb_cairo__is_kind_of (exception, rb_eCairo_SurfaceFinishedError))
+    return CAIRO_STATUS_SURFACE_FINISHED;
+  else if (rb_cairo__is_kind_of (exception, rb_eCairo_SurfaceTypeMismatchError))
+    return CAIRO_STATUS_SURFACE_TYPE_MISMATCH;
+  else if (rb_cairo__is_kind_of (exception, rb_eCairo_PatternTypeMismatchError))
+    return CAIRO_STATUS_PATTERN_TYPE_MISMATCH;
+  else if (rb_cairo__is_kind_of (exception, rb_eCairo_InvalidContentError))
+    return CAIRO_STATUS_INVALID_CONTENT;
+  else if (rb_cairo__is_kind_of (exception, rb_eCairo_InvalidFormatError))
+    return CAIRO_STATUS_INVALID_FORMAT;
+  else if (rb_cairo__is_kind_of (exception, rb_eCairo_InvalidVisualError))
+    return CAIRO_STATUS_INVALID_VISUAL;
+  else if (rb_cairo__is_kind_of (exception, rb_eCairo_FileNotFoundError))
+    return CAIRO_STATUS_FILE_NOT_FOUND;
+  else if (rb_cairo__is_kind_of (exception, rb_eCairo_InvalidDashError))
+    return CAIRO_STATUS_INVALID_DASH;
+  else if (rb_cairo__is_kind_of (exception, rb_eCairo_InvalidDscCommentError))
+    return CAIRO_STATUS_INVALID_DSC_COMMENT;
+#if CAIRO_CHECK_VERSION(1, 3, 0)
+  else if (rb_cairo__is_kind_of (exception, rb_eCairo_InvalidIndexError))
+    return CAIRO_STATUS_INVALID_INDEX;
+  else if (rb_cairo__is_kind_of (exception, rb_eCairo_ClipNotRepresentableError))
+    return CAIRO_STATUS_CLIP_NOT_REPRESENTABLE;
+#endif
+#if CAIRO_CHECK_VERSION(1, 5, 6)
+  else if (rb_cairo__is_kind_of (exception, rb_eCairo_TempFileError))
+    return CAIRO_STATUS_TEMP_FILE_ERROR;
+  else if (rb_cairo__is_kind_of (exception, rb_eCairo_InvalidStringError))
+    return CAIRO_STATUS_INVALID_STRIDE;
+#endif
+#if CAIRO_CHECK_VERSION(1, 7, 2)
+  else if (rb_cairo__is_kind_of (exception, rb_eCairo_FontTypeMismatch))
+    return CAIRO_STATUS_FONT_TYPE_MISMATCH;
+  else if (rb_cairo__is_kind_of (exception, rb_eCairo_UserFontImmutable))
+    return CAIRO_STATUS_USER_FONT_IMMUTABLE;
+  else if (rb_cairo__is_kind_of (exception, rb_eCairo_UserFontError))
+    return CAIRO_STATUS_USER_FONT_ERROR;
+  else if (rb_cairo__is_kind_of (exception, rb_eCairo_NegativeCount))
+    return CAIRO_STATUS_NEGATIVE_COUNT;
+  else if (rb_cairo__is_kind_of (exception, rb_eCairo_InvalidClusters))
+    return CAIRO_STATUS_INVALID_CLUSTERS;
+  else if (rb_cairo__is_kind_of (exception, rb_eCairo_InvalidSlant))
+    return CAIRO_STATUS_INVALID_SLANT;
+  else if (rb_cairo__is_kind_of (exception, rb_eCairo_InvalidWeight))
+    return CAIRO_STATUS_INVALID_WEIGHT;
+#endif
+
+  return -1;
 }
 
 void
