@@ -1,3 +1,11 @@
+2008-08-16  Kouhei Sutou  <kou@cozmixng.org>
+
+	* src/rb_cairo_context.c: support
+	Cairo::Context#have_show_text_glyphs?.
+
+	* test/test_context.rb (ContextTest#test_have_show_text_glyphs):
+	add a test for Cairo::Context#have_show_text_glyphs?.
+
 2008-08-14  Kouhei Sutou  <kou@cozmixng.org>
 
 	* src/rb_cairo_scaled_font.c: support Cairo::ScaledFont#scale_matrix.

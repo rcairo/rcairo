@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-08-11 12:53:33 $
+ * $Date: 2008-08-16 07:23:15 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -1171,6 +1171,14 @@ cr_show_glyphs (VALUE self, VALUE rb_glyphs)
   return self;
 }
 
+#if CAIRO_CHECK_VERSION(1, 7, 2)
+static VALUE
+cr_has_show_text_glyphs (VALUE self)
+{
+  return CBOOL2RVAL (cairo_has_show_text_glyphs (_SELF));
+}
+#endif
+
 static VALUE
 cr_get_font_face (VALUE self)
 {
@@ -1580,6 +1588,12 @@ Init_cairo_context (void)
 #endif
   rb_define_method (rb_cCairo_Context, "show_text", cr_show_text, 1);
   rb_define_method (rb_cCairo_Context, "show_glyphs", cr_show_glyphs, 1);
+#if CAIRO_CHECK_VERSION(1, 7, 2)
+  rb_define_method (rb_cCairo_Context, "have_show_text_glyphs?",
+                    cr_has_show_text_glyphs, 0);
+  rb_define_alias (rb_cCairo_Context,
+                   "has_show_text_glyphs?", "have_show_text_glyphs?");
+#endif
   rb_define_method (rb_cCairo_Context, "text_path", cr_text_path, 1);
   rb_define_method (rb_cCairo_Context, "glyph_path", cr_glyph_path, 1);
   rb_define_method (rb_cCairo_Context, "text_extents", cr_text_extents, 1);
