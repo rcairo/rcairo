@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-08-16 08:16:39 $
+ * $Date: 2008-08-16 08:34:18 $
  *
  * Copyright 2005-2008 Kouhei Sutou <kou@cozmixng.org>
  *
@@ -130,13 +130,13 @@ rb_cairo__inspect (VALUE object)
 }
 
 VALUE
-rb_cairo__glyphs_to_ruby_object (cairo_glyph_t *glyphs, int n_glyphs)
+rb_cairo__glyphs_to_ruby_object (cairo_glyph_t *glyphs, int num_glyphs)
 {
   int i;
   VALUE rb_glyphs;
 
-  rb_glyphs = rb_ary_new2 (n_glyphs);
-  for (i = 0; i < n_glyphs; i++)
+  rb_glyphs = rb_ary_new2 (num_glyphs);
+  for (i = 0; i < num_glyphs; i++)
     {
       RARRAY_PTR (rb_glyphs)[i] = CRGLYPH2RVAL (glyphs + i);
     }
@@ -144,20 +144,55 @@ rb_cairo__glyphs_to_ruby_object (cairo_glyph_t *glyphs, int n_glyphs)
   return rb_glyphs;
 }
 
+void
+rb_cairo__glyphs_from_ruby_object (VALUE rb_glyphs,
+                                   cairo_glyph_t **glyphs, int *num_glyphs)
+{
+  int i;
+
+  *num_glyphs = RARRAY_LEN (rb_glyphs);
+  *glyphs = cairo_glyph_allocate (*num_glyphs);
+  for (i = 0; i < *num_glyphs; i++)
+    {
+      cairo_glyph_t *glyph;
+
+      glyph = *glyphs + i;
+      *glyph = *(RVAL2CRGLYPH (RARRAY_PTR (rb_glyphs)[i]));
+    }
+}
+
 VALUE
 rb_cairo__text_clusters_to_ruby_object (cairo_text_cluster_t *clusters,
-                                        int n_clusters)
+                                        int num_clusters)
 {
   int i;
   VALUE rb_clusters;
 
-  rb_clusters = rb_ary_new2 (n_clusters);
-  for (i = 0; i < n_clusters; i++)
+  rb_clusters = rb_ary_new2 (num_clusters);
+  for (i = 0; i < num_clusters; i++)
     {
       RARRAY_PTR (rb_clusters)[i] = CRTEXTCLUSTER2RVAL (clusters + i);
     }
 
   return rb_clusters;
+}
+
+void
+rb_cairo__text_clusters_from_ruby_object (VALUE rb_clusters,
+                                          cairo_text_cluster_t **clusters,
+                                          int *num_clusters)
+{
+  int i;
+
+  *num_clusters = RARRAY_LEN (rb_clusters);
+  *clusters = cairo_text_cluster_allocate (*num_clusters);
+  for (i = 0; i < *num_clusters; i++)
+    {
+      cairo_text_cluster_t *cluster;
+
+      cluster = *clusters + i;
+      *cluster = *(RVAL2CRTEXTCLUSTER (RARRAY_PTR (rb_clusters)[i]));
+    }
 }
 
 void

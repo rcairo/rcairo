@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-08-16 08:16:39 $
+ * $Date: 2008-08-16 08:34:19 $
  *
  * Copyright 2005-2008 Kouhei Sutou <kou@cozmixng.org>
  *
@@ -122,9 +122,9 @@ cr_scaled_font_text_to_glyphs (VALUE self, VALUE rb_x, VALUE rb_y, VALUE rb_utf8
   const char *utf8;
   int utf8_len;
   cairo_glyph_t *glyphs = NULL;
-  int n_glyphs;
+  int num_glyphs;
   cairo_text_cluster_t *clusters = NULL;
-  int n_clusters;
+  int num_clusters;
   cairo_bool_t backward;
   cairo_status_t status;
   VALUE rb_glyphs, rb_clusters;
@@ -136,14 +136,14 @@ cr_scaled_font_text_to_glyphs (VALUE self, VALUE rb_x, VALUE rb_y, VALUE rb_utf8
 
   status = cairo_scaled_font_text_to_glyphs (_SELF (self),
                                              x, y, utf8, utf8_len,
-                                             &glyphs, &n_glyphs,
-                                             &clusters, &n_clusters,
+                                             &glyphs, &num_glyphs,
+                                             &clusters, &num_clusters,
                                              &backward);
   rb_cairo_check_status (status);
 
-  rb_glyphs = rb_cairo__glyphs_to_ruby_object (glyphs, n_glyphs);
+  rb_glyphs = rb_cairo__glyphs_to_ruby_object (glyphs, num_glyphs);
   cairo_glyph_free (glyphs);
-  rb_clusters = rb_cairo__text_clusters_to_ruby_object (clusters, n_clusters);
+  rb_clusters = rb_cairo__text_clusters_to_ruby_object (clusters, num_clusters);
   cairo_text_cluster_free (clusters);
 
   return rb_ary_new3 (3, rb_glyphs, rb_clusters, CBOOL2RVAL (backward));
