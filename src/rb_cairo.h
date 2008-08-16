@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-08-14 08:11:11 $
+ * $Date: 2008-08-16 08:16:39 $
  *
  * Copyright 2006-2008 Kouhei Sutou <kou@cozmixng.org>
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
@@ -160,6 +160,9 @@ RB_CAIRO_VAR VALUE rb_cCairo_Paper;
 #define RVAL2CRGLYPH(obj)       (rb_cairo_glyph_from_ruby_object(obj))
 #define CRGLYPH2RVAL(glyph)     (rb_cairo_glyph_to_ruby_object(glyph))
 
+#define RVAL2CRTEXTCLUSTER(obj)     (rb_cairo_text_cluster_from_ruby_object(obj))
+#define CRTEXTCLUSTER2RVAL(cluster) (rb_cairo_text_cluster_to_ruby_object(cluster))
+
 #define RVAL2CRSURFACE(obj)     (rb_cairo_surface_from_ruby_object(obj))
 #define CRSURFACE2RVAL(surface) (rb_cairo_surface_to_ruby_object(surface))
 #define CRSURFACE2RVAL_WITH_DESTROY(surface) \
@@ -194,6 +197,9 @@ VALUE                 rb_cairo_text_extents_to_ruby_object   (cairo_text_extents
 
 cairo_glyph_t        *rb_cairo_glyph_from_ruby_object        (VALUE obj);
 VALUE                 rb_cairo_glyph_to_ruby_object          (cairo_glyph_t *glyph);
+
+cairo_text_cluster_t *rb_cairo_text_cluster_from_ruby_object (VALUE obj);
+VALUE                 rb_cairo_text_cluster_to_ruby_object   (cairo_text_cluster_t *cluster);
 
 cairo_surface_t      *rb_cairo_surface_from_ruby_object      (VALUE obj);
 VALUE                 rb_cairo_surface_to_ruby_object        (cairo_surface_t *surface);

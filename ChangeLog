@@ -1,5 +1,19 @@
 2008-08-16  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/test_text_cluster.rb: add tests for Cairo::TextCluster.
+
+	* test/test_scaled_font.rb (ScaledFontTest#test_text_to_glyphs):
+	add a test for Cairo::ScaledFont#text_to_glyphs.
+
+	* src/rb_cairo.h, src/rb_cairo.c, src/cairo.def,
+	src/rb_cairo_text_cluster.c: add Cairo::TextCluster.
+
+	* src/rb_cairo_scaled_font.c: support
+	Cairo::ScaledFont#text_to_glyphs.
+
+	* src/rb_cairo_private.[ch] (rb_cairo__glyphs_to_ruby_object),
+	(rb_cairo__text_clusters_to_ruby_object): add.
+
 	* src/rb_cairo_context.c: support
 	Cairo::Context#have_show_text_glyphs?.
 

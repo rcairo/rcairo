@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-08-13 08:27:44 $
+ * $Date: 2008-08-16 08:16:39 $
  *
  * Copyright 2006-2008 Kouhei Sutou <kou@cozmixng.org>
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
@@ -100,4 +100,5 @@ Init_cairo ()
   Init_cairo_text_extents ();
   Init_cairo_pattern ();
   Init_cairo_glyph ();
+  Init_cairo_text_cluster ();
 }

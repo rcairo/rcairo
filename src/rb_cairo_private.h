@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-08-14 08:11:14 $
+ * $Date: 2008-08-16 08:16:39 $
  *
  * Copyright 2005-2008 Kouhei Sutou <kou@cozmixng.org>
  *
@@ -57,6 +57,7 @@ extern void Init_cairo_scaled_font (void);
 extern void Init_cairo_text_extents (void);
 extern void Init_cairo_pattern (void);
 extern void Init_cairo_glyph (void);
+extern void Init_cairo_text_cluster (void);
 
 #define RB_CAIRO__GLYPHS_TO_ARRAY(rb_array, glyphs, length)     \
 do                                                              \
@@ -91,5 +92,9 @@ void rb_cairo__gc_guard_remove (VALUE klass, VALUE object);
 VALUE rb_cairo__gc_guarded_objects (VALUE klass);
 
 const char *rb_cairo__inspect (VALUE object);
+
+VALUE rb_cairo__glyphs_to_ruby_object (cairo_glyph_t *glyphs, int n_glyphs);
+VALUE rb_cairo__text_clusters_to_ruby_object (cairo_text_cluster_t *clusters,
+                                              int n_clusters);
 
 #endif
