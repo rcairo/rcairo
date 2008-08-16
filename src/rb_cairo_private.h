@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-08-16 08:34:18 $
+ * $Date: 2008-08-16 12:52:17 $
  *
  * Copyright 2005-2008 Kouhei Sutou <kou@cozmixng.org>
  *
@@ -16,6 +16,8 @@
 
 #define CR_TRUE 1
 #define CR_FALSE 0
+
+#define CAIRO_INT_STATUS_UNSUPPORTED 100
 
 #define CSTR2RVAL(str) rb_str_new2(str)
 #define RVAL2CSTR(str) StringValueCStr(str)
@@ -101,5 +103,10 @@ VALUE rb_cairo__text_clusters_to_ruby_object (cairo_text_cluster_t *clusters,
 void rb_cairo__text_clusters_from_ruby_object (VALUE rb_clusters,
                                                cairo_text_cluster_t **clusters,
                                                int *num_clusters);
+
+cairo_status_t rb_cairo__exception_to_status (VALUE exception);
+
+typedef VALUE (*cr_callback_func_t) (VALUE user_data);
+VALUE rb_cairo__invoke_callback (cr_callback_func_t func, VALUE user_data);
 
 #endif

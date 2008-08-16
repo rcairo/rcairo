@@ -45,14 +45,19 @@ require 'cairo/constants'
 module Cairo
   class << self
     undef __add_one_arg_setter
-  end
 
-  module_function
-  def bindings_version
-    major, minor, micro, tag = BINDINGS_VERSION
-    version = [major, minor, micro].join('.')
-    version << "-#{tag}" if tag
-    version
+    def bindings_version
+      major, minor, micro, tag = BINDINGS_VERSION
+      version = [major, minor, micro].join('.')
+      version << "-#{tag}" if tag
+      version
+    end
+
+    def exit_application(exception, status)
+      puts("#{exception.class}: #{exception}")
+      puts(exception.backtrace)
+      exit(status)
+    end
   end
 
   class Surface

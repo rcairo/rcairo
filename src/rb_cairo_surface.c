@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-08-14 08:21:57 $
+ * $Date: 2008-08-16 12:52:17 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -159,6 +159,11 @@ typedef struct cr_io_callback_closure {
   unsigned int length;
 } cr_io_callback_closure_t;
 
+typedef struct cr_invoke_data {
+  cr_callback_func_t func;
+  VALUE data;
+} cr_invoke_data_t;
+
 #if HAS_CREATE_CR_CLOSURE_SURFACE
 static cr_io_callback_closure_t *
 cr_closure_new (VALUE target)
@@ -194,6 +199,17 @@ cr_surface_io_func_rescue (VALUE io_closure)
   return Qnil;
 }
 
+static VALUE
+cr_surface_invoke_io_func (VALUE user_data)
+{
+  cr_invoke_data_t *data;
+
+  data = (cr_invoke_data_t *)user_data;
+  return rb_rescue2 (data->func, data->data,
+                     cr_surface_io_func_rescue, data->data, rb_eException,
+                     (VALUE)0);
+}
+
 /* write callback */
 static VALUE
 cr_surface_write_func_invoke (VALUE write_closure)
@@ -226,15 +242,16 @@ cr_surface_write_func (void *write_closure,
                        const unsigned char *data, unsigned int length)
 {
   cr_io_callback_closure_t *closure;
+  cr_invoke_data_t invoke_data;
 
   closure = (cr_io_callback_closure_t *)write_closure;
   closure->data = (unsigned char *)data;
   closure->length = length;
-  
-  rb_rescue2 (cr_surface_write_func_invoke, (VALUE) closure,
-              cr_surface_io_func_rescue, (VALUE) closure, rb_eException,
-              (VALUE)0);
-  
+
+  invoke_data.func = cr_surface_write_func_invoke;
+  invoke_data.data = (VALUE)closure;
+  rb_cairo__invoke_callback (cr_surface_invoke_io_func, (VALUE)&invoke_data);
+
   if (NIL_P (closure->error))
     return CAIRO_STATUS_SUCCESS;
   else
@@ -270,14 +287,16 @@ cr_surface_read_func (void *read_closure,
                       unsigned char *data, unsigned int length)
 {
   cr_io_callback_closure_t *closure;
+  cr_invoke_data_t invoke_data;
 
   closure = (cr_io_callback_closure_t *)read_closure;
   closure->data = data;
   closure->length = length;
-  rb_rescue2 (cr_surface_read_func_invoke, (VALUE) closure,
-              cr_surface_io_func_rescue, (VALUE) closure, rb_eException,
-              (VALUE)0);
-  
+
+  invoke_data.func = cr_surface_read_func_invoke;
+  invoke_data.data = (VALUE)closure;
+  rb_cairo__invoke_callback (cr_surface_invoke_io_func, (VALUE)&invoke_data);
+
   if (NIL_P (closure->error))
     return CAIRO_STATUS_SUCCESS;
   else

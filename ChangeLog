@@ -1,5 +1,25 @@
 2008-08-16  Kouhei Sutou  <kou@cozmixng.org>
 
+	* src/lib/cairo.rb (Cairo.exit_application): add.
+
+	* src/rb_cairo_surface.c: use rb_cairo__invoke_callback().
+
+	* src/rb_cairo_private.c, src/rb_cairo_private.h
+	(rb_cairo__invoke_callback): use rb_protect() and exit if an
+	exception is raised in callback.
+
+	* src/rb_cairo_font_face.c: support Cairo::UserFontFace.
+
+	* src/rb_cairo_exception.c, src/rb_cairo_private.h
+	(rb_cairo__exception_to_status): add.
+
+	* src/rb_cairo_context.c (cr_show_text_glyphs): initialize variables.
+
+	* src/cairo.def, src/rb_cairo.h: add
+	rb_cCairo_UserFontFace_TextToGlyphsData.
+
+	* test/test_font_face.rb: add tests for user font.
+
 	* src/rb_cairo_private.[ch] (rb_cairo__text_clusters_from_ruby_object)
 	(rb_cairo__glyphs_from_ruby_object): add.
 

@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-08-14 08:11:12 $
+ * $Date: 2008-08-16 12:52:16 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -19,6 +19,24 @@
 VALUE rb_cCairo_FontFace;
 VALUE rb_cCairo_ToyFontFace = Qnil;
 VALUE rb_cCairo_UserFontFace = Qnil;
+VALUE rb_cCairo_UserFontFace_TextToGlyphsData = Qnil;
+
+#if CAIRO_CHECK_VERSION(1, 7, 2)
+static cairo_user_data_key_t ruby_object_key;
+static ID cr_id_call;
+static ID cr_id_new;
+
+static ID cr_id_init;
+static ID cr_id_render_glyph;
+static ID cr_id_text_to_glyphs;
+static ID cr_id_unicode_to_glyph;
+
+static ID cr_id_at_glyphs;
+static ID cr_id_at_clusters;
+static ID cr_id_at_backward;
+static ID cr_id_at_need_glyphs;
+static ID cr_id_at_need_clusters;
+#endif
 
 #define _SELF  (RVAL2CRFONTFACE(self))
 
@@ -65,12 +83,14 @@ rb_cairo_font_face_to_ruby_object (cairo_font_face_t *face)
 
       switch (cairo_font_face_get_type (face))
         {
+#if CAIRO_CHECK_VERSION(1, 7, 2)
         case CAIRO_FONT_TYPE_TOY:
           klass = rb_cCairo_ToyFontFace;
           break;
         case CAIRO_FONT_TYPE_USER:
           klass = rb_cCairo_UserFontFace;
           break;
+#endif
         default:
           klass = rb_cCairo_FontFace;
           break;
@@ -90,6 +110,7 @@ cr_font_face_allocate (VALUE klass)
   return Data_Wrap_Struct (klass, NULL, cr_font_face_free, NULL);
 }
 
+#if CAIRO_CHECK_VERSION(1, 7, 2)
 static VALUE
 cr_toy_font_face_initialize (int argc, VALUE *argv, VALUE self)
 {
@@ -151,10 +172,452 @@ cr_toy_font_face_get_weight (VALUE self)
   return INT2NUM (cairo_toy_font_face_get_weight (_SELF));
 }
 
+typedef struct cr_user_font_face_invoke_data
+{
+  VALUE receiver;
+  ID method;
+  int argc;
+  VALUE *argv;
+  cairo_status_t *status;
+  VALUE result;
+  cr_callback_func_t after_hook;
+  void *after_hook_data;
+} cr_user_font_face_invoke_data_t;
+
+static VALUE
+cr_user_font_face_invoke_body (VALUE user_data)
+{
+  cr_user_font_face_invoke_data_t *data;
+  VALUE result;
+
+  data = (cr_user_font_face_invoke_data_t *)user_data;
+  result = rb_funcall2 (data->receiver, data->method, data->argc, data->argv);
+  data->result = result;
+  if (data->after_hook)
+    result = data->after_hook(user_data);
+  return result;
+}
+
+static VALUE
+cr_user_font_face_invoke_rescue (VALUE user_data, VALUE exception)
+{
+  cr_user_font_face_invoke_data_t *data;
+
+  data = (cr_user_font_face_invoke_data_t *)user_data;
+  *(data->status) = rb_cairo__exception_to_status (exception);
+
+  if (*(data->status) == -1)
+    rb_exc_raise (exception);
+
+  return Qnil;
+}
+
+static VALUE
+cr_user_font_face_invoke_func (VALUE user_data)
+{
+  return rb_rescue2 (cr_user_font_face_invoke_body, user_data,
+                     cr_user_font_face_invoke_rescue, user_data, rb_eException,
+                     (VALUE)0);
+}
+
+static VALUE
+cr_user_font_face_init_func_after (VALUE user_data)
+{
+  cr_user_font_face_invoke_data_t *data;
+  cairo_font_extents_t *extents;
+
+  data = (cr_user_font_face_invoke_data_t *)user_data;
+  extents = data->after_hook_data;
+
+  *extents = *(RVAL2CRFONTEXTENTS (data->argv[2]));
+
+  return data->result;
+}
+
+static cairo_status_t
+cr_user_font_face_init_func (cairo_scaled_font_t *scaled_font,
+                             cairo_t *cr, cairo_font_extents_t *extents)
+{
+  cairo_status_t status = CAIRO_STATUS_SUCCESS;
+  cairo_font_face_t *face;
+  VALUE self;
+  VALUE receiver = Qnil;
+  ID id_method_name = cr_id_call;
+
+  face = cairo_scaled_font_get_font_face (scaled_font);
+  self = (VALUE)cairo_font_face_get_user_data (face, &ruby_object_key);
+  receiver = rb_ivar_get (self, cr_id_init);
+  if (NIL_P (receiver) && rb_obj_respond_to (self, cr_id_init, Qtrue))
+    {
+      receiver = self;
+      id_method_name = cr_id_init;
+    }
+
+  if (!NIL_P (receiver))
+    {
+      cr_user_font_face_invoke_data_t data;
+      VALUE argv[3];
+
+      argv[0] = CRSCALEDFONT2RVAL (scaled_font);
+      argv[1] = CRCONTEXT2RVAL (cr);
+      argv[2] = CRFONTEXTENTS2RVAL (extents);
+
+      data.receiver = receiver;
+      data.method = id_method_name;
+      data.argc = 3;
+      data.argv = argv;
+      data.status = &status;
+      data.after_hook = cr_user_font_face_init_func_after;
+      data.after_hook_data = extents;
+
+      rb_cairo__invoke_callback (cr_user_font_face_invoke_func, (VALUE)&data);
+    }
+
+  return status;
+}
+
+static VALUE
+cr_user_font_face_render_glyph_func_after (VALUE user_data)
+{
+  cr_user_font_face_invoke_data_t *data;
+  cairo_text_extents_t *extents;
+
+  data = (cr_user_font_face_invoke_data_t *)user_data;
+  extents = data->after_hook_data;
+
+  *extents = *(RVAL2CRTEXTEXTENTS (data->argv[3]));
+
+  return data->result;
+}
+
+static cairo_status_t
+cr_user_font_face_render_glyph_func (cairo_scaled_font_t *scaled_font,
+                                     unsigned long glyph,
+                                     cairo_t *cr,
+                                     cairo_text_extents_t *extents)
+{
+  cairo_status_t status = CAIRO_STATUS_SUCCESS;
+  cairo_font_face_t *face;
+  VALUE self;
+  VALUE receiver = Qnil;
+  ID id_method_name = cr_id_call;
+
+  face = cairo_scaled_font_get_font_face (scaled_font);
+  self = (VALUE)cairo_font_face_get_user_data (face, &ruby_object_key);
+  receiver = rb_ivar_get (self, cr_id_render_glyph);
+  if (NIL_P (receiver) && rb_obj_respond_to (self, cr_id_render_glyph, Qtrue))
+    {
+      receiver = self;
+      id_method_name = cr_id_render_glyph;
+    }
+
+  if (!NIL_P (receiver))
+    {
+      cr_user_font_face_invoke_data_t data;
+      VALUE argv[4];
+
+      argv[0] = CRSCALEDFONT2RVAL (scaled_font);
+      argv[1] = ULONG2NUM (glyph);
+      argv[2] = CRCONTEXT2RVAL (cr);
+      argv[3] = CRTEXTEXTENTS2RVAL (extents);
+
+      data.receiver = receiver;
+      data.method = id_method_name;
+      data.argc = 4;
+      data.argv = argv;
+      data.status = &status;
+      data.after_hook = cr_user_font_face_render_glyph_func_after;
+      data.after_hook_data = extents;
+
+      rb_cairo__invoke_callback (cr_user_font_face_invoke_func, (VALUE)&data);
+    }
+
+  return status;
+}
+
+typedef struct _cr_text_to_glyphs_after_hook_data {
+  VALUE text_to_glyphs_data;
+  cairo_glyph_t **glyphs;
+  int *num_glyphs;
+  cairo_text_cluster_t **clusters;
+  int *num_clusters;
+  cairo_bool_t *backward;
+} cr_text_to_glyphs_after_hook_data_t;
+
+static VALUE
+cr_user_font_face_text_to_glyphs_func_after (VALUE user_data)
+{
+  cr_user_font_face_invoke_data_t *data;
+  cr_text_to_glyphs_after_hook_data_t *after_hook_data;
+  VALUE text_to_glyphs_data;
+
+
+  data = (cr_user_font_face_invoke_data_t *)user_data;
+  after_hook_data = data->after_hook_data;
+  text_to_glyphs_data = after_hook_data->text_to_glyphs_data;
+
+  if (after_hook_data->glyphs)
+    {
+      VALUE rb_glyphs;
+
+      rb_glyphs = rb_ivar_get (text_to_glyphs_data, cr_id_at_glyphs);
+      rb_cairo__glyphs_from_ruby_object (rb_glyphs,
+                                         after_hook_data->glyphs,
+                                         after_hook_data->num_glyphs);
+    }
+
+  if (after_hook_data->clusters)
+    {
+      VALUE rb_clusters;
+
+      rb_clusters = rb_ivar_get (text_to_glyphs_data, cr_id_at_clusters);
+      rb_cairo__text_clusters_from_ruby_object (rb_clusters,
+                                                after_hook_data->clusters,
+                                                after_hook_data->num_clusters);
+    }
+
+  if (after_hook_data->backward)
+    {
+      VALUE rb_backward;
+
+      rb_backward = rb_ivar_get (text_to_glyphs_data, cr_id_at_backward);
+      *(after_hook_data->backward) = RVAL2CBOOL (rb_backward);
+    }
+
+  return data->result;
+}
+
+static cairo_status_t
+cr_user_font_face_text_to_glyphs_func (cairo_scaled_font_t *scaled_font,
+                                       const char *utf8, int utf8_len,
+                                       cairo_glyph_t **glyphs, int *num_glyphs,
+                                       cairo_text_cluster_t **clusters,
+                                       int *num_clusters,
+                                       cairo_bool_t *backward)
+{
+  cairo_status_t status = CAIRO_INT_STATUS_UNSUPPORTED;
+  cairo_font_face_t *face;
+  VALUE self;
+  VALUE receiver = Qnil;
+  ID id_method_name = cr_id_call;
+
+  face = cairo_scaled_font_get_font_face (scaled_font);
+  self = (VALUE)cairo_font_face_get_user_data (face, &ruby_object_key);
+  receiver = rb_ivar_get (self, cr_id_text_to_glyphs);
+  if (NIL_P (receiver) && rb_obj_respond_to (self, cr_id_text_to_glyphs, Qtrue))
+    {
+      receiver = self;
+      id_method_name = cr_id_text_to_glyphs;
+    }
+
+  if (!NIL_P (receiver))
+    {
+      cr_user_font_face_invoke_data_t data;
+      cr_text_to_glyphs_after_hook_data_t after_hook_data;
+      VALUE text_to_glyphs_data;
+      VALUE argv[3];
+
+      argv[0] = CRSCALEDFONT2RVAL (scaled_font);
+      argv[1] = rb_str_new (utf8, utf8_len);
+      text_to_glyphs_data = rb_funcall (rb_cCairo_UserFontFace_TextToGlyphsData,
+                                        cr_id_new,
+                                        2,
+                                        CBOOL2RVAL (glyphs != NULL),
+                                        CBOOL2RVAL (clusters != NULL));
+      argv[2] = text_to_glyphs_data;
+
+      data.receiver = receiver;
+      data.method = id_method_name;
+      data.argc = 3;
+      data.argv = argv;
+      data.status = &status;
+      data.after_hook = cr_user_font_face_text_to_glyphs_func_after;
+      data.after_hook_data = &after_hook_data;
+
+      after_hook_data.text_to_glyphs_data = text_to_glyphs_data;
+      after_hook_data.glyphs = glyphs;
+      after_hook_data.num_glyphs = num_glyphs;
+      after_hook_data.clusters = clusters;
+      after_hook_data.num_clusters = num_clusters;
+      after_hook_data.backward = backward;
+
+      rb_cairo__invoke_callback (cr_user_font_face_invoke_func, (VALUE)&data);
+    }
+
+  return status;
+}
+
+static VALUE
+cr_user_font_face_unicode_to_glyph_func_after (VALUE user_data)
+{
+  cr_user_font_face_invoke_data_t *data;
+  unsigned long *glyph_index;
+
+  data = (cr_user_font_face_invoke_data_t *)user_data;
+  glyph_index = data->after_hook_data;
+
+  *glyph_index = NUM2ULONG (data->result);
+
+  return data->result;
+}
+
+static cairo_status_t
+cr_user_font_face_unicode_to_glyph_func (cairo_scaled_font_t *scaled_font,
+                                         unsigned long unicode,
+                                         unsigned long *glyph_index)
+{
+  cairo_status_t status = CAIRO_STATUS_SUCCESS;
+  cairo_font_face_t *face;
+  VALUE self;
+  VALUE receiver = Qnil;
+  ID id_method_name = cr_id_call;
+
+  face = cairo_scaled_font_get_font_face (scaled_font);
+  self = (VALUE)cairo_font_face_get_user_data (face, &ruby_object_key);
+  receiver = rb_ivar_get (self, cr_id_unicode_to_glyph);
+  if (NIL_P (receiver) &&
+      rb_obj_respond_to (self, cr_id_unicode_to_glyph, Qtrue))
+    {
+      receiver = self;
+      id_method_name = cr_id_unicode_to_glyph;
+    }
+
+  if (NIL_P (receiver))
+    {
+      *glyph_index = unicode;
+    }
+  else
+    {
+      cr_user_font_face_invoke_data_t data;
+      VALUE argv[2];
+
+      argv[0] = CRSCALEDFONT2RVAL (scaled_font);
+      argv[1] = ULONG2NUM (unicode);
+
+      data.receiver = receiver;
+      data.method = id_method_name;
+      data.argc = 2;
+      data.argv = argv;
+      data.status = &status;
+      data.after_hook = cr_user_font_face_unicode_to_glyph_func_after;
+      data.after_hook_data = glyph_index;
+
+      rb_cairo__invoke_callback (cr_user_font_face_invoke_func, (VALUE)&data);
+    }
+
+  return status;
+}
+
+
+static VALUE
+cr_user_font_face_initialize (VALUE self)
+{
+  cairo_font_face_t *face;
+
+  face = cairo_user_font_face_create ();
+  cr_font_face_check_status (face);
+
+  cairo_font_face_set_user_data (face, &ruby_object_key, (void *)self, NULL);
+
+  cairo_user_font_face_set_init_func
+    (face, cr_user_font_face_init_func);
+  cairo_user_font_face_set_render_glyph_func
+    (face, cr_user_font_face_render_glyph_func);
+  cairo_user_font_face_set_text_to_glyphs_func
+    (face, cr_user_font_face_text_to_glyphs_func);
+  cairo_user_font_face_set_unicode_to_glyph_func
+    (face, cr_user_font_face_unicode_to_glyph_func);
+
+  rb_ivar_set (self, cr_id_init, Qnil);
+  rb_ivar_set (self, cr_id_render_glyph, Qnil);
+  rb_ivar_set (self, cr_id_text_to_glyphs, Qnil);
+  rb_ivar_set (self, cr_id_unicode_to_glyph, Qnil);
+
+  DATA_PTR (self) = face;
+
+  return Qnil;
+}
+
+static VALUE
+cr_user_font_face_on_init (VALUE self)
+{
+  rb_ivar_set (self, cr_id_init, rb_block_proc ());
+  return self;
+}
+
+static VALUE
+cr_user_font_face_on_render_glyph (VALUE self)
+{
+  rb_ivar_set (self, cr_id_render_glyph, rb_block_proc ());
+  return self;
+}
+
+static VALUE
+cr_user_font_face_on_text_to_glyphs (VALUE self)
+{
+  rb_ivar_set (self, cr_id_text_to_glyphs, rb_block_proc ());
+  return self;
+}
+
+static VALUE
+cr_user_font_face_on_unicode_to_glyph (VALUE self)
+{
+  rb_ivar_set (self, cr_id_unicode_to_glyph, rb_block_proc ());
+  return self;
+}
+
+
+static VALUE
+cr_text_to_glyphs_data_initialize (VALUE self,
+                                   VALUE need_glyphs, VALUE need_clusters)
+{
+  rb_ivar_set (self, cr_id_at_glyphs, Qnil);
+  rb_ivar_set (self, cr_id_at_clusters, Qnil);
+  rb_ivar_set (self, cr_id_at_backward, Qfalse);
+  rb_ivar_set (self, cr_id_at_need_glyphs, need_glyphs);
+  rb_ivar_set (self, cr_id_at_need_clusters, need_clusters);
+
+  return Qnil;
+}
+
+static VALUE
+cr_text_to_glyphs_data_backward_p (VALUE self)
+{
+  return rb_ivar_get (self, cr_id_at_backward);
+}
+
+static VALUE
+cr_text_to_glyphs_data_need_glyphs (VALUE self)
+{
+  return rb_ivar_get (self, cr_id_at_need_glyphs);
+}
+
+static VALUE
+cr_text_to_glyphs_data_need_clusters (VALUE self)
+{
+  return rb_ivar_get (self, cr_id_at_need_clusters);
+}
+#endif
 
 void
 Init_cairo_font (void)
 {
+#if CAIRO_CHECK_VERSION(1, 7, 2)
+  cr_id_call = rb_intern ("call");
+  cr_id_new = rb_intern ("new");
+
+  cr_id_init = rb_intern ("init");
+  cr_id_render_glyph = rb_intern ("render_glyph");
+  cr_id_text_to_glyphs = rb_intern ("text_to_glyphs");
+  cr_id_unicode_to_glyph = rb_intern ("unicode_to_glyph");
+
+  cr_id_at_glyphs = rb_intern ("@glyphs");
+  cr_id_at_clusters = rb_intern ("@clusters");
+  cr_id_at_backward = rb_intern ("@backward");
+  cr_id_at_need_glyphs = rb_intern ("@need_glyphs");
+  cr_id_at_need_clusters = rb_intern ("@need_clusters");
+#endif
+
   rb_cCairo_FontFace =
     rb_define_class_under (rb_mCairo, "FontFace", rb_cObject);
   rb_define_alloc_func (rb_cCairo_FontFace, cr_font_face_allocate);
@@ -173,7 +636,41 @@ Init_cairo_font (void)
   rb_define_method (rb_cCairo_ToyFontFace, "weight",
                     cr_toy_font_face_get_weight, 0);
 
+
   rb_cCairo_UserFontFace =
     rb_define_class_under (rb_mCairo, "UserFontFace", rb_cCairo_FontFace);
+
+  rb_define_method (rb_cCairo_UserFontFace, "initialize",
+                    cr_user_font_face_initialize, 0);
+
+  rb_define_method (rb_cCairo_UserFontFace, "on_init",
+                    cr_user_font_face_on_init, 0);
+  rb_define_method (rb_cCairo_UserFontFace, "on_render_glyph",
+                    cr_user_font_face_on_render_glyph, 0);
+  rb_define_method (rb_cCairo_UserFontFace, "on_text_to_glyphs",
+                    cr_user_font_face_on_text_to_glyphs, 0);
+  rb_define_method (rb_cCairo_UserFontFace, "on_unicode_to_glyph",
+                    cr_user_font_face_on_unicode_to_glyph, 0);
+
+
+  rb_cCairo_UserFontFace_TextToGlyphsData =
+    rb_define_class_under (rb_cCairo_UserFontFace,
+                           "TextToGlyphsData", rb_cObject);
+  rb_attr (rb_cCairo_UserFontFace_TextToGlyphsData, rb_intern ("glyphs"),
+           CR_TRUE, CR_TRUE, CR_TRUE);
+  rb_attr (rb_cCairo_UserFontFace_TextToGlyphsData, rb_intern ("clusters"),
+           CR_TRUE, CR_TRUE, CR_TRUE);
+  rb_attr (rb_cCairo_UserFontFace_TextToGlyphsData, rb_intern ("backward"),
+           CR_FALSE, CR_TRUE, CR_TRUE);
+
+  rb_define_method (rb_cCairo_UserFontFace_TextToGlyphsData,
+                    "initialize", cr_text_to_glyphs_data_initialize, 2);
+
+  rb_define_method (rb_cCairo_UserFontFace_TextToGlyphsData,
+                    "backward?", cr_text_to_glyphs_data_backward_p, 0);
+  rb_define_method (rb_cCairo_UserFontFace_TextToGlyphsData,
+                    "need_glyphs?", cr_text_to_glyphs_data_need_glyphs, 0);
+  rb_define_method (rb_cCairo_UserFontFace_TextToGlyphsData,
+                    "need_clusters?", cr_text_to_glyphs_data_need_clusters, 0);
 #endif
 }
