@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2007-05-03 02:47:39 $
+ * $Date: 2008-08-16 08:16:39 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -37,7 +37,7 @@ cr_glyph_free (void *ptr)
 {
   if (ptr)
     {
-      free (ptr);
+      xfree (ptr);
     }
 }
 
@@ -46,7 +46,9 @@ rb_cairo_glyph_to_ruby_object (cairo_glyph_t *glyph)
 {
   if (glyph)
     {
-      cairo_glyph_t *new_glyph = ALLOC (cairo_glyph_t);
+      cairo_glyph_t *new_glyph;
+
+      new_glyph = ALLOC (cairo_glyph_t);
       *new_glyph = *glyph;
       return Data_Wrap_Struct (rb_cCairo_Glyph, NULL, cr_glyph_free, new_glyph);
     }

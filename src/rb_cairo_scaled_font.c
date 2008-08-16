@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-08-14 12:37:51 $
+ * $Date: 2008-08-16 08:16:39 $
  *
  * Copyright 2005-2008 Kouhei Sutou <kou@cozmixng.org>
  *
@@ -114,6 +114,42 @@ cr_scaled_font_glyph_extents (VALUE self, VALUE rb_glyphs)
   return CRTEXTEXTENTS2RVAL (&extents);
 }
 
+#if CAIRO_CHECK_VERSION(1, 7, 2)
+static VALUE
+cr_scaled_font_text_to_glyphs (VALUE self, VALUE rb_x, VALUE rb_y, VALUE rb_utf8)
+{
+  double x, y;
+  const char *utf8;
+  int utf8_len;
+  cairo_glyph_t *glyphs = NULL;
+  int n_glyphs;
+  cairo_text_cluster_t *clusters = NULL;
+  int n_clusters;
+  cairo_bool_t backward;
+  cairo_status_t status;
+  VALUE rb_glyphs, rb_clusters;
+
+  x = NUM2DBL (rb_x);
+  y = NUM2DBL (rb_y);
+  utf8 = RSTRING_PTR (rb_utf8);
+  utf8_len = RSTRING_LEN (rb_utf8);
+
+  status = cairo_scaled_font_text_to_glyphs (_SELF (self),
+                                             x, y, utf8, utf8_len,
+                                             &glyphs, &n_glyphs,
+                                             &clusters, &n_clusters,
+                                             &backward);
+  rb_cairo_check_status (status);
+
+  rb_glyphs = rb_cairo__glyphs_to_ruby_object (glyphs, n_glyphs);
+  cairo_glyph_free (glyphs);
+  rb_clusters = rb_cairo__text_clusters_to_ruby_object (clusters, n_clusters);
+  cairo_text_cluster_free (clusters);
+
+  return rb_ary_new3 (3, rb_glyphs, rb_clusters, CBOOL2RVAL (backward));
+}
+#endif
+
 static VALUE
 cr_scaled_font_get_font_face (VALUE self)
 {
@@ -181,6 +217,10 @@ Init_cairo_scaled_font (void)
                     cr_scaled_font_text_extents, 1);
   rb_define_method (rb_cCairo_ScaledFont, "glyph_extents",
                     cr_scaled_font_glyph_extents, 1);
+#if CAIRO_CHECK_VERSION(1, 7, 2)
+  rb_define_method (rb_cCairo_ScaledFont, "text_to_glyphs",
+                    cr_scaled_font_text_to_glyphs, 3);
+#endif
   rb_define_method (rb_cCairo_ScaledFont, "font_face",
                     cr_scaled_font_get_font_face, 0);
   rb_define_method (rb_cCairo_ScaledFont, "font_matrix",

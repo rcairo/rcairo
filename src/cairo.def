@@ -23,6 +23,7 @@ EXPORTS
     rb_cCairo_ScaledFont      DATA
     rb_cCairo_TextExtents     DATA
     rb_cCairo_Glyph           DATA
+    rb_cCairo_TextCluster     DATA
     rb_cCairo_Surface         DATA
     rb_cCairo_ImageSurface    DATA
     rb_cCairo_PDFSurface      DATA
@@ -76,6 +77,8 @@ EXPORTS
     rb_cairo_text_extents_to_ruby_object
     rb_cairo_glyph_from_ruby_object
     rb_cairo_glyph_to_ruby_object
+    rb_cairo_text_cluster_from_ruby_object
+    rb_cairo_text_cluster_to_ruby_object
     rb_cairo_surface_from_ruby_object
     rb_cairo_surface_to_ruby_object
     rb_cairo_surface_to_ruby_object_with_destroy
