@@ -2,6 +2,8 @@ require 'cairo'
 require 'stringio'
 
 class ContextTest < Test::Unit::TestCase
+  include CairoTestUtils
+
   def setup
     @output = StringIO.new
     @surface = Cairo::PDFSurface.new(@output, 10, 10)
@@ -43,5 +45,17 @@ class ContextTest < Test::Unit::TestCase
     face = Cairo::ToyFontFace.new("sans")
     context.font_face = face
     assert_equal("sans", context.font_face.family)
+  end
+
+  def test_have_show_text_glyphs?
+    only_cairo_version(1, 7, 2)
+
+    pdf_surface = Cairo::PDFSurface.new(@output, 10, 10)
+    context = Cairo::Context.new(pdf_surface)
+    assert_true(context.have_show_text_glyphs?)
+
+    image_surface = Cairo::ImageSurface.new(10, 10)
+    context = Cairo::Context.new(image_surface)
+    assert_false(context.have_show_text_glyphs?)
   end
 end
