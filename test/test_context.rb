@@ -58,4 +58,22 @@ class ContextTest < Test::Unit::TestCase
     context = Cairo::Context.new(image_surface)
     assert_false(context.have_show_text_glyphs?)
   end
+
+
+  def test_text_to_glyphs
+    only_cairo_version(1, 7, 2)
+
+    surface = Cairo::PDFSurface.new(StringIO.new, 10, 10)
+    context = Cairo::Context.new(surface)
+    scaled_font = Cairo::ScaledFont.new(context.font_face,
+                                        Cairo::Matrix.identity,
+                                        Cairo::Matrix.identity,
+                                        Cairo::FontOptions.new)
+
+    utf8 = "text"
+    glyphs, clusters, backward = scaled_font.text_to_glyphs(0, 0, utf8)
+    assert_nothing_raised do
+      context.show_text_glyphs(utf8, glyphs, clusters, backward)
+    end
+  end
 end

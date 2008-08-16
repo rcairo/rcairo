@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-08-16 07:23:15 $
+ * $Date: 2008-08-16 08:34:18 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -1177,6 +1177,36 @@ cr_has_show_text_glyphs (VALUE self)
 {
   return CBOOL2RVAL (cairo_has_show_text_glyphs (_SELF));
 }
+
+static VALUE
+cr_show_text_glyphs (VALUE self, VALUE rb_utf8, VALUE rb_glyphs,
+                     VALUE rb_clusters, VALUE rb_backward)
+{
+  cairo_t *cr;
+  const char *utf8;
+  int utf8_len;
+  cairo_glyph_t *glyphs;
+  int num_glyphs;
+  cairo_text_cluster_t *clusters;
+  int num_clusters;
+  cairo_bool_t backward;
+
+  cr = _SELF;
+  utf8 = RSTRING_PTR (rb_utf8);
+  utf8_len = RSTRING_LEN (rb_utf8);
+  rb_cairo__glyphs_from_ruby_object (rb_glyphs, &glyphs, &num_glyphs);
+  rb_cairo__text_clusters_from_ruby_object (rb_clusters,
+                                            &clusters, &num_clusters);
+  backward = RVAL2CBOOL (rb_backward);
+  cairo_show_text_glyphs (cr, utf8, utf8_len,
+                          glyphs, num_glyphs,
+                          clusters, num_clusters,
+                          backward);
+  cairo_glyph_free (glyphs);
+  cairo_text_cluster_free (clusters);
+
+  return self;
+}
 #endif
 
 static VALUE
@@ -1593,6 +1623,8 @@ Init_cairo_context (void)
                     cr_has_show_text_glyphs, 0);
   rb_define_alias (rb_cCairo_Context,
                    "has_show_text_glyphs?", "have_show_text_glyphs?");
+  rb_define_method (rb_cCairo_Context, "show_text_glyphs",
+                    cr_show_text_glyphs, 4);
 #endif
   rb_define_method (rb_cCairo_Context, "text_path", cr_text_path, 1);
   rb_define_method (rb_cCairo_Context, "glyph_path", cr_glyph_path, 1);
