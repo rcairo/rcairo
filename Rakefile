@@ -31,7 +31,8 @@ manifest_contents = []
 base_dir_included_components = %w(AUTHORS COPYING ChangeLog GPL
                                   NEWS README Rakefile
                                   extconf.rb pkg-config.rb)
-excluded_components = %w(.cvsignore .gdb_history CVS depend Makefile pkg)
+excluded_components = %w(.cvsignore .gdb_history CVS depend Makefile pkg
+                         .test-result)
 excluded_suffixes = %w(.png .ps .pdf .o .so .a .txt .~)
 Find.find(base_dir) do |target|
   target = truncate_base_dir[target]
