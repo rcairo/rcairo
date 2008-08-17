@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-08-17 03:00:41 $
+ * $Date: 2008-08-17 03:16:02 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -36,6 +36,7 @@ static ID cr_id_at_clusters;
 static ID cr_id_at_backward;
 static ID cr_id_at_need_glyphs;
 static ID cr_id_at_need_clusters;
+static ID cr_id_at_need_backward;
 #endif
 
 #define _SELF  (RVAL2CRFONTFACE(self))
@@ -425,9 +426,10 @@ cr_user_font_face_text_to_glyphs_func (cairo_scaled_font_t *scaled_font,
       argv[1] = rb_str_new (utf8, utf8_len);
       text_to_glyphs_data = rb_funcall (rb_cCairo_UserFontFace_TextToGlyphsData,
                                         cr_id_new,
-                                        2,
+                                        3,
                                         CBOOL2RVAL (glyphs != NULL),
-                                        CBOOL2RVAL (clusters != NULL));
+                                        CBOOL2RVAL (clusters != NULL),
+                                        CBOOL2RVAL (backward != NULL));
       argv[2] = text_to_glyphs_data;
 
       data.receiver = receiver;
@@ -573,13 +575,15 @@ cr_user_font_face_on_unicode_to_glyph (VALUE self)
 
 static VALUE
 cr_text_to_glyphs_data_initialize (VALUE self,
-                                   VALUE need_glyphs, VALUE need_clusters)
+                                   VALUE need_glyphs, VALUE need_clusters,
+                                   VALUE need_backward)
 {
   rb_ivar_set (self, cr_id_at_glyphs, Qnil);
   rb_ivar_set (self, cr_id_at_clusters, Qnil);
   rb_ivar_set (self, cr_id_at_backward, Qfalse);
   rb_ivar_set (self, cr_id_at_need_glyphs, need_glyphs);
   rb_ivar_set (self, cr_id_at_need_clusters, need_clusters);
+  rb_ivar_set (self, cr_id_at_need_backward, need_backward);
 
   return Qnil;
 }
@@ -601,6 +605,12 @@ cr_text_to_glyphs_data_need_clusters (VALUE self)
 {
   return rb_ivar_get (self, cr_id_at_need_clusters);
 }
+
+static VALUE
+cr_text_to_glyphs_data_need_backward (VALUE self)
+{
+  return rb_ivar_get (self, cr_id_at_need_backward);
+}
 #endif
 
 void
@@ -620,6 +630,7 @@ Init_cairo_font (void)
   cr_id_at_backward = rb_intern ("@backward");
   cr_id_at_need_glyphs = rb_intern ("@need_glyphs");
   cr_id_at_need_clusters = rb_intern ("@need_clusters");
+  cr_id_at_need_backward = rb_intern ("@need_backward");
 #endif
 
   rb_cCairo_FontFace =
@@ -668,7 +679,7 @@ Init_cairo_font (void)
            CR_FALSE, CR_TRUE, CR_TRUE);
 
   rb_define_method (rb_cCairo_UserFontFace_TextToGlyphsData,
-                    "initialize", cr_text_to_glyphs_data_initialize, 2);
+                    "initialize", cr_text_to_glyphs_data_initialize, 3);
 
   rb_define_method (rb_cCairo_UserFontFace_TextToGlyphsData,
                     "backward?", cr_text_to_glyphs_data_backward_p, 0);
@@ -676,5 +687,7 @@ Init_cairo_font (void)
                     "need_glyphs?", cr_text_to_glyphs_data_need_glyphs, 0);
   rb_define_method (rb_cCairo_UserFontFace_TextToGlyphsData,
                     "need_clusters?", cr_text_to_glyphs_data_need_clusters, 0);
+  rb_define_method (rb_cCairo_UserFontFace_TextToGlyphsData,
+                    "need_backward?", cr_text_to_glyphs_data_need_backward, 0);
 #endif
 }
