@@ -1,5 +1,7 @@
 2008-08-17  Kouhei Sutou  <kou@cozmixng.org>
 
+	* NEWS: add 1.7.0 entry. (cairo 1.7.4 is supported)
+
 	* src/, test/: add missing version checks.
 
 	* src/rb_cairo_font_face.c

@@ -1,3 +1,16 @@
+Release 1.7.0 (2008-08-16) Kouhei Sutou <kou@cozmixng.org>)
+===========================================================
+
+Features
+--------
+  * Support cairo 1.7.4.
+  * Add new methods:
+    * Cairo::Context#destroy
+    * Cairo::Surface#destroy
+    * Cairo.satisfied_version?
+  * Resupport ruby 1.9. (suggested by Paul van Tilburg)
+  * Fix README. (suggested by Davide Rambaldi)
+
 Release 1.6.3 (2008-07-19) Kouhei Sutou <kou@cozmixng.org>)
 ===========================================================
 
