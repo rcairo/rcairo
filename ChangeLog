@@ -1,5 +1,10 @@
 2008-08-17  Kouhei Sutou  <kou@cozmixng.org>
 
+	* src/rb_cairo_font_extents.c: add Cairo::FontExtents#initialize
+	and setters.
+
+	* test/test_font_extents.rb: add.
+
 	* src/rb_cairo_font_face.c: add
 	Cairo::UserFontFace::TextToGlyphsData#need_backward?.
 
