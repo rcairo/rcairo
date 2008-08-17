@@ -1,5 +1,9 @@
 2008-08-17  Kouhei Sutou  <kou@cozmixng.org>
 
+	* src/rb_cairo_private.c (rb_cairo__glyphs_from_ruby_object)
+	(rb_cairo__text_clusters_from_ruby_object): set -1 to *num_XXX
+	instead of 0.
+
 	* src/rb_cairo_text_extents.c: add Cairo::TextExtents#initialize
 	and setters.
 
