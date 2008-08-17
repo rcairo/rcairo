@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-08-16 12:52:16 $
+ * $Date: 2008-08-17 03:00:41 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -120,9 +120,13 @@ cr_toy_font_face_initialize (int argc, VALUE *argv, VALUE self)
   cairo_font_slant_t slant;
   cairo_font_weight_t weight;
 
-  rb_scan_args (argc, argv, "12", &rb_family, &rb_slant, &rb_weight);
+  rb_scan_args (argc, argv, "03", &rb_family, &rb_slant, &rb_weight);
 
-  if (rb_cairo__is_kind_of (rb_family, rb_cString))
+  if (NIL_P (rb_family))
+    {
+      family = "";
+    }
+  else if (rb_cairo__is_kind_of (rb_family, rb_cString))
     {
       family = RSTRING_PTR (rb_family);
     }
@@ -133,7 +137,7 @@ cr_toy_font_face_initialize (int argc, VALUE *argv, VALUE self)
   else
     {
       rb_raise (rb_eArgError,
-                "family name should be String or Symbol: %s",
+                "family name should be nil, String or Symbol: %s",
                 rb_cairo__inspect (rb_family));
     }
 

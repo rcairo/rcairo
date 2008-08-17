@@ -59,7 +59,6 @@ class ContextTest < Test::Unit::TestCase
     assert_false(context.have_show_text_glyphs?)
   end
 
-
   def test_text_to_glyphs
     only_cairo_version(1, 7, 2)
 
@@ -75,5 +74,40 @@ class ContextTest < Test::Unit::TestCase
     assert_nothing_raised do
       context.show_text_glyphs(utf8, glyphs, clusters, backward)
     end
+  end
+
+  def test_select_font_face
+    context = Cairo::Context.new(@surface)
+
+    face = context.font_face
+    default_font_family = ""
+    # default_font_family = "Helvetica" if quartz?
+    # default_font_family = "Arial" if win32?
+    assert_equal([default_font_family,
+                  Cairo::FONT_SLANT_NORMAL,
+                  Cairo::FONT_WEIGHT_NORMAL],
+                 [face.family, face.slant, face.weight])
+
+    context.select_font_face
+    face = context.font_face
+    assert_equal([default_font_family,
+                  Cairo::FONT_SLANT_NORMAL,
+                  Cairo::FONT_WEIGHT_NORMAL],
+                 [face.family, face.slant, face.weight])
+
+    context.select_font_face(:serif, :italic, :bold)
+    face = context.font_face
+    assert_equal(["serif", Cairo::FONT_SLANT_ITALIC, Cairo::FONT_WEIGHT_BOLD],
+                 [face.family, face.slant, face.weight])
+  end
+
+  def test_select_font_face_with_invalid_family_name
+    context = Cairo::Context.new(@surface)
+
+    exception = assert_raise(ArgumentError) do
+      context.select_font_face([999])
+    end
+    assert_equal("family name should be nil, String or Symbol: [999]",
+                 exception.message)
   end
 end
