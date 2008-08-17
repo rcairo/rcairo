@@ -1,5 +1,9 @@
 2008-08-17  Kouhei Sutou  <kou@cozmixng.org>
 
+	* src/rb_cairo_font_face.c
+	(cr_user_font_face_text_to_glyphs_func): set num_glyphs to -1 if
+	callback isn't found.
+
 	* src/rb_cairo_private.c (rb_cairo__glyphs_from_ruby_object)
 	(rb_cairo__text_clusters_from_ruby_object): set -1 to *num_XXX
 	instead of 0.

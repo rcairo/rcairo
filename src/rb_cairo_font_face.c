@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-08-17 03:16:02 $
+ * $Date: 2008-08-17 06:11:51 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -415,7 +415,12 @@ cr_user_font_face_text_to_glyphs_func (cairo_scaled_font_t *scaled_font,
       id_method_name = cr_id_text_to_glyphs;
     }
 
-  if (!NIL_P (receiver))
+  if (NIL_P (receiver))
+    {
+      if (num_glyphs)
+        *num_glyphs = -1;
+    }
+  else
     {
       cr_user_font_face_invoke_data_t data;
       cr_text_to_glyphs_after_hook_data_t after_hook_data;
