@@ -1,5 +1,7 @@
 2008-08-17  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/.cvsignore: add.
+
 	* src/rb_cairo.c (Cairo::BINDINGS_VERSION): 1.7.0 -> 1.7.1.
 
 	* Rakefile: exclude .test-result.
