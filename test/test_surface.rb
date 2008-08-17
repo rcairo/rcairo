@@ -29,11 +29,12 @@ class SurfaceTest < Test::Unit::TestCase
   end
 
   def test_fallback_resolution
+    only_cairo_version(1, 7, 2)
+
     surface = Cairo::ImageSurface.new(100, 100)
 
     assert_equal([300.0, 300.0], surface.fallback_resolution)
 
-    only_cairo_version(1, 7, 2)
     surface.set_fallback_resolution(95, 95)
     assert_equal([95.0, 95.0], surface.fallback_resolution)
   end

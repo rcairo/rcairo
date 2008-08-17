@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-08-16 12:52:17 $
+ * $Date: 2008-08-17 07:21:42 $
  *
  * Copyright 2005-2008 Kouhei Sutou <kou@cozmixng.org>
  *
@@ -95,6 +95,7 @@ VALUE rb_cairo__gc_guarded_objects (VALUE klass);
 
 const char *rb_cairo__inspect (VALUE object);
 
+#if CAIRO_CHECK_VERSION(1, 7, 2)
 VALUE rb_cairo__glyphs_to_ruby_object (cairo_glyph_t *glyphs, int num_glyphs);
 void rb_cairo__glyphs_from_ruby_object (VALUE rb_glyphs,
                                         cairo_glyph_t **glyphs, int *num_glyphs);
@@ -103,6 +104,7 @@ VALUE rb_cairo__text_clusters_to_ruby_object (cairo_text_cluster_t *clusters,
 void rb_cairo__text_clusters_from_ruby_object (VALUE rb_clusters,
                                                cairo_text_cluster_t **clusters,
                                                int *num_clusters);
+#endif
 
 cairo_status_t rb_cairo__exception_to_status (VALUE exception);
 

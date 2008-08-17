@@ -110,35 +110,37 @@ class FontFaceTest < Test::Unit::TestCase
                   result])
   end
 
-  class CustomUserFontFace < Cairo::UserFontFace
-    attr_reader :init_args, :render_glyph_args
-    attr_reader :text_to_glyphs_args, :unicode_to_glyph_args
-    def initialize
-      super
-      @init_args = []
-      @render_glyph_args = []
-      @text_to_glyphs_args = []
-      @unicode_to_glyph_args = []
-    end
+  if Cairo.satisfied_version?(1, 7, 2)
+    class CustomUserFontFace < Cairo::UserFontFace
+      attr_reader :init_args, :render_glyph_args
+      attr_reader :text_to_glyphs_args, :unicode_to_glyph_args
+      def initialize
+        super
+        @init_args = []
+        @render_glyph_args = []
+        @text_to_glyphs_args = []
+        @unicode_to_glyph_args = []
+      end
 
-    def init(*args)
-      @init_args << args
-    end
+      def init(*args)
+        @init_args << args
+      end
 
-    def render_glyph(*args)
-      @render_glyph_args << args
-    end
+      def render_glyph(*args)
+        @render_glyph_args << args
+      end
 
-    def text_to_glyphs(*args)
-      @text_to_glyphs_args << args
-      scaled_font, utf8, data = args
-      data.backward = true
-    end
+      def text_to_glyphs(*args)
+        @text_to_glyphs_args << args
+        scaled_font, utf8, data = args
+        data.backward = true
+      end
 
-    def unicode_to_glyph(*args)
-      @unicode_to_glyph_args << args
-      scaled_font, unicode = args
-      unicode
+      def unicode_to_glyph(*args)
+        @unicode_to_glyph_args << args
+        scaled_font, unicode = args
+        unicode
+      end
     end
   end
 

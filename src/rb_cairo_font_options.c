@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-08-13 12:27:40 $
+ * $Date: 2008-08-17 07:21:42 $
  *
  * Copyright 2005-2008 Kouhei Sutou <kou@cozmixng.org>
  *
@@ -160,6 +160,7 @@ cr_options_get_hint_metrics (VALUE self)
   return INT2NUM (cairo_font_options_get_hint_metrics (_SELF (self)));
 }
 
+#if CAIRO_CHECK_VERSION(1, 7, 2)
 static VALUE
 cr_options_set_lcd_filter (VALUE self, VALUE lcd_filter)
 {
@@ -173,6 +174,7 @@ cr_options_get_lcd_filter (VALUE self)
 {
   return INT2NUM (cairo_font_options_get_lcd_filter (_SELF (self)));
 }
+#endif
 
 
 void
@@ -206,10 +208,12 @@ Init_cairo_font_options (void)
                     cr_options_set_hint_metrics, 1);
   rb_define_method (rb_cCairo_FontOptions, "hint_metrics",
                     cr_options_get_hint_metrics, 0);
+#if CAIRO_CHECK_VERSION(1, 7, 2)
   rb_define_method (rb_cCairo_FontOptions, "set_lcd_filter",
                     cr_options_set_lcd_filter, 1);
   rb_define_method (rb_cCairo_FontOptions, "lcd_filter",
                     cr_options_get_lcd_filter, 0);
+#endif
 
   RB_CAIRO_DEF_SETTERS (rb_cCairo_FontOptions);
 }

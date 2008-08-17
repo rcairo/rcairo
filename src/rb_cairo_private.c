@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-08-17 06:04:50 $
+ * $Date: 2008-08-17 07:21:42 $
  *
  * Copyright 2005-2008 Kouhei Sutou <kou@cozmixng.org>
  *
@@ -130,6 +130,7 @@ rb_cairo__inspect (VALUE object)
   return RSTRING_PTR (inspected);
 }
 
+#if CAIRO_CHECK_VERSION(1, 7, 2)
 VALUE
 rb_cairo__glyphs_to_ruby_object (cairo_glyph_t *glyphs, int num_glyphs)
 {
@@ -211,6 +212,7 @@ rb_cairo__text_clusters_from_ruby_object (VALUE rb_clusters,
       *cluster = *(RVAL2CRTEXTCLUSTER (RARRAY_PTR (rb_clusters)[i]));
     }
 }
+#endif
 
 VALUE
 rb_cairo__invoke_callback (cr_callback_func_t func, VALUE data)
