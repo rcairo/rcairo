@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-08-16 12:52:16 $
+ * $Date: 2008-08-17 06:04:50 $
  *
  * Copyright 2005-2008 Kouhei Sutou <kou@cozmixng.org>
  *
@@ -153,7 +153,7 @@ rb_cairo__glyphs_from_ruby_object (VALUE rb_glyphs,
 
   if (NIL_P (rb_glyphs))
     {
-      *num_glyphs = 0;
+      *num_glyphs = -1;
       return;
     }
 
@@ -195,7 +195,7 @@ rb_cairo__text_clusters_from_ruby_object (VALUE rb_clusters,
 
   if (NIL_P (rb_clusters))
     {
-      *num_clusters = 0;
+      *num_clusters = -1;
       return;
     }
 
