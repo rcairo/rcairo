@@ -34,6 +34,8 @@ class ContextTest < Test::Unit::TestCase
   end
 
   def test_font_face
+    only_cairo_version(1, 7, 2)
+
     context = Cairo::Context.new(@surface)
 
     assert_kind_of(Cairo::FontFace, context.font_face)
@@ -77,6 +79,8 @@ class ContextTest < Test::Unit::TestCase
   end
 
   def test_select_font_face
+    only_cairo_version(1, 7, 2)
+
     context = Cairo::Context.new(@surface)
 
     face = context.font_face

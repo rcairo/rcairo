@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-08-16 12:52:16 $
+ * $Date: 2008-08-17 07:21:42 $
  *
  * Copyright 2006-2008 Kouhei Sutou <kou@cozmixng.org>
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
@@ -199,8 +199,10 @@ VALUE                 rb_cairo_text_extents_to_ruby_object   (cairo_text_extents
 cairo_glyph_t        *rb_cairo_glyph_from_ruby_object        (VALUE obj);
 VALUE                 rb_cairo_glyph_to_ruby_object          (cairo_glyph_t *glyph);
 
+#if CAIRO_CHECK_VERSION(1, 7, 2)
 cairo_text_cluster_t *rb_cairo_text_cluster_from_ruby_object (VALUE obj);
 VALUE                 rb_cairo_text_cluster_to_ruby_object   (cairo_text_cluster_t *cluster);
+#endif
 
 cairo_surface_t      *rb_cairo_surface_from_ruby_object      (VALUE obj);
 VALUE                 rb_cairo_surface_to_ruby_object        (cairo_surface_t *surface);
