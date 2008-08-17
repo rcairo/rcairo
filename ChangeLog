@@ -1,5 +1,11 @@
 2008-08-17  Kouhei Sutou  <kou@cozmixng.org>
 
+	* src/rb_cairo_font_face.c: add
+	Cairo::UserFontFace::TextToGlyphsData#need_backward?.
+
+	* test/test_text_to_glyphs_data.rb: add tests for
+	Cairo::UserFontFace::TextToGlyphsData.
+
 	* test/test_font_face.rb
 	(FontFaceTest#test_toy_font_face_new_with_invalid_family_name):
 	add a test for creating Cairo::ToyFontFace with invalid family
