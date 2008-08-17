@@ -1,3 +1,21 @@
+2008-08-17  Kouhei Sutou  <kou@cozmixng.org>
+
+	* test/test_font_face.rb
+	(FontFaceTest#test_toy_font_face_new_with_invalid_family_name):
+	add a test for creating Cairo::ToyFontFace with invalid family
+	name.
+	(FontFaceTest#test_toy_font_face_new): add a test for creating
+	Cairo::ToyFontFace with nil family name.
+
+	* src/rb_cairo_font_face.c (cr_toy_font_face_initialize): accept nil.
+
+	* src/rb_cairo_context.c (cr_select_font_face): make family optional.
+
+	* test/test_context.rb
+	(ContextTest#test_select_font_face),
+	(ContextTest#test_select_font_face_with_invalid_family_name): add
+	a test for Cairo::Context#select_font_face.
+
 2008-08-16  Kouhei Sutou  <kou@cozmixng.org>
 
 	* test/test_pkg_config.rb (PkgConfigTest#test_requires_private):

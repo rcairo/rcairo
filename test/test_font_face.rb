@@ -3,24 +3,47 @@ require 'cairo'
 class FontFaceTest < Test::Unit::TestCase
   include CairoTestUtils
 
-  def test_toy_font_face
+  def test_toy_font_face_new
     only_cairo_version(1, 7, 2)
 
-    face = Cairo::ToyFontFace.new("sans")
-    assert_equal(["sans", Cairo::FONT_SLANT_NORMAL, Cairo::FONT_WEIGHT_NORMAL],
+    face = Cairo::ToyFontFace.new
+    default_font_family = ""
+    # default_font_family = "Helvetica" if quartz?
+    # default_font_family = "Arial" if win32?
+    assert_equal([default_font_family,
+                  Cairo::FONT_SLANT_NORMAL,
+                  Cairo::FONT_WEIGHT_NORMAL],
                  [face.family, face.slant, face.weight])
 
-    face = Cairo::ToyFontFace.new("sans", :oblique)
-    assert_equal(["sans", Cairo::FONT_SLANT_OBLIQUE, Cairo::FONT_WEIGHT_NORMAL],
+    face = Cairo::ToyFontFace.new("serif")
+    assert_equal(["serif", Cairo::FONT_SLANT_NORMAL, Cairo::FONT_WEIGHT_NORMAL],
                  [face.family, face.slant, face.weight])
 
-    face = Cairo::ToyFontFace.new("sans", nil, :bold)
-    assert_equal(["sans", Cairo::FONT_SLANT_NORMAL, Cairo::FONT_WEIGHT_BOLD],
+    face = Cairo::ToyFontFace.new(:serif)
+    assert_equal(["serif", Cairo::FONT_SLANT_NORMAL, Cairo::FONT_WEIGHT_NORMAL],
                  [face.family, face.slant, face.weight])
 
-    face = Cairo::ToyFontFace.new("sans", :italic, :bold)
-    assert_equal(["sans", Cairo::FONT_SLANT_ITALIC, Cairo::FONT_WEIGHT_BOLD],
+    face = Cairo::ToyFontFace.new("serif", :oblique)
+    assert_equal(["serif", Cairo::FONT_SLANT_OBLIQUE, Cairo::FONT_WEIGHT_NORMAL],
                  [face.family, face.slant, face.weight])
+
+    face = Cairo::ToyFontFace.new("serif", nil, :bold)
+    assert_equal(["serif", Cairo::FONT_SLANT_NORMAL, Cairo::FONT_WEIGHT_BOLD],
+                 [face.family, face.slant, face.weight])
+
+    face = Cairo::ToyFontFace.new("serif", :italic, :bold)
+    assert_equal(["serif", Cairo::FONT_SLANT_ITALIC, Cairo::FONT_WEIGHT_BOLD],
+                 [face.family, face.slant, face.weight])
+  end
+
+  def test_toy_font_face_new_with_invalid_family_name
+    only_cairo_version(1, 7, 2)
+
+    exception = assert_raise(ArgumentError) do
+      Cairo::ToyFontFace.new(999)
+    end
+    assert_equal("family name should be nil, String or Symbol: 999",
+                 exception.message)
   end
 
   def test_user_font_face_empty
