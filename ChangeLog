@@ -1,3 +1,10 @@
+2008-09-06  Kouhei Sutou  <kou@cozmixng.org>
+
+	* README: add Yusue ENDOH to Thanks list.
+
+	* src/rb_cairo_context.c: re-support cairo 1.2.x.
+	Reported by Yusuke ENDOH. Thanks!!!
+
 2008-08-17  Kouhei Sutou  <kou@cozmixng.org>
 
 	* NEWS: fix a typo.

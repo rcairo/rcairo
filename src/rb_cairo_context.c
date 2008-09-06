@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-08-17 03:00:41 $
+ * $Date: 2008-09-06 11:13:34 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -110,13 +110,26 @@ cr_allocate (VALUE klass)
   return Data_Wrap_Struct (klass, NULL, cr_context_free, NULL);
 }
 
+static void
+cr_set_user_data (cairo_t *cr, const cairo_user_data_key_t *key,
+                  void *user_data, cairo_destroy_func_t destroy)
+{
+#if CAIRO_CHECK_VERSION(1, 4, 0)
+  cairo_set_user_data (cr, key, user_data, destroy);
+#else
+  cairo_surface_t *surface;
+  surface = cairo_get_target (cr);
+  cairo_surface_set_user_data (surface, key, user_data, destroy);
+#endif
+}
+
 static VALUE
 cr_destroy (VALUE self)
 {
   cairo_t *cr;
 
   cr = _SELF;
-  cairo_set_user_data (cr, &cr_object_holder_key, NULL, NULL); /* needed? */
+  cr_set_user_data (cr, &cr_object_holder_key, NULL, NULL);
   cairo_destroy (cr);
 
   DATA_PTR (self) = NULL;
@@ -140,9 +153,10 @@ cr_initialize (VALUE self, VALUE target)
   cr = cairo_create (RVAL2CRSURFACE (target));
   cr_check_status (cr);
   rb_ivar_set (self, cr_id_surface, target);
-  cairo_set_user_data (cr, &cr_object_holder_key,
-                       cr_object_holder_new(self),
-                       cr_object_holder_free);
+  cr_set_user_data (cr,
+                    &cr_object_holder_key,
+                    cr_object_holder_new(self),
+                    cr_object_holder_free);
   DATA_PTR (self) = cr;
   if (rb_block_given_p ())
     result = rb_ensure (rb_yield, self, cr_destroy_with_destroy_check, self);
