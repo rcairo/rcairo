@@ -100,5 +100,5 @@ EXPORTS
     rb_cairo_filter_from_ruby_object
     rb_cairo_svg_version_from_ruby_object
     rb_cairo_ps_level_from_ruby_object
-    rb_cairo_lcd_filter_from_ruby_object
+    rb_cairo_text_cluster_flags_from_ruby_object
     rb_cairo_check_status
