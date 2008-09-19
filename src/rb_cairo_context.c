@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-09-06 11:13:34 $
+ * $Date: 2008-09-19 12:56:27 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -1205,7 +1205,7 @@ cr_show_glyphs (VALUE self, VALUE rb_glyphs)
   return self;
 }
 
-#if CAIRO_CHECK_VERSION(1, 7, 2)
+#if CAIRO_CHECK_VERSION(1, 7, 6)
 static VALUE
 cr_has_show_text_glyphs (VALUE self)
 {
@@ -1214,7 +1214,7 @@ cr_has_show_text_glyphs (VALUE self)
 
 static VALUE
 cr_show_text_glyphs (VALUE self, VALUE rb_utf8, VALUE rb_glyphs,
-                     VALUE rb_clusters, VALUE rb_backward)
+                     VALUE rb_clusters, VALUE rb_cluster_flags)
 {
   cairo_t *cr;
   const char *utf8;
@@ -1223,7 +1223,7 @@ cr_show_text_glyphs (VALUE self, VALUE rb_utf8, VALUE rb_glyphs,
   int num_glyphs = 0;
   cairo_text_cluster_t *clusters = NULL;
   int num_clusters = 0;
-  cairo_bool_t backward;
+  cairo_text_cluster_flags_t cluster_flags;
 
   cr = _SELF;
   utf8 = RSTRING_PTR (rb_utf8);
@@ -1231,11 +1231,11 @@ cr_show_text_glyphs (VALUE self, VALUE rb_utf8, VALUE rb_glyphs,
   rb_cairo__glyphs_from_ruby_object (rb_glyphs, &glyphs, &num_glyphs);
   rb_cairo__text_clusters_from_ruby_object (rb_clusters,
                                             &clusters, &num_clusters);
-  backward = RVAL2CBOOL (rb_backward);
+  cluster_flags = RVAL2CRTEXTCLUSTERFLAGS (rb_cluster_flags);
   cairo_show_text_glyphs (cr, utf8, utf8_len,
                           glyphs, num_glyphs,
                           clusters, num_clusters,
-                          backward);
+                          cluster_flags);
   if (glyphs)
     cairo_glyph_free (glyphs);
   if (clusters)

@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-08-13 12:27:39 $
+ * $Date: 2008-09-19 12:56:27 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -33,7 +33,7 @@ VALUE rb_mCairo_Extend;
 VALUE rb_mCairo_Filter;
 VALUE rb_mCairo_SVGVersion = Qnil;
 VALUE rb_mCairo_PSLevel = Qnil;
-VALUE rb_mCairo_LCDFilter = Qnil;
+VALUE rb_mCairo_TextClusterFlag = Qnil;
 
 #define CAIRO_OPERATOR_MIN CAIRO_OPERATOR_CLEAR
 #define CAIRO_OPERATOR_MAX CAIRO_OPERATOR_SATURATE
@@ -86,8 +86,8 @@ VALUE rb_mCairo_LCDFilter = Qnil;
 #define CAIRO_PS_LEVEL_MIN CAIRO_PS_LEVEL_2
 #define CAIRO_PS_LEVEL_MAX CAIRO_PS_LEVEL_3
 
-#define CAIRO_LCD_FILTER_MIN CAIRO_LCD_FILTER_DEFAULT
-#define CAIRO_LCD_FILTER_MAX CAIRO_LCD_FILTER_FIR5
+#define CAIRO_TEXT_CLUSTER_FLAG_MIN 0
+#define CAIRO_TEXT_CLUSTER_FLAG_MAX CAIRO_TEXT_CLUSTER_FLAG_BACKWARD
 
 #define DEFINE_RVAL2ENUM(name, const_name)                      \
 cairo_ ## name ## _t                                            \
@@ -139,8 +139,8 @@ DEFINE_RVAL2ENUM(ps_level, PS_LEVEL)
 #  endif
 #endif
 
-#if CAIRO_CHECK_VERSION(1, 7, 2)
-DEFINE_RVAL2ENUM(lcd_filter, LCD_FILTER)
+#if CAIRO_CHECK_VERSION(1, 7, 6)
+DEFINE_RVAL2ENUM(text_cluster_flags, TEXT_CLUSTER_FLAG)
 #endif
 
 #if defined(RB_CAIRO_PLATFORM_WIN32) && !defined(PS_LEVEL_ENUM_DEFINED)
@@ -468,18 +468,11 @@ Init_cairo_constants (void)
 #  endif
 #endif
 
-#if CAIRO_CHECK_VERSION(1, 7, 2)
-  /* cairo_lcd_filter_t */
-  rb_mCairo_LCDFilter = rb_define_module_under (rb_mCairo, "LCDFilter");
-  rb_define_const (rb_mCairo_LCDFilter, "DEFAULT",
-                   INT2FIX (CAIRO_LCD_FILTER_DEFAULT));
-  rb_define_const (rb_mCairo_LCDFilter, "NONE",
-                   INT2FIX (CAIRO_LCD_FILTER_NONE));
-  rb_define_const (rb_mCairo_LCDFilter, "INTRA_PIXEL",
-                   INT2FIX (CAIRO_LCD_FILTER_INTRA_PIXEL));
-  rb_define_const (rb_mCairo_LCDFilter, "FIR3",
-                   INT2FIX (CAIRO_LCD_FILTER_FIR3));
-  rb_define_const (rb_mCairo_LCDFilter, "FIR5",
-                   INT2FIX (CAIRO_LCD_FILTER_FIR5));
+#if CAIRO_CHECK_VERSION(1, 7, 6)
+  /* cairo_text_cluster_flags_t */
+  rb_mCairo_TextClusterFlag =
+    rb_define_module_under (rb_mCairo, "TextClusterFlag");
+  rb_define_const (rb_mCairo_TextClusterFlag, "BACKWARD",
+                   INT2FIX (CAIRO_TEXT_CLUSTER_FLAG_BACKWARD));
 #endif
 }

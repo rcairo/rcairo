@@ -17,7 +17,7 @@ class ScaledFontTest < Test::Unit::TestCase
   end
 
   def test_text_to_glyphs
-    only_cairo_version(1, 7, 2)
+    only_cairo_version(1, 7, 6)
 
     surface = Cairo::PDFSurface.new(StringIO.new, 10, 10)
     context = Cairo::Context.new(surface)
@@ -27,8 +27,8 @@ class ScaledFontTest < Test::Unit::TestCase
                                         Cairo::FontOptions.new)
     expected_glyphs = []
     expected_clusters = []
-    expected_backward = false
-    assert_equal([expected_glyphs, expected_clusters, expected_backward],
+    expected_cluster_flags = 0
+    assert_equal([expected_glyphs, expected_clusters, expected_cluster_flags],
                  scaled_font.text_to_glyphs(0, 0, "text"))
   end
 end

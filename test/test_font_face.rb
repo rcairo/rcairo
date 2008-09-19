@@ -54,7 +54,7 @@ class FontFaceTest < Test::Unit::TestCase
                                         Cairo::Matrix.identity,
                                         Cairo::Matrix.identity,
                                         Cairo::FontOptions.new)
-    assert_equal([[], [], false],
+    assert_equal([[], [], 0],
                  scaled_font.text_to_glyphs(0, 0, "text"))
   end
 
@@ -77,7 +77,7 @@ class FontFaceTest < Test::Unit::TestCase
     face.on_text_to_glyphs do |*args|
       text_to_glyphs_args << args
       scaled_font, utf8, data = args
-      data.backward = true
+      data.cluster_flags = :backward
     end
 
     unicode_to_glyph_args = []
@@ -102,7 +102,7 @@ class FontFaceTest < Test::Unit::TestCase
                    [Cairo::ScaledFont, ?e],
                    [Cairo::ScaledFont, ?x],
                    [Cairo::ScaledFont, ?t]],
-                  [[], [], true]],
+                  [[], [], Cairo::TextClusterFlag::BACKWARD]],
                  [classify_cairo_object(init_args),
                   classify_cairo_object(render_glyph_args),
                   classify_cairo_object(text_to_glyphs_args),
@@ -133,7 +133,7 @@ class FontFaceTest < Test::Unit::TestCase
       def text_to_glyphs(*args)
         @text_to_glyphs_args << args
         scaled_font, utf8, data = args
-        data.backward = true
+        data.cluster_flags = :backward
       end
 
       def unicode_to_glyph(*args)
@@ -164,7 +164,7 @@ class FontFaceTest < Test::Unit::TestCase
                    [Cairo::ScaledFont, ?e],
                    [Cairo::ScaledFont, ?x],
                    [Cairo::ScaledFont, ?t]],
-                  [[], [], true]],
+                  [[], [], Cairo::TextClusterFlag::BACKWARD]],
                  [classify_cairo_object(face.init_args),
                   classify_cairo_object(face.render_glyph_args),
                   classify_cairo_object(face.text_to_glyphs_args),
@@ -191,7 +191,7 @@ class FontFaceTest < Test::Unit::TestCase
     face.on_text_to_glyphs do |*args|
       text_to_glyphs_args << args
       scaled_font, utf8, data = args
-      data.backward = true
+      data.cluster_flags = :backward
     end
 
     unicode_to_glyph_args = []
@@ -220,7 +220,7 @@ class FontFaceTest < Test::Unit::TestCase
                   [],
                   [],
                   [],
-                  [[], [], true]],
+                  [[], [], Cairo::TextClusterFlag::BACKWARD]],
                  [classify_cairo_object(init_args),
                   classify_cairo_object(render_glyph_args),
                   classify_cairo_object(text_to_glyphs_args),

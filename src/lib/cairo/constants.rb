@@ -18,5 +18,7 @@ module Cairo
   define_constants.call(PathDataType, nil, Path)
   define_constants.call(SVGVersion, nil, SVGSurface)
   define_constants.call(SVGVersion, "SVG")
-  define_constants.call(LCDFilter, "LCD_FILTER") if const_defined?(:LCDFilter)
+  if const_defined?(:TextClusterFlag)
+    define_constants.call(TextClusterFlag, "TEXT_CLUSTER_FLAG")
+  end
 end

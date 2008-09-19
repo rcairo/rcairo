@@ -1,3 +1,7 @@
+2008-09-19  Kouhei Sutou  <kou@cozmixng.org>
+
+	* src/, test/: support cairo 1.7.6.
+
 2008-09-06  Kouhei Sutou  <kou@cozmixng.org>
 
 	* README: add Yusue ENDOH to Thanks list.

@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-08-17 06:11:51 $
+ * $Date: 2008-09-19 12:56:27 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -21,7 +21,7 @@ VALUE rb_cCairo_ToyFontFace = Qnil;
 VALUE rb_cCairo_UserFontFace = Qnil;
 VALUE rb_cCairo_UserFontFace_TextToGlyphsData = Qnil;
 
-#if CAIRO_CHECK_VERSION(1, 7, 2)
+#if CAIRO_CHECK_VERSION(1, 7, 6)
 static cairo_user_data_key_t ruby_object_key;
 static ID cr_id_call;
 static ID cr_id_new;
@@ -33,10 +33,10 @@ static ID cr_id_unicode_to_glyph;
 
 static ID cr_id_at_glyphs;
 static ID cr_id_at_clusters;
-static ID cr_id_at_backward;
+static ID cr_id_at_cluster_flags;
 static ID cr_id_at_need_glyphs;
 static ID cr_id_at_need_clusters;
-static ID cr_id_at_need_backward;
+static ID cr_id_at_need_cluster_flags;
 #endif
 
 #define _SELF  (RVAL2CRFONTFACE(self))
@@ -84,7 +84,7 @@ rb_cairo_font_face_to_ruby_object (cairo_font_face_t *face)
 
       switch (cairo_font_face_get_type (face))
         {
-#if CAIRO_CHECK_VERSION(1, 7, 2)
+#if CAIRO_CHECK_VERSION(1, 7, 6)
         case CAIRO_FONT_TYPE_TOY:
           klass = rb_cCairo_ToyFontFace;
           break;
@@ -111,7 +111,7 @@ cr_font_face_allocate (VALUE klass)
   return Data_Wrap_Struct (klass, NULL, cr_font_face_free, NULL);
 }
 
-#if CAIRO_CHECK_VERSION(1, 7, 2)
+#if CAIRO_CHECK_VERSION(1, 7, 6)
 static VALUE
 cr_toy_font_face_initialize (int argc, VALUE *argv, VALUE self)
 {
@@ -346,7 +346,7 @@ typedef struct _cr_text_to_glyphs_after_hook_data {
   int *num_glyphs;
   cairo_text_cluster_t **clusters;
   int *num_clusters;
-  cairo_bool_t *backward;
+  cairo_text_cluster_flags_t *cluster_flags;
 } cr_text_to_glyphs_after_hook_data_t;
 
 static VALUE
@@ -381,12 +381,14 @@ cr_user_font_face_text_to_glyphs_func_after (VALUE user_data)
                                                 after_hook_data->num_clusters);
     }
 
-  if (after_hook_data->backward)
+  if (after_hook_data->cluster_flags)
     {
-      VALUE rb_backward;
+      VALUE rb_cluster_flags;
 
-      rb_backward = rb_ivar_get (text_to_glyphs_data, cr_id_at_backward);
-      *(after_hook_data->backward) = RVAL2CBOOL (rb_backward);
+      rb_cluster_flags = rb_ivar_get (text_to_glyphs_data,
+                                      cr_id_at_cluster_flags);
+      *(after_hook_data->cluster_flags) =
+        RVAL2CRTEXTCLUSTERFLAGS (rb_cluster_flags);
     }
 
   return data->result;
@@ -398,7 +400,7 @@ cr_user_font_face_text_to_glyphs_func (cairo_scaled_font_t *scaled_font,
                                        cairo_glyph_t **glyphs, int *num_glyphs,
                                        cairo_text_cluster_t **clusters,
                                        int *num_clusters,
-                                       cairo_bool_t *backward)
+                                       cairo_text_cluster_flags_t *cluster_flags)
 {
   cairo_status_t status = CAIRO_INT_STATUS_UNSUPPORTED;
   cairo_font_face_t *face;
@@ -434,7 +436,7 @@ cr_user_font_face_text_to_glyphs_func (cairo_scaled_font_t *scaled_font,
                                         3,
                                         CBOOL2RVAL (glyphs != NULL),
                                         CBOOL2RVAL (clusters != NULL),
-                                        CBOOL2RVAL (backward != NULL));
+                                        CBOOL2RVAL (cluster_flags != NULL));
       argv[2] = text_to_glyphs_data;
 
       data.receiver = receiver;
@@ -450,7 +452,7 @@ cr_user_font_face_text_to_glyphs_func (cairo_scaled_font_t *scaled_font,
       after_hook_data.num_glyphs = num_glyphs;
       after_hook_data.clusters = clusters;
       after_hook_data.num_clusters = num_clusters;
-      after_hook_data.backward = backward;
+      after_hook_data.cluster_flags = cluster_flags;
 
       rb_cairo__invoke_callback (cr_user_font_face_invoke_func, (VALUE)&data);
     }
@@ -581,22 +583,30 @@ cr_user_font_face_on_unicode_to_glyph (VALUE self)
 static VALUE
 cr_text_to_glyphs_data_initialize (VALUE self,
                                    VALUE need_glyphs, VALUE need_clusters,
-                                   VALUE need_backward)
+                                   VALUE need_cluster_flags)
 {
   rb_ivar_set (self, cr_id_at_glyphs, Qnil);
   rb_ivar_set (self, cr_id_at_clusters, Qnil);
-  rb_ivar_set (self, cr_id_at_backward, Qfalse);
+  rb_ivar_set (self, cr_id_at_cluster_flags, INT2NUM (0));
   rb_ivar_set (self, cr_id_at_need_glyphs, need_glyphs);
   rb_ivar_set (self, cr_id_at_need_clusters, need_clusters);
-  rb_ivar_set (self, cr_id_at_need_backward, need_backward);
+  rb_ivar_set (self, cr_id_at_need_cluster_flags, need_cluster_flags);
 
   return Qnil;
 }
 
 static VALUE
-cr_text_to_glyphs_data_backward_p (VALUE self)
+cr_text_to_glyphs_data_get_cluster_flags (VALUE self)
 {
-  return rb_ivar_get (self, cr_id_at_backward);
+  return rb_ivar_get (self, cr_id_at_cluster_flags);
+}
+
+static VALUE
+cr_text_to_glyphs_data_set_cluster_flags (VALUE self, VALUE cluster_flags)
+{
+  rb_ivar_set (self, cr_id_at_cluster_flags,
+               INT2NUM (RVAL2CRTEXTCLUSTERFLAGS (cluster_flags)));
+  return Qnil;
 }
 
 static VALUE
@@ -612,16 +622,16 @@ cr_text_to_glyphs_data_need_clusters (VALUE self)
 }
 
 static VALUE
-cr_text_to_glyphs_data_need_backward (VALUE self)
+cr_text_to_glyphs_data_need_cluster_flags (VALUE self)
 {
-  return rb_ivar_get (self, cr_id_at_need_backward);
+  return rb_ivar_get (self, cr_id_at_need_cluster_flags);
 }
 #endif
 
 void
 Init_cairo_font (void)
 {
-#if CAIRO_CHECK_VERSION(1, 7, 2)
+#if CAIRO_CHECK_VERSION(1, 7, 6)
   cr_id_call = rb_intern ("call");
   cr_id_new = rb_intern ("new");
 
@@ -632,17 +642,17 @@ Init_cairo_font (void)
 
   cr_id_at_glyphs = rb_intern ("@glyphs");
   cr_id_at_clusters = rb_intern ("@clusters");
-  cr_id_at_backward = rb_intern ("@backward");
+  cr_id_at_cluster_flags = rb_intern ("@cluster_flags");
   cr_id_at_need_glyphs = rb_intern ("@need_glyphs");
   cr_id_at_need_clusters = rb_intern ("@need_clusters");
-  cr_id_at_need_backward = rb_intern ("@need_backward");
+  cr_id_at_need_cluster_flags = rb_intern ("@need_cluster_flags");
 #endif
 
   rb_cCairo_FontFace =
     rb_define_class_under (rb_mCairo, "FontFace", rb_cObject);
   rb_define_alloc_func (rb_cCairo_FontFace, cr_font_face_allocate);
 
-#if CAIRO_CHECK_VERSION(1, 7, 2)
+#if CAIRO_CHECK_VERSION(1, 7, 6)
   rb_cCairo_ToyFontFace =
     rb_define_class_under (rb_mCairo, "ToyFontFace", rb_cCairo_FontFace);
 
@@ -680,19 +690,24 @@ Init_cairo_font (void)
            CR_TRUE, CR_TRUE, CR_TRUE);
   rb_attr (rb_cCairo_UserFontFace_TextToGlyphsData, rb_intern ("clusters"),
            CR_TRUE, CR_TRUE, CR_TRUE);
-  rb_attr (rb_cCairo_UserFontFace_TextToGlyphsData, rb_intern ("backward"),
-           CR_FALSE, CR_TRUE, CR_TRUE);
 
   rb_define_method (rb_cCairo_UserFontFace_TextToGlyphsData,
                     "initialize", cr_text_to_glyphs_data_initialize, 3);
 
   rb_define_method (rb_cCairo_UserFontFace_TextToGlyphsData,
-                    "backward?", cr_text_to_glyphs_data_backward_p, 0);
+                    "cluster_flags",
+                    cr_text_to_glyphs_data_get_cluster_flags, 0);
+  rb_define_method (rb_cCairo_UserFontFace_TextToGlyphsData,
+                    "set_cluster_flags",
+                    cr_text_to_glyphs_data_set_cluster_flags, 1);
   rb_define_method (rb_cCairo_UserFontFace_TextToGlyphsData,
                     "need_glyphs?", cr_text_to_glyphs_data_need_glyphs, 0);
   rb_define_method (rb_cCairo_UserFontFace_TextToGlyphsData,
                     "need_clusters?", cr_text_to_glyphs_data_need_clusters, 0);
   rb_define_method (rb_cCairo_UserFontFace_TextToGlyphsData,
-                    "need_backward?", cr_text_to_glyphs_data_need_backward, 0);
+                    "need_cluster_flags?",
+                    cr_text_to_glyphs_data_need_cluster_flags, 0);
+
+  RB_CAIRO_DEF_SETTERS (rb_cCairo_UserFontFace_TextToGlyphsData);
 #endif
 }
