@@ -49,18 +49,6 @@ class ContextTest < Test::Unit::TestCase
     assert_equal("sans", context.font_face.family)
   end
 
-  def test_have_show_text_glyphs?
-    only_cairo_version(1, 7, 2)
-
-    pdf_surface = Cairo::PDFSurface.new(@output, 10, 10)
-    context = Cairo::Context.new(pdf_surface)
-    assert_true(context.have_show_text_glyphs?)
-
-    image_surface = Cairo::ImageSurface.new(10, 10)
-    context = Cairo::Context.new(image_surface)
-    assert_false(context.have_show_text_glyphs?)
-  end
-
   def test_text_to_glyphs
     only_cairo_version(1, 7, 2)
 
