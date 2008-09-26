@@ -1,3 +1,11 @@
+Release 1.8.0 (2008-09-26) Kouhei Sutou <kou@cozmixng.org>)
+===========================================================
+
+Features
+--------
+  * Support cairo 1.8.0.
+  * Resupport cairo 1.2.x. (reported by Yusuke ENDOH)
+
 Release 1.7.0 (2008-08-17) Kouhei Sutou <kou@cozmixng.org>)
 ===========================================================
 
