@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-09-19 12:56:27 $
+ * $Date: 2008-09-26 14:13:58 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -698,7 +698,7 @@ Init_cairo_font (void)
                     "cluster_flags",
                     cr_text_to_glyphs_data_get_cluster_flags, 0);
   rb_define_method (rb_cCairo_UserFontFace_TextToGlyphsData,
-                    "set_cluster_flags",
+                    "cluster_flags=",
                     cr_text_to_glyphs_data_set_cluster_flags, 1);
   rb_define_method (rb_cCairo_UserFontFace_TextToGlyphsData,
                     "need_glyphs?", cr_text_to_glyphs_data_need_glyphs, 0);

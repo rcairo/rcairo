@@ -7,6 +7,8 @@
 	* test/test_context.rb (ContextTest#test_font_face): remove
 	needless test.
 
+	* src/rb_cairo_font_face.c: don't define #set_cluster_flags.
+
 	* src/rb_cairo_context.c: support cairo 1.8.0.
 
 2008-09-19  Kouhei Sutou  <kou@cozmixng.org>
