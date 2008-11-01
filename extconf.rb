@@ -81,6 +81,7 @@ major, minor, micro = 1, 2, 0
 PKGConfig.have_package(pkg, major, minor, micro) or exit 1
 
 have_header("ruby/st.h") unless have_macro("HAVE_RUBY_ST_H", "ruby.h")
+have_header("ruby/io.h") unless have_macro("HAVE_RUBY_IO_H", "ruby.h")
 have_func("rb_errinfo", "ruby.h")
 have_type("enum ruby_value_type", "ruby.h")
 

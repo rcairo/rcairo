@@ -3,7 +3,7 @@
  * Ruby Cairo Binding
  *
  * $Author: kou $
- * $Date: 2008-08-16 12:52:17 $
+ * $Date: 2008-11-01 14:23:14 $
  *
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -27,7 +27,11 @@
 #  undef OpenFile
 #endif
 
-#include <rubyio.h>
+#ifdef HAVE_RUBY_IO_H
+#  include <ruby/io.h>
+#else
+#  include <rubyio.h>
+#endif
 
 #ifdef CAIRO_HAS_QUARTZ_SURFACE
 #  ifndef HAVE_TYPE_ENUM_RUBY_VALUE_TYPE
