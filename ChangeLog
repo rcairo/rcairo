@@ -1,3 +1,8 @@
+2009-03-02  Kouhei Sutou  <kou@cozmixng.org>
+
+	* pkg-config.rb (PackageConfig#guess_default_path): add
+	/usr/X11/lib/pkgconfig/.
+
 2008-11-01  Kouhei Sutou  <kou@cozmixng.org>
 
 	* extconf.rb, src/rb_cairo_surface.c: check ruby/io.h availability.
