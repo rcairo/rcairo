@@ -1,3 +1,6 @@
+# Copyright 2008-2009 Kouhei Sutou <kou@cozmixng.org>
+# This file is made available under the same terms as Ruby.
+
 require "rbconfig"
 
 require 'mkmf'
