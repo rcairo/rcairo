@@ -108,6 +108,7 @@ end
 project.spec.executables.clear
 
 task(:release).prerequisites.reject! {|name| name == "clean"}
+task(:release_to_rubyforge).prerequisites.reject! {|name| name == "clean"}
 
 # for releasing
 task :dist => [:docs] do
