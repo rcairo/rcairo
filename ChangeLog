@@ -4,6 +4,8 @@
 
 	* NEWS: add 1.8.1 entry.
 
+	* Rakefile: remove install/uninstall tasks.
+
 2009-03-27  Kouhei Sutou  <kou@clear-code.com>
 
 	* pkg-config.rb: add license term.

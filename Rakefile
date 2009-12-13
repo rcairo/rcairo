@@ -105,37 +105,7 @@ end
 project.spec.executables.clear
 project.lib_files = project.spec.files.grep(%r|^src/lib/|)
 
-# fix Hoe's install and uninstall task.
-task(:install).instance_variable_get("@actions").clear
-task(:uninstall).instance_variable_get("@actions").clear
-
 task(:release).prerequisites.reject! {|name| name == "clean"}
-
-task :install do
-  [
-   [project.lib_files, "lib", Hoe::RUBYLIB, 0444],
-   [project.bin_files, "bin", File.join(Hoe::PREFIX, 'bin'), 0555]
-  ].each do |files, prefix, dest, mode|
-    FileUtils.mkdir_p dest unless test ?d, dest
-    files.each do |file|
-      base = File.dirname(file.sub(/^#{prefix}#{File::SEPARATOR}/, ''))
-      _dest = File.join(dest, base)
-      FileUtils.mkdir_p _dest unless test ?d, _dest
-      install file, _dest, :mode => mode
-    end
-  end
-end
-
-desc 'Uninstall the package.'
-task :uninstall do
-  Dir.chdir Hoe::RUBYLIB do
-    rm_f project.lib_files.collect {|f| f.sub(/^lib#{File::SEPARATOR}/, '')}
-  end
-  Dir.chdir File.join(Hoe::PREFIX, 'bin') do
-    rm_f project.bin_files.collect {|f| f.sub(/^bin#{File::SEPARATOR}/, '')}
-  end
-end
-
 
 # for releasing
 task :dist => [:docs] do
