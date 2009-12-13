@@ -1,3 +1,9 @@
+2009-12-13  Kouhei Sutou  <kou@cozmixng.org>
+
+	* src/rb_cairo.c: 1.8.0 -> 1.8.1.
+
+	* NEWS: add 1.8.1 entry.
+
 2009-03-27  Kouhei Sutou  <kou@clear-code.com>
 
 	* pkg-config.rb: add license term.

@@ -1,3 +1,11 @@
+Release 1.8.1 (2009-12-13) Kouhei Sutou <kou@cozmixng.org>)
+===========================================================
+
+Features
+--------
+  * Support cairo 1.8.8.
+  * Improve auto .pc detection.
+
 Release 1.8.0 (2008-09-26) Kouhei Sutou <kou@cozmixng.org>)
 ===========================================================
 
