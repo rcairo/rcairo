@@ -60,7 +60,8 @@ end
 
 ENV["VERSION"] ||= guess_rcairo_version
 version = ENV["VERSION"]
-project = Hoe.new('cairo', version) do |project|
+project = Hoe.spec('cairo') do |project|
+  project.version = version
   project.rubyforge_name = 'cairo'
   authors = File.join(base_dir, "AUTHORS")
   project.author = File.readlines(authors).collect do |line|
@@ -103,7 +104,6 @@ end
 
 # fix Hoe's incorrect guess.
 project.spec.executables.clear
-project.lib_files = project.spec.files.grep(%r|^src/lib/|)
 
 task(:release).prerequisites.reject! {|name| name == "clean"}
 
