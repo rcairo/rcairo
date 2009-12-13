@@ -80,6 +80,8 @@ project = Hoe.spec('cairo') do |project|
     :require_paths => ['src/lib', 'src'],
     :has_rdoc => false,
   }
+  platform = ENV["FORCE_PLATFORM"]
+  project.spec_extras[:platform] = platform if platform
   news = File.join(base_dir, "NEWS")
   project.changes = File.read(news).gsub(/\n+^Release(?m:.*)/, '')
   project.description = "Ruby bindings for cairo"

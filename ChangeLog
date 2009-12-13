@@ -8,6 +8,8 @@
 
 	* Rakefile: use hoe 2.3.2.
 
+	* Rakefile: resupport FORCE_PLATFORM.
+
 2009-03-27  Kouhei Sutou  <kou@clear-code.com>
 
 	* pkg-config.rb: add license term.
