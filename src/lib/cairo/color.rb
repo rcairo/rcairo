@@ -88,6 +88,18 @@ module Cairo
         @blue = b
       end
 
+      def hash
+        to_s.hash
+      end
+
+      def eql?(other)
+        self == other
+      end
+
+      def ==(other)
+        other.is_a?(self.class) and other.to_s == to_s
+      end
+
       def to_a
         [@red, @green, @blue, @alpha]
       end
