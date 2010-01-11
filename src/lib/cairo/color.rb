@@ -135,10 +135,10 @@ module Cairo
           when @red
             numerator = @green - @blue
             angle = 0
-          when @blue
+          when @green
             numerator = @blue - @red
             angle = 120
-          when @green
+          when @blue
             numerator = @red - @green
             angle = 240
           end

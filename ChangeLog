@@ -1,5 +1,12 @@
 2010-01-11  Kouhei Sutou  <kou@cozmixng.org>
 
+	* src/lib/cairo/color.rb(Color::RGB#to_hsv): fix RGB -> HSV
+	conversion.
+	Patch by Yuta Taniguchi. Thanks!!!
+	* README: add Yuta Taniguchi to thanks list. Thanks!!!
+
+	* test/test_color.rb: add.
+
 	* src/lib/cairo/color.rb: add Color::RGB#==, Color::RGB#hash,
 	Color::RGB#eql?.
 
