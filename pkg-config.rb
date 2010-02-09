@@ -199,7 +199,12 @@ class PackageConfig
       end
       extern "const char *dln_find_exe(const char *, const char *)"
     end
-    dln.dln_find_exe(pkg_config.to_s, ".")
+    path = dln.dln_find_exe(pkg_config.to_s, nil)
+    if path.size.zero?
+      nil
+    else
+      Pathname(path.to_s)
+    end
   end
 
   def guess_default_path

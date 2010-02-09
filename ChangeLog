@@ -1,3 +1,8 @@
+2010-02-09  Kouhei Sutou  <kou@clear-code.com>
+
+	* pkg-config.rb: fix pkg-config detection on Ruby 1.9.
+	Reported by Tasuku SUENAGA. Thanks!!!
+
 2010-01-11  Kouhei Sutou  <kou@cozmixng.org>
 
 	* src/lib/cairo/color.rb(Color::RGB#to_hsv): fix RGB -> HSV
