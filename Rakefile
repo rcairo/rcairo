@@ -27,7 +27,7 @@ end
 manifest = File.join(base_dir, "Manifest.txt")
 manifest_contents = []
 base_dir_included_components = %w(AUTHORS COPYING ChangeLog GPL
-                                  NEWS README Rakefile
+                                  NEWS README.doc Rakefile
                                   extconf.rb pkg-config.rb)
 excluded_components = %w(.cvsignore .gdb_history CVS depend Makefile pkg
                          .test-result .gitignore .git vendor)
