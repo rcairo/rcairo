@@ -2,3 +2,5 @@
 /mkmf.log
 *.so
 *.o
+/doc/
+/rcairo-*.tar.gz*
