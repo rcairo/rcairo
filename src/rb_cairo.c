@@ -76,7 +76,7 @@ Init_cairo ()
 
   rb_define_const (rb_mCairo, "BINDINGS_VERSION",
                    rb_ary_new3 (4,
-                                INT2FIX (1), INT2FIX (8), INT2FIX (1), Qnil));
+                                INT2FIX (1), INT2FIX (8), INT2FIX (2), Qnil));
 
   rb_define_module_function (rb_mCairo, "satisfied_version?",
                              rb_cairo_satisfied_version, -1);
