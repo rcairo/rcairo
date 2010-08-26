@@ -51,11 +51,12 @@ cairo-X.Y.Z-x86-mswin32.gem includes cairo related binaries.
 * cairo related binaries:
   http://ftp.gnome.org/pub/gnome/binaries/win32/dependencies/
 
-  * cairo-X.Y.Z.zip
-  * cairo-dev-X.Y.Z.zip
-  * libpng-X.Y.Z.zip
-  * libpng-dev-X.Y.Z.zip
-  * zlib-X.Y.Z.zip
+  * cairo-X.Y.Z-win32.zip
+  * cairo-dev-X.Y.Z-win32.zip
+  * libpng-X.Y.Z-win32.zip
+  * libpng-dev-X.Y.Z-win32.zip
+  * zlib-X.Y.Z-win32.zip
+  * zlib-dev-X.Y.Z-win32.zip
 
 == Documents
 
