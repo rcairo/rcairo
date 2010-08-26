@@ -12,7 +12,7 @@ ruby = File.join(RbConfig::CONFIG['bindir'],
                  RbConfig::CONFIG['ruby_install_name'] +
                  RbConfig::CONFIG["EXEEXT"])
 
-ext_dir.chdir do
+Dir.chdir(ext_dir.to_s) do
   system(ruby, "extconf.rb")
 end
 
