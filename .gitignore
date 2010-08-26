@@ -5,3 +5,5 @@
 /doc/
 /rcairo-*.tar.gz*
 /test/.test-result/
+/tmp/
+/vendor/

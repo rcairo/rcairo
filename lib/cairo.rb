@@ -3,7 +3,7 @@
 if /mingw|mswin|mswin32/ =~ RUBY_PLATFORM
   require 'pathname'
   base_dir = Pathname(File.dirname(__FILE__))
-  base_dir = base_dir.parent.parent + "cairo"
+  base_dir = base_dir.parent + "vendor" + "local"
   if base_dir.exist?
     base_dir = base_dir.to_s.gsub(/\//, "\\")
     ENV['PATH'] = %w(bin lib).collect do |dir|

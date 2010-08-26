@@ -24,9 +24,6 @@ def guess_rcairo_version
   Cairo.bindings_version
 end
 
-cairo_win32_dir = "cairo"
-FileUtils.rm_rf(cairo_win32_dir)
-
 manifest = File.join(base_dir, "Manifest.txt")
 manifest_contents = []
 base_dir_included_components = %w(AUTHORS COPYING ChangeLog GPL
@@ -98,8 +95,7 @@ Rake::ExtensionTask.new("cairo", project.spec) do |ext|
 end
 
 if /mswin32/ =~ project.spec.platform.to_s
-  FileUtils.cp_r(File.expand_path("~/.wine/drive_c/cairo-dev"),
-                 cairo_win32_dir)
+  cairo_win32_dir = File.join(base_dir, "vendor", "local")
   cairo_files = []
   Find.find(cairo_win32_dir) do |f|
     cairo_files << f
