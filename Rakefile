@@ -30,8 +30,8 @@ base_dir_included_components = %w(AUTHORS COPYING ChangeLog GPL
                                   NEWS README Rakefile
                                   extconf.rb pkg-config.rb)
 excluded_components = %w(.cvsignore .gdb_history CVS depend Makefile pkg
-                         .test-result)
-excluded_suffixes = %w(.png .ps .pdf .o .so .a .txt .~)
+                         .test-result .gitignore .git vendor)
+excluded_suffixes = %w(.png .ps .pdf .o .so .a .txt .~ .log)
 Find.find(base_dir) do |target|
   target = truncate_base_dir[target]
   components = target.split(File::SEPARATOR)
@@ -74,8 +74,8 @@ project = Hoe.spec('cairo') do |project|
   project.url = 'http://cairographics.org/rcairo'
   project.test_globs = []
   project.spec_extras = {
-    :extensions => ['extconf.rb'],
-    :require_paths => ['lib', 'ext/cairo'],
+    :extensions => ['ext/cairo/extconf.rb'],
+    :require_paths => ['lib'],
     :has_rdoc => false,
   }
   platform = ENV["FORCE_PLATFORM"]
