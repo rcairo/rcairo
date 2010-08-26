@@ -20,16 +20,11 @@ checking_for(checking_message("GCC")) do
   end
 end
 
-pkg = "cairo"
+package = "cairo"
 module_name = "cairo"
 major, minor, micro = 1, 2, 0
 
-PKGConfig.have_package(pkg, major, minor, micro) or exit 1
-
-have_header("ruby/st.h") unless have_macro("HAVE_RUBY_ST_H", "ruby.h")
-have_header("ruby/io.h") unless have_macro("HAVE_RUBY_IO_H", "ruby.h")
-have_func("rb_errinfo", "ruby.h")
-have_type("enum ruby_value_type", "ruby.h")
+PKGConfig.have_package(package, major, minor, micro) or exit 1
 
 checking_for(checking_message("Win32 OS")) do
   case RUBY_PLATFORM
@@ -41,10 +36,10 @@ checking_for(checking_message("Win32 OS")) do
     local_cairo_install_dir = base_dir + "vendor" + "local"
     $CFLAGS += " -I#{local_cairo_install_dir}/include"
     local_cairo_lib_dir = local_cairo_install_dir + "lib"
-    ["libcairo.lib", "libcairo.dll.a"].each do |libcairo_base|
+    ["cairo.lib", "libcairo.dll.a"].each do |libcairo_base|
       libcairo = local_cairo_lib_dir + libcairo_base
       if libcairo.exist?
-        $DLDFLAGS += " -L#{local_cairo_lib_dir}"
+        $LDFLAGS += " -L#{local_cairo_lib_dir}"
         break
       end
     end
@@ -76,4 +71,10 @@ checking_for(checking_message("Mac OS X")) do
 end
 
 $defs << "-DRB_CAIRO_COMPILATION"
+
+have_header("ruby/st.h") unless have_macro("HAVE_RUBY_ST_H", "ruby.h")
+have_header("ruby/io.h") unless have_macro("HAVE_RUBY_IO_H", "ruby.h")
+have_func("rb_errinfo", "ruby.h")
+have_type("enum ruby_value_type", "ruby.h")
+
 create_makefile(module_name)

@@ -24,7 +24,7 @@ VALUE
 rb_cairo__float_array (double *values, unsigned count)
 {
   VALUE result;
-  int i;
+  unsigned i;
 
   result = rb_ary_new2 (count);
   for (i = 0; i < count; i++)
