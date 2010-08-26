@@ -21,7 +21,8 @@ mkdir -p tmp
 git clone git@github.com:rcairo/rcairo.git tmp/$base
 cd tmp/$base
 git checkout $TAG
-cd ..
+rm -rf .git
+cd ../..
 cp -rp doc tmp/$base/
 tar cvfz $tgz -C tmp $base
 md5sum $tgz > $tgz.md5
