@@ -1,3 +1,19 @@
+Release 1.8.2 (2010-08-26) Kouhei Sutou <kou@cozmixng.org>)
+===========================================================
+
+Features
+--------
+  * Support cairo 1.8.10.
+  * Support Ruby 1.9.2. (reported by Tasuku SUENAGA and kimura wataru)
+  * Fix RGV -> HSV conversion. (patch by Yuta Taniguchi)
+  * Support Cairo::Color as Hash key.
+
+Thanks
+------
+  * Yuta Taniguchi
+  * Tasuku SUENAGA
+  * kimura wataru
+
 Release 1.8.1 (2009-12-13) Kouhei Sutou <kou@cozmixng.org>)
 ===========================================================
 
