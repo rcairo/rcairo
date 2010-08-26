@@ -13,8 +13,8 @@ truncate_base_dir = Proc.new do |x|
   x.gsub(/^#{Regexp.escape(base_dir + File::SEPARATOR)}/, '')
 end
 
-cairo_ext_dir = File.join(base_dir, 'src')
-cairo_lib_dir = File.join(cairo_ext_dir, 'lib')
+cairo_ext_dir = File.join(base_dir, 'ext', 'cairo')
+cairo_lib_dir = File.join(base_dir, 'lib')
 $LOAD_PATH.unshift(cairo_ext_dir)
 $LOAD_PATH.unshift(cairo_lib_dir)
 ENV["RUBYLIB"] = "#{cairo_lib_dir}:#{cairo_ext_dir}:#{ENV['RUBYLIB']}"
