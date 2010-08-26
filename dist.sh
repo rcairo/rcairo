@@ -15,9 +15,13 @@ base=rcairo-$VERSION
 tgz=$base.tar.gz
 
 
-cvs tag $TAG
+git tag -a $TAG -m "release ${VERSION}!!!"
+git push --tags
 mkdir -p tmp
-cvs export -r $TAG -d tmp/$base rcairo
+git clone git@github.com:rcairo/rcairo.git tmp/$base
+cd tmp/$base
+git checkout $TAG
+cd ..
 cp -rp doc tmp/$base/
 tar cvfz $tgz -C tmp $base
 md5sum $tgz > $tgz.md5
