@@ -6,6 +6,7 @@ require 'find'
 require 'fileutils'
 require 'rubygems'
 require 'hoe'
+require 'rake/extensiontask'
 
 base_dir = File.join(File.dirname(__FILE__))
 truncate_base_dir = Proc.new do |x|
@@ -77,7 +78,7 @@ project = Hoe.spec('cairo') do |project|
   project.test_globs = []
   project.spec_extras = {
     :extensions => ['extconf.rb'],
-    :require_paths => ['src/lib', 'src'],
+    :require_paths => ['lib', 'ext/cairo'],
     :has_rdoc => false,
   }
   platform = ENV["FORCE_PLATFORM"]
@@ -91,10 +92,12 @@ end
 
 project.spec.dependencies.delete_if {|dependency| dependency.name == "hoe"}
 
-if /mswin32/ =~ project.spec.platform.to_s
-  project.spec.extensions = []
-  project.spec.files += ["src/cairo.so", "src/libruby-cairo.a"]
+Rake::ExtensionTask.new("cairo", project.spec) do |ext|
+  ext.cross_compile = true
+  ext.cross_platform = 'x86-mingw32'
+end
 
+if /mswin32/ =~ project.spec.platform.to_s
   FileUtils.cp_r(File.expand_path("~/.wine/drive_c/cairo-dev"),
                  cairo_win32_dir)
   cairo_files = []

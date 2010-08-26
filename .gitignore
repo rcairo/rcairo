@@ -1,6 +1,7 @@
-/Makefile
-/mkmf.log
+/ext/cairo/Makefile
+/ext/cairo/mkmf.log
 *.so
 *.o
 /doc/
 /rcairo-*.tar.gz*
+/test/.test-result/

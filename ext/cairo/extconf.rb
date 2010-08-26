@@ -1,7 +1,8 @@
 #!/usr/bin/env ruby
 # vim: filetype=ruby:expandtab:shiftwidth=2:tabstop=8:softtabstop=2 :
 
-$LOAD_PATH.unshift(File.dirname(__FILE__))
+base_dir = File.expand_path(File.join(File.dirname(__FILE__), "..", ".."))
+$LOAD_PATH.unshift(base_dir)
 
 require 'English'
 require 'mkmf'
@@ -73,9 +74,7 @@ end
 
 
 pkg = "cairo"
-modname = "cairo"
-ext_dir_name = "src"
-srcdir = File.join(File.expand_path(File.dirname(__FILE__)), ext_dir_name)
+module_name = "cairo"
 major, minor, micro = 1, 2, 0
 
 PKGConfig.have_package(pkg, major, minor, micro) or exit 1
@@ -86,74 +85,7 @@ have_func("rb_errinfo", "ruby.h")
 have_type("enum ruby_value_type", "ruby.h")
 
 check_win32
-target_name = File.basename(modname)
-set_output_lib(target_name, ext_dir_name)
+target_name = File.basename(module_name)
+set_output_lib(target_name)
 $defs << "-DRB_CAIRO_COMPILATION"
-create_makefile(modname, srcdir)
-
-wine = with_config("wine", false)
-
-makefile = File.read("Makefile")
-File.open("Makefile", "w") do |f|
-  objs = []
-  co = nil
-  dllib = nil
-  makefile.each_line do |line|
-    if wine
-      line.gsub!(/\s+gcc\b/, " i586-mingw32msvc-gcc")
-      line.gsub!(/C:/, "$(HOME)/.wine/drive_c")
-      line.gsub!(/Z:/, "")
-    end
-
-    case line
-    when /^DLLIB\s*=\s*/
-      dllib = $POSTMATCH.chomp
-      f.puts("DLLIB = #{ext_dir_name}/#{dllib}")
-      f.puts("IMPLIB = #{ext_dir_name}/libruby-#{dllib.gsub(/\..+?$/, '.lib')}")
-    when /(\$\(RUBYARCHDIR\)\/)\$\(DLLIB\)/
-      f.puts("#{$PREMATCH}#{$1}#{dllib}#{$POSTMATCH}")
-    when /^(SRCS)\s*=\s*/
-      name = $1
-      vars = $POSTMATCH.split.collect {|var| "$(srcdir)/#{var}"}.join(" ")
-      f.puts("#{name} = #{vars}")
-    when /^(OBJS|CLEANLIBS|CLEANOBJS)\s*=\s*/
-      name = $1
-      vars = $POSTMATCH.split.collect {|var| "#{ext_dir_name}/#{var}"}
-      objs = vars if name == "OBJS"
-      vars = vars.join(" ")
-      f.puts("#{name} = #{vars}")
-    when /^LDSHARED\s*=/
-      def_file = "#{ext_dir_name}/#{target_name}.def"
-      line.gsub!(/\b-shared\b/, "-shared #{def_file}") if wine
-      f.puts(line)
-    when /^\t\$\(CC\)/
-      if PKGConfig.msvc?
-        output_option = "-Fo"
-      else
-        output_option = "-o"
-      end
-      unless /#{Regexp.escape(output_option)}/ =~ line
-        line = "#{line.chomp} #{output_option}$@"
-      end
-      co = line
-      f.puts(line)
-    else
-      f.puts(line)
-    end
-  end
-
-  if co and !objs.empty?
-    f.puts
-    if PKGConfig.msvc?
-      f.puts "{$(srcdir)}.c{#{ext_dir_name}}.obj:"
-      f.puts co
-    else
-      objs.each do |obj|
-        f.puts "#{obj}: $(srcdir)/#{File.basename(obj).sub(/\..+?$/, '.c')}"
-        f.puts co
-      end
-    end
-  end
-end
-
-FileUtils.mkdir_p(ext_dir_name)
+create_makefile(module_name)
