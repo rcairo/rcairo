@@ -99,4 +99,6 @@ http://cairographics.org/cgi-bin/mailman/listinfo/cairo
 * Davide Rambaldi: A suggestion.
 * Yusuke ENDOH: reports a bug.
 * Yuta Taniguchi: a bug fix patch.
-* kimura wataru: reports a bug.
+* kimura wataru:
+  * reports a bug.
+  * some patches.

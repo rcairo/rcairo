@@ -13,7 +13,7 @@ ruby = File.join(RbConfig::CONFIG['bindir'],
                  RbConfig::CONFIG["EXEEXT"])
 
 Dir.chdir(ext_dir.to_s) do
-  system(ruby, "extconf.rb")
+  system(ruby, "extconf.rb", *ARGV)
 end
 
 create_makefile("cairo")
