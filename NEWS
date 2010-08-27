@@ -1,3 +1,17 @@
+Release 1.8.4 (2010-08-27) Kouhei Sutou <kou@cozmixng.org>)
+===========================================================
+
+Fixes
+-----
+  * Fix build system. (patch by kimura watasu and suggested by OBATA Akio)
+  * Fix Windows gem. (reported by Dominic Sisneros)
+
+Thanks
+------
+  * Dominic Sisneros
+  * kimura wataru
+  * OBATA Akio
+
 Release 1.8.3 (2010-08-26) Kouhei Sutou <kou@cozmixng.org>)
 ===========================================================
 
