@@ -94,7 +94,7 @@ Rake::ExtensionTask.new("cairo", project.spec) do |ext|
 end
 
 task :add_win32_binaries do
-  cairo_win32_dir = File.join(base_dir, "vendor", "local")
+  cairo_win32_dir = File.join("vendor", "local")
   cairo_files = []
   Find.find(cairo_win32_dir) do |f|
     cairo_files << f
