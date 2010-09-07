@@ -91,17 +91,17 @@ project.spec.dependencies.delete_if {|dependency| dependency.name == "hoe"}
 
 Rake::ExtensionTask.new("cairo", project.spec) do |ext|
   ext.cross_compile = true
-end
-
-task :add_win32_binaries do
-  cairo_win32_dir = File.join("vendor", "local")
-  cairo_files = []
-  Find.find(cairo_win32_dir) do |f|
-    cairo_files << f
+  ext.cross_compiling do |spec|
+    if /mingw|mswin/ =~ spec.platform.to_s
+      cairo_win32_dir = File.join("vendor", "local")
+      cairo_files = []
+      Find.find(cairo_win32_dir) do |f|
+        cairo_files << f
+      end
+      spec.files += cairo_files
+    end
   end
-  project.spec.files += cairo_files
 end
-task :cross => :add_win32_binaries
 
 # fix Hoe's incorrect guess.
 project.spec.executables.clear
