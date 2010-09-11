@@ -5,6 +5,7 @@
  * $Author: kou $
  * $Date: 2008-09-19 12:56:27 $
  *
+ * Copyright 2005-2010 Kouhei Sutou <kou@cozmixng.org>
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
  *
@@ -75,7 +76,7 @@ VALUE rb_mCairo_MimeType = Qnil;
 #define CAIRO_CONTENT_MAX CAIRO_CONTENT_COLOR_ALPHA
 
 #define CAIRO_FORMAT_MIN CAIRO_FORMAT_ARGB32
-#define CAIRO_FORMAT_MAX CAIRO_FORMAT_A1
+#define CAIRO_FORMAT_MAX CAIRO_FORMAT_RGB16_565
 
 #define CAIRO_EXTEND_MIN CAIRO_EXTEND_NONE
 #define CAIRO_EXTEND_MAX CAIRO_EXTEND_REFLECT
@@ -482,6 +483,10 @@ Init_cairo_constants (void)
 
   /* cairo_format_t */
   rb_mCairo_Format = rb_define_module_under (rb_mCairo, "Format");
+#if CAIRO_CHECK_VERSION(1, 10, 0)
+  rb_define_const (rb_mCairo_Format,    "INVALID",
+                   INT2FIX (CAIRO_FORMAT_INVALID));
+#endif
   rb_define_const (rb_mCairo_Format,    "ARGB32",
                    INT2FIX (CAIRO_FORMAT_ARGB32));
   rb_define_const (rb_mCairo_Format,    "RGB24",
@@ -490,10 +495,8 @@ Init_cairo_constants (void)
                    INT2FIX (CAIRO_FORMAT_A8));
   rb_define_const (rb_mCairo_Format,    "A1",
                    INT2FIX (CAIRO_FORMAT_A1));
-#if !CAIRO_CHECK_VERSION(1, 3, 0)
   rb_define_const (rb_mCairo_Format,    "RGB16_565",
                    INT2FIX (CAIRO_FORMAT_RGB16_565));
-#endif
 
 #if CAIRO_CHECK_VERSION(1, 5, 8)
   rb_define_singleton_method (rb_mCairo_Format, "stride_for_width",
