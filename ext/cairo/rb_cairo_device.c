@@ -276,6 +276,18 @@ cr_script_device_initialize (VALUE self, VALUE file_name_or_output)
   return Qnil;
 }
 
+static VALUE
+cr_script_device_write_comment (VALUE self, VALUE comment)
+{
+  cairo_device_t *device;
+
+  device = _SELF;
+  cairo_script_write_comment (device,
+                              StringValuePtr (comment),
+                              RSTRING_LEN (comment));
+  cr_device_check_status (device);
+  return Qnil;
+}
 #  endif
 
 #endif
@@ -306,6 +318,9 @@ Init_cairo_device (void)
 
   rb_define_method (rb_cCairo_ScriptDevice, "initialize",
                     cr_script_device_initialize, 1);
+
+  rb_define_method (rb_cCairo_ScriptDevice, "write_comment",
+                    cr_script_device_write_comment, 1);
 
   RB_CAIRO_DEF_SETTERS (rb_cCairo_ScriptDevice);
 #  endif

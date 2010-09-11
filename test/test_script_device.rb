@@ -1,8 +1,12 @@
 require 'cairo'
 require 'stringio'
 
-class DeviceTest < Test::Unit::TestCase
+class ScriptDeviceTest < Test::Unit::TestCase
   include CairoTestUtils
+
+  def setup
+    only_device("Script")
+  end
 
   def test_new
     output = StringIO.new
@@ -19,5 +23,15 @@ class DeviceTest < Test::Unit::TestCase
       string = output.string
     end
     assert_equal("%!CairoScript\n", string)
+  end
+
+  def test_write_comment
+    output = StringIO.new
+    Cairo::ScriptDevice.new(output) do |device|
+      device.write_comment("Hello!")
+    end
+    assert_equal("%!CairoScript\n" +
+                 "% Hello!\n",
+                 output.string)
   end
 end

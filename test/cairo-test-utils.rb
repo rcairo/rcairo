@@ -15,4 +15,11 @@ module CairoTestUtils
   def win32?
     /cygwin|mingw|mswin32|bccwin32/.match(RUBY_PLATFORM) ? true : false
   end
+
+  def only_device(name)
+    device_class = "#{name}Device"
+    unless Cairo.const_defined?(device_class)
+      omit("Only for #{device_class} device available")
+    end
+  end
 end
