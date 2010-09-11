@@ -80,7 +80,6 @@ VALUE rb_cCairo_SubSurface = Qnil;
 static ID cr_id_target;
 static ID cr_id_read;
 static ID cr_id_write;
-static ID cr_id_inspect;
 static ID cr_id_parse;
 static ID cr_id_size;
 static ID cr_id_set_unit;
@@ -191,14 +190,6 @@ cr_surface_get_klass (cairo_surface_t *surface)
     rb_raise (rb_eArgError, "unknown source type: %d", type);
 
   return klass;
-}
-
-static char *
-inspect (VALUE object)
-{
-  VALUE inspected;
-  inspected = rb_funcall (object, cr_id_inspect, 0);
-  return StringValueCStr(inspected);
 }
 
 /* read/write callback */
@@ -611,7 +602,7 @@ cr_surface_mark_dirty (int argc, VALUE *argv, VALUE self)
 
       rb_raise (rb_eArgError,
                 "invalid argument (expect () or (x, y, width, height)): %s",
-                inspect (args));
+                rb_cairo__inspect (args));
     }
 
   cr_surface_check_status (_SELF);
@@ -775,7 +766,7 @@ cr_image_surface_initialize (int argc, VALUE *argv, VALUE self)
               "(width, height) or "
               "(format, width, height) or "
               "(data, format, width, height, stride)): %s",
-              inspect (rb_ary_new3 (4, arg1, arg2, arg3, arg4)));
+              rb_cairo__inspect (rb_ary_new3 (4, arg1, arg2, arg3, arg4)));
 
   cr_surface_check_status (surface);
   DATA_PTR (self) = surface;
@@ -1204,7 +1195,7 @@ cr_quartz_surface_initialize (int argc, VALUE *argv, VALUE self)
                       "(width, height), "
                       "(format, width, height) or "
                       "(cg_context, width, height)): %s",
-                      inspect (rb_ary_new3 (3, arg1, arg2, arg3)));
+                      rb_cairo__inspect (rb_ary_new3 (3, arg1, arg2, arg3)));
           break;
         }
 
@@ -1310,7 +1301,7 @@ cr_script_surface_initialize (int argc, VALUE *argv, VALUE self)
                     "(script, width, height), "
                     "(script, content, width, height), "
                     "(script, surface)): %s",
-                    inspect (rb_ary_new3 (4, arg1, arg2, arg3, arg4)));
+                    rb_cairo__inspect (rb_ary_new3 (4, arg1, arg2, arg3, arg4)));
           break;
         }
 
@@ -1358,7 +1349,6 @@ Init_cairo_surface (void)
   cr_id_target = rb_intern ("target");
   cr_id_read = rb_intern ("read");
   cr_id_write = rb_intern ("write");
-  cr_id_inspect = rb_intern ("inspect");
   cr_id_parse = rb_intern ("parse");
   cr_id_size = rb_intern ("size");
   cr_id_set_unit = rb_intern ("unit=");
