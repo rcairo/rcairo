@@ -38,4 +38,12 @@ class SurfaceTest < Test::Unit::TestCase
     surface.set_fallback_resolution(95, 95)
     assert_equal([95.0, 95.0], surface.fallback_resolution)
   end
+
+  def test_device
+    only_device("Script")
+
+    device = Cairo::ScriptDevice.new(StringIO.new)
+    surface = Cairo::ScriptSurface.new(device, 100, 100)
+    assert_equal(Cairo::ScriptDevice, surface.device.class)
+  end
 end
