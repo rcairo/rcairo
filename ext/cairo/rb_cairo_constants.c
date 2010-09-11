@@ -319,6 +319,38 @@ Init_cairo_constants (void)
   rb_define_const (rb_mCairo_Operator,    "SATURATE",
                    INT2FIX (CAIRO_OPERATOR_SATURATE));
 
+#if CAIRO_CHECK_VERSION(1, 10, 0)
+  rb_define_const (rb_mCairo_Operator,    "MULTIPLY",
+                   INT2FIX (CAIRO_OPERATOR_MULTIPLY));
+  rb_define_const (rb_mCairo_Operator,    "SCREEN",
+                   INT2FIX (CAIRO_OPERATOR_SCREEN));
+  rb_define_const (rb_mCairo_Operator,    "OVERLAY",
+                   INT2FIX (CAIRO_OPERATOR_OVERLAY));
+  rb_define_const (rb_mCairo_Operator,    "DARKEN",
+                   INT2FIX (CAIRO_OPERATOR_DARKEN));
+  rb_define_const (rb_mCairo_Operator,    "LIGHTEN",
+                   INT2FIX (CAIRO_OPERATOR_LIGHTEN));
+  rb_define_const (rb_mCairo_Operator,    "COLOR_DODGE",
+                   INT2FIX (CAIRO_OPERATOR_COLOR_DODGE));
+  rb_define_const (rb_mCairo_Operator,    "COLOR_BURN",
+                   INT2FIX (CAIRO_OPERATOR_COLOR_BURN));
+  rb_define_const (rb_mCairo_Operator,    "HARD_LIGHT",
+                   INT2FIX (CAIRO_OPERATOR_HARD_LIGHT));
+  rb_define_const (rb_mCairo_Operator,    "SOFT_LIGHT",
+                   INT2FIX (CAIRO_OPERATOR_SOFT_LIGHT));
+  rb_define_const (rb_mCairo_Operator,    "DIFFERENCE",
+                   INT2FIX (CAIRO_OPERATOR_DIFFERENCE));
+  rb_define_const (rb_mCairo_Operator,    "EXCLUSION",
+                   INT2FIX (CAIRO_OPERATOR_EXCLUSION));
+  rb_define_const (rb_mCairo_Operator,    "HSL_HUE",
+                   INT2FIX (CAIRO_OPERATOR_HSL_HUE));
+  rb_define_const (rb_mCairo_Operator,    "HSL_SATURATION",
+                   INT2FIX (CAIRO_OPERATOR_HSL_SATURATION));
+  rb_define_const (rb_mCairo_Operator,    "HSL_COLOR",
+                   INT2FIX (CAIRO_OPERATOR_HSL_COLOR));
+  rb_define_const (rb_mCairo_Operator,    "HSL_LUMINOSITY",
+                   INT2FIX (CAIRO_OPERATOR_HSL_LUMINOSITY));
+#endif
 
   /* cairo_antialias_t */
   rb_mCairo_Antialias = rb_define_module_under (rb_mCairo, "Antialias");
