@@ -34,4 +34,13 @@ class ScriptDeviceTest < Test::Unit::TestCase
                  "% Hello!\n",
                  output.string)
   end
+
+  def test_mode
+    output = StringIO.new
+    Cairo::ScriptDevice.new(output) do |device|
+      assert_equal(Cairo::ScriptMode::ASCII, device.mode)
+      device.mode = Cairo::ScriptMode::BINARY
+      assert_equal(Cairo::ScriptMode::BINARY, device.mode)
+    end
+  end
 end
