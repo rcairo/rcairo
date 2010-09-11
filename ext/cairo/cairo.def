@@ -34,6 +34,23 @@ EXPORTS
     rb_cCairo_Win32PrintingSurface DATA
     rb_cCairo_QuartzSurface   DATA
     rb_cCairo_QuartzImageSurface DATA
+    rb_cCairo_ScriptSurface   DATA
+    rb_cCairo_QtSurface       DATA
+    rb_cCairo_RecordingSurface DATA
+    rb_cCairo_VGSurface       DATA
+    rb_cCairo_GLSurface       DATA
+    rb_cCairo_DRMSurface      DATA
+    rb_cCairo_TeeSurface      DATA
+    rb_cCairo_XMLSurface      DATA
+    rb_cCairo_SkiaSurface     DATA
+    rb_cCairo_SubSurface      DATA
+    rb_cCairo_Device          DATA
+    rb_cCairo_DRMDevice       DATA
+    rb_cCairo_GLDevice        DATA
+    rb_cCairo_ScriptDevice    DATA
+    rb_cCairo_XCBDevice       DATA
+    rb_cCairo_XlibtDevice     DATA
+    rb_cCairo_XMLDevice       DATA
 
     rb_mCairo_Operator        DATA
     rb_mCairo_Antialias       DATA
