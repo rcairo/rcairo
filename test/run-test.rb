@@ -7,7 +7,9 @@ lib_dir = File.join(base_dir, "lib")
 test_dir = File.join(base_dir, "test")
 
 if system("which make > /dev/null")
-  system("cd #{base_dir.dump} && make > /dev/null") or exit(1)
+  Dir.chdir(base_dir) do
+    system("make > /dev/null") or exit(1)
+  end
 end
 
 $LOAD_PATH.unshift(test_unit_dir)

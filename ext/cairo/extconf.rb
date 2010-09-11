@@ -6,10 +6,12 @@ require 'English'
 require 'mkmf'
 require 'fileutils'
 
-base_dir = (Pathname(__FILE__).dirname + ".." + "..").expand_path
-$LOAD_PATH.unshift(base_dir.to_s)
-
-require 'pkg-config'
+begin
+  require 'pkg-config'
+rescue LoadError
+  require 'rubygems'
+  require 'pkg-config'
+end
 
 checking_for(checking_message("GCC")) do
   if macro_defined?("__GNUC__", "")

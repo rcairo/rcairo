@@ -78,6 +78,7 @@ project = Hoe.spec('cairo') do |project|
     :require_paths => ['lib'],
     :has_rdoc => false,
   }
+  project.extra_deps << ['pkg-config', '>= 0']
   platform = ENV["FORCE_PLATFORM"]
   project.spec_extras[:platform] = platform if platform
   news = File.join(base_dir, "NEWS")
