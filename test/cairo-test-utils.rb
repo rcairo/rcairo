@@ -22,4 +22,11 @@ module CairoTestUtils
       omit("Only for #{device_class} device available")
     end
   end
+
+  def only_surface(name)
+    surface_class = "#{name}Surface"
+    unless Cairo.const_defined?(surface_class)
+      omit("Only for #{surface_class} surface available")
+    end
+  end
 end

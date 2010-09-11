@@ -701,6 +701,87 @@ cr_image_surface_get_stride (VALUE self)
   return INT2NUM (cairo_image_surface_get_stride (_SELF));
 }
 
+#ifdef CAIRO_HAS_RECORDING_SURFACE
+/* Recording-surface functions */
+static VALUE
+cr_recording_surface_initialize (int argc, VALUE *argv, VALUE self)
+{
+  VALUE arg1, arg2, arg3, arg4, arg5;
+  cairo_surface_t *surface;
+  cairo_content_t content = CAIRO_CONTENT_COLOR_ALPHA;
+  cairo_rectangle_t extents;
+  const char *error_message =
+    "invalid argument (expect "
+    "(x, y, width, height), "
+    "([x, y, width, height]),"
+    "(content, x, y, width, height) or "
+    "(content, [x, y, width, height])): %s";
+
+  rb_scan_args (argc, argv, "14", &arg1, &arg2, &arg3, &arg4, &arg5);
+  if (argc == 1 || argc == 2)
+    {
+      VALUE rb_extents;
+
+      if (argc == 1)
+        {
+          rb_extents = arg1;
+        }
+      else
+        {
+          content = RVAL2CRCONTENT (arg1);
+          rb_extents = arg2;
+        }
+      rb_extents = rb_check_array_type (rb_extents);
+      if (RARRAY_LEN (rb_extents) != 4)
+        rb_raise (rb_eArgError, error_message, rb_cairo__inspect (arg1));
+      extents.x = NUM2DBL (RARRAY_PTR (rb_extents)[0]);
+      extents.y = NUM2DBL (RARRAY_PTR (rb_extents)[1]);
+      extents.width = NUM2DBL (RARRAY_PTR (rb_extents)[2]);
+      extents.height = NUM2DBL (RARRAY_PTR (rb_extents)[3]);
+    }
+  else if (argc == 4)
+    {
+      extents.x = NUM2DBL (arg1);
+      extents.y = NUM2DBL (arg2);
+      extents.width = NUM2DBL (arg3);
+      extents.height = NUM2DBL (arg4);
+    }
+  else if (argc == 5)
+    {
+      content = RVAL2CRCONTENT (arg1);
+      extents.x = NUM2DBL (arg2);
+      extents.y = NUM2DBL (arg3);
+      extents.width = NUM2DBL (arg4);
+      extents.height = NUM2DBL (arg5);
+    }
+  else
+    {
+      rb_raise (rb_eArgError, error_message,
+                rb_cairo__inspect (rb_ary_new4 (argc, argv)));
+    }
+
+  surface = cairo_recording_surface_create (content, &extents);
+  cr_surface_check_status (surface);
+  DATA_PTR (self) = surface;
+  if (rb_block_given_p ())
+    yield_and_finish (self);
+  return Qnil;
+}
+
+static VALUE
+cr_recording_surface_get_ink_extents (VALUE self)
+{
+  cairo_surface_t *surface;
+  double x, y, width, height;
+
+  surface = _SELF;
+  cairo_recording_surface_ink_extents (surface, &x, &y, &width, &height);
+  cr_surface_check_status (surface);
+  return rb_ary_new3 (4,
+                      rb_float_new (x), rb_float_new (y),
+                      rb_float_new (width), rb_float_new (height));
+}
+#endif
 
 /* Printing surfaces */
 #define DEFINE_SURFACE(type)                                            \
@@ -1313,6 +1394,18 @@ Init_cairo_surface (void)
                     cr_image_surface_get_height, 0);
   rb_define_method (rb_cCairo_ImageSurface, "stride",
                     cr_image_surface_get_stride, 0);
+
+#ifdef CAIRO_HAS_RECORDING_SURFACE
+  /* Recording-surface */
+  rb_cCairo_RecordingSurface =
+    rb_define_class_under (rb_mCairo, "RecordingSurface", rb_cCairo_Surface);
+
+  rb_define_method (rb_cCairo_RecordingSurface, "initialize",
+                    cr_recording_surface_initialize, -1);
+
+  rb_define_method (rb_cCairo_RecordingSurface, "ink_extents",
+                    cr_recording_surface_get_ink_extents, 0);
+#endif
 
 #define INIT_SURFACE(type, name)                                        \
   rb_cCairo_ ## name ## Surface =                                       \
