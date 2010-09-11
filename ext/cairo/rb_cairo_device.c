@@ -301,6 +301,18 @@ cr_script_device_get_mode (VALUE self)
 {
   return INT2NUM (cairo_script_get_mode (_SELF));
 }
+
+static VALUE
+cr_script_device_reply (VALUE self, VALUE recording_surface)
+{
+  cairo_device_t *device;
+
+  device = _SELF;
+  cairo_script_from_recording_surface (device,
+                                       RVAL2CRSURFACE (recording_surface));
+  cr_device_check_status (device);
+  return Qnil;
+}
 #  endif
 
 #endif
@@ -339,6 +351,9 @@ Init_cairo_device (void)
                     cr_script_device_set_mode, 1);
   rb_define_method (rb_cCairo_ScriptDevice, "mode",
                     cr_script_device_get_mode, 0);
+
+  rb_define_method (rb_cCairo_ScriptDevice, "reply",
+                    cr_script_device_reply, 1);
 
   RB_CAIRO_DEF_SETTERS (rb_cCairo_ScriptDevice);
 #  endif
