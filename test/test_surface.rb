@@ -46,4 +46,14 @@ class SurfaceTest < Test::Unit::TestCase
     surface = Cairo::ScriptSurface.new(device, 100, 100)
     assert_equal(Cairo::ScriptDevice, surface.device.class)
   end
+
+  def test_mime_data
+    only_cairo_version(1, 10, 0)
+
+    output = StringIO.new
+    surface = Cairo::PDFSurface.new(output, 100, 100)
+    surface.set_mime_data(Cairo::MimeType::URI, "http://cairo.rubyforge.org/")
+    assert_equal("http://cairo.rubyforge.org/",
+                 surface.get_mime_data(Cairo::MimeType::URI))
+  end
 end

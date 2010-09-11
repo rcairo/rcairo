@@ -149,6 +149,7 @@ RB_CAIRO_VAR VALUE rb_mCairo_PDFVersion;
 RB_CAIRO_VAR VALUE rb_mCairo_SVGVersion;
 RB_CAIRO_VAR VALUE rb_mCairo_TextClusterFlag;
 RB_CAIRO_VAR VALUE rb_mCairo_ScriptMode;
+RB_CAIRO_VAR VALUE rb_mCairo_MimeType;
 RB_CAIRO_VAR VALUE rb_mCairo_Color;
 RB_CAIRO_VAR VALUE rb_cCairo_Color_Base;
 RB_CAIRO_VAR VALUE rb_cCairo_Paper;

@@ -36,6 +36,7 @@ VALUE rb_mCairo_PSLevel = Qnil;
 VALUE rb_mCairo_TextClusterFlag = Qnil;
 VALUE rb_mCairo_PDFVersion = Qnil;
 VALUE rb_mCairo_ScriptMode = Qnil;
+VALUE rb_mCairo_MimeType = Qnil;
 
 #define CAIRO_OPERATOR_MIN CAIRO_OPERATOR_CLEAR
 #define CAIRO_OPERATOR_MAX CAIRO_OPERATOR_SATURATE
@@ -586,5 +587,18 @@ Init_cairo_constants (void)
                    INT2FIX (CAIRO_SCRIPT_MODE_BINARY));
   rb_define_const (rb_mCairo_ScriptMode, "ASCII",
                    INT2FIX (CAIRO_SCRIPT_MODE_ASCII));
+#endif
+
+#if CAIRO_CHECK_VERSION(1, 10, 0)
+  rb_mCairo_MimeType = rb_define_module_under (rb_mCairo, "MimeType");
+
+  rb_define_const (rb_mCairo_MimeType, "JPEG",
+                   rb_str_new2 (CAIRO_MIME_TYPE_JPEG));
+  rb_define_const (rb_mCairo_MimeType, "PNG",
+                   rb_str_new2 (CAIRO_MIME_TYPE_PNG));
+  rb_define_const (rb_mCairo_MimeType, "JP2",
+                   rb_str_new2 (CAIRO_MIME_TYPE_JP2));
+  rb_define_const (rb_mCairo_MimeType, "URI",
+                   rb_str_new2 (CAIRO_MIME_TYPE_URI));
 #endif
 }

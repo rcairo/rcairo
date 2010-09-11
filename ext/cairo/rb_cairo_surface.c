@@ -388,6 +388,56 @@ cr_surface_write_to_png_generic (VALUE self, VALUE target)
 }
 #endif
 
+#if CAIRO_CHECK_VERSION(1, 10, 0)
+static VALUE
+cr_surface_get_mime_data (VALUE self, VALUE mime_type)
+{
+  cairo_surface_t *surface;
+  const unsigned char *data;
+  unsigned long length;
+
+  surface = _SELF;
+  cairo_surface_get_mime_data (surface, StringValueCStr (mime_type),
+                               &data, &length);
+  if (data)
+    return rb_str_new ((const char *)data, length);
+  else
+    return Qnil;
+}
+
+static VALUE
+cr_surface_set_mime_data (VALUE self, VALUE rb_mime_type, VALUE rb_data)
+{
+  cairo_status_t status;
+  cairo_surface_t *surface;
+  const char *mime_type;
+
+  surface = _SELF;
+  mime_type = StringValueCStr (rb_mime_type);
+  if (NIL_P (rb_data))
+    {
+      status = cairo_surface_set_mime_data (surface, mime_type,
+                                            NULL, 0, NULL, NULL);
+    }
+  else
+    {
+      const char *raw_data;
+      unsigned char *data;
+      unsigned long length;
+
+      raw_data = StringValuePtr (rb_data);
+      length = RSTRING_LEN (rb_data);
+      data = xmalloc (length);
+      memcpy (data, raw_data, length);
+      status = cairo_surface_set_mime_data (surface, mime_type,
+                                            data, length,
+                                            xfree, data);
+    }
+  rb_cairo_check_status (status);
+  return Qnil;
+}
+#endif
+
 static VALUE
 cr_surface_get_font_options (VALUE self)
 {
@@ -1205,6 +1255,13 @@ Init_cairo_surface (void)
   rb_define_method (rb_cCairo_Surface, "destroy", cr_surface_destroy, 0);
   rb_define_method (rb_cCairo_Surface, "finish", cr_surface_finish, 0);
   rb_define_method (rb_cCairo_Surface, "content", cr_surface_get_content, 0);
+
+#if CAIRO_CHECK_VERSION(1, 10, 0)
+  rb_define_method (rb_cCairo_Surface, "get_mime_data",
+                    cr_surface_get_mime_data, 1);
+  rb_define_method (rb_cCairo_Surface, "set_mime_data",
+                    cr_surface_set_mime_data, 2);
+#endif
 
   rb_define_method (rb_cCairo_Surface, "font_options",
                     cr_surface_get_font_options, 0);
