@@ -34,6 +34,7 @@ VALUE rb_mCairo_Filter;
 VALUE rb_mCairo_SVGVersion = Qnil;
 VALUE rb_mCairo_PSLevel = Qnil;
 VALUE rb_mCairo_TextClusterFlag = Qnil;
+VALUE rb_mCairo_PDFVersion = Qnil;
 
 #define CAIRO_OPERATOR_MIN CAIRO_OPERATOR_CLEAR
 #define CAIRO_OPERATOR_MAX CAIRO_OPERATOR_SATURATE
