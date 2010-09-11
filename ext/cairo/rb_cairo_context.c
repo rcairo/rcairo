@@ -5,6 +5,7 @@
  * $Author: kou $
  * $Date: 2008-09-26 13:52:08 $
  *
+ * Copyright 2005-2010 Kouhei Sutou <kou@cozmixng.org>
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
  *
@@ -983,6 +984,19 @@ cr_in_fill (VALUE self, VALUE x, VALUE y)
   return CBOOL2RVAL (cairo_in_fill (_SELF, NUM2DBL (x), NUM2DBL (y)));
 }
 
+#if CAIRO_CHECK_VERSION(1, 10, 0)
+static VALUE
+cr_in_clip (VALUE self, VALUE x, VALUE y)
+{
+  if (rb_block_given_p ())
+    {
+      cr_new_path (self);
+      rb_yield (self);
+    }
+  return CBOOL2RVAL (cairo_in_clip (_SELF, NUM2DBL (x), NUM2DBL (y)));
+}
+#endif
+
 /* Rectangular extents */
 static VALUE
 cr_stroke_extents (VALUE self)
@@ -1615,6 +1629,9 @@ Init_cairo_context (void)
   /* Insideness testing */
   rb_define_method (rb_cCairo_Context, "in_stroke?", cr_in_stroke, 2);
   rb_define_method (rb_cCairo_Context, "in_fill?", cr_in_fill, 2);
+#if CAIRO_CHECK_VERSION(1, 10, 0)
+  rb_define_method (rb_cCairo_Context, "in_clip?", cr_in_clip, 2);
+#endif
 
   /* Rectangular extents */
   rb_define_method (rb_cCairo_Context, "stroke_extents", cr_stroke_extents, 0);
