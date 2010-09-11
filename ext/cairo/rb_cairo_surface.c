@@ -509,6 +509,12 @@ cr_surface_create_sub_rectangle_surface (VALUE self, VALUE x, VALUE y,
   else
     return rb_surface;
 }
+
+static VALUE
+cr_surface_get_device (VALUE self)
+{
+  return CRDEVICE2RVAL (cairo_surface_get_device (_SELF));
+}
 #endif
 
 static VALUE
@@ -1277,7 +1283,7 @@ cr_script_surface_initialize (int argc, VALUE *argv, VALUE self)
 
   rb_scan_args (argc, argv, "22", &arg1, &arg2, &arg3, &arg4);
 
-  script = CRDEVICE2RVAL (arg1);
+  script = RVAL2CRDEVICE (arg1);
   if (argc == 2)
     {
       target = RVAL2CRSURFACE (arg2);
@@ -1370,6 +1376,8 @@ Init_cairo_surface (void)
 #if CAIRO_CHECK_VERSION(1, 10, 0)
   rb_define_method (rb_cCairo_Surface, "sub_rectangle_surface",
                     cr_surface_create_sub_rectangle_surface, 4);
+  rb_define_method (rb_cCairo_Surface, "device",
+                    cr_surface_get_device, 0);
 #endif
   rb_define_method (rb_cCairo_Surface, "destroy", cr_surface_destroy, 0);
   rb_define_method (rb_cCairo_Surface, "finish", cr_surface_finish, 0);
@@ -1531,7 +1539,7 @@ Init_cairo_surface (void)
 
 #ifdef CAIRO_HAS_SCRIPT_SURFACE
   rb_cCairo_ScriptSurface =
-    rb_define_class_under (rb_mCairo, "ScriptSurface", rb_cCairo_ScriptSurface);
+    rb_define_class_under (rb_mCairo, "ScriptSurface", rb_cCairo_Surface);
 
   rb_define_method (rb_cCairo_ScriptSurface, "initialize",
                     cr_script_surface_initialize, -1);
