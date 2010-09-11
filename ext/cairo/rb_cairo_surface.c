@@ -46,10 +46,6 @@ enum ruby_value_type {
 #  define T_DATA RUBY_T_DATA
 #endif
 
-#ifdef CAIRO_HAS_SCRIPT_SURFACE
-#  include <cairo-script.h>
-#endif
-
 VALUE rb_cCairo_Surface;
 VALUE rb_cCairo_ImageSurface;
 VALUE rb_cCairo_PDFSurface = Qnil;

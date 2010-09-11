@@ -35,6 +35,7 @@ VALUE rb_mCairo_SVGVersion = Qnil;
 VALUE rb_mCairo_PSLevel = Qnil;
 VALUE rb_mCairo_TextClusterFlag = Qnil;
 VALUE rb_mCairo_PDFVersion = Qnil;
+VALUE rb_mCairo_ScriptMode = Qnil;
 
 #define CAIRO_OPERATOR_MIN CAIRO_OPERATOR_CLEAR
 #define CAIRO_OPERATOR_MAX CAIRO_OPERATOR_SATURATE
@@ -92,6 +93,9 @@ VALUE rb_mCairo_PDFVersion = Qnil;
 
 #define CAIRO_TEXT_CLUSTER_FLAG_MIN 0
 #define CAIRO_TEXT_CLUSTER_FLAG_MAX CAIRO_TEXT_CLUSTER_FLAG_BACKWARD
+
+#define CAIRO_SCRIPT_MODE_MIN CAIRO_SCRIPT_MODE_BINARY
+#define CAIRO_SCRIPT_MODE_MAX CAIRO_SCRIPT_MODE_ASCII
 
 #define DEFINE_RVAL2ENUM(name, const_name)                      \
 cairo_ ## name ## _t                                            \
@@ -151,6 +155,10 @@ DEFINE_RVAL2ENUM(pdf_version, PDF_VERSION)
 
 #if CAIRO_CHECK_VERSION(1, 7, 6)
 DEFINE_RVAL2ENUM(text_cluster_flags, TEXT_CLUSTER_FLAG)
+#endif
+
+#ifdef CAIRO_HAS_SCRIPT_SURFACE
+DEFINE_RVAL2ENUM(script_mode, SCRIPT_MODE)
 #endif
 
 #if defined(RB_CAIRO_PLATFORM_WIN32) && !defined(PS_LEVEL_ENUM_DEFINED)
@@ -569,5 +577,14 @@ Init_cairo_constants (void)
     rb_define_module_under (rb_mCairo, "TextClusterFlag");
   rb_define_const (rb_mCairo_TextClusterFlag, "BACKWARD",
                    INT2FIX (CAIRO_TEXT_CLUSTER_FLAG_BACKWARD));
+#endif
+
+#ifdef CAIRO_HAS_SCRIPT_SURFACE
+  /* cairo_script_mode_t */
+  rb_mCairo_ScriptMode = rb_define_module_under (rb_mCairo, "ScriptMode");
+  rb_define_const (rb_mCairo_ScriptMode, "BINARY",
+                   INT2FIX (CAIRO_SCRIPT_MODE_BINARY));
+  rb_define_const (rb_mCairo_ScriptMode, "ASCII",
+                   INT2FIX (CAIRO_SCRIPT_MODE_ASCII));
 #endif
 }

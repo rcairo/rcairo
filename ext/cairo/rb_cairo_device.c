@@ -18,10 +18,6 @@
 #  include <st.h>
 #endif
 
-#ifdef CAIRO_HAS_SCRIPT_SURFACE
-#  include <cairo-script.h>
-#endif
-
 VALUE rb_cCairo_Device = Qnil;
 VALUE rb_cCairo_DRMDevice = Qnil;
 VALUE rb_cCairo_GLDevice = Qnil;
