@@ -907,6 +907,16 @@ cr_ps_surface_set_eps (VALUE self, VALUE eps)
 /* PDF-surface functions */
 DEFINE_SURFACE(pdf)
 DEFINE_SURFACE_SET_SIZE(pdf)
+
+#  if CAIRO_CHECK_VERSION(1, 10, 0)
+static VALUE
+cr_pdf_surface_restrict_to_version (VALUE self, VALUE version)
+{
+  cairo_pdf_surface_restrict_to_version (_SELF, RVAL2CRPDFVERSION (version));
+  cr_surface_check_status (_SELF);
+  return Qnil;
+}
+#  endif
 #endif
 
 #ifdef CAIRO_HAS_SVG_SURFACE
@@ -1306,6 +1316,11 @@ Init_cairo_surface (void)
 
   rb_define_method (rb_cCairo_PDFSurface, "set_size",
                     cr_pdf_surface_set_size, -1);
+
+#  if CAIRO_CHECK_VERSION(1, 10, 0)
+  rb_define_method (rb_cCairo_PDFSurface, "restrict_to_version",
+                    cr_pdf_surface_restrict_to_version, 1);
+#  endif
 
   RB_CAIRO_DEF_SETTERS (rb_cCairo_PDFSurface);
 #endif

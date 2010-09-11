@@ -86,6 +86,9 @@ VALUE rb_mCairo_TextClusterFlag = Qnil;
 #define CAIRO_PS_LEVEL_MIN CAIRO_PS_LEVEL_2
 #define CAIRO_PS_LEVEL_MAX CAIRO_PS_LEVEL_3
 
+#define CAIRO_PDF_VERSION_MIN CAIRO_PDF_VERSION_1_4
+#define CAIRO_PDF_VERSION_MAX CAIRO_PDF_VERSION_1_5
+
 #define CAIRO_TEXT_CLUSTER_FLAG_MIN 0
 #define CAIRO_TEXT_CLUSTER_FLAG_MAX CAIRO_TEXT_CLUSTER_FLAG_BACKWARD
 
@@ -135,7 +138,13 @@ DEFINE_RVAL2ENUM(svg_version, SVG_VERSION)
 #ifdef CAIRO_HAS_PS_SURFACE
 #  if CAIRO_CHECK_VERSION(1, 5, 2)
 DEFINE_RVAL2ENUM(ps_level, PS_LEVEL)
-#define PS_LEVEL_ENUM_DEFINED 1
+#  endif
+#endif
+
+#ifdef CAIRO_HAS_PDF_SURFACE
+#  if CAIRO_CHECK_VERSION(1, 10, 0)
+DEFINE_RVAL2ENUM(pdf_version, PDF_VERSION)
+#define PDF_VERSION_ENUM_DEFINED 1
 #  endif
 #endif
 
@@ -231,6 +240,43 @@ cr_ps_level_to_string (int argc, VALUE *argv, VALUE self)
       VALUE level;
       rb_scan_args (argc, argv, "1", &level);
       return rb_str_new2 (cairo_ps_level_to_string (RVAL2CRPSLEVEL (level)));
+    }
+}
+#  endif
+#endif
+
+#ifdef CAIRO_HAS_PDF_SURFACE
+#  if CAIRO_CHECK_VERSION(1, 10, 0)
+static VALUE
+cr_pdf_get_versions (VALUE self)
+{
+  VALUE rb_versions;
+  const cairo_pdf_version_t *versions;
+  int i, n_versions;
+
+  cairo_pdf_get_versions (&versions, &n_versions);
+
+  rb_versions = rb_ary_new2 (n_versions);
+  for (i = 0; i < n_versions; i++)
+    {
+      rb_ary_push (rb_versions, INT2NUM (versions[i]));
+    }
+
+  return rb_versions;
+}
+
+static VALUE
+cr_pdf_version_to_string (int argc, VALUE *argv, VALUE self)
+{
+  if (argc == 0)
+    {
+      return rb_call_super (argc, argv);
+    }
+  else
+    {
+      VALUE version;
+      rb_scan_args (argc, argv, "1", &version);
+      return rb_str_new2 (cairo_pdf_version_to_string (RVAL2CRPDFVERSION (version)));
     }
 }
 #  endif
@@ -465,6 +511,22 @@ Init_cairo_constants (void)
                               cr_ps_get_levels, 0);
   rb_define_singleton_method (rb_mCairo_PSLevel, "name",
                               cr_ps_level_to_string, -1);
+#  endif
+#endif
+
+#ifdef CAIRO_HAS_PDF_SURFACE
+#  if CAIRO_CHECK_VERSION(1, 10, 0)
+  /* cairo_pdf_version_t */
+  rb_mCairo_PDFVersion = rb_define_module_under (rb_mCairo, "PDFVersion");
+  rb_define_const (rb_mCairo_PDFVersion, "VERSION_1_4",
+                   INT2FIX (CAIRO_PDF_VERSION_1_4));
+  rb_define_const (rb_mCairo_PDFVersion, "VERSION_1_5",
+                   INT2FIX (CAIRO_PDF_VERSION_1_5));
+
+  rb_define_singleton_method (rb_mCairo_PDFVersion, "list",
+                              cr_pdf_get_versions, 0);
+  rb_define_singleton_method (rb_mCairo_PDFVersion, "name",
+                              cr_pdf_version_to_string, -1);
 #  endif
 #endif
 

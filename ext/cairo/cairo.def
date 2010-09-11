@@ -52,6 +52,7 @@ EXPORTS
     rb_mCairo_Filter          DATA
     rb_mCairo_SVGVersion      DATA
     rb_mCairo_PSLevel         DATA
+    rb_mCairo_PDFVersion      DATA
     rb_mCairo_LCDFilter       DATA
 
     rb_mCairo_Color           DATA
@@ -100,5 +101,6 @@ EXPORTS
     rb_cairo_filter_from_ruby_object
     rb_cairo_svg_version_from_ruby_object
     rb_cairo_ps_level_from_ruby_object
+    rb_cairo_pdf_version_from_ruby_object
     rb_cairo_text_cluster_flags_from_ruby_object
     rb_cairo_check_status

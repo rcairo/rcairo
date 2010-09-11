@@ -124,6 +124,7 @@ RB_CAIRO_VAR VALUE rb_mCairo_Extend;
 RB_CAIRO_VAR VALUE rb_mCairo_Filter;
 RB_CAIRO_VAR VALUE rb_mCairo_SVGVersion;
 RB_CAIRO_VAR VALUE rb_mCairo_PSLevel;
+RB_CAIRO_VAR VALUE rb_mCairo_PDFVersion;
 RB_CAIRO_VAR VALUE rb_mCairo_LCDFilter;
 RB_CAIRO_VAR VALUE rb_mCairo_SVGVersion;
 RB_CAIRO_VAR VALUE rb_mCairo_Color;
@@ -233,6 +234,11 @@ VALUE                 rb_cairo_surface_to_ruby_object_with_destroy
 #define RVAL2CRPSLEVEL(obj)       (rb_cairo_ps_level_from_ruby_object(obj))
 #  endif
 #endif
+#ifdef CAIRO_HAS_PDF_SURFACE
+#  if CAIRO_CHECK_VERSION(1, 10, 0)
+#define RVAL2CRPDFVERSION(obj)    (rb_cairo_pdf_version_from_ruby_object(obj))
+#  endif
+#endif
 #if CAIRO_CHECK_VERSION(1, 7, 6)
 #define RVAL2CRTEXTCLUSTERFLAGS(obj) (rb_cairo_text_cluster_flags_from_ruby_object(obj))
 #endif
@@ -258,6 +264,11 @@ cairo_svg_version_t    rb_cairo_svg_version_from_ruby_object    (VALUE obj);
 #ifdef CAIRO_HAS_PS_SURFACE
 #  if CAIRO_CHECK_VERSION(1, 5, 2)
 cairo_ps_level_t       rb_cairo_ps_level_from_ruby_object       (VALUE obj);
+#  endif
+#endif
+#ifdef CAIRO_HAS_PDF_SURFACE
+#  if CAIRO_CHECK_VERSION(1, 10, 0)
+cairo_pdf_version_t     rb_cairo_pdf_version_from_ruby_object   (VALUE obj);
 #  endif
 #endif
 #if CAIRO_CHECK_VERSION(1, 7, 6)
