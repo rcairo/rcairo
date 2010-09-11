@@ -44,6 +44,7 @@
 #endif
 
 extern void Init_cairo_private (void);
+extern void Init_cairo_io (void);
 extern void Init_cairo_constants (void);
 
 extern void Init_cairo_context (void);

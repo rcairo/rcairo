@@ -15,6 +15,7 @@
 
 #include "rb_cairo.h"
 #include "rb_cairo_private.h"
+#include "rb_cairo_io.h"
 
 #ifdef HAVE_RUBY_ST_H
 #  include <ruby/st.h>
@@ -45,14 +46,6 @@ enum ruby_value_type {
 #  define T_DATA RUBY_T_DATA
 #endif
 
-#if defined(CAIRO_HAS_PS_SURFACE) || \
-  defined(CAIRO_HAS_PDF_SURFACE) || \
-  defined(CAIRO_HAS_SVG_SURFACE)
-#  define HAS_CREATE_CR_CLOSURE_SURFACE 1
-#else
-#  define HAS_CREATE_CR_CLOSURE_SURFACE 0
-#endif
-
 #ifdef CAIRO_HAS_SCRIPT_SURFACE
 #  include <cairo-script.h>
 #endif
@@ -78,8 +71,6 @@ VALUE rb_cCairo_SkiaSurface = Qnil;
 VALUE rb_cCairo_SubSurface = Qnil;
 
 static ID cr_id_target;
-static ID cr_id_read;
-static ID cr_id_write;
 static ID cr_id_parse;
 static ID cr_id_size;
 static ID cr_id_set_unit;
@@ -192,158 +183,6 @@ cr_surface_get_klass (cairo_surface_t *surface)
   return klass;
 }
 
-/* read/write callback */
-typedef struct cr_io_callback_closure {
-  VALUE target;
-  VALUE error;
-  unsigned char *data;
-  unsigned int length;
-} cr_io_callback_closure_t;
-
-typedef struct cr_invoke_data {
-  cr_callback_func_t func;
-  VALUE data;
-} cr_invoke_data_t;
-
-#if HAS_CREATE_CR_CLOSURE_SURFACE
-static cr_io_callback_closure_t *
-cr_closure_new (VALUE target)
-{
-  cr_io_callback_closure_t *closure;
-  closure = ALLOC (cr_io_callback_closure_t);
-
-  closure->target = target;
-  closure->error = Qnil;
-
-  return closure;
-}
-
-static void
-cr_closure_destroy (cr_io_callback_closure_t *closure)
-{
-  xfree (closure);
-}
-
-static void
-cr_closure_free (void *closure)
-{
-  cr_closure_destroy ((cr_io_callback_closure_t *) closure);
-}
-#endif
-
-static VALUE
-cr_surface_io_func_rescue (VALUE io_closure)
-{
-  cr_io_callback_closure_t *closure;
-  closure = (cr_io_callback_closure_t *)io_closure;
-  closure->error = RB_ERRINFO;
-  return Qnil;
-}
-
-static VALUE
-cr_surface_invoke_io_func (VALUE user_data)
-{
-  cr_invoke_data_t *data;
-
-  data = (cr_invoke_data_t *)user_data;
-  return rb_rescue2 (data->func, data->data,
-                     cr_surface_io_func_rescue, data->data, rb_eException,
-                     (VALUE)0);
-}
-
-/* write callback */
-static VALUE
-cr_surface_write_func_invoke (VALUE write_closure)
-{
-  VALUE output, data;
-  long written_bytes;
-  cr_io_callback_closure_t *closure;
-  unsigned int length;
-
-  closure = (cr_io_callback_closure_t *)write_closure;
-  
-  output = closure->target;
-  data = rb_str_new ((const char *)closure->data, closure->length);
-
-  length = RSTRING_LEN (data);
-  while (length != 0)
-    {
-      VALUE rb_written_bytes = rb_funcall (output, cr_id_write, 1, data);
-      written_bytes = NUM2LONG (rb_written_bytes);
-      data = rb_str_substr (data, written_bytes,
-                            RSTRING_LEN (data) - written_bytes);
-      length -= written_bytes;
-    }
-  
-  return Qnil;
-}
-
-static cairo_status_t
-cr_surface_write_func (void *write_closure,
-                       const unsigned char *data, unsigned int length)
-{
-  cr_io_callback_closure_t *closure;
-  cr_invoke_data_t invoke_data;
-
-  closure = (cr_io_callback_closure_t *)write_closure;
-  closure->data = (unsigned char *)data;
-  closure->length = length;
-
-  invoke_data.func = cr_surface_write_func_invoke;
-  invoke_data.data = (VALUE)closure;
-  rb_cairo__invoke_callback (cr_surface_invoke_io_func, (VALUE)&invoke_data);
-
-  if (NIL_P (closure->error))
-    return CAIRO_STATUS_SUCCESS;
-  else
-    return CAIRO_STATUS_WRITE_ERROR;
-}
-
-/* read callback */
-static VALUE
-cr_surface_read_func_invoke (VALUE read_closure)
-{
-  VALUE input, result;
-  cr_io_callback_closure_t *closure;
-  unsigned int length, rest;
-
-  closure = (cr_io_callback_closure_t *)read_closure;
-  input = closure->target;
-  length = closure->length;
-  
-  result = rb_str_new2 ("");
-
-  for (rest = length; rest != 0; rest = length - RSTRING_LEN (result))
-    {
-      rb_str_concat (result, rb_funcall (input, cr_id_read, 1, INT2NUM (rest)));
-    }
-
-  memcpy ((void *)closure->data, (const void *)StringValuePtr (result), length);
-
-  return Qnil;
-}
-
-static cairo_status_t
-cr_surface_read_func (void *read_closure,
-                      unsigned char *data, unsigned int length)
-{
-  cr_io_callback_closure_t *closure;
-  cr_invoke_data_t invoke_data;
-
-  closure = (cr_io_callback_closure_t *)read_closure;
-  closure->data = data;
-  closure->length = length;
-
-  invoke_data.func = cr_surface_read_func_invoke;
-  invoke_data.data = (VALUE)closure;
-  rb_cairo__invoke_callback (cr_surface_invoke_io_func, (VALUE)&invoke_data);
-
-  if (NIL_P (closure->error))
-    return CAIRO_STATUS_SUCCESS;
-  else
-    return CAIRO_STATUS_READ_ERROR;
-}
-
 /* constructor/de-constructor */
 cairo_surface_t *
 rb_cairo_surface_from_ruby_object (VALUE obj)
@@ -431,7 +270,7 @@ static VALUE
 cr_surface_finish (VALUE self)
 {
   cairo_surface_t *surface;
-  cr_io_callback_closure_t *closure;
+  rb_cairo__io_callback_closure_t *closure;
 
   surface = _SELF;
   closure = cairo_surface_get_user_data (surface, &cr_closure_key);
@@ -520,12 +359,13 @@ static VALUE
 cr_surface_write_to_png_stream (VALUE self, VALUE target)
 {
   cairo_status_t status;
-  cr_io_callback_closure_t closure;
+  rb_cairo__io_callback_closure_t closure;
 
   closure.target = target;
   closure.error = Qnil;
 
-  status = cairo_surface_write_to_png_stream (_SELF, cr_surface_write_func,
+  status = cairo_surface_write_to_png_stream (_SELF,
+                                              rb_cairo__io_write_func,
                                               (void *)&closure);
   if (!NIL_P (closure.error))
     rb_exc_raise (closure.error);
@@ -546,7 +386,7 @@ cr_surface_write_to_png (VALUE self, VALUE filename)
 static VALUE
 cr_surface_write_to_png_generic (VALUE self, VALUE target)
 {
-  if (rb_respond_to (target, cr_id_write))
+  if (rb_respond_to (target, rb_cairo__io_id_write))
     return cr_surface_write_to_png_stream (self, target);
   else
     return cr_surface_write_to_png (self, target);
@@ -681,17 +521,17 @@ cr_surface_show_page (VALUE self)
 static cairo_surface_t *
 cr_image_surface_create_from_png_stream (VALUE target)
 {
-  cr_io_callback_closure_t closure;
+  rb_cairo__io_callback_closure_t closure;
   cairo_surface_t *surface;
 
   closure.target = target;
   closure.error = Qnil;
 
-  surface = cairo_image_surface_create_from_png_stream (cr_surface_read_func,
+  surface = cairo_image_surface_create_from_png_stream (rb_cairo__io_read_func,
                                                         (void *)&closure);
   if (!NIL_P (closure.error))
     rb_exc_raise (closure.error);
-  
+
   return surface;
 }
 
@@ -707,7 +547,7 @@ cr_image_surface_create_from_png_generic (VALUE klass, VALUE target)
   VALUE rb_surface;
   cairo_surface_t *surface;
 
-  if (rb_respond_to (target, cr_id_read))
+  if (rb_respond_to (target, rb_cairo__io_id_read))
     surface = cr_image_surface_create_from_png_stream (target);
   else
     surface = cr_image_surface_create_from_png (target);
@@ -846,27 +686,28 @@ cr_ ## type ## _surface_initialize (int argc, VALUE *argv, VALUE self)  \
   width_in_points = NUM2DBL (rb_width_in_points);                       \
   height_in_points = NUM2DBL (rb_height_in_points);                     \
                                                                         \
-  if (rb_respond_to (target, cr_id_write))                              \
+  if (rb_respond_to (target, rb_cairo__io_id_write))                    \
     {                                                                   \
-      cr_io_callback_closure_t *closure;                                \
+      rb_cairo__io_callback_closure_t *closure;                         \
                                                                         \
-      closure = cr_closure_new (target);                                \
+      closure = rb_cairo__io_closure_new (target);                      \
       surface =                                                         \
         cairo_ ## type ## _surface_create_for_stream (                  \
-          cr_surface_write_func,                                        \
+          rb_cairo__io_write_func,                                      \
           (void *) closure,                                             \
           width_in_points,                                              \
           height_in_points);                                            \
                                                                         \
       if (cairo_surface_status (surface))                               \
         {                                                               \
-          cr_closure_destroy (closure);                                 \
+          rb_cairo__io_closure_destroy (closure);                       \
         }                                                               \
       else                                                              \
         {                                                               \
           rb_ivar_set (self, cr_id_target, target);                     \
           cairo_surface_set_user_data (surface, &cr_closure_key,        \
-                                       closure, cr_closure_free);       \
+                                       closure,                         \
+                                       rb_cairo__io_closure_free);      \
           cairo_surface_set_user_data (surface, &cr_object_holder_key,  \
                                        cr_object_holder_new(self),      \
                                        cr_object_holder_free);          \
@@ -1347,8 +1188,6 @@ void
 Init_cairo_surface (void)
 {
   cr_id_target = rb_intern ("target");
-  cr_id_read = rb_intern ("read");
-  cr_id_write = rb_intern ("write");
   cr_id_parse = rb_intern ("parse");
   cr_id_size = rb_intern ("size");
   cr_id_set_unit = rb_intern ("unit=");

@@ -86,6 +86,7 @@ Init_cairo ()
   rb_cCairo_Paper = rb_const_get (rb_mCairo, rb_intern ("Paper"));
 
   Init_cairo_private ();
+  Init_cairo_io ();
   Init_cairo_constants ();
 
   Init_cairo_context ();
