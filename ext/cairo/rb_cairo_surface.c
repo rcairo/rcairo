@@ -434,6 +434,37 @@ cr_surface_create_similar (VALUE self, VALUE content, VALUE width, VALUE height)
   return CRSURFACE2RVAL_WITH_DESTROY (surface);
 }
 
+#if CAIRO_CHECK_VERSION(1, 10, 0)
+static VALUE
+cr_surface_destroy_with_destroy_check (VALUE self)
+{
+  if (DATA_PTR (self))
+    cr_surface_destroy (self);
+  return Qnil;
+}
+
+static VALUE
+cr_surface_create_sub_rectangle_surface (VALUE self, VALUE x, VALUE y,
+                                         VALUE width, VALUE height)
+{
+  VALUE rb_surface;
+  cairo_surface_t *surface;
+
+  surface = cairo_surface_create_for_rectangle (RVAL2CRSURFACE (self),
+                                                NUM2DBL (x),
+                                                NUM2DBL (y),
+                                                NUM2DBL (width),
+                                                NUM2INT (height));
+  cr_surface_check_status (surface);
+  rb_surface = CRSURFACE2RVAL_WITH_DESTROY (surface);
+  if (rb_block_given_p ())
+    return rb_ensure (rb_yield, rb_surface,
+                      cr_surface_destroy_with_destroy_check, rb_surface);
+  else
+    return rb_surface;
+}
+#endif
+
 static VALUE
 cr_surface_get_content (VALUE self)
 {
@@ -1225,6 +1256,10 @@ Init_cairo_surface (void)
 
   rb_define_method (rb_cCairo_Surface, "create_similar",
                     cr_surface_create_similar, 3);
+#if CAIRO_CHECK_VERSION(1, 10, 0)
+  rb_define_method (rb_cCairo_Surface, "sub_rectangle_surface",
+                    cr_surface_create_sub_rectangle_surface, 4);
+#endif
   rb_define_method (rb_cCairo_Surface, "destroy", cr_surface_destroy, 0);
   rb_define_method (rb_cCairo_Surface, "finish", cr_surface_finish, 0);
   rb_define_method (rb_cCairo_Surface, "content", cr_surface_get_content, 0);
