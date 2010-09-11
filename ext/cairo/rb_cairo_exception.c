@@ -51,113 +51,136 @@ static VALUE rb_eCairo_InvalidClusters;
 static VALUE rb_eCairo_InvalidSlant;
 static VALUE rb_eCairo_InvalidWeight;
 #endif
+#if CAIRO_CHECK_VERSION(1, 10, 0)
+static VALUE rb_eCairo_InvalidSize;
+static VALUE rb_eCairo_UserFontNotImplemented;
+static VALUE rb_eCairo_DeviceTypeMismatch;
+static VALUE rb_eCairo_DeviceError;
+#endif
 
 void
 rb_cairo_check_status (cairo_status_t status)
 {
   const char *string = cairo_status_to_string (status);
-  
+
   switch (status)
     {
     case CAIRO_STATUS_SUCCESS:
       break;
     case CAIRO_STATUS_NO_MEMORY:
-      rb_raise (rb_eNoMemError, string);
+      rb_raise (rb_eNoMemError, "%s", string);
       break;
     case CAIRO_STATUS_INVALID_RESTORE:
-      rb_raise (rb_eCairo_InvalidRestoreError, string);
+      rb_raise (rb_eCairo_InvalidRestoreError, "%s", string);
       break;
     case CAIRO_STATUS_INVALID_POP_GROUP:
-      rb_raise (rb_eCairo_InvalidPopGroupError, string);
+      rb_raise (rb_eCairo_InvalidPopGroupError, "%s", string);
       break;
     case CAIRO_STATUS_NO_CURRENT_POINT:
-      rb_raise (rb_eCairo_NoCurrentPointError, string);
+      rb_raise (rb_eCairo_NoCurrentPointError, "%s", string);
       break;
     case CAIRO_STATUS_INVALID_MATRIX:
-      rb_raise (rb_eCairo_InvalidMatrixError, string);
+      rb_raise (rb_eCairo_InvalidMatrixError, "%s", string);
       break;
     case CAIRO_STATUS_INVALID_STATUS:
-      rb_raise (rb_eCairo_InvalidStatusError, string);
+      rb_raise (rb_eCairo_InvalidStatusError, "%s", string);
       break;
     case CAIRO_STATUS_NULL_POINTER:
-      rb_raise (rb_eCairo_NullPointerError, string);
+      rb_raise (rb_eCairo_NullPointerError, "%s", string);
       break;
     case CAIRO_STATUS_INVALID_STRING:
-      rb_raise (rb_eCairo_InvalidStringError, string);
+      rb_raise (rb_eCairo_InvalidStringError, "%s", string);
       break;
     case CAIRO_STATUS_INVALID_PATH_DATA:
-      rb_raise (rb_eCairo_InvalidPathDataError, string);
+      rb_raise (rb_eCairo_InvalidPathDataError, "%s", string);
       break;
     case CAIRO_STATUS_READ_ERROR:
-      rb_raise (rb_eCairo_ReadError, string);
+      rb_raise (rb_eCairo_ReadError, "%s", string);
       break;
     case CAIRO_STATUS_WRITE_ERROR:
-      rb_raise (rb_eCairo_WriteError, string);
+      rb_raise (rb_eCairo_WriteError, "%s", string);
       break;
     case CAIRO_STATUS_SURFACE_FINISHED:
-      rb_raise (rb_eCairo_SurfaceFinishedError, string);
+      rb_raise (rb_eCairo_SurfaceFinishedError, "%s", string);
       break;
     case CAIRO_STATUS_SURFACE_TYPE_MISMATCH:
-      rb_raise (rb_eCairo_SurfaceTypeMismatchError, string);
+      rb_raise (rb_eCairo_SurfaceTypeMismatchError, "%s", string);
       break;
     case CAIRO_STATUS_PATTERN_TYPE_MISMATCH:
-      rb_raise (rb_eCairo_PatternTypeMismatchError, string);
+      rb_raise (rb_eCairo_PatternTypeMismatchError, "%s", string);
       break;
     case CAIRO_STATUS_INVALID_CONTENT:
-      rb_raise (rb_eCairo_InvalidContentError, string);
+      rb_raise (rb_eCairo_InvalidContentError, "%s", string);
       break;
     case CAIRO_STATUS_INVALID_FORMAT:
-      rb_raise (rb_eCairo_InvalidFormatError, string);
+      rb_raise (rb_eCairo_InvalidFormatError, "%s", string);
       break;
     case CAIRO_STATUS_INVALID_VISUAL:
-      rb_raise (rb_eCairo_InvalidVisualError, string);
+      rb_raise (rb_eCairo_InvalidVisualError, "%s", string);
       break;
     case CAIRO_STATUS_FILE_NOT_FOUND:
-      rb_raise (rb_eCairo_FileNotFoundError, string);
+      rb_raise (rb_eCairo_FileNotFoundError, "%s", string);
       break;
     case CAIRO_STATUS_INVALID_DASH:
-      rb_raise (rb_eCairo_InvalidDashError, string);
+      rb_raise (rb_eCairo_InvalidDashError, "%s", string);
       break;
     case CAIRO_STATUS_INVALID_DSC_COMMENT:
-      rb_raise (rb_eCairo_InvalidDscCommentError, string);
+      rb_raise (rb_eCairo_InvalidDscCommentError, "%s", string);
       break;
 #if CAIRO_CHECK_VERSION(1, 3, 0)
     case CAIRO_STATUS_INVALID_INDEX:
-      rb_raise (rb_eCairo_InvalidIndexError, string);
+      rb_raise (rb_eCairo_InvalidIndexError, "%s", string);
       break;
     case CAIRO_STATUS_CLIP_NOT_REPRESENTABLE:
-      rb_raise (rb_eCairo_ClipNotRepresentableError, string);
+      rb_raise (rb_eCairo_ClipNotRepresentableError, "%s", string);
       break;
 #endif
 #if CAIRO_CHECK_VERSION(1, 5, 6)
     case CAIRO_STATUS_TEMP_FILE_ERROR:
-      rb_raise (rb_eCairo_TempFileError, string);
+      rb_raise (rb_eCairo_TempFileError, "%s", string);
       break;
     case CAIRO_STATUS_INVALID_STRIDE:
-      rb_raise (rb_eCairo_InvalidStringError, string);
+      rb_raise (rb_eCairo_InvalidStringError, "%s", string);
       break;
 #endif
 #if CAIRO_CHECK_VERSION(1, 7, 2)
     case CAIRO_STATUS_FONT_TYPE_MISMATCH:
-      rb_raise (rb_eCairo_FontTypeMismatch, string);
+      rb_raise (rb_eCairo_FontTypeMismatch, "%s", string);
       break;
     case CAIRO_STATUS_USER_FONT_IMMUTABLE:
-      rb_raise (rb_eCairo_UserFontImmutable, string);
+      rb_raise (rb_eCairo_UserFontImmutable, "%s", string);
       break;
     case CAIRO_STATUS_USER_FONT_ERROR:
-      rb_raise (rb_eCairo_UserFontError, string);
+      rb_raise (rb_eCairo_UserFontError, "%s", string);
       break;
     case CAIRO_STATUS_NEGATIVE_COUNT:
-      rb_raise (rb_eCairo_NegativeCount, string);
+      rb_raise (rb_eCairo_NegativeCount, "%s", string);
       break;
     case CAIRO_STATUS_INVALID_CLUSTERS:
-      rb_raise (rb_eCairo_InvalidClusters, string);
+      rb_raise (rb_eCairo_InvalidClusters, "%s", string);
       break;
     case CAIRO_STATUS_INVALID_SLANT:
-      rb_raise (rb_eCairo_InvalidSlant, string);
+      rb_raise (rb_eCairo_InvalidSlant, "%s", string);
       break;
     case CAIRO_STATUS_INVALID_WEIGHT:
-      rb_raise (rb_eCairo_InvalidWeight, string);
+      rb_raise (rb_eCairo_InvalidWeight, "%s", string);
+      break;
+#endif
+#if CAIRO_CHECK_VERSION(1, 10, 0)
+    case CAIRO_STATUS_INVALID_SIZE:
+      rb_raise (rb_eCairo_InvalidSize, "%s", string);
+      break;
+    case CAIRO_STATUS_USER_FONT_NOT_IMPLEMENTED:
+      rb_raise (rb_eCairo_UserFontNotImplemented, "%s", string);
+      break;
+    case CAIRO_STATUS_DEVICE_TYPE_MISMATCH:
+      rb_raise (rb_eCairo_DeviceTypeMismatch, "%s", string);
+      break;
+    case CAIRO_STATUS_DEVICE_ERROR:
+      rb_raise (rb_eCairo_DeviceError, "%s", string);
+      break;
+    case CAIRO_STATUS_LAST_STATUS:
+      rb_raise (rb_eArgError, "bug: %s: %d", string, status);
       break;
 #endif
     }
@@ -235,6 +258,16 @@ rb_cairo__exception_to_status (VALUE exception)
     return CAIRO_STATUS_INVALID_SLANT;
   else if (rb_cairo__is_kind_of (exception, rb_eCairo_InvalidWeight))
     return CAIRO_STATUS_INVALID_WEIGHT;
+#endif
+#if CAIRO_CHECK_VERSION(1, 10, 0)
+  else if (rb_cairo__is_kind_of (exception, rb_eCairo_InvalidSize))
+    return CAIRO_STATUS_INVALID_SIZE;
+  else if (rb_cairo__is_kind_of (exception, rb_eCairo_UserFontNotImplemented))
+    return CAIRO_STATUS_USER_FONT_NOT_IMPLEMENTED;
+  else if (rb_cairo__is_kind_of (exception, rb_eCairo_DeviceTypeMismatch))
+    return CAIRO_STATUS_DEVICE_TYPE_MISMATCH;
+  else if (rb_cairo__is_kind_of (exception, rb_eCairo_DeviceError))
+    return CAIRO_STATUS_DEVICE_ERROR;
 #endif
 
   return -1;
@@ -350,5 +383,23 @@ Init_cairo_exception ()
   rb_eCairo_InvalidWeight =
     rb_define_class_under (rb_mCairo, "InvalidWeight",
                            rb_eArgError);
+#endif
+
+#if CAIRO_CHECK_VERSION(1, 10, 0)
+  rb_eCairo_InvalidSize =
+    rb_define_class_under (rb_mCairo, "InvalidSize",
+                           rb_eArgError);
+
+  rb_eCairo_UserFontNotImplemented =
+    rb_define_class_under (rb_mCairo, "UserFontNotImplemented",
+                           rb_eCairo_Error);
+
+  rb_eCairo_DeviceTypeMismatch =
+    rb_define_class_under (rb_mCairo, "DeviceTypeMismatch",
+                           rb_eArgError);
+
+  rb_eCairo_DeviceError =
+    rb_define_class_under (rb_mCairo, "DeviceError",
+                           rb_eCairo_Error);
 #endif
 }
