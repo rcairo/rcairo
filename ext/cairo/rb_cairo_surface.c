@@ -70,7 +70,6 @@ VALUE rb_cCairo_XMLSurface = Qnil;
 VALUE rb_cCairo_SkiaSurface = Qnil;
 VALUE rb_cCairo_SubSurface = Qnil;
 
-static ID cr_id_target;
 static ID cr_id_parse;
 static ID cr_id_size;
 static ID cr_id_set_unit;
@@ -704,12 +703,12 @@ cr_ ## type ## _surface_initialize (int argc, VALUE *argv, VALUE self)  \
         }                                                               \
       else                                                              \
         {                                                               \
-          rb_ivar_set (self, cr_id_target, target);                     \
+          rb_ivar_set (self, rb_cairo__io_id_output, target);           \
           cairo_surface_set_user_data (surface, &cr_closure_key,        \
                                        closure,                         \
                                        rb_cairo__io_closure_free);      \
           cairo_surface_set_user_data (surface, &cr_object_holder_key,  \
-                                       cr_object_holder_new(self),      \
+                                       cr_object_holder_new (self),     \
                                        cr_object_holder_free);          \
         }                                                               \
     }                                                                   \
@@ -1187,7 +1186,6 @@ cr_finish_all_guarded_surfaces_at_end (VALUE data)
 void
 Init_cairo_surface (void)
 {
-  cr_id_target = rb_intern ("target");
   cr_id_parse = rb_intern ("parse");
   cr_id_size = rb_intern ("size");
   cr_id_set_unit = rb_intern ("unit=");

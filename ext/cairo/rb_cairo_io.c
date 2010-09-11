@@ -14,6 +14,7 @@
 
 ID rb_cairo__io_id_read;
 ID rb_cairo__io_id_write;
+ID rb_cairo__io_id_output;
 
 /* read/write callback */
 rb_cairo__io_callback_closure_t *
@@ -161,4 +162,5 @@ Init_cairo_io (void)
 {
   rb_cairo__io_id_read = rb_intern ("read");
   rb_cairo__io_id_write = rb_intern ("write");
+  rb_cairo__io_id_output = rb_intern ("output");
 }

@@ -10,6 +10,7 @@
 
 #include "rb_cairo.h"
 #include "rb_cairo_private.h"
+#include "rb_cairo_io.h"
 
 #ifdef HAVE_RUBY_ST_H
 #  include <ruby/st.h>
@@ -167,17 +168,17 @@ static VALUE
 cr_device_finish (VALUE self)
 {
   cairo_device_t *device;
-  /* cr_io_callback_closure_t *closure; */
+  rb_cairo__io_callback_closure_t *closure;
 
   device = _SELF;
-  /* closure = cairo_device_get_user_data (device, &cr_closure_key); */
+  closure = cairo_device_get_user_data (device, &cr_closure_key);
 
   cairo_device_finish (device);
   cairo_device_set_user_data (device, &cr_finished_key, (void *)CR_TRUE, NULL);
   cairo_device_set_user_data (device, &cr_object_holder_key, NULL, NULL);
 
-  /* if (closure && !NIL_P (closure->error)) */
-  /*   rb_exc_raise (closure->error); */
+  if (closure && !NIL_P (closure->error))
+    rb_exc_raise (closure->error);
   cr_device_check_status (device);
 
   return self;
@@ -209,7 +210,6 @@ cr_device_acquire (VALUE self)
   else
     return self;
 }
-#endif
 
 static int
 cr_finish_all_guarded_devices_at_end_iter (VALUE key, VALUE value, VALUE data)
@@ -226,10 +226,64 @@ cr_finish_all_guarded_devices_at_end (VALUE data)
                    Qnil);
 }
 
+static void
+yield_and_finish (VALUE self)
+{
+  cairo_device_t *device;
+
+  rb_yield (self);
+
+  device = _SELF;
+  if (!cairo_device_get_user_data (device, &cr_finished_key))
+    cr_device_finish (self);
+}
+
+#  ifdef CAIRO_HAS_SCRIPT_SURFACE
+static VALUE
+cr_script_device_initialize (VALUE self, VALUE file_name_or_output)
+{
+  cairo_device_t *device;
+
+  if (rb_respond_to (file_name_or_output, rb_cairo__io_id_write))
+    {
+      rb_cairo__io_callback_closure_t *closure;
+
+      closure = rb_cairo__io_closure_new (file_name_or_output);
+      device = cairo_script_create_for_stream (rb_cairo__io_write_func,
+                                               (void *)closure);
+      if (cairo_device_status (device))
+        {
+          rb_cairo__io_closure_destroy (closure);
+        }
+      else
+        {
+          cairo_device_set_user_data (device, &cr_closure_key,
+                                      closure, rb_cairo__io_closure_free);
+          cairo_device_set_user_data (device, &cr_object_holder_key,
+                                      cr_object_holder_new (self),
+                                      cr_object_holder_free);
+        }
+    }
+  else
+    {
+      device = cairo_script_create (StringValueCStr (file_name_or_output));
+    }
+
+  cr_device_check_status (device);
+  DATA_PTR (self) = device;
+  if (rb_block_given_p ())
+    yield_and_finish (self);
+  return Qnil;
+}
+
+#  endif
+
+#endif
+
 void
 Init_cairo_device (void)
 {
-#ifdef CAIRO_CHECK_VERSION(1, 10, 0)
+#if CAIRO_CHECK_VERSION(1, 10, 0)
   rb_cCairo_Device =
     rb_define_class_under (rb_mCairo, "Device", rb_cObject);
   rb_define_alloc_func (rb_cCairo_Device, cr_device_allocate);
@@ -245,5 +299,16 @@ Init_cairo_device (void)
   rb_define_method (rb_cCairo_Device, "release", cr_device_release, 0);
 
   RB_CAIRO_DEF_SETTERS (rb_cCairo_Device);
+
+#  ifdef CAIRO_HAS_SCRIPT_SURFACE
+  rb_cCairo_ScriptDevice =
+    rb_define_class_under (rb_mCairo, "ScriptDevice", rb_cCairo_Device);
+
+  rb_define_method (rb_cCairo_ScriptDevice, "initialize",
+                    cr_script_device_initialize, 1);
+
+  RB_CAIRO_DEF_SETTERS (rb_cCairo_ScriptDevice);
+#  endif
+
 #endif
 }

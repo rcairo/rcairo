@@ -27,6 +27,7 @@ typedef struct rb_cairo__io_invoke_data {
 
 RB_CAIRO_VAR ID rb_cairo__io_id_read;
 RB_CAIRO_VAR ID rb_cairo__io_id_write;
+RB_CAIRO_VAR ID rb_cairo__io_id_output;
 
 rb_cairo__io_callback_closure_t *
                rb_cairo__io_closure_new     (VALUE                target);
