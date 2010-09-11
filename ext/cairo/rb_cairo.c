@@ -91,6 +91,7 @@ Init_cairo ()
   Init_cairo_context ();
   Init_cairo_path ();
   Init_cairo_matrix ();
+  Init_cairo_device ();
   Init_cairo_surface ();
   Init_cairo_exception ();
   Init_cairo_font ();

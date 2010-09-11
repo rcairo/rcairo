@@ -113,6 +113,13 @@ RB_CAIRO_VAR VALUE rb_cCairo_TeeSurface;
 RB_CAIRO_VAR VALUE rb_cCairo_XMLSurface;
 RB_CAIRO_VAR VALUE rb_cCairo_SkiaSurface;
 RB_CAIRO_VAR VALUE rb_cCairo_SubSurface;
+RB_CAIRO_VAR VALUE rb_cCairo_Device;
+RB_CAIRO_VAR VALUE rb_cCairo_DRMDevice;
+RB_CAIRO_VAR VALUE rb_cCairo_GLDevice;
+RB_CAIRO_VAR VALUE rb_cCairo_ScriptDevice;
+RB_CAIRO_VAR VALUE rb_cCairo_XCBDevice;
+RB_CAIRO_VAR VALUE rb_cCairo_XlibtDevice;
+RB_CAIRO_VAR VALUE rb_cCairo_XMLDevice;
 
 RB_CAIRO_VAR VALUE rb_mCairo_Operator;
 RB_CAIRO_VAR VALUE rb_mCairo_Antialias;
