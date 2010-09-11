@@ -84,6 +84,8 @@ EXPORTS
     rb_cairo_surface_from_ruby_object
     rb_cairo_surface_to_ruby_object
     rb_cairo_surface_to_ruby_object_with_destroy
+    rb_cairo_device_from_ruby_object
+    rb_cairo_device_to_ruby_object
     rb_cairo_operator_from_ruby_object
     rb_cairo_antialias_from_ruby_object
     rb_cairo_fill_rule_from_ruby_object

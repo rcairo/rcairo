@@ -5,6 +5,7 @@
  * $Author: kou $
  * $Date: 2008-11-01 14:23:14 $
  *
+ * Copyright 2005-2010 Kouhei Sutou <kou@cozmixng.org>
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
  *
@@ -52,6 +53,9 @@ enum ruby_value_type {
 #  define HAS_CREATE_CR_CLOSURE_SURFACE 0
 #endif
 
+#ifdef CAIRO_HAS_SCRIPT_SURFACE
+#  include <cairo-script.h>
+#endif
 
 VALUE rb_cCairo_Surface;
 VALUE rb_cCairo_ImageSurface;
@@ -62,6 +66,16 @@ VALUE rb_cCairo_Win32Surface = Qnil;
 VALUE rb_cCairo_Win32PrintingSurface = Qnil;
 VALUE rb_cCairo_QuartzSurface = Qnil;
 VALUE rb_cCairo_QuartzImageSurface = Qnil;
+VALUE rb_cCairo_ScriptSurface = Qnil;
+VALUE rb_cCairo_QtSurface = Qnil;
+VALUE rb_cCairo_RecordingSurface = Qnil;
+VALUE rb_cCairo_VGSurface = Qnil;
+VALUE rb_cCairo_GLSurface = Qnil;
+VALUE rb_cCairo_DRMSurface = Qnil;
+VALUE rb_cCairo_TeeSurface = Qnil;
+VALUE rb_cCairo_XMLSurface = Qnil;
+VALUE rb_cCairo_SkiaSurface = Qnil;
+VALUE rb_cCairo_SubSurface = Qnil;
 
 static ID cr_id_target;
 static ID cr_id_read;
@@ -134,6 +148,38 @@ cr_surface_get_klass (cairo_surface_t *surface)
 #if CAIRO_CHECK_VERSION(1, 5, 12)
     case CAIRO_SURFACE_TYPE_QUARTZ_IMAGE:
       klass = rb_cCairo_QuartzImageSurface;
+      break;
+#endif
+#if CAIRO_CHECK_VERSION(1, 10, 0)
+    case CAIRO_SURFACE_TYPE_SCRIPT:
+      klass = rb_cCairo_ScriptSurface;
+      break;
+    case CAIRO_SURFACE_TYPE_QT:
+      klass = rb_cCairo_QtSurface;
+      break;
+    case CAIRO_SURFACE_TYPE_RECORDING:
+      klass = rb_cCairo_RecordingSurface;
+      break;
+    case CAIRO_SURFACE_TYPE_VG:
+      klass = rb_cCairo_VGSurface;
+      break;
+    case CAIRO_SURFACE_TYPE_GL:
+      klass = rb_cCairo_GLSurface;
+      break;
+    case CAIRO_SURFACE_TYPE_DRM:
+      klass = rb_cCairo_DRMSurface;
+      break;
+    case CAIRO_SURFACE_TYPE_TEE:
+      klass = rb_cCairo_TeeSurface;
+      break;
+    case CAIRO_SURFACE_TYPE_XML:
+      klass = rb_cCairo_XMLSurface;
+      break;
+    case CAIRO_SURFACE_TYPE_SKIA:
+      klass = rb_cCairo_SkiaSurface;
+      break;
+    case CAIRO_SURFACE_TYPE_SUBSURFACE:
+      klass = rb_cCairo_SubSurface;
       break;
 #endif
     default:
@@ -1220,6 +1266,71 @@ cr_quartz_image_surface_get_image (VALUE self)
 #  endif
 #endif
 
+#ifdef CAIRO_HAS_SCRIPT_SURFACE
+static VALUE
+cr_script_surface_initialize (int argc, VALUE *argv, VALUE self)
+{
+  cairo_device_t *script;
+  cairo_surface_t *surface = NULL, *target = NULL;
+  cairo_content_t content = CAIRO_CONTENT_COLOR_ALPHA;
+  VALUE arg1, arg2, arg3, arg4, rb_width = Qnil, rb_height = Qnil;
+
+  rb_scan_args (argc, argv, "22", &arg1, &arg2, &arg3, &arg4);
+
+  script = CRDEVICE2RVAL (arg1);
+  if (argc == 2)
+    {
+      target = RVAL2CRSURFACE (arg2);
+    }
+  else if (argc == 3)
+    {
+      rb_width = arg2;
+      rb_height = arg3;
+    }
+  else
+    {
+      switch (TYPE (arg1))
+        {
+        case T_NIL:
+          break;
+        case T_STRING:
+        case T_SYMBOL:
+        case T_FIXNUM:
+          content = RVAL2CRCONTENT (arg1);
+          break;
+        default:
+          rb_raise (rb_eArgError,
+                    "invalid argument (expect "
+                    "(script, width, height), "
+                    "(script, content, width, height), "
+                    "(script, surface)): %s",
+                    inspect (rb_ary_new3 (4, arg1, arg2, arg3, arg4)));
+          break;
+        }
+
+      rb_width = arg3;
+      rb_height = arg4;
+    }
+
+  if (target)
+    {
+      surface = cairo_script_surface_create_for_target (script, target);
+    }
+  else
+    {
+      surface = cairo_script_surface_create (script, content,
+                                             NUM2DBL (rb_width),
+                                             NUM2DBL (rb_height));
+    }
+
+  cr_surface_check_status (surface);
+  DATA_PTR (self) = surface;
+  if (rb_block_given_p ())
+    yield_and_finish (self);
+  return Qnil;
+}
+#endif
+
 static int
 cr_finish_all_guarded_surfaces_at_end_iter (VALUE key, VALUE value, VALUE data)
 {
@@ -1416,6 +1527,15 @@ Init_cairo_surface (void)
   rb_define_method (rb_cCairo_QuartzImageSurface, "image",
                     cr_quartz_image_surface_get_image, 0);
 #  endif
+#endif
 
+#ifdef CAIRO_HAS_SCRIPT_SURFACE
+  rb_cCairo_ScriptSurface =
+    rb_define_class_under (rb_mCairo, "ScriptSurface", rb_cCairo_ScriptSurface);
+
+  rb_define_method (rb_cCairo_ScriptSurface, "initialize",
+                    cr_script_surface_initialize, -1);
+
+  RB_CAIRO_DEF_SETTERS (rb_cCairo_ScriptSurface);
 #endif
 }

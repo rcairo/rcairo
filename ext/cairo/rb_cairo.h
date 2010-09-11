@@ -103,6 +103,16 @@ RB_CAIRO_VAR VALUE rb_cCairo_Win32PrintingSurface;
 #define rb_cCairo_WIN32Surface rb_cCairo_Win32Surface
 RB_CAIRO_VAR VALUE rb_cCairo_QuartzSurface;
 RB_CAIRO_VAR VALUE rb_cCairo_QuartzImageSurface;
+RB_CAIRO_VAR VALUE rb_cCairo_ScriptSurface;
+RB_CAIRO_VAR VALUE rb_cCairo_QtSurface;
+RB_CAIRO_VAR VALUE rb_cCairo_RecordingSurface;
+RB_CAIRO_VAR VALUE rb_cCairo_VGSurface;
+RB_CAIRO_VAR VALUE rb_cCairo_GLSurface;
+RB_CAIRO_VAR VALUE rb_cCairo_DRMSurface;
+RB_CAIRO_VAR VALUE rb_cCairo_TeeSurface;
+RB_CAIRO_VAR VALUE rb_cCairo_XMLSurface;
+RB_CAIRO_VAR VALUE rb_cCairo_SkiaSurface;
+RB_CAIRO_VAR VALUE rb_cCairo_SubSurface;
 
 RB_CAIRO_VAR VALUE rb_mCairo_Operator;
 RB_CAIRO_VAR VALUE rb_mCairo_Antialias;
@@ -170,6 +180,9 @@ RB_CAIRO_VAR VALUE rb_cCairo_Paper;
 #define CRSURFACE2RVAL_WITH_DESTROY(surface) \
   (rb_cairo_surface_to_ruby_object_with_destroy(surface))
 
+#define RVAL2CRDEVICE(obj)      (rb_cairo_device_from_ruby_object(obj))
+#define CRDEVICE2RVAL(device)   (rb_cairo_device_to_ruby_object(device))
+
 cairo_t              *rb_cairo_context_from_ruby_object      (VALUE obj);
 VALUE                 rb_cairo_context_to_ruby_object        (cairo_t *cr);
 
@@ -210,6 +223,10 @@ VALUE                 rb_cairo_surface_to_ruby_object        (cairo_surface_t *s
 VALUE                 rb_cairo_surface_to_ruby_object_with_destroy
                                                              (cairo_surface_t *surface);
 
+#if CAIRO_CHECK_VERSION(1, 10, 0)
+cairo_device_t       *rb_cairo_device_from_ruby_object       (VALUE obj);
+VALUE                 rb_cairo_device_to_ruby_object         (cairo_device_t *device);
+#endif
 
 #define RVAL2CROPERATOR(obj)      (rb_cairo_operator_from_ruby_object(obj))
 #define RVAL2CRANTIALIAS(obj)     (rb_cairo_antialias_from_ruby_object(obj))
