@@ -50,6 +50,10 @@ enum ruby_value_type {
 #  include <cairo-xml.h>
 #endif
 
+#ifdef CAIRO_HAS_TEE_SURFACE
+#  include <cairo-tee.h>
+#endif
+
 VALUE rb_cCairo_Surface;
 VALUE rb_cCairo_ImageSurface;
 VALUE rb_cCairo_PDFSurface = Qnil;
@@ -1352,6 +1356,78 @@ cr_xml_surface_initialize (int argc, VALUE *argv, VALUE self)
 }
 #endif
 
+#ifdef CAIRO_HAS_TEE_SURFACE
+static VALUE
+cr_tee_surface_initialize (VALUE self, VALUE master)
+{
+  cairo_surface_t *surface = NULL;
+
+  surface = cairo_tee_surface_create (RVAL2CRSURFACE (master));
+  cr_surface_check_status (surface);
+  DATA_PTR (self) = surface;
+  if (rb_block_given_p ())
+    yield_and_finish (self);
+  return Qnil;
+}
+
+static VALUE
+cr_tee_surface_add (VALUE self, VALUE target)
+{
+  cairo_surface_t *surface = NULL;
+
+  surface = _SELF;
+  cairo_tee_surface_add (surface, RVAL2CRSURFACE (target));
+  cr_surface_check_status (surface);
+  return Qnil;
+}
+
+static VALUE
+cr_tee_surface_shift_operator (VALUE self, VALUE target)
+{
+  cr_tee_surface_add (self, target);
+  return self;
+}
+
+static VALUE
+cr_tee_surface_remove (VALUE self, VALUE target_or_index)
+{
+  cairo_surface_t *surface = NULL, *target;
+
+  surface = _SELF;
+  if (rb_cairo__is_kind_of (target_or_index, rb_cCairo_Surface))
+    {
+      target = RVAL2CRSURFACE (target_or_index);
+    }
+  else
+    {
+      VALUE index;
+
+      index = rb_check_to_integer (target_or_index, "to_int");
+      if (NIL_P (index))
+        rb_raise (rb_eArgError,
+                  "invalid argument (expect (surface) or (index)): %s",
+                  rb_cairo__inspect (target_or_index));
+      target = cairo_tee_surface_index (surface, NUM2INT (index));
+    }
+  cairo_tee_surface_remove (surface, target);
+  cr_surface_check_status (surface);
+  return Qnil;
+}
+
+static VALUE
+cr_tee_surface_array_reference (VALUE self, VALUE index)
+{
+  cairo_surface_t *surface = NULL, *target;
+
+  surface = _SELF;
+  index = rb_Integer (index);
+  target = cairo_tee_surface_index (surface, NUM2INT (index));
+  cr_surface_check_status (surface);
+  cr_surface_check_status (target);
+  return CRSURFACE2RVAL (target);
+}
+#endif
+
 static int
 cr_finish_all_guarded_surfaces_at_end_iter (VALUE key, VALUE value, VALUE data)
 {
@@ -1585,5 +1661,24 @@ Init_cairo_surface (void)
                     cr_xml_surface_initialize, -1);
 
   RB_CAIRO_DEF_SETTERS (rb_cCairo_XMLSurface);
+#endif
+
+#ifdef CAIRO_HAS_TEE_SURFACE
+  rb_cCairo_TeeSurface =
+    rb_define_class_under (rb_mCairo, "TeeSurface", rb_cCairo_Surface);
+
+  rb_define_method (rb_cCairo_TeeSurface, "initialize",
+                    cr_tee_surface_initialize, 1);
+
+  rb_define_method (rb_cCairo_TeeSurface, "add",
+                    cr_tee_surface_add, 1);
+  rb_define_method (rb_cCairo_TeeSurface, "<<",
+                    cr_tee_surface_shift_operator, 1);
+  rb_define_method (rb_cCairo_TeeSurface, "remove",
+                    cr_tee_surface_remove, 1);
+  rb_define_method (rb_cCairo_TeeSurface, "[]",
+                    cr_tee_surface_array_reference, 1);
+
+  RB_CAIRO_DEF_SETTERS (rb_cCairo_TeeSurface);
 #endif
 }
