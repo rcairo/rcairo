@@ -40,7 +40,7 @@ cr_matrix_free (void *ptr)
 {
   if (ptr)
     {
-      free ((cairo_matrix_t *) ptr);
+      xfree ((cairo_matrix_t *) ptr);
     }
 }
 
