@@ -18,6 +18,10 @@
 #  include <st.h>
 #endif
 
+#ifdef CAIRO_HAS_XML_SURFACE
+#  include <cairo-xml.h>
+#endif
+
 VALUE rb_cCairo_Device = Qnil;
 VALUE rb_cCairo_DRMDevice = Qnil;
 VALUE rb_cCairo_GLDevice = Qnil;
@@ -234,43 +238,51 @@ yield_and_finish (VALUE self)
     cr_device_finish (self);
 }
 
-#  ifdef CAIRO_HAS_SCRIPT_SURFACE
-static VALUE
-cr_script_device_initialize (VALUE self, VALUE file_name_or_output)
-{
-  cairo_device_t *device;
-
-  if (rb_respond_to (file_name_or_output, rb_cairo__io_id_write))
-    {
-      rb_cairo__io_callback_closure_t *closure;
-
-      closure = rb_cairo__io_closure_new (file_name_or_output);
-      device = cairo_script_create_for_stream (rb_cairo__io_write_func,
-                                               (void *)closure);
-      if (cairo_device_status (device))
-        {
-          rb_cairo__io_closure_destroy (closure);
-        }
-      else
-        {
-          cairo_device_set_user_data (device, &cr_closure_key,
-                                      closure, rb_cairo__io_closure_free);
-          cairo_device_set_user_data (device, &cr_object_holder_key,
-                                      cr_object_holder_new (self),
-                                      cr_object_holder_free);
-        }
-    }
-  else
-    {
-      device = cairo_script_create (StringValueCStr (file_name_or_output));
-    }
-
-  cr_device_check_status (device);
-  DATA_PTR (self) = device;
-  if (rb_block_given_p ())
-    yield_and_finish (self);
-  return Qnil;
+#define DEFINE_OUTPUT_INITIALIZE(type)                                  \
+static VALUE                                                            \
+cr_ ## type ## _device_initialize (VALUE self,                          \
+                                   VALUE file_name_or_output)           \
+{                                                                       \
+  cairo_device_t *device;                                               \
+                                                                        \
+  if (rb_respond_to (file_name_or_output, rb_cairo__io_id_write))       \
+    {                                                                   \
+      rb_cairo__io_callback_closure_t *closure;                         \
+                                                                        \
+      closure = rb_cairo__io_closure_new (file_name_or_output);         \
+      device =                                                          \
+        cairo_ ## type ## _create_for_stream (rb_cairo__io_write_func,  \
+                                                     (void *)closure);  \
+      if (cairo_device_status (device))                                 \
+        {                                                               \
+          rb_cairo__io_closure_destroy (closure);                       \
+        }                                                               \
+      else                                                              \
+        {                                                               \
+          cairo_device_set_user_data (device, &cr_closure_key,          \
+                                      closure,                          \
+                                      rb_cairo__io_closure_free);       \
+          cairo_device_set_user_data (device, &cr_object_holder_key,    \
+                                      cr_object_holder_new (self),      \
+                                      cr_object_holder_free);           \
+        }                                                               \
+    }                                                                   \
+  else                                                                  \
+    {                                                                   \
+      const char *file_name;                                            \
+      file_name = StringValueCStr (file_name_or_output);                \
+      device = cairo_ ## type ## _create (file_name);                   \
+    }                                                                   \
+                                                                        \
+  cr_device_check_status (device);                                      \
+  DATA_PTR (self) = device;                                             \
+  if (rb_block_given_p ())                                              \
+    yield_and_finish (self);                                            \
+  return Qnil;                                                          \
 }
+
+#  ifdef CAIRO_HAS_SCRIPT_SURFACE
+DEFINE_OUTPUT_INITIALIZE(script)
 
 static VALUE
 cr_script_device_write_comment (VALUE self, VALUE comment)
@@ -310,6 +322,22 @@ cr_script_device_reply (VALUE self, VALUE recording_surface)
   device = _SELF;
   cairo_script_from_recording_surface (device,
                                        RVAL2CRSURFACE (recording_surface));
+  cr_device_check_status (device);
+  return Qnil;
+}
+#  endif
+
+#  ifdef CAIRO_HAS_XML_SURFACE
+DEFINE_OUTPUT_INITIALIZE(xml)
+
+static VALUE
+cr_xml_device_reply (VALUE self, VALUE recording_surface)
+{
+  cairo_device_t *device;
+
+  device = _SELF;
+  cairo_xml_for_recording_surface (device,
+                                   RVAL2CRSURFACE (recording_surface));
   cr_device_check_status (device);
   return Qnil;
 }
@@ -356,6 +384,19 @@ Init_cairo_device (void)
                     cr_script_device_reply, 1);
 
   RB_CAIRO_DEF_SETTERS (rb_cCairo_ScriptDevice);
+#  endif
+
+#  ifdef CAIRO_HAS_XML_SURFACE
+  rb_cCairo_XMLDevice =
+    rb_define_class_under (rb_mCairo, "XMLDevice", rb_cCairo_Device);
+
+  rb_define_method (rb_cCairo_XMLDevice, "initialize",
+                    cr_xml_device_initialize, 1);
+
+  rb_define_method (rb_cCairo_XMLDevice, "reply",
+                    cr_xml_device_reply, 1);
+
+  RB_CAIRO_DEF_SETTERS (rb_cCairo_XMLDevice);
 #  endif
 
 #endif

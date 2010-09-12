@@ -1,4 +1,5 @@
 require 'cairo'
+require 'stringio'
 
 module CairoTestUtils
   private
