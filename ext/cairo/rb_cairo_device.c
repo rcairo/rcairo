@@ -260,6 +260,8 @@ cr_ ## type ## _device_initialize (VALUE self,                          \
         }                                                               \
       else                                                              \
         {                                                               \
+          rb_ivar_set (self, rb_cairo__io_id_output,                    \
+                       file_name_or_output);                            \
           cairo_device_set_user_data (device, &cr_closure_key,          \
                                       closure,                          \
                                       rb_cairo__io_closure_free);       \

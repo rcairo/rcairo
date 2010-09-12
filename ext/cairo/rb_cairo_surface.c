@@ -1355,6 +1355,7 @@ cr_tee_surface_initialize (VALUE self, VALUE master)
   surface = cairo_tee_surface_create (RVAL2CRSURFACE (master));
   cr_surface_check_status (surface);
   DATA_PTR (self) = surface;
+  rb_iv_set (self, "surfaces", rb_ary_new3 (1, master));
   if (rb_block_given_p ())
     yield_and_finish (self);
   return Qnil;
@@ -1368,6 +1369,7 @@ cr_tee_surface_add (VALUE self, VALUE target)
   surface = _SELF;
   cairo_tee_surface_add (surface, RVAL2CRSURFACE (target));
   cr_surface_check_status (surface);
+  rb_ary_push (rb_iv_get (self, "surfaces"), target);
   return Qnil;
 }
 
@@ -1382,6 +1384,8 @@ static VALUE
 cr_tee_surface_remove (VALUE self, VALUE target_or_index)
 {
   cairo_surface_t *surface = NULL, *target;
+  VALUE rb_surfaces;
+  int i;
 
   surface = _SELF;
   if (rb_cairo__is_kind_of (target_or_index, rb_cCairo_Surface))
@@ -1401,6 +1405,22 @@ cr_tee_surface_remove (VALUE self, VALUE target_or_index)
     }
   cairo_tee_surface_remove (surface, target);
   cr_surface_check_status (surface);
+
+  rb_surfaces = rb_iv_get (self, "surfaces");
+  for (i = 0; i < RARRAY_LEN (rb_surfaces); i++)
+    {
+      VALUE rb_marked_surface;
+      cairo_surface_t *marked_surface;
+
+      rb_marked_surface = RARRAY_PTR (rb_surfaces)[i];
+      marked_surface = RVAL2CRSURFACE (rb_marked_surface);
+      if (marked_surface == target)
+        {
+          rb_ary_delete (rb_surfaces, rb_marked_surface);
+          break;
+        }
+    }
+
   return Qnil;
 }
 
