@@ -30,13 +30,14 @@ VALUE rb_cCairo_XCBDevice = Qnil;
 VALUE rb_cCairo_XlibDevice = Qnil;
 VALUE rb_cCairo_XMLDevice = Qnil;
 
+#if CAIRO_CHECK_VERSION(1, 10, 0)
+
 static cairo_user_data_key_t cr_closure_key;
 static cairo_user_data_key_t cr_object_holder_key;
 static cairo_user_data_key_t cr_finished_key;
 
 #define _SELF  (RVAL2CRDEVICE(self))
 
-#if CAIRO_CHECK_VERSION(1, 10, 0)
 static inline void
 cr_device_check_status (cairo_device_t *device)
 {
