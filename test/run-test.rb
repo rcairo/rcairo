@@ -1,7 +1,6 @@
 #!/usr/bin/env ruby
 
 base_dir = File.expand_path(File.join(File.dirname(__FILE__), ".."))
-test_unit_dir = File.join(base_dir, "test-unit", "lib")
 ext_dir = File.join(base_dir, "ext", "cairo")
 lib_dir = File.join(base_dir, "lib")
 test_dir = File.join(base_dir, "test")
@@ -12,8 +11,8 @@ if system("which make > /dev/null")
   end
 end
 
-$LOAD_PATH.unshift(test_unit_dir)
-
+require 'rubygems'
+gem 'test-unit'
 require 'test/unit'
 
 $LOAD_PATH.unshift(base_dir)
