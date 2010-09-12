@@ -46,6 +46,10 @@ enum ruby_value_type {
 #  define T_DATA RUBY_T_DATA
 #endif
 
+#ifdef CAIRO_HAS_XML_SURFACE
+#  include <cairo-xml.h>
+#endif
+
 VALUE rb_cCairo_Surface;
 VALUE rb_cCairo_ImageSurface;
 VALUE rb_cCairo_PDFSurface = Qnil;
@@ -1266,9 +1270,9 @@ cr_script_surface_initialize (int argc, VALUE *argv, VALUE self)
           rb_raise (rb_eArgError,
                     "invalid argument (expect "
                     "(script, width, height), "
-                    "(script, content, width, height), "
+                    "(script, content, width, height) or "
                     "(script, surface)): %s",
-                    rb_cairo__inspect (rb_ary_new3 (4, arg1, arg2, arg3, arg4)));
+                    rb_cairo__inspect (rb_ary_new4 (argc, argv)));
           break;
         }
 
@@ -1286,6 +1290,59 @@ cr_script_surface_initialize (int argc, VALUE *argv, VALUE self)
                                              NUM2DBL (rb_width),
                                              NUM2DBL (rb_height));
     }
+
+  cr_surface_check_status (surface);
+  DATA_PTR (self) = surface;
+  if (rb_block_given_p ())
+    yield_and_finish (self);
+  return Qnil;
+}
+#endif
+
+#ifdef CAIRO_HAS_XML_SURFACE
+static VALUE
+cr_xml_surface_initialize (int argc, VALUE *argv, VALUE self)
+{
+  cairo_device_t *script;
+  cairo_surface_t *surface = NULL;
+  cairo_content_t content = CAIRO_CONTENT_COLOR_ALPHA;
+  VALUE arg1, arg2, arg3, arg4, rb_width = Qnil, rb_height = Qnil;
+
+  rb_scan_args (argc, argv, "22", &arg1, &arg2, &arg3, &arg4);
+
+  script = RVAL2CRDEVICE (arg1);
+  if (argc == 3)
+    {
+      rb_width = arg2;
+      rb_height = arg3;
+    }
+  else
+    {
+      switch (TYPE (arg1))
+        {
+        case T_NIL:
+          break;
+        case T_STRING:
+        case T_SYMBOL:
+        case T_FIXNUM:
+          content = RVAL2CRCONTENT (arg1);
+          break;
+        default:
+          rb_raise (rb_eArgError,
+                    "invalid argument (expect "
+                    "(script, width, height) or "
+                    "(script, content, width, height)): %s",
+                    rb_cairo__inspect (rb_ary_new4 (argc, argv)));
+          break;
+        }
+
+      rb_width = arg3;
+      rb_height = arg4;
+    }
+
+  surface = cairo_xml_surface_create (script, content,
+                                      NUM2DBL (rb_width),
+                                      NUM2DBL (rb_height));
 
   cr_surface_check_status (surface);
   DATA_PTR (self) = surface;
@@ -1518,5 +1575,15 @@ Init_cairo_surface (void)
                     cr_script_surface_initialize, -1);
 
   RB_CAIRO_DEF_SETTERS (rb_cCairo_ScriptSurface);
+#endif
+
+#ifdef CAIRO_HAS_XML_SURFACE
+  rb_cCairo_XMLSurface =
+    rb_define_class_under (rb_mCairo, "XMLSurface", rb_cCairo_Surface);
+
+  rb_define_method (rb_cCairo_XMLSurface, "initialize",
+                    cr_xml_surface_initialize, -1);
+
+  RB_CAIRO_DEF_SETTERS (rb_cCairo_XMLSurface);
 #endif
 }
