@@ -81,6 +81,7 @@ RB_CAIRO_VAR VALUE rb_cCairo_PathLineTo;
 RB_CAIRO_VAR VALUE rb_cCairo_PathCurveTo;
 RB_CAIRO_VAR VALUE rb_cCairo_PathClosePath;
 RB_CAIRO_VAR VALUE rb_cCairo_Matrix;
+RB_CAIRO_VAR VALUE rb_cCairo_Region;
 RB_CAIRO_VAR VALUE rb_cCairo_Pattern;
 RB_CAIRO_VAR VALUE rb_cCairo_SolidPattern;
 RB_CAIRO_VAR VALUE rb_cCairo_SurfacePattern;
@@ -151,6 +152,7 @@ RB_CAIRO_VAR VALUE rb_mCairo_SVGVersion;
 RB_CAIRO_VAR VALUE rb_mCairo_TextClusterFlag;
 RB_CAIRO_VAR VALUE rb_mCairo_ScriptMode;
 RB_CAIRO_VAR VALUE rb_mCairo_MimeType;
+RB_CAIRO_VAR VALUE rb_mCairo_RegionOverlap;
 RB_CAIRO_VAR VALUE rb_mCairo_Color;
 RB_CAIRO_VAR VALUE rb_cCairo_Color_Base;
 RB_CAIRO_VAR VALUE rb_cCairo_Paper;
@@ -164,6 +166,9 @@ RB_CAIRO_VAR VALUE rb_cCairo_Paper;
 
 #define RVAL2CRMATRIX(obj)      (rb_cairo_matrix_from_ruby_object(obj))
 #define CRMATRIX2RVAL(matrix)   (rb_cairo_matrix_to_ruby_object(matrix))
+
+#define RVAL2CRREGION(obj)      (rb_cairo_region_from_ruby_object(obj))
+#define CRREGION2RVAL(region)   (rb_cairo_region_to_ruby_object(region))
 
 #define RVAL2CRPATTERN(obj)     (rb_cairo_pattern_from_ruby_object(obj))
 #define CRPATTERN2RVAL(pattern) (rb_cairo_pattern_to_ruby_object(pattern))
@@ -205,6 +210,11 @@ VALUE                 rb_cairo_path_to_ruby_object           (cairo_path_t *path
 
 cairo_matrix_t       *rb_cairo_matrix_from_ruby_object       (VALUE obj);
 VALUE                 rb_cairo_matrix_to_ruby_object         (cairo_matrix_t *matrix);
+
+#if CAIRO_CHECK_VERSION(1, 10, 0)
+cairo_region_t       *rb_cairo_region_from_ruby_object       (VALUE obj);
+VALUE                 rb_cairo_region_to_ruby_object         (cairo_region_t *region);
+#endif
 
 cairo_pattern_t      *rb_cairo_pattern_from_ruby_object      (VALUE obj);
 VALUE                 rb_cairo_pattern_to_ruby_object        (cairo_pattern_t *pat);
@@ -276,6 +286,9 @@ VALUE                 rb_cairo_device_to_ruby_object         (cairo_device_t *de
 #ifdef CAIRO_HAS_SCRIPT_SURFACE
 #define RVAL2CRSCRIPTMODE(obj)    (rb_cairo_script_mode_from_ruby_object(obj))
 #endif
+#if CAIRO_CHECK_VERSION(1, 10, 0)
+#define RVAL2CRREGIONOVERLAP(obj) (rb_cairo_region_overalap_from_ruby_object(obj))
+#endif
 
 cairo_operator_t       rb_cairo_operator_from_ruby_object       (VALUE obj);
 cairo_antialias_t      rb_cairo_antialias_from_ruby_object      (VALUE obj);
@@ -310,6 +323,9 @@ cairo_text_cluster_flags_t rb_cairo_text_cluster_flags_from_ruby_object (VALUE o
 #endif
 #ifdef CAIRO_HAS_SCRIPT_SURFACE
 cairo_script_mode_t     rb_cairo_script_mode_from_ruby_object   (VALUE obj);
+#endif
+#if CAIRO_CHECK_VERSION(1, 10, 0)
+cairo_region_overlap_t  rb_cairo_region_overlap_from_ruby_object(VALUE obj);
 #endif
 
 void rb_cairo_check_status (cairo_status_t status);

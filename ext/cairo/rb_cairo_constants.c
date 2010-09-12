@@ -38,6 +38,7 @@ VALUE rb_mCairo_TextClusterFlag = Qnil;
 VALUE rb_mCairo_PDFVersion = Qnil;
 VALUE rb_mCairo_ScriptMode = Qnil;
 VALUE rb_mCairo_MimeType = Qnil;
+VALUE rb_mCairo_RegionOverlap = Qnil;
 
 #define CAIRO_OPERATOR_MIN CAIRO_OPERATOR_CLEAR
 #define CAIRO_OPERATOR_MAX CAIRO_OPERATOR_SATURATE
@@ -98,6 +99,9 @@ VALUE rb_mCairo_MimeType = Qnil;
 
 #define CAIRO_SCRIPT_MODE_MIN CAIRO_SCRIPT_MODE_BINARY
 #define CAIRO_SCRIPT_MODE_MAX CAIRO_SCRIPT_MODE_ASCII
+
+#define CAIRO_REGION_OVERLAP_MIN CAIRO_REGION_OVERLAP_IN
+#define CAIRO_REGION_OVERLAP_MAX CAIRO_REGION_OVERLAP_PART
 
 #define DEFINE_RVAL2ENUM(name, const_name)                      \
 cairo_ ## name ## _t                                            \
@@ -161,6 +165,10 @@ DEFINE_RVAL2ENUM(text_cluster_flags, TEXT_CLUSTER_FLAG)
 
 #ifdef CAIRO_HAS_SCRIPT_SURFACE
 DEFINE_RVAL2ENUM(script_mode, SCRIPT_MODE)
+#endif
+
+#if CAIRO_CHECK_VERSION(1, 10, 0)
+DEFINE_RVAL2ENUM(region_overlap, REGION_OVERLAP)
 #endif
 
 #if defined(RB_CAIRO_PLATFORM_WIN32) && !defined(PS_LEVEL_ENUM_DEFINED)
@@ -603,5 +611,14 @@ Init_cairo_constants (void)
                    rb_str_new2 (CAIRO_MIME_TYPE_JP2));
   rb_define_const (rb_mCairo_MimeType, "URI",
                    rb_str_new2 (CAIRO_MIME_TYPE_URI));
+
+  rb_mCairo_RegionOverlap = rb_define_module_under (rb_mCairo, "RegionOverlap");
+
+  rb_define_const (rb_mCairo_RegionOverlap, "IN",
+                   INT2FIX (CAIRO_REGION_OVERLAP_IN));
+  rb_define_const (rb_mCairo_RegionOverlap, "OUT",
+                   INT2FIX (CAIRO_REGION_OVERLAP_OUT));
+  rb_define_const (rb_mCairo_RegionOverlap, "PART",
+                   INT2FIX (CAIRO_REGION_OVERLAP_PART));
 #endif
 }

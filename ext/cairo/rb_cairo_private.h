@@ -50,6 +50,7 @@ extern void Init_cairo_constants (void);
 extern void Init_cairo_context (void);
 extern void Init_cairo_path (void);
 extern void Init_cairo_matrix (void);
+extern void Init_cairo_region (void);
 extern void Init_cairo_device (void);
 extern void Init_cairo_surface (void);
 extern void Init_cairo_quartz_surface (void);

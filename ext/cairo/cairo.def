@@ -9,6 +9,7 @@ EXPORTS
     rb_cCairo_PathCurveTo     DATA
     rb_cCairo_PathClosePath   DATA
     rb_cCairo_Matrix          DATA
+    rb_cCairo_Region          DATA
     rb_cCairo_Pattern         DATA
     rb_cCairo_SolidPattern    DATA
     rb_cCairo_SurfacePattern  DATA
@@ -85,6 +86,8 @@ EXPORTS
     rb_cairo_path_to_ruby_object
     rb_cairo_matrix_from_ruby_object
     rb_cairo_matrix_to_ruby_object
+    rb_cairo_region_from_ruby_object
+    rb_cairo_region_to_ruby_object
     rb_cairo_pattern_from_ruby_object
     rb_cairo_pattern_to_ruby_object
     rb_cairo_font_face_from_ruby_object
