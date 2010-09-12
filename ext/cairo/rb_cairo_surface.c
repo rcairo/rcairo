@@ -307,15 +307,33 @@ yield_and_finish (VALUE self)
 }
 
 static VALUE
-cr_surface_create_similar (VALUE self, VALUE content, VALUE width, VALUE height)
+cr_surface_create_similar (int argc, VALUE *argv, VALUE self)
 {
-  cairo_surface_t *surface;
+  cairo_surface_t *surface, *similar_surface;
+  cairo_content_t content;
+  int width, height;
+  VALUE arg1, arg2, arg3;
 
-  surface = cairo_surface_create_similar (RVAL2CRSURFACE (self),
-                                          RVAL2CRCONTENT (content),
-                                          NUM2INT (width), NUM2INT (height));
-  cr_surface_check_status (surface);
-  return CRSURFACE2RVAL_WITH_DESTROY (surface);
+  rb_scan_args (argc, argv, "21", &arg1, &arg2, &arg3);
+
+  surface = _SELF;
+  if (argc == 2)
+    {
+      content = cairo_surface_get_content (surface);
+      width = NUM2INT (arg1);
+      height = NUM2INT (arg2);
+    }
+  else
+    {
+      content = RVAL2CRCONTENT (arg1);
+      width = NUM2INT (arg2);
+      height = NUM2INT (arg3);
+    }
+
+  similar_surface = cairo_surface_create_similar (surface, content,
+                                                  width, height);
+  cr_surface_check_status (similar_surface);
+  return CRSURFACE2RVAL_WITH_DESTROY (similar_surface);
 }
 
 #if CAIRO_CHECK_VERSION(1, 10, 0)
@@ -1556,7 +1574,7 @@ Init_cairo_surface (void)
 
 
   rb_define_method (rb_cCairo_Surface, "create_similar",
-                    cr_surface_create_similar, 3);
+                    cr_surface_create_similar, -1);
 #if CAIRO_CHECK_VERSION(1, 10, 0)
   rb_define_method (rb_cCairo_Surface, "sub_rectangle_surface",
                     cr_surface_create_sub_rectangle_surface, 4);
