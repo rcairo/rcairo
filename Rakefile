@@ -90,17 +90,53 @@ end
 
 project.spec.dependencies.delete_if {|dependency| dependency.name == "hoe"}
 
+binary_dir = File.join("vendor", "local")
 Rake::ExtensionTask.new("cairo", project.spec) do |ext|
   ext.cross_compile = true
   ext.cross_compiling do |spec|
     if /mingw|mswin/ =~ spec.platform.to_s
-      cairo_win32_dir = File.join("vendor", "local")
-      cairo_files = []
-      Find.find(cairo_win32_dir) do |f|
-        cairo_files << f
+      binary_files = []
+      Find.find(binary_dir) do |name|
+        next unless File.file?(name)
+        next if /\.zip\z/i =~ name
+        binary_files << name
       end
-      spec.files += cairo_files
+      spec.files += binary_files
     end
+  end
+end
+
+task 'cross' => "download_windows_binaries"
+
+def download_windows_binaries(binary_dir)
+  base_url = "http://ftp.gnome.org/pub/gnome/binaries/win32/dependencies/"
+  dependencies = [
+                  ["cairo", "1.10.0-1"],
+                  ["cairo-dev", "1.10.0-1"],
+                  ["libpng", "1.4.3-1"],
+                  ["zlib", "1.2.5-2"],
+                  ["expat", "2.0.1-1"],
+                  ["fontconfig", "2.8.0-2"],
+                  ["freetype", "2.4.2-1"],
+                 ]
+  dependencies.each do |name, version|
+    file_name = "#{name}_#{version}_win32.zip"
+    full_file_name = File.join(binary_dir, file_name)
+    next if File.exist?(full_file_name)
+    open("#{base_url}#{file_name}", "rb") do |input|
+      File.open(full_file_name, "wb") do |output|
+        output.print(input.read)
+      end
+    end
+    sh("unzip", full_file_name, "-d", binary_dir)
+  end
+end
+
+task "download_windows_binaries" do
+  require 'open-uri'
+  unless File.exist?(binary_dir)
+    mkdir_p(binary_dir)
+    download_windows_binaries(binary_dir)
   end
 end
 
