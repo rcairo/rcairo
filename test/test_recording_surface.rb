@@ -1,6 +1,3 @@
-require 'cairo'
-require 'stringio'
-
 class RecordingSurfaceTest < Test::Unit::TestCase
   include CairoTestUtils
 
