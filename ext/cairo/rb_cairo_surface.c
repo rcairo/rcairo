@@ -727,45 +727,32 @@ cr_recording_surface_initialize (int argc, VALUE *argv, VALUE self)
     "invalid argument (expect "
     "(x, y, width, height), "
     "([x, y, width, height]),"
-    "(content, x, y, width, height) or "
-    "(content, [x, y, width, height])): %s";
+    "(x, y, width, height, content) or "
+    "([x, y, width, height], content)): %s";
 
   rb_scan_args (argc, argv, "14", &arg1, &arg2, &arg3, &arg4, &arg5);
   if (argc == 1 || argc == 2)
     {
       VALUE rb_extents;
 
-      if (argc == 1)
-        {
-          rb_extents = arg1;
-        }
-      else
-        {
-          content = RVAL2CRCONTENT (arg1);
-          rb_extents = arg2;
-        }
-      rb_extents = rb_check_array_type (rb_extents);
+      rb_extents = rb_check_array_type (arg1);
       if (RARRAY_LEN (rb_extents) != 4)
         rb_raise (rb_eArgError, error_message, rb_cairo__inspect (arg1));
       extents.x = NUM2DBL (RARRAY_PTR (rb_extents)[0]);
       extents.y = NUM2DBL (RARRAY_PTR (rb_extents)[1]);
       extents.width = NUM2DBL (RARRAY_PTR (rb_extents)[2]);
       extents.height = NUM2DBL (RARRAY_PTR (rb_extents)[3]);
+      if (!NIL_P (arg2))
+        content = RVAL2CRCONTENT (arg2);
     }
-  else if (argc == 4)
+  else if (argc == 4 || argc == 5)
     {
       extents.x = NUM2DBL (arg1);
       extents.y = NUM2DBL (arg2);
       extents.width = NUM2DBL (arg3);
       extents.height = NUM2DBL (arg4);
-    }
-  else if (argc == 5)
-    {
-      content = RVAL2CRCONTENT (arg1);
-      extents.x = NUM2DBL (arg2);
-      extents.y = NUM2DBL (arg3);
-      extents.width = NUM2DBL (arg4);
-      extents.height = NUM2DBL (arg5);
+      if (!NIL_P (arg5))
+        content = RVAL2CRCONTENT (arg5);
     }
   else
     {
@@ -1247,10 +1234,11 @@ cr_quartz_image_surface_get_image (VALUE self)
 static VALUE
 cr_script_surface_initialize (int argc, VALUE *argv, VALUE self)
 {
-  cairo_device_t *device;
   cairo_surface_t *surface = NULL, *target = NULL;
+  cairo_device_t *device;
+  double width = 0.0, height = 0.0;
   cairo_content_t content = CAIRO_CONTENT_COLOR_ALPHA;
-  VALUE arg1, arg2, arg3, arg4, rb_width = Qnil, rb_height = Qnil;
+  VALUE arg1, arg2, arg3, arg4;
 
   rb_scan_args (argc, argv, "22", &arg1, &arg2, &arg3, &arg4);
 
@@ -1259,46 +1247,34 @@ cr_script_surface_initialize (int argc, VALUE *argv, VALUE self)
     {
       target = RVAL2CRSURFACE (arg2);
     }
-  else if (argc == 3)
-    {
-      rb_width = arg2;
-      rb_height = arg3;
-    }
   else
     {
-      switch (TYPE (arg1))
+      width = NUM2DBL (arg2);
+      height = NUM2DBL (arg3);
+      switch (TYPE (arg4))
         {
         case T_NIL:
           break;
         case T_STRING:
         case T_SYMBOL:
         case T_FIXNUM:
-          content = RVAL2CRCONTENT (arg1);
+          content = RVAL2CRCONTENT (arg4);
           break;
         default:
           rb_raise (rb_eArgError,
                     "invalid argument (expect "
                     "(device, width, height), "
-                    "(device, content, width, height) or "
+                    "(device, width, height, content) or "
                     "(device, surface)): %s",
                     rb_cairo__inspect (rb_ary_new4 (argc, argv)));
           break;
         }
-
-      rb_width = arg3;
-      rb_height = arg4;
     }
 
   if (target)
-    {
-      surface = cairo_script_surface_create_for_target (device, target);
-    }
+    surface = cairo_script_surface_create_for_target (device, target);
   else
-    {
-      surface = cairo_script_surface_create (device, content,
-                                             NUM2DBL (rb_width),
-                                             NUM2DBL (rb_height));
-    }
+    surface = cairo_script_surface_create (device, content, width, height);
 
   cr_surface_check_status (surface);
   DATA_PTR (self) = surface;
@@ -1312,46 +1288,37 @@ cr_script_surface_initialize (int argc, VALUE *argv, VALUE self)
 static VALUE
 cr_xml_surface_initialize (int argc, VALUE *argv, VALUE self)
 {
+  cairo_surface_t *surface;
   cairo_device_t *device;
-  cairo_surface_t *surface = NULL;
+  double width, height;
   cairo_content_t content = CAIRO_CONTENT_COLOR_ALPHA;
-  VALUE arg1, arg2, arg3, arg4, rb_width = Qnil, rb_height = Qnil;
+  VALUE rb_device, rb_width, rb_height, rb_content;
 
-  rb_scan_args (argc, argv, "22", &arg1, &arg2, &arg3, &arg4);
+  rb_scan_args (argc, argv, "31",
+                &rb_device, &rb_width, &rb_height, &rb_content);
 
-  device = RVAL2CRDEVICE (arg1);
-  if (argc == 3)
+  device = RVAL2CRDEVICE (rb_device);
+  width = NUM2DBL (rb_width);
+  height = NUM2DBL (rb_height);
+  switch (TYPE (rb_content))
     {
-      rb_width = arg2;
-      rb_height = arg3;
-    }
-  else
-    {
-      switch (TYPE (arg1))
-        {
-        case T_NIL:
-          break;
-        case T_STRING:
-        case T_SYMBOL:
-        case T_FIXNUM:
-          content = RVAL2CRCONTENT (arg1);
-          break;
-        default:
-          rb_raise (rb_eArgError,
-                    "invalid argument (expect "
-                    "(device, width, height) or "
-                    "(device, content, width, height)): %s",
-                    rb_cairo__inspect (rb_ary_new4 (argc, argv)));
-          break;
-        }
-
-      rb_width = arg3;
-      rb_height = arg4;
+    case T_NIL:
+      break;
+    case T_STRING:
+    case T_SYMBOL:
+    case T_FIXNUM:
+      content = RVAL2CRCONTENT (rb_content);
+      break;
+    default:
+      rb_raise (rb_eArgError,
+                "invalid argument (expect "
+                "(device, width, height) or "
+                "(device, width, height, content)): %s",
+                rb_cairo__inspect (rb_ary_new4 (argc, argv)));
+      break;
     }
 
-  surface = cairo_xml_surface_create (device, content,
-                                      NUM2DBL (rb_width),
-                                      NUM2DBL (rb_height));
+  surface = cairo_xml_surface_create (device, content, width, height);
 
   cr_surface_check_status (surface);
   DATA_PTR (self) = surface;
