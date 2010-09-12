@@ -112,6 +112,7 @@ RB_CAIRO_VAR VALUE rb_cCairo_QtSurface;
 RB_CAIRO_VAR VALUE rb_cCairo_RecordingSurface;
 RB_CAIRO_VAR VALUE rb_cCairo_VGSurface;
 RB_CAIRO_VAR VALUE rb_cCairo_GLSurface;
+RB_CAIRO_VAR VALUE rb_cCairo_GLTextureSurface;
 RB_CAIRO_VAR VALUE rb_cCairo_DRMSurface;
 RB_CAIRO_VAR VALUE rb_cCairo_TeeSurface;
 RB_CAIRO_VAR VALUE rb_cCairo_XMLSurface;

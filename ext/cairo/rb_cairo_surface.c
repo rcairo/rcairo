@@ -54,6 +54,10 @@ enum ruby_value_type {
 #  include <cairo-tee.h>
 #endif
 
+#ifdef CAIRO_HAS_GL_SURFACE
+#  include <cairo-gl.h>
+#endif
+
 VALUE rb_cCairo_Surface;
 VALUE rb_cCairo_ImageSurface;
 VALUE rb_cCairo_PDFSurface = Qnil;
@@ -68,6 +72,7 @@ VALUE rb_cCairo_QtSurface = Qnil;
 VALUE rb_cCairo_RecordingSurface = Qnil;
 VALUE rb_cCairo_VGSurface = Qnil;
 VALUE rb_cCairo_GLSurface = Qnil;
+VALUE rb_cCairo_GLTextureSurface = Qnil;
 VALUE rb_cCairo_DRMSurface = Qnil;
 VALUE rb_cCairo_TeeSurface = Qnil;
 VALUE rb_cCairo_XMLSurface = Qnil;
@@ -1242,14 +1247,14 @@ cr_quartz_image_surface_get_image (VALUE self)
 static VALUE
 cr_script_surface_initialize (int argc, VALUE *argv, VALUE self)
 {
-  cairo_device_t *script;
+  cairo_device_t *device;
   cairo_surface_t *surface = NULL, *target = NULL;
   cairo_content_t content = CAIRO_CONTENT_COLOR_ALPHA;
   VALUE arg1, arg2, arg3, arg4, rb_width = Qnil, rb_height = Qnil;
 
   rb_scan_args (argc, argv, "22", &arg1, &arg2, &arg3, &arg4);
 
-  script = RVAL2CRDEVICE (arg1);
+  device = RVAL2CRDEVICE (arg1);
   if (argc == 2)
     {
       target = RVAL2CRSURFACE (arg2);
@@ -1273,9 +1278,9 @@ cr_script_surface_initialize (int argc, VALUE *argv, VALUE self)
         default:
           rb_raise (rb_eArgError,
                     "invalid argument (expect "
-                    "(script, width, height), "
-                    "(script, content, width, height) or "
-                    "(script, surface)): %s",
+                    "(device, width, height), "
+                    "(device, content, width, height) or "
+                    "(device, surface)): %s",
                     rb_cairo__inspect (rb_ary_new4 (argc, argv)));
           break;
         }
@@ -1286,11 +1291,11 @@ cr_script_surface_initialize (int argc, VALUE *argv, VALUE self)
 
   if (target)
     {
-      surface = cairo_script_surface_create_for_target (script, target);
+      surface = cairo_script_surface_create_for_target (device, target);
     }
   else
     {
-      surface = cairo_script_surface_create (script, content,
+      surface = cairo_script_surface_create (device, content,
                                              NUM2DBL (rb_width),
                                              NUM2DBL (rb_height));
     }
@@ -1307,14 +1312,14 @@ cr_script_surface_initialize (int argc, VALUE *argv, VALUE self)
 static VALUE
 cr_xml_surface_initialize (int argc, VALUE *argv, VALUE self)
 {
-  cairo_device_t *script;
+  cairo_device_t *device;
   cairo_surface_t *surface = NULL;
   cairo_content_t content = CAIRO_CONTENT_COLOR_ALPHA;
   VALUE arg1, arg2, arg3, arg4, rb_width = Qnil, rb_height = Qnil;
 
   rb_scan_args (argc, argv, "22", &arg1, &arg2, &arg3, &arg4);
 
-  script = RVAL2CRDEVICE (arg1);
+  device = RVAL2CRDEVICE (arg1);
   if (argc == 3)
     {
       rb_width = arg2;
@@ -1334,8 +1339,8 @@ cr_xml_surface_initialize (int argc, VALUE *argv, VALUE self)
         default:
           rb_raise (rb_eArgError,
                     "invalid argument (expect "
-                    "(script, width, height) or "
-                    "(script, content, width, height)): %s",
+                    "(device, width, height) or "
+                    "(device, content, width, height)): %s",
                     rb_cairo__inspect (rb_ary_new4 (argc, argv)));
           break;
         }
@@ -1344,7 +1349,7 @@ cr_xml_surface_initialize (int argc, VALUE *argv, VALUE self)
       rb_height = arg4;
     }
 
-  surface = cairo_xml_surface_create (script, content,
+  surface = cairo_xml_surface_create (device, content,
                                       NUM2DBL (rb_width),
                                       NUM2DBL (rb_height));
 
@@ -1425,6 +1430,131 @@ cr_tee_surface_array_reference (VALUE self, VALUE index)
   cr_surface_check_status (surface);
   cr_surface_check_status (target);
   return CRSURFACE2RVAL (target);
+}
+#endif
+
+#ifdef CAIRO_HAS_GL_SURFACE
+static VALUE
+cr_gl_surface_initialize (int argc, VALUE *argv, VALUE self)
+{
+  cairo_surface_t *surface;
+  cairo_device_t *device;
+  int width, height;
+  cairo_content_t content = CAIRO_CONTENT_COLOR_ALPHA;
+  VALUE rb_device, rb_width, rb_height, rb_content;
+
+  rb_scan_args (argc, argv, "31",
+                &rb_device, &rb_width, &rb_height, &rb_content);
+
+  device = RVAL2CRDEVICE (rb_device);
+  width = NUM2INT (rb_width);
+  height = NUM2INT (rb_height);
+  switch (TYPE (rb_content))
+    {
+    case T_NIL:
+      break;
+    case T_STRING:
+    case T_SYMBOL:
+    case T_FIXNUM:
+      content = RVAL2CRCONTENT (rb_content);
+      break;
+    default:
+      rb_raise (rb_eArgError,
+                "invalid argument (expect "
+                "(device, width, height) or "
+                "(device, width, height, content)): %s",
+                rb_cairo__inspect (rb_ary_new4 (argc, argv)));
+      break;
+    }
+
+  surface = cairo_gl_surface_create (device, content, width, height);
+
+  cr_surface_check_status (surface);
+  DATA_PTR (self) = surface;
+  if (rb_block_given_p ())
+    yield_and_finish (self);
+  return Qnil;
+}
+
+static VALUE
+cr_gl_texture_surface_initialize (int argc, VALUE *argv, VALUE self)
+{
+  cairo_surface_t *surface;
+  cairo_device_t *device;
+  unsigned int texture;
+  int width, height;
+  cairo_content_t content = CAIRO_CONTENT_COLOR_ALPHA;
+  VALUE rb_device, rb_texture, rb_width, rb_height, rb_content;
+
+  rb_scan_args (argc, argv, "41",
+                &rb_device, &rb_texture, &rb_width, &rb_height, &rb_content);
+
+  device = RVAL2CRDEVICE (rb_device);
+  texture = NUM2UINT (rb_texture);
+  width = NUM2INT (rb_width);
+  height = NUM2INT (rb_height);
+  switch (TYPE (rb_content))
+    {
+    case T_NIL:
+      break;
+    case T_STRING:
+    case T_SYMBOL:
+    case T_FIXNUM:
+      content = RVAL2CRCONTENT (rb_content);
+      break;
+    default:
+      rb_raise (rb_eArgError,
+                "invalid argument (expect "
+                "(device, texture, width, height) or "
+                "(device, texture, width, height, content)): %s",
+                rb_cairo__inspect (rb_ary_new4 (argc, argv)));
+      break;
+    }
+
+  surface = cairo_gl_surface_create_for_texture (device, content,
+                                                 texture,
+                                                 width,
+                                                 height);
+
+  cr_surface_check_status (surface);
+  DATA_PTR (self) = surface;
+  if (rb_block_given_p ())
+    yield_and_finish (self);
+  return Qnil;
+}
+
+static VALUE
+cr_gl_surface_set_size (VALUE self, VALUE width, VALUE height)
+{
+  cairo_surface_t *surface = NULL;
+
+  surface = _SELF;
+  cairo_gl_surface_set_size (surface, NUM2INT (width), NUM2INT (height));
+  cr_surface_check_status (surface);
+  return Qnil;
+}
+
+static VALUE
+cr_gl_surface_get_width (VALUE self)
+{
+  return INT2NUM (cairo_gl_surface_get_width (_SELF));
+}
+
+static VALUE
+cr_gl_surface_get_height (VALUE self)
+{
+  return INT2NUM (cairo_gl_surface_get_height (_SELF));
+}
+
+static VALUE
+cr_gl_surface_swap_buffers (VALUE self)
+{
+  cairo_surface_t *surface = NULL;
+
+  surface = _SELF;
+  cairo_gl_surface_swapbuffers (surface);
+  cr_surface_check_status (surface);
+  return Qnil;
 }
 #endif
 
@@ -1680,5 +1810,32 @@ Init_cairo_surface (void)
                     cr_tee_surface_array_reference, 1);
 
   RB_CAIRO_DEF_SETTERS (rb_cCairo_TeeSurface);
+#endif
+
+#ifdef CAIRO_HAS_GL_SURFACE
+  rb_cCairo_GLSurface =
+    rb_define_class_under (rb_mCairo, "GLSurface", rb_cCairo_Surface);
+
+  rb_define_method (rb_cCairo_GLSurface, "initialize",
+                    cr_gl_surface_initialize, 1);
+
+  rb_define_method (rb_cCairo_GLSurface, "set_size",
+                    cr_gl_surface_set_size, 2);
+  rb_define_method (rb_cCairo_GLSurface, "width",
+                    cr_gl_surface_get_width, 0);
+  rb_define_method (rb_cCairo_GLSurface, "height",
+                    cr_gl_surface_get_height, 0);
+  rb_define_method (rb_cCairo_GLSurface, "swap_buffers",
+                    cr_gl_surface_swap_buffers, 0);
+
+  RB_CAIRO_DEF_SETTERS (rb_cCairo_GLSurface);
+
+  rb_cCairo_GLTextureSurface =
+    rb_define_class_under (rb_mCairo, "GLTextureSurface", rb_cCairo_GLSurface);
+
+  rb_define_method (rb_cCairo_GLTextureSurface, "initialize",
+                    cr_gl_texture_surface_initialize, 1);
+
+  RB_CAIRO_DEF_SETTERS (rb_cCairo_GLTextureSurface);
 #endif
 }

@@ -39,6 +39,7 @@ EXPORTS
     rb_cCairo_RecordingSurface DATA
     rb_cCairo_VGSurface       DATA
     rb_cCairo_GLSurface       DATA
+    rb_cCairo_GLTextureSurface DATA
     rb_cCairo_DRMSurface      DATA
     rb_cCairo_TeeSurface      DATA
     rb_cCairo_XMLSurface      DATA
