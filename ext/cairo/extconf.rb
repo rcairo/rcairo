@@ -26,8 +26,7 @@ package = "cairo"
 module_name = "cairo"
 major, minor, micro = 1, 2, 0
 
-PKGConfig.have_package(package, major, minor, micro) or exit 1
-
+base_dir = Pathname(__FILE__).dirname.parent.parent
 checking_for(checking_message("Win32 OS")) do
   case RUBY_PLATFORM
   when /cygwin|mingw|mswin32/
@@ -35,16 +34,11 @@ checking_for(checking_message("Win32 OS")) do
     import_library_name = "libruby-#{module_name}.a"
     $DLDFLAGS << " -Wl,--out-implib=#{import_library_name}"
     $cleanfiles << import_library_name
-    local_cairo_install_dir = base_dir + "vendor" + "local"
-    $CFLAGS += " -I#{local_cairo_install_dir}/include"
-    local_cairo_lib_dir = local_cairo_install_dir + "lib"
-    ["cairo.lib", "libcairo.dll.a"].each do |libcairo_base|
-      libcairo = local_cairo_lib_dir + libcairo_base
-      if libcairo.exist?
-        $LDFLAGS += " -L#{local_cairo_lib_dir}"
-        break
-      end
-    end
+    binary_base_dir = base_dir + "vendor" + "local"
+    $CFLAGS += " -I#{binary_base_dir}/include"
+    pkg_config_dir = binary_base_dir + "lib" + "pkgconfig"
+    PKGConfig.add_path(pkg_config_dir.to_s)
+    PKGConfig.set_override_variable("prefix", binary_base_dir.to_s)
     true
   else
     false
@@ -71,6 +65,8 @@ checking_for(checking_message("Mac OS X")) do
     false
   end
 end
+
+PKGConfig.have_package(package, major, minor, micro) or exit 1
 
 $defs << "-DRB_CAIRO_COMPILATION"
 
