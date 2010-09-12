@@ -72,9 +72,9 @@ EXPORTS
     rb_mCairo_SVGVersion      DATA
     rb_mCairo_PSLevel         DATA
     rb_mCairo_PDFVersion      DATA
-    rb_cCairo_TextClusterFlag DATA
-    rb_cCairo_ScriptMode      DATA
-    rb_cCairo_MimeType        DATA
+    rb_mCairo_TextClusterFlag DATA
+    rb_mCairo_ScriptMode      DATA
+    rb_mCairo_MimeType        DATA
 
     rb_mCairo_Color           DATA
     rb_cCairo_Color_Base      DATA
