@@ -71,6 +71,10 @@ RB_CAIRO_BEGIN_DECLS
 #  define RB_CAIRO_VAR extern
 #endif
 
+#define RB_CAIRO_VERSION_MAJOR 1
+#define RB_CAIRO_VERSION_MINOR 10
+#define RB_CAIRO_VERSION_MICRO 1
+
 RB_CAIRO_VAR VALUE rb_mCairo;
 RB_CAIRO_VAR VALUE rb_cCairo_Context;
 RB_CAIRO_VAR VALUE rb_cCairo_Point;
