@@ -1,5 +1,5 @@
 =begin
-  pac2.rb - rcairo sample script with #scale and #translate.
+  pac-normalize.rb - rcairo sample script with #scale and #translate.
 
   Original: pac.rb in http://www.artima.com/rubycs/articles/pdf_writer3.html
 =end
