@@ -151,13 +151,13 @@ paper = Cairo::Paper.parse(:a4_landscape)
 size_in_points = paper.size("pt")
 Cairo::ImageSurface.new(*size_in_points) do |surface|
   cr = pac(surface, *size_in_points)
-  cr.target.write_to_png("pac2.png")
+  cr.target.write_to_png("pac-normalize.png")
 end
 
 scalable_surface_output = Proc.new do |surface_class_name, suffix|
   if Cairo.const_defined?(surface_class_name)
     surface_class = Cairo.const_get(surface_class_name)
-    surface_class.new("pac2.#{suffix}", paper) do |surface|
+    surface_class.new("pac-normalize.#{suffix}", paper) do |surface|
       pac(surface, *size_in_points)
     end
   else
