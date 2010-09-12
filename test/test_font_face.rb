@@ -93,15 +93,18 @@ class FontFaceTest < Test::Unit::TestCase
                                         Cairo::FontOptions.new)
     result = scaled_font.text_to_glyphs(0, 0, "text")
     assert_equal([[[Cairo::ScaledFont, Cairo::Context, Cairo::FontExtents]],
-                  [[Cairo::ScaledFont, ?t, Cairo::Context, Cairo::TextExtents],
-                   [Cairo::ScaledFont, ?e, Cairo::Context, Cairo::TextExtents],
-                   [Cairo::ScaledFont, ?x, Cairo::Context, Cairo::TextExtents]],
+                  [[Cairo::ScaledFont, codepoint("t"),
+                    Cairo::Context, Cairo::TextExtents],
+                   [Cairo::ScaledFont, codepoint("e"),
+                    Cairo::Context, Cairo::TextExtents],
+                   [Cairo::ScaledFont, codepoint("x"),
+                    Cairo::Context, Cairo::TextExtents]],
                   [[Cairo::ScaledFont, "text",
                     Cairo::UserFontFace::TextToGlyphsData]],
-                  [[Cairo::ScaledFont, ?t],
-                   [Cairo::ScaledFont, ?e],
-                   [Cairo::ScaledFont, ?x],
-                   [Cairo::ScaledFont, ?t]],
+                  [[Cairo::ScaledFont, codepoint("t")],
+                   [Cairo::ScaledFont, codepoint("e")],
+                   [Cairo::ScaledFont, codepoint("x")],
+                   [Cairo::ScaledFont, codepoint("t")]],
                   [[], [], Cairo::TextClusterFlag::BACKWARD]],
                  [classify_cairo_object(init_args),
                   classify_cairo_object(render_glyph_args),
@@ -155,15 +158,18 @@ class FontFaceTest < Test::Unit::TestCase
                                         Cairo::FontOptions.new)
     result = scaled_font.text_to_glyphs(0, 0, "text")
     assert_equal([[[Cairo::ScaledFont, Cairo::Context, Cairo::FontExtents]],
-                  [[Cairo::ScaledFont, ?t, Cairo::Context, Cairo::TextExtents],
-                   [Cairo::ScaledFont, ?e, Cairo::Context, Cairo::TextExtents],
-                   [Cairo::ScaledFont, ?x, Cairo::Context, Cairo::TextExtents]],
+                  [[Cairo::ScaledFont, codepoint("t"),
+                    Cairo::Context, Cairo::TextExtents],
+                   [Cairo::ScaledFont, codepoint("e"),
+                    Cairo::Context, Cairo::TextExtents],
+                   [Cairo::ScaledFont, codepoint("x"),
+                    Cairo::Context, Cairo::TextExtents]],
                   [[Cairo::ScaledFont, "text",
                     Cairo::UserFontFace::TextToGlyphsData]],
-                  [[Cairo::ScaledFont, ?t],
-                   [Cairo::ScaledFont, ?e],
-                   [Cairo::ScaledFont, ?x],
-                   [Cairo::ScaledFont, ?t]],
+                  [[Cairo::ScaledFont, codepoint("t")],
+                   [Cairo::ScaledFont, codepoint("e")],
+                   [Cairo::ScaledFont, codepoint("x")],
+                   [Cairo::ScaledFont, codepoint("t")]],
                   [[], [], Cairo::TextClusterFlag::BACKWARD]],
                  [classify_cairo_object(face.init_args),
                   classify_cairo_object(face.render_glyph_args),
@@ -207,15 +213,18 @@ class FontFaceTest < Test::Unit::TestCase
                                         Cairo::FontOptions.new)
     result = scaled_font.text_to_glyphs(0, 0, "text")
     assert_equal([[[Cairo::ScaledFont, Cairo::Context, Cairo::FontExtents]],
-                  [[Cairo::ScaledFont, ?t, Cairo::Context, Cairo::TextExtents],
-                   [Cairo::ScaledFont, ?e, Cairo::Context, Cairo::TextExtents],
-                   [Cairo::ScaledFont, ?x, Cairo::Context, Cairo::TextExtents]],
+                  [[Cairo::ScaledFont, codepoint("t"),
+                    Cairo::Context, Cairo::TextExtents],
+                   [Cairo::ScaledFont, codepoint("e"),
+                    Cairo::Context, Cairo::TextExtents],
+                   [Cairo::ScaledFont, codepoint("x"),
+                    Cairo::Context, Cairo::TextExtents]],
                   [[Cairo::ScaledFont, "text",
                     Cairo::UserFontFace::TextToGlyphsData]],
-                  [[Cairo::ScaledFont, ?t],
-                   [Cairo::ScaledFont, ?e],
-                   [Cairo::ScaledFont, ?x],
-                   [Cairo::ScaledFont, ?t]],
+                  [[Cairo::ScaledFont, codepoint("t")],
+                   [Cairo::ScaledFont, codepoint("e")],
+                   [Cairo::ScaledFont, codepoint("x")],
+                   [Cairo::ScaledFont, codepoint("t")]],
                   [],
                   [],
                   [],
@@ -240,5 +249,9 @@ class FontFaceTest < Test::Unit::TestCase
     else
       object
     end
+  end
+
+  def codepoint(character)
+    character.unpack("U")[0]
   end
 end

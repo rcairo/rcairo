@@ -7,17 +7,17 @@ class SurfaceTest < Test::Unit::TestCase
   def test_new
     output = StringIO.new
     surface = Cairo::PDFSurface.new(output, 10, 10)
-    assert_no_match(/%%EOF\s*\z/m, output.string)
+    assert_not_equal("%%EOF\n", output.string[-6..-1])
     surface.finish
-    assert_match(/%%EOF\s*\z/m, output.string)
+    assert_equal("%%EOF\n", output.string[-6..-1])
   end
 
   def test_new_with_block
     output = StringIO.new
     Cairo::PDFSurface.new(output, 10, 10) do |surface|
-      assert_no_match(/%%EOF\s*\z/m, output.string)
+      assert_not_equal("%%EOF\n", output.string[-6..-1])
     end
-    assert_match(/%%EOF\s*\z/m, output.string)
+    assert_equal("%%EOF\n", output.string[-6..-1])
   end
 
   def test_new_with_block_and_finish

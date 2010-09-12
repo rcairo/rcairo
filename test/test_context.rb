@@ -12,17 +12,17 @@ class ContextTest < Test::Unit::TestCase
   def test_new_and_destroy
     context = Cairo::Context.new(@surface)
     @surface.destroy
-    assert_no_match(/%%EOF\s*\z/m, @output.string)
+    assert_not_equal("%%EOF\n", @output.string[-6..-1])
     context.destroy
-    assert_match(/%%EOF\s*\z/m, @output.string)
+    assert_equal("%%EOF\n", @output.string[-6..-1])
   end
 
   def test_new_with_block
     Cairo::Context.new(@surface) do |context|
       @surface.destroy
-      assert_no_match(/%%EOF\s*\z/m, @output.string)
+      assert_not_equal("%%EOF\n", @output.string[-6..-1])
     end
-    assert_match(/%%EOF\s*\z/m, @output.string)
+    assert_equal("%%EOF\n", @output.string[-6..-1])
   end
 
   def test_new_with_block_and_destroy
