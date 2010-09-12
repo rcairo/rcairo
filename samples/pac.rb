@@ -5,9 +5,8 @@
 =end
 
 top = File.expand_path(File.join(File.dirname(__FILE__), ".."))
-src = File.join(top, "src")
-$LOAD_PATH.unshift src
-$LOAD_PATH.unshift File.join(src, "lib")
+$LOAD_PATH.unshift File.join(top, "ext", "cairo")
+$LOAD_PATH.unshift File.join(top, "lib")
 
 require "cairo"
 
