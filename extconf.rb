@@ -12,8 +12,10 @@ ruby = File.join(RbConfig::CONFIG['bindir'],
                  RbConfig::CONFIG['ruby_install_name'] +
                  RbConfig::CONFIG["EXEEXT"])
 
-Dir.chdir(ext_dir.to_s) do
-  system(ruby, "extconf.rb", *ARGV) || exit(false)
+build_ext_dir = Pathname(".") + "ext" + "cairo"
+FileUtils.mkdir_p(build_ext_dir.to_s)
+Dir.chdir(build_ext_dir.to_s) do
+  system(ruby, (ext_dir + "extconf.rb").to_s, *ARGV) || exit(false)
 end
 
 create_makefile("cairo")
