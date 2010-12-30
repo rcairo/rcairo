@@ -105,3 +105,4 @@ http://cairographics.org/cgi-bin/mailman/listinfo/cairo
   * some patches.
 * Masayas TARUI:
   * Windows support.
+* Stefan Salewski: reports a bug.

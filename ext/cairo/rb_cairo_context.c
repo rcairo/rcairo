@@ -1450,12 +1450,13 @@ static VALUE
 cr_get_target (VALUE self)
 {
   cairo_surface_t *surface;
-  VALUE rb_surface;
+  VALUE rb_surface = Qnil;
 
   surface = cairo_get_target (_SELF);
   rb_cairo_check_status (cairo_surface_status (surface));
 
-  rb_surface = rb_ivar_get (self, cr_id_surface);
+  if (RTEST (rb_ivar_defined (self, cr_id_surface)))
+      rb_surface = rb_ivar_get (self, cr_id_surface);
   if (NIL_P (rb_surface) || RVAL2CRSURFACE (rb_surface) != surface)
     {
       rb_surface = CRSURFACE2RVAL (surface);
