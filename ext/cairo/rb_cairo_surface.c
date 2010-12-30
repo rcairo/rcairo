@@ -62,6 +62,8 @@ VALUE rb_cCairo_Surface;
 VALUE rb_cCairo_ImageSurface;
 VALUE rb_cCairo_PDFSurface = Qnil;
 VALUE rb_cCairo_PSSurface = Qnil;
+VALUE rb_cCairo_XLibSurface = Qnil;
+VALUE rb_cCairo_XCBSurface = Qnil;
 VALUE rb_cCairo_SVGSurface = Qnil;
 VALUE rb_cCairo_Win32Surface = Qnil;
 VALUE rb_cCairo_Win32PrintingSurface = Qnil;
@@ -128,6 +130,12 @@ cr_surface_get_klass (cairo_surface_t *surface)
       break;
     case CAIRO_SURFACE_TYPE_PS:
       klass = rb_cCairo_PSSurface;
+      break;
+    case CAIRO_SURFACE_TYPE_XLIB:
+      klass = rb_cCairo_XLibSurface;
+      break;
+    case CAIRO_SURFACE_TYPE_XCB:
+      klass = rb_cCairo_XCBSurface;
       break;
     case CAIRO_SURFACE_TYPE_QUARTZ:
       klass = rb_cCairo_QuartzSurface;
@@ -978,6 +986,24 @@ cr_pdf_surface_restrict_to_version (VALUE self, VALUE version)
 #  endif
 #endif
 
+#ifdef CAIRO_HAS_XLIB_SURFACE
+static VALUE
+cr_xlib_surface_initialize (int argc, VALUE *argv, VALUE self)
+{
+  rb_notimplement();
+  return Qnil;
+}
+#endif
+
+#ifdef CAIRO_HAS_XCB_SURFACE
+static VALUE
+cr_xcb_surface_initialize (int argc, VALUE *argv, VALUE self)
+{
+  rb_notimplement();
+  return Qnil;
+}
+#endif
+
 #ifdef CAIRO_HAS_SVG_SURFACE
 /* SVG-surface functions */
 DEFINE_SURFACE(svg)
@@ -1718,6 +1744,20 @@ Init_cairo_surface (void)
 #  endif
 
   RB_CAIRO_DEF_SETTERS (rb_cCairo_PDFSurface);
+#endif
+
+#ifdef CAIRO_HAS_XLIB_SURFACE
+  /* XLib-surface */
+  INIT_SURFACE(xlib, XLib)
+
+  RB_CAIRO_DEF_SETTERS (rb_cCairo_XLibSurface);
+#endif
+
+#ifdef CAIRO_HAS_XCB_SURFACE
+  /* XLib-surface */
+  INIT_SURFACE(xcb, XCB)
+
+  RB_CAIRO_DEF_SETTERS (rb_cCairo_XCBSurface);
 #endif
 
 #ifdef CAIRO_HAS_SVG_SURFACE
