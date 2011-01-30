@@ -112,7 +112,6 @@ def download_windows_binaries(binary_dir)
   base_url = "http://ftp.gnome.org/pub/gnome/binaries/win32/dependencies/"
   dependencies = [
                   ["cairo", "1.10.0-1"],
-                  ["cairo-dev", "1.10.0-1"],
                   ["libpng", "1.4.3-1"],
                   ["zlib", "1.2.5-2"],
                   ["expat", "2.0.1-1"],
@@ -120,15 +119,24 @@ def download_windows_binaries(binary_dir)
                   ["freetype", "2.4.2-1"],
                  ]
   dependencies.each do |name, version|
-    file_name = "#{name}_#{version}_win32.zip"
-    full_file_name = File.join(binary_dir, file_name)
-    next if File.exist?(full_file_name)
-    open("#{base_url}#{file_name}", "rb") do |input|
-      File.open(full_file_name, "wb") do |output|
-        output.print(input.read)
+    ["", "-dev"].each do |suffix|
+      file_name = "#{name}#{suffix}_#{version}_win32.zip"
+      full_file_name = File.join(binary_dir, file_name)
+      next if File.exist?(full_file_name)
+      open("#{base_url}#{file_name}", "rb") do |input|
+        File.open(full_file_name, "wb") do |output|
+          output.print(input.read)
+        end
       end
+      sh("unzip", "-o", full_file_name, "-d", binary_dir)
     end
-    sh("unzip", full_file_name, "-d", binary_dir)
+  end
+  Dir.glob("#{binary_dir}/lib/pkgconfig/*.pc") do |pc_path|
+    pc = File.read(pc_path)
+    pc = pc.gsub(/\Aprefix=.+$/) {"prefix=#{File.expand_path(binary_dir)}"}
+    File.open(pc_path, "w") do |pc_file|
+      pc_file.print(pc)
+    end
   end
 end
 
