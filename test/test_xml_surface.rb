@@ -24,7 +24,8 @@ class XMLSurfaceTest < Test::Unit::TestCase
   <source-pattern>
     <solid>0 0 0 1</solid>
   </source-pattern>
-  <path> 15 30 m 80 100 l  </path>  <tolerance>0.1</tolerance>
+  <path> 15 30 m 80 100 l</path>
+  <tolerance>0.1</tolerance>
   <antialias>ANTIALIAS_DEFAULT</antialias>
 </stroke>
 EOX
