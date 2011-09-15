@@ -22,6 +22,10 @@
 #  include <cairo-xml.h>
 #endif
 
+#if defined(CAIRO_HAS_SCRIPT_SURFACE) || defined(CAIRO_HAS_XML_SURFACE)
+#  define NEED_DEFINE_OUTPUT_INITIALIZE 1
+#endif
+
 VALUE rb_cCairo_Device = Qnil;
 VALUE rb_cCairo_DRMDevice = Qnil;
 VALUE rb_cCairo_GLDevice = Qnil;
@@ -97,6 +101,7 @@ rb_cairo_device_from_ruby_object (VALUE obj)
   return device;
 }
 
+#ifdef NEED_DEFINE_OUTPUT_INITIALIZE
 static rb_cairo__object_holder_t *
 cr_object_holder_new (VALUE object)
 {
@@ -108,6 +113,7 @@ cr_object_holder_free (void *ptr)
 {
   rb_cairo__object_holder_free (rb_cCairo_Device, ptr);
 }
+#endif
 
 static void
 cr_device_free (void *ptr)
@@ -227,6 +233,7 @@ cr_finish_all_guarded_devices_at_end (VALUE data)
                    Qnil);
 }
 
+#ifdef NEED_DEFINE_OUTPUT_INITIALIZE
 static void
 yield_and_finish (VALUE self)
 {
@@ -238,6 +245,7 @@ yield_and_finish (VALUE self)
   if (!cairo_device_get_user_data (device, &cr_finished_key))
     cr_device_finish (self);
 }
+#endif
 
 #define DEFINE_OUTPUT_INITIALIZE(type)                                  \
 static VALUE                                                            \
