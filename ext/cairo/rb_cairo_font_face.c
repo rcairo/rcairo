@@ -211,7 +211,7 @@ cr_user_font_face_invoke_rescue (VALUE user_data, VALUE exception)
   data = (cr_user_font_face_invoke_data_t *)user_data;
   *(data->status) = rb_cairo__exception_to_status (exception);
 
-  if (*(data->status) == -1)
+  if (*(data->status) == (cairo_status_t)-1)
     rb_exc_raise (exception);
 
   return Qnil;

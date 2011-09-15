@@ -107,3 +107,4 @@ http://cairographics.org/cgi-bin/mailman/listinfo/cairo
   * Windows support.
 * Stefan Salewski: reports a bug.
 * Mamoru Tasaka: reports a bug.
+* Nikolai Weibull: reports problems.
