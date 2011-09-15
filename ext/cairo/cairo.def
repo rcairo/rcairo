@@ -51,7 +51,7 @@ EXPORTS
     rb_cCairo_GLDevice        DATA
     rb_cCairo_ScriptDevice    DATA
     rb_cCairo_XCBDevice       DATA
-    rb_cCairo_XlibtDevice     DATA
+    rb_cCairo_XlibDevice      DATA
     rb_cCairo_XMLDevice       DATA
 
     rb_mCairo_Operator        DATA
