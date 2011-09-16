@@ -12,7 +12,7 @@ if /mingw|mswin|mswin32/ =~ RUBY_PLATFORM
   else
     require 'rbconfig'
     ENV['PATH'] = %w(bin lib).collect do |dir|
-      "#{Config::CONFIG["prefix"]}\\lib\\GTK\\#{dir};"
+      "#{RbConfig::CONFIG["prefix"]}\\lib\\GTK\\#{dir};"
     end.join('') + ENV['PATH']
   end
 end
