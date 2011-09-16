@@ -35,11 +35,11 @@ module Cairo
     def parse_hex_color(value)
       case value
       when /\A#((?:#{HEX_RE}){3,4})\z/ #
-        RGB.new(*$1.scan(/./).collect {|value| value.hex / 15.0})
+        RGB.new(*$1.scan(/./).collect {|part| part.hex / 15.0})
       when /\A#((?:#{HEX_RE}{2,2}){3,4})\z/ #
-        RGB.new(*$1.scan(/.{2,2}/).collect {|value| value.hex / 255.0})
+        RGB.new(*$1.scan(/.{2,2}/).collect {|part| part.hex / 255.0})
       when /\A#((?:#{HEX_RE}{4,4}){3,4})\z/ #
-        RGB.new(*$1.scan(/.{4,4}/).collect {|value| value.hex / 65535.0})
+        RGB.new(*$1.scan(/.{4,4}/).collect {|part| part.hex / 65535.0})
       else
         message = "invalid hex color format: #{value} should be "
         message << "#RGB, #RGBA, #RRGGBB, #RRGGBBAA, #RRRRGGGGBBBB "
