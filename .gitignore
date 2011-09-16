@@ -1,4 +1,5 @@
 /ext/cairo/Makefile
+/ext/cairo/libruby-cairo.a
 /ext/cairo/mkmf.log
 *.so
 *.o
