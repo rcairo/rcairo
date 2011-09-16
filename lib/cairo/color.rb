@@ -11,7 +11,7 @@ module Cairo
         when :hsv, :hsva
           HSV.new(*value[1..-1])
         else
-          type, *value = value if [:rgb, :rgba].include?(value.first)
+          _, *value = value if [:rgb, :rgba].include?(value.first)
           RGB.new(*value)
         end
       when /\A#/ #
