@@ -44,6 +44,11 @@ Compiling:
 		       # support. So you need to install rcairo and build
 		       # Ruby/Pango with it before you run them.
 
+Options to extconf.rb:
+
+  * --without-vendor-override: Use system libraries instead of those found in
+                               vendor/local for compiling
+
 == Windows
 
 cairo-X.Y.Z-x86-mswin32.gem includes cairo related binaries.
