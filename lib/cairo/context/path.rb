@@ -25,8 +25,8 @@ module Cairo
           d = x
           i = -1
           type = points = nil
-          path.each do |btype, bpoints|
-            type, points = btype, bpoints
+          path.each do |_type, _points|
+            type, points = _type, _points
             i += 1
             break if d < parameterized_path[i]
             d -= parameterized_path[i]
