@@ -128,7 +128,7 @@ module Cairo
     def rotate(radians); dup.rotate!(radians); end
     def invert; dup.invert!; end
     def multiply(other); dup.multiply!(other); end
-    alias * multiply
+    alias_method :*, :multiply
   end
 
   class FontOptions
