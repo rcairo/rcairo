@@ -57,7 +57,7 @@ at_exit do
 end
 
 ENV["VERSION"] ||= guess_rcairo_version
-version = ENV["VERSION"]
+version = ENV["VERSION"].dup
 project = Hoe.spec('cairo') do |project|
   project.version = version
   project.rubyforge_name = 'cairo'
