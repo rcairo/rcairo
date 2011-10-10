@@ -111,7 +111,7 @@ task 'cross' => "download_windows_binaries"
 def download_windows_binaries(binary_dir)
   base_url = "http://ftp.gnome.org/pub/gnome/binaries/win32/dependencies/"
   dependencies = [
-                  ["cairo", "1.10.0-1"],
+                  ["cairo", "1.10.2-1"],
                   ["libpng", "1.4.3-1"],
                   ["zlib", "1.2.5-2"],
                   ["expat", "2.0.1-1"],
