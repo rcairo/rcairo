@@ -1,8 +1,34 @@
+Release 1.10.1 (2011-10-12) Kouhei Sutou <kou@cozmixng.org>)
+============================================================
+
+Features
+--------
+
+  * Accepted Cairo::EXTEND_PAD as extend value.
+  * Suppressed a warning. [Stefan Salewski]
+  * Bound CAIRO_SURFACE_TYPE_XLIB and CAIRO_SURFACE_TYPE_XCB.
+  * Supported cairo 1.10.2.
+  * Fixed recording surface test. #4 [Mamoru Tasaka]
+  * AcceptedCairo::OPERATOR_HSL_LUMINDSITY as operator value.
+    #6 [Matt Bramlage]
+  * Suppressed warnings on Windows. [Nikolai Weibull]
+  * Added --without-vendor-override options to extconf.rb.
+    [Nikolai Weibull]
+
+Thanks
+------
+
+  * Stefan Salewski
+  * Mamoru Tasaka
+  * Matt Bramlage
+  * Nikolai Weibull
+
 Release 1.10.0 (2010-09-12) Kouhei Sutou <kou@cozmixng.org>)
 ===========================================================
 
 Features
------
+--------
+
   * Support cairo 1.10.0.
 
 Release 1.8.5 (2010-08-28) Kouhei Sutou <kou@cozmixng.org>)
