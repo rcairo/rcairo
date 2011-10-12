@@ -19,12 +19,20 @@ $LOAD_PATH.unshift(cairo_ext_dir)
 $LOAD_PATH.unshift(cairo_lib_dir)
 ENV["RUBYLIB"] = "#{cairo_lib_dir}:#{cairo_ext_dir}:#{ENV['RUBYLIB']}"
 
-def guess_rcairo_version
-  require 'cairo'
-  Cairo.bindings_version
+def guess_rcairo_version(cairo_ext_dir)
+  version = {}
+  File.open(File.join(cairo_ext_dir, "rb_cairo.h")) do |rb_cairo_h|
+    rb_cairo_h.each_line do |line|
+      case line
+      when /\A#define RB_CAIRO_VERSION_([A-Z]+) (\d+)/
+        version[$1.downcase] = $2
+      end
+    end
+  end
+  [version["major"], version["minor"], version["micro"]].join(".")
 end
 
-ENV["VERSION"] ||= guess_rcairo_version
+ENV["VERSION"] ||= guess_rcairo_version(cairo_ext_dir)
 version = ENV["VERSION"].dup
 spec = nil
 Jeweler::Tasks.new do |_spec|
