@@ -137,10 +137,9 @@ task "download_windows_binaries" do
 end
 
 # for releasing
-task :dist => [:docs] do
+task :dist do
   sh "./dist.sh", version
 end
-task :gem => [:docs]
 
 # for documentation
 langs = [
