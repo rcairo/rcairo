@@ -113,3 +113,4 @@ http://cairographics.org/cgi-bin/mailman/listinfo/cairo
 * Stefan Salewski: reports a bug.
 * Mamoru Tasaka: reports a bug.
 * Nikolai Weibull: reports problems.
+* Will Bryant: reports a bug.
