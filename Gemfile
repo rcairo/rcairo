@@ -2,8 +2,9 @@
 
 source "http://rubygems.org/"
 
+gem 'pkg-config'
+
 group :development, :test do
-  gem 'pkg-config'
   gem "test-unit"
   gem "test-unit-notify"
   gem "rake"
