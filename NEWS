@@ -1,3 +1,16 @@
+Release 1.10.2 (2011-11-20) Kouhei Sutou <kou@cozmixng.org>)
+============================================================
+
+Fixes
+-----
+
+  * Added missing pkg-config dependency. #8 [Will Bryant]
+
+Thanks
+------
+
+  * Will Bryant
+
 Release 1.10.1 (2011-10-12) Kouhei Sutou <kou@cozmixng.org>)
 ============================================================
 
