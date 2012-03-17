@@ -84,6 +84,7 @@ VALUE rb_cCairo_TeeSurface = Qnil;
 VALUE rb_cCairo_XMLSurface = Qnil;
 VALUE rb_cCairo_SkiaSurface = Qnil;
 VALUE rb_cCairo_SubSurface = Qnil;
+VALUE rb_cCairo_CoglSurface = Qnil;
 
 static ID cr_id_parse;
 static ID cr_id_size;
@@ -190,6 +191,11 @@ cr_surface_get_klass (cairo_surface_t *surface)
       break;
     case CAIRO_SURFACE_TYPE_SUBSURFACE:
       klass = rb_cCairo_SubSurface;
+      break;
+#endif
+#if CAIRO_CHECK_VERSION(1, 11, 4)
+    case CAIRO_SURFACE_TYPE_COGL:
+      klass = rb_cCairo_CoglSurface;
       break;
 #endif
     default:

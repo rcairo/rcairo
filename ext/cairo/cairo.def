@@ -47,6 +47,8 @@ EXPORTS
     rb_cCairo_XMLSurface      DATA
     rb_cCairo_SkiaSurface     DATA
     rb_cCairo_SubSurface      DATA
+    rb_cCairo_CoglSurface     DATA
+
     rb_cCairo_Device          DATA
     rb_cCairo_DRMDevice       DATA
     rb_cCairo_GLDevice        DATA
