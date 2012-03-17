@@ -54,6 +54,8 @@ EXPORTS
     rb_cCairo_XCBDevice       DATA
     rb_cCairo_XlibDevice      DATA
     rb_cCairo_XMLDevice       DATA
+    rb_cCairo_CoglDevice      DATA
+    rb_cCairo_Win32Device     DATA
 
     rb_mCairo_Operator        DATA
     rb_mCairo_Antialias       DATA
