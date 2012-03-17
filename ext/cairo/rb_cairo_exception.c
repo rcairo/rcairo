@@ -179,10 +179,10 @@ rb_cairo_check_status (cairo_status_t status)
     case CAIRO_STATUS_DEVICE_ERROR:
       rb_raise (rb_eCairo_DeviceError, "%s", string);
       break;
+#endif
     case CAIRO_STATUS_LAST_STATUS:
       rb_raise (rb_eArgError, "bug: %s: %d", string, status);
       break;
-#endif
     }
 }
 
