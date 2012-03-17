@@ -77,6 +77,7 @@ RB_CAIRO_BEGIN_DECLS
 
 RB_CAIRO_VAR VALUE rb_mCairo;
 RB_CAIRO_VAR VALUE rb_cCairo_Context;
+RB_CAIRO_VAR VALUE rb_cCairo_Rectangle;
 RB_CAIRO_VAR VALUE rb_cCairo_Point;
 RB_CAIRO_VAR VALUE rb_cCairo_Path;
 RB_CAIRO_VAR VALUE rb_cCairo_PathData;

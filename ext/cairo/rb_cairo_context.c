@@ -23,6 +23,7 @@
 #endif
 
 VALUE rb_cCairo_Context;
+VALUE rb_cCairo_Rectangle;
 
 static ID cr_id_surface, cr_id_source;
 static ID cr_id_plus, cr_id_minus, cr_id_multi, cr_id_div;
@@ -33,7 +34,6 @@ static cairo_user_data_key_t cr_object_holder_key;
 static VALUE cr_get_current_point (VALUE self);
 
 #if CAIRO_CHECK_VERSION(1, 3, 0)
-static VALUE rb_cCairo_Rectangle;
 static ID at_x, at_y, at_width, at_height;
 
 static VALUE

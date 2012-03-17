@@ -2,6 +2,7 @@ EXPORTS
     Init_cairo
     rb_mCairo                 DATA
     rb_cCairo_Context         DATA
+    rb_cCairo_Rectangle       DATA
     rb_cCairo_Path            DATA
     rb_cCairo_PathData        DATA
     rb_cCairo_PathMoveTo      DATA
