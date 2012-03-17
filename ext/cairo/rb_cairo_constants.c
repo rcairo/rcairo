@@ -48,7 +48,11 @@ VALUE rb_mCairo_RegionOverlap = Qnil;
 #endif
 
 #define CAIRO_ANTIALIAS_MIN CAIRO_ANTIALIAS_DEFAULT
-#define CAIRO_ANTIALIAS_MAX CAIRO_ANTIALIAS_SUBPIXEL
+#if CAIRO_CHECK_VERSION(1, 11, 4)
+#  define CAIRO_ANTIALIAS_MAX CAIRO_ANTIALIAS_BEST
+#else
+#  define CAIRO_ANTIALIAS_MAX CAIRO_ANTIALIAS_SUBPIXEL
+#endif
 
 #define CAIRO_FILL_RULE_MIN CAIRO_FILL_RULE_WINDING
 #define CAIRO_FILL_RULE_MAX CAIRO_FILL_RULE_EVEN_ODD
@@ -400,6 +404,14 @@ Init_cairo_constants (void)
                    INT2FIX (CAIRO_ANTIALIAS_GRAY));
   rb_define_const (rb_mCairo_Antialias,    "SUBPIXEL",
                    INT2FIX (CAIRO_ANTIALIAS_SUBPIXEL));
+#if CAIRO_CHECK_VERSION(1, 11, 4)
+  rb_define_const (rb_mCairo_Antialias,    "FAST",
+                   INT2FIX (CAIRO_ANTIALIAS_FAST));
+  rb_define_const (rb_mCairo_Antialias,    "GOOD",
+                   INT2FIX (CAIRO_ANTIALIAS_GOOD));
+  rb_define_const (rb_mCairo_Antialias,    "BEST",
+                   INT2FIX (CAIRO_ANTIALIAS_BEST));
+#endif
 
 
   /* cairo_fill_rule_t */
