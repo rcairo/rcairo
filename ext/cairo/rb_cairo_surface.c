@@ -481,6 +481,21 @@ cr_surface_set_mime_data (VALUE self, VALUE rb_mime_type, VALUE rb_data)
 }
 #endif
 
+#if CAIRO_CHECK_VERSION(1, 11, 4)
+static VALUE
+cr_surface_supported_mime_type_p (VALUE self, VALUE rb_mime_type)
+{
+  cairo_surface_t *surface;
+  const char *mime_type;
+  cairo_bool_t supported_p;
+
+  surface = _SELF;
+  mime_type = StringValueCStr (rb_mime_type);
+  supported_p = cairo_surface_supports_mime_type (surface, mime_type);
+  return CBOOL2RVAL (supported_p);
+}
+#endif
+
 static VALUE
 cr_surface_get_font_options (VALUE self)
 {
@@ -1641,6 +1656,11 @@ Init_cairo_surface (void)
   rb_define_method (rb_cCairo_Surface, "set_mime_data",
                     cr_surface_set_mime_data, 2);
 #endif
+#if CAIRO_CHECK_VERSION(1, 11, 4)
+  rb_define_method (rb_cCairo_Surface, "supported_mime_type?",
+                    cr_surface_supported_mime_type_p, 1);
+#endif
+
 
   rb_define_method (rb_cCairo_Surface, "font_options",
                     cr_surface_get_font_options, 0);
