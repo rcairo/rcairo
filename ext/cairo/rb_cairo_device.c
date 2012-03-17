@@ -2,7 +2,7 @@
 /*
  * Ruby Cairo Binding
  *
- * Copyright 2010 Kouhei Sutou <kou@cozmixng.org>
+ * Copyright 2010-2012 Kouhei Sutou <kou@cozmixng.org>
  *
  * This file is made available under the same terms as Ruby
  *
@@ -33,6 +33,8 @@ VALUE rb_cCairo_ScriptDevice = Qnil;
 VALUE rb_cCairo_XCBDevice = Qnil;
 VALUE rb_cCairo_XlibDevice = Qnil;
 VALUE rb_cCairo_XMLDevice = Qnil;
+VALUE rb_cCairo_CoglDevice = Qnil;
+VALUE rb_cCairo_Win32Device = Qnil;
 
 #if CAIRO_CHECK_VERSION(1, 10, 0)
 
@@ -75,6 +77,14 @@ cr_device_get_klass (cairo_device_t *device)
     case CAIRO_DEVICE_TYPE_XML:
       klass = rb_cCairo_XMLDevice;
       break;
+#if CAIRO_CHECK_VERSION(1, 11, 4)
+    case CAIRO_DEVICE_TYPE_COGL:
+      klass = rb_cCairo_CoglDevice;
+      break;
+    case CAIRO_DEVICE_TYPE_WIN32:
+      klass = rb_cCairo_Win32Device;
+      break;
+#endif
     default:
       klass = rb_cCairo_Device;
       break;
