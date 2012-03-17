@@ -85,7 +85,11 @@ VALUE rb_mCairo_RegionOverlap = Qnil;
 #else
 #  define CAIRO_FORMAT_MIN CAIRO_FORMAT_ARGB32
 #endif
-#define CAIRO_FORMAT_MAX CAIRO_FORMAT_RGB16_565
+#if CAIRO_CHECK_VERSION(1, 11, 4)
+#  define CAIRO_FORMAT_MAX CAIRO_FORMAT_RGB30
+#else
+#  define CAIRO_FORMAT_MAX CAIRO_FORMAT_RGB16_565
+#endif
 
 #define CAIRO_EXTEND_MIN CAIRO_EXTEND_NONE
 #define CAIRO_EXTEND_MAX CAIRO_EXTEND_PAD
@@ -520,6 +524,10 @@ Init_cairo_constants (void)
                    INT2FIX (CAIRO_FORMAT_A1));
   rb_define_const (rb_mCairo_Format,    "RGB16_565",
                    INT2FIX (CAIRO_FORMAT_RGB16_565));
+#if CAIRO_CHECK_VERSION(1, 11, 4)
+  rb_define_const (rb_mCairo_Format,    "RGB30",
+                   INT2FIX (CAIRO_FORMAT_RGB30));
+#endif
 
 #if CAIRO_CHECK_VERSION(1, 5, 8)
   rb_define_singleton_method (rb_mCairo_Format, "stride_for_width",
