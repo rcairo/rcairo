@@ -386,10 +386,15 @@ Init_cairo_device (void)
 
   RB_CAIRO_DEF_SETTERS (rb_cCairo_Device);
 
-#  ifdef CAIRO_HAS_SCRIPT_SURFACE
+  rb_cCairo_DRMDevice =
+    rb_define_class_under (rb_mCairo, "DRMDevice", rb_cCairo_Device);
+
+  rb_cCairo_GLDevice =
+    rb_define_class_under (rb_mCairo, "GLDevice", rb_cCairo_Device);
+
   rb_cCairo_ScriptDevice =
     rb_define_class_under (rb_mCairo, "ScriptDevice", rb_cCairo_Device);
-
+#  ifdef CAIRO_HAS_SCRIPT_SURFACE
   rb_define_method (rb_cCairo_ScriptDevice, "initialize",
                     cr_script_device_initialize, 1);
 
@@ -407,10 +412,15 @@ Init_cairo_device (void)
   RB_CAIRO_DEF_SETTERS (rb_cCairo_ScriptDevice);
 #  endif
 
-#  ifdef CAIRO_HAS_XML_SURFACE
+  rb_cCairo_XCBDevice =
+    rb_define_class_under (rb_mCairo, "XCBDevice", rb_cCairo_Device);
+
+  rb_cCairo_XlibDevice =
+    rb_define_class_under (rb_mCairo, "XlibDevice", rb_cCairo_Device);
+
   rb_cCairo_XMLDevice =
     rb_define_class_under (rb_mCairo, "XMLDevice", rb_cCairo_Device);
-
+#  ifdef CAIRO_HAS_XML_SURFACE
   rb_define_method (rb_cCairo_XMLDevice, "initialize",
                     cr_xml_device_initialize, 1);
 
@@ -418,6 +428,14 @@ Init_cairo_device (void)
                     cr_xml_device_reply, 1);
 
   RB_CAIRO_DEF_SETTERS (rb_cCairo_XMLDevice);
+#  endif
+
+#  if CAIRO_CHECK_VERSION(1, 11, 4)
+  rb_cCairo_CoglDevice =
+    rb_define_class_under (rb_mCairo, "CoglDevice", rb_cCairo_Device);
+
+  rb_cCairo_Win32Device =
+    rb_define_class_under (rb_mCairo, "Win32Device", rb_cCairo_Device);
 #  endif
 
 #endif
