@@ -5,7 +5,7 @@
  * $Author: kou $
  * $Date: 2008-09-19 12:56:27 $
  *
- * Copyright 2005-2010 Kouhei Sutou <kou@cozmixng.org>
+ * Copyright 2005-2012 Kouhei Sutou <kou@cozmixng.org>
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
  *
@@ -101,8 +101,14 @@ VALUE rb_mCairo_RegionOverlap = Qnil;
 #define CAIRO_TEXT_CLUSTER_FLAG_MIN 0
 #define CAIRO_TEXT_CLUSTER_FLAG_MAX CAIRO_TEXT_CLUSTER_FLAG_BACKWARD
 
-#define CAIRO_SCRIPT_MODE_MIN CAIRO_SCRIPT_MODE_BINARY
-#define CAIRO_SCRIPT_MODE_MAX CAIRO_SCRIPT_MODE_ASCII
+#if CAIRO_CHECK_VERSION(1, 11, 4)
+#  define CAIRO_SCRIPT_MODE_MIN CAIRO_SCRIPT_MODE_ASCII
+#  define CAIRO_SCRIPT_MODE_MAX CAIRO_SCRIPT_MODE_BINARY
+#else
+#  define CAIRO_SCRIPT_MODE_MIN CAIRO_SCRIPT_MODE_BINARY
+#  define CAIRO_SCRIPT_MODE_MAX CAIRO_SCRIPT_MODE_ASCII
+#endif
+
 
 #define CAIRO_REGION_OVERLAP_MIN CAIRO_REGION_OVERLAP_IN
 #define CAIRO_REGION_OVERLAP_MAX CAIRO_REGION_OVERLAP_PART
