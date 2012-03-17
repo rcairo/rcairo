@@ -646,7 +646,13 @@ Init_cairo_constants (void)
                    rb_str_new2 (CAIRO_MIME_TYPE_JP2));
   rb_define_const (rb_mCairo_MimeType, "URI",
                    rb_str_new2 (CAIRO_MIME_TYPE_URI));
+#endif
+#if CAIRO_CHECK_VERSION(1, 11, 4)
+  rb_define_const (rb_mCairo_MimeType, "UNIQUE_ID",
+                   rb_str_new2 (CAIRO_MIME_TYPE_UNIQUE_ID));
+#endif
 
+#if CAIRO_CHECK_VERSION(1, 10, 0)
   rb_mCairo_RegionOverlap = rb_define_module_under (rb_mCairo, "RegionOverlap");
 
   rb_define_const (rb_mCairo_RegionOverlap, "IN",
