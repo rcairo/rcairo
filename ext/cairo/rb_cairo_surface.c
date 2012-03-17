@@ -385,6 +385,55 @@ cr_surface_create_similar_image (int argc, VALUE *argv, VALUE self)
   cr_surface_check_status (similar_image);
   return CRSURFACE2RVAL_WITH_DESTROY (similar_image);
 }
+
+static VALUE
+cr_surface_map_to_image (int argc, VALUE *argv, VALUE self)
+{
+  cairo_surface_t *surface, *mapped_image;
+  cairo_rectangle_int_t extents_value;
+  cairo_rectangle_int_t *extents = NULL;
+  VALUE rb_extents;
+
+  rb_scan_args (argc, argv, "01", &rb_extents);
+
+  surface = _SELF;
+  if (!NIL_P (rb_extents))
+    {
+      extents = &extents_value;
+      if (rb_cairo__is_kind_of (rb_extents, rb_cCairo_Rectangle))
+        {
+          extents->x = NUM2INT (rb_iv_get (rb_extents, "@x"));
+          extents->y = NUM2INT (rb_iv_get (rb_extents, "@y"));
+          extents->width = NUM2INT (rb_iv_get (rb_extents, "@width"));
+          extents->height = NUM2INT (rb_iv_get (rb_extents, "@height"));
+        }
+      else
+        {
+          VALUE *values;
+          rb_extents = rb_convert_type (rb_extents, T_ARRAY, "Array", "to_ary");
+          values = RARRAY_PTR (rb_extents);
+          extents->x = NUM2INT (values[0]);
+          extents->y = NUM2INT (values[1]);
+          extents->height = NUM2INT (values[2]);
+          extents->width = NUM2INT (values[3]);
+        }
+    }
+
+  mapped_image = cairo_surface_map_to_image (surface, extents);
+  cr_surface_check_status (mapped_image);
+  return CRSURFACE2RVAL_WITH_DESTROY (mapped_image);
+}
+
+static VALUE
+cr_surface_unmap_image (VALUE self, VALUE rb_mapped_image)
+{
+  cairo_surface_t *surface, *mapped_image;
+
+  surface = _SELF;
+  mapped_image = RVAL2CRSURFACE (rb_mapped_image);
+  cairo_surface_unmap_image (surface, mapped_image);
+  return Qnil;
+}
 #endif
 
 #if CAIRO_CHECK_VERSION(1, 10, 0)
@@ -1682,6 +1731,10 @@ Init_cairo_surface (void)
 #if CAIRO_CHECK_VERSION(1, 11, 4)
   rb_define_method (rb_cCairo_Surface, "create_similar_image",
                     cr_surface_create_similar_image, -1);
+  rb_define_method (rb_cCairo_Surface, "map_to_image",
+                    cr_surface_map_to_image, -1);
+  rb_define_method (rb_cCairo_Surface, "unmap_image",
+                    cr_surface_unmap_image, 1);
 #endif
 #if CAIRO_CHECK_VERSION(1, 10, 0)
   rb_define_method (rb_cCairo_Surface, "sub_rectangle_surface",
