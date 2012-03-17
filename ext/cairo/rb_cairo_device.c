@@ -77,14 +77,14 @@ cr_device_get_klass (cairo_device_t *device)
     case CAIRO_DEVICE_TYPE_XML:
       klass = rb_cCairo_XMLDevice;
       break;
-#if CAIRO_CHECK_VERSION(1, 11, 4)
+#  if CAIRO_CHECK_VERSION(1, 11, 4)
     case CAIRO_DEVICE_TYPE_COGL:
       klass = rb_cCairo_CoglDevice;
       break;
     case CAIRO_DEVICE_TYPE_WIN32:
       klass = rb_cCairo_Win32Device;
       break;
-#endif
+#  endif
     default:
       klass = rb_cCairo_Device;
       break;
