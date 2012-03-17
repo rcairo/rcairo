@@ -54,7 +54,11 @@ enum ruby_value_type {
 #  include <cairo-tee.h>
 #endif
 
-#ifdef CAIRO_HAS_GL_SURFACE
+#if defined(CAIRO_HAS_GL_SURFACE) || defined(CAIRO_HAS_GLESV2_SURFACE)
+#  define RB_CAIRO_HAS_GL_SURFACE
+#endif
+
+#ifdef RB_CAIRO_HAS_GL_SURFACE
 #  include <cairo-gl.h>
 #endif
 
@@ -1464,7 +1468,7 @@ cr_tee_surface_array_reference (VALUE self, VALUE index)
 }
 #endif
 
-#ifdef CAIRO_HAS_GL_SURFACE
+#ifdef RB_CAIRO_HAS_GL_SURFACE
 static VALUE
 cr_gl_surface_initialize (int argc, VALUE *argv, VALUE self)
 {
@@ -1857,7 +1861,7 @@ Init_cairo_surface (void)
   RB_CAIRO_DEF_SETTERS (rb_cCairo_TeeSurface);
 #endif
 
-#ifdef CAIRO_HAS_GL_SURFACE
+#ifdef RB_CAIRO_HAS_GL_SURFACE
   rb_cCairo_GLSurface =
     rb_define_class_under (rb_mCairo, "GLSurface", rb_cCairo_Surface);
 
