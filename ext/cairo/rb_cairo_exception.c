@@ -57,6 +57,10 @@ static VALUE rb_eCairo_UserFontNotImplemented;
 static VALUE rb_eCairo_DeviceTypeMismatch;
 static VALUE rb_eCairo_DeviceError;
 #endif
+#if CAIRO_CHECK_VERSION(1, 11, 2)
+static VALUE rb_eCairo_InvalidMeshConstruction;
+static VALUE rb_eCairo_DeviceFinished;
+#endif
 
 void
 rb_cairo_check_status (cairo_status_t status)
@@ -178,6 +182,14 @@ rb_cairo_check_status (cairo_status_t status)
       break;
     case CAIRO_STATUS_DEVICE_ERROR:
       rb_raise (rb_eCairo_DeviceError, "%s", string);
+      break;
+#endif
+#if CAIRO_CHECK_VERSION(1, 11, 2)
+    case CAIRO_STATUS_INVALID_MESH_CONSTRUCTION:
+      rb_raise (rb_eCairo_InvalidMeshConstruction, "%s", string);
+      break;
+    case CAIRO_STATUS_DEVICE_FINISHED:
+      rb_raise (rb_eCairo_DeviceFinished, "%s", string);
       break;
 #endif
     case CAIRO_STATUS_LAST_STATUS:
@@ -400,6 +412,14 @@ Init_cairo_exception ()
 
   rb_eCairo_DeviceError =
     rb_define_class_under (rb_mCairo, "DeviceError",
+                           rb_eCairo_Error);
+#endif
+#if CAIRO_CHECK_VERSION(1, 11, 2)
+  rb_eCairo_InvalidMeshConstruction =
+    rb_define_class_under (rb_mCairo, "InvalidMeshConstruction",
+                           rb_eArgError);
+  rb_eCairo_DeviceFinished =
+    rb_define_class_under (rb_mCairo, "DeviceFinished",
                            rb_eCairo_Error);
 #endif
 }
