@@ -5,7 +5,7 @@
  * $Author: kou $
  * $Date: 2008-11-01 14:23:14 $
  *
- * Copyright 2005-2010 Kouhei Sutou <kou@cozmixng.org>
+ * Copyright 2005-2012 Kouhei Sutou <kou@cozmixng.org>
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
  *
@@ -347,6 +347,45 @@ cr_surface_create_similar (int argc, VALUE *argv, VALUE self)
   cr_surface_check_status (similar_surface);
   return CRSURFACE2RVAL_WITH_DESTROY (similar_surface);
 }
+
+#if CAIRO_CHECK_VERSION(1, 11, 4)
+static VALUE
+cr_surface_create_similar_image (int argc, VALUE *argv, VALUE self)
+{
+  cairo_surface_t *surface, *similar_image;
+  cairo_format_t format;
+  int width, height;
+  VALUE arg1, arg2, arg3;
+
+  rb_scan_args (argc, argv, "21", &arg1, &arg2, &arg3);
+
+  surface = _SELF;
+  if (argc == 2)
+    {
+      if (cairo_surface_get_type (surface) == CAIRO_SURFACE_TYPE_IMAGE)
+        {
+          format = cairo_image_surface_get_format (surface);
+        }
+      else
+        {
+          format = CAIRO_FORMAT_ARGB32;
+        }
+      width = NUM2INT (arg1);
+      height = NUM2INT (arg2);
+    }
+  else
+    {
+      format = RVAL2CRFORMAT (arg1);
+      width = NUM2INT (arg2);
+      height = NUM2INT (arg3);
+    }
+
+  similar_image = cairo_surface_create_similar_image (surface, format,
+                                                      width, height);
+  cr_surface_check_status (similar_image);
+  return CRSURFACE2RVAL_WITH_DESTROY (similar_image);
+}
+#endif
 
 #if CAIRO_CHECK_VERSION(1, 10, 0)
 static VALUE
@@ -1640,6 +1679,10 @@ Init_cairo_surface (void)
 
   rb_define_method (rb_cCairo_Surface, "create_similar",
                     cr_surface_create_similar, -1);
+#if CAIRO_CHECK_VERSION(1, 11, 4)
+  rb_define_method (rb_cCairo_Surface, "create_similar_image",
+                    cr_surface_create_similar_image, -1);
+#endif
 #if CAIRO_CHECK_VERSION(1, 10, 0)
   rb_define_method (rb_cCairo_Surface, "sub_rectangle_surface",
                     cr_surface_create_sub_rectangle_surface, 4);
