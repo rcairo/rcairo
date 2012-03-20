@@ -543,7 +543,7 @@ cr_mesh_pattern_set_control_point (VALUE self, VALUE rb_nth_point,
     {
       VALUE inspected;
 
-      inspected = rb_funcall (rb_ary_new3 (4, self, rb_nth_point, rb_x, rb_y),
+      inspected = rb_funcall (rb_ary_new3 (3, rb_nth_point, rb_x, rb_y),
                               id_inspect, 0);
       rb_raise (rb_eArgError, "nth_point must be 0, 1, 2 or 3: <%u>: <%s>",
                 nth_point, RVAL2CSTR (inspected));
