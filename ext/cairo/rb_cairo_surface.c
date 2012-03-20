@@ -920,6 +920,24 @@ cr_recording_surface_get_ink_extents (VALUE self)
                       rb_float_new (x), rb_float_new (y),
                       rb_float_new (width), rb_float_new (height));
 }
+
+#  if CAIRO_CHECK_VERSION(1, 11, 4)
+static VALUE
+cr_recording_surface_get_extents (VALUE self)
+{
+  cairo_surface_t *surface;
+  cairo_rectangle_t extents;
+
+  surface = _SELF;
+  cairo_recording_surface_get_extents (surface, &extents);
+  cr_surface_check_status (surface);
+  return rb_ary_new3 (4,
+                      rb_float_new (extents.x),
+                      rb_float_new (extents.y),
+                      rb_float_new (extents.width),
+                      rb_float_new (extents.height));
+}
+#  endif
 #endif
 
 /* Printing surfaces */
@@ -1825,6 +1843,10 @@ Init_cairo_surface (void)
 
   rb_define_method (rb_cCairo_RecordingSurface, "ink_extents",
                     cr_recording_surface_get_ink_extents, 0);
+#  if CAIRO_CHECK_VERSION(1, 11, 4)
+  rb_define_method (rb_cCairo_RecordingSurface, "extents",
+                    cr_recording_surface_get_extents, 0);
+#  endif
 #endif
 
 #define INIT_SURFACE(type, name)                                        \
