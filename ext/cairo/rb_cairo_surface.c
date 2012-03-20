@@ -1570,7 +1570,7 @@ cr_tee_surface_array_reference (VALUE self, VALUE index)
 
   surface = _SELF;
   index = rb_Integer (index);
-  target = cairo_tee_surface_index (surface, NUM2INT (index));
+  target = cairo_tee_surface_index (surface, NUM2UINT (index));
   cr_surface_check_status (surface);
   cr_surface_check_status (target);
   return CRSURFACE2RVAL (target);
