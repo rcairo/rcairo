@@ -616,6 +616,40 @@ cr_mesh_pattern_get_path (VALUE self, VALUE nth_patch)
   rb_cairo_check_status (path->status);
   return CRPATH2RVAL (path);
 }
+
+static VALUE
+cr_mesh_pattern_get_corner_color (VALUE self,
+                                  VALUE rb_nth_patch, VALUE rb_nth_corner)
+{
+  cairo_pattern_t *pattern;
+  unsigned int nth_patch, nth_corner;
+  double red, green, blue, alpha;
+  cairo_status_t status;
+
+  nth_patch = NUM2UINT (rb_nth_patch);
+  nth_corner = NUM2UINT (rb_nth_corner);
+  if (!(0 <= nth_corner && nth_corner <= 3))
+    {
+      VALUE inspected;
+
+      inspected = rb_funcall (rb_ary_new3 (2, rb_nth_patch, rb_nth_corner),
+                              id_inspect, 0);
+      rb_raise (rb_eArgError, "nth_corner must be 0, 1, 2 or 3: <%u>: <%s>",
+                nth_corner, RVAL2CSTR (inspected));
+    }
+
+  pattern = _SELF (self);
+  status = cairo_mesh_pattern_get_corner_color_rgba (pattern,
+                                                     nth_patch, nth_corner,
+                                                     &red,
+                                                     &green,
+                                                     &blue,
+                                                     &alpha);
+  rb_cairo_check_status (status);
+  return rb_ary_new3 (4,
+                      rb_float_new (red), rb_float_new (green),
+                      rb_float_new (blue), rb_float_new (alpha));
+}
 #endif
 
 void
@@ -743,6 +777,8 @@ Init_cairo_pattern (void)
                     cr_mesh_pattern_get_patch_count, 0);
   rb_define_method (rb_cCairo_MeshPattern, "get_path",
                     cr_mesh_pattern_get_path, 1);
+  rb_define_method (rb_cCairo_MeshPattern, "get_corner_color",
+                    cr_mesh_pattern_get_corner_color, 2);
 #endif
   RB_CAIRO_DEF_SETTERS (rb_cCairo_MeshPattern);
 }
