@@ -591,6 +591,19 @@ cr_mesh_pattern_set_corner_color_generic (int argc, VALUE *argv, VALUE self)
   cr_pattern_check_status (pattern);
   return self;
 }
+
+static VALUE
+cr_mesh_pattern_get_patch_count (VALUE self)
+{
+  cairo_pattern_t *pattern;
+  unsigned int count;
+  cairo_status_t status;
+
+  pattern = _SELF (self);
+  status = cairo_mesh_pattern_get_patch_count (pattern, &count);
+  rb_cairo_check_status (status);
+  return UINT2NUM (count);
+}
 #endif
 
 void
@@ -714,6 +727,8 @@ Init_cairo_pattern (void)
                    "set_corner_color_rgb", "set_corner_color");
   rb_define_alias (rb_cCairo_MeshPattern,
                    "set_corner_color_rgba", "set_corner_color");
+  rb_define_method (rb_cCairo_MeshPattern, "patch_count",
+                    cr_mesh_pattern_get_patch_count, 0);
 #endif
   RB_CAIRO_DEF_SETTERS (rb_cCairo_MeshPattern);
 }
