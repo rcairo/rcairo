@@ -461,6 +461,30 @@ cr_mesh_pattern_initialize (VALUE self)
   return Qnil;
 }
 
+static VALUE
+cr_mesh_pattern_end_patch (VALUE self)
+{
+  cairo_pattern_t *pattern;
+
+  pattern = _SELF (self);
+  cairo_mesh_pattern_end_patch (pattern);
+  cr_pattern_check_status (pattern);
+  return self;
+}
+
+static VALUE
+cr_mesh_pattern_begin_patch (VALUE self)
+{
+  cairo_pattern_t *pattern;
+
+  pattern = _SELF (self);
+  cairo_mesh_pattern_begin_patch (pattern);
+  cr_pattern_check_status (pattern);
+  if (rb_block_given_p ())
+    return rb_ensure (rb_yield, self, cr_mesh_pattern_end_patch, self);
+  else
+    return self;
+}
 #endif
 
 void
@@ -566,6 +590,10 @@ Init_cairo_pattern (void)
 #if CAIRO_CHECK_VERSION(1, 11, 4)
   rb_define_method (rb_cCairo_MeshPattern, "initialize",
                     cr_mesh_pattern_initialize, 0);
+  rb_define_method (rb_cCairo_MeshPattern, "begin_patch",
+                    cr_mesh_pattern_begin_patch, 0);
+  rb_define_method (rb_cCairo_MeshPattern, "end_patch",
+                    cr_mesh_pattern_end_patch, 0);
 #endif
   RB_CAIRO_DEF_SETTERS (rb_cCairo_MeshPattern);
 }
