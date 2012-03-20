@@ -5,6 +5,7 @@
  * $Author: kou $
  * $Date: 2008-06-12 10:59:54 $
  *
+ * Copyright 2012 Kouhei Sutou <kou@cozmixng.org>
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
  *
@@ -21,6 +22,7 @@ VALUE rb_cCairo_SurfacePattern;
 VALUE rb_cCairo_GradientPattern;
 VALUE rb_cCairo_LinearPattern;
 VALUE rb_cCairo_RadialPattern;
+VALUE rb_cCairo_MeshPattern;
 
 static ID id_parse, id_to_rgb, id_to_a, id_inspect;
 
@@ -59,6 +61,11 @@ cr_pattern_get_klass (cairo_pattern_t *pattern)
     case CAIRO_PATTERN_TYPE_RADIAL:
       klass = rb_cCairo_RadialPattern;
       break;
+#if CAIRO_CHECK_VERSION(1, 11, 4)
+    case CAIRO_PATTERN_TYPE_MESH:
+      klass = rb_cCairo_MeshPattern;
+      break;
+#endif
     default:
       rb_raise (rb_eArgError, "unknown pattern type: %d", type);
       break;
@@ -537,4 +544,11 @@ Init_cairo_pattern (void)
 #endif
 
   RB_CAIRO_DEF_SETTERS (rb_cCairo_RadialPattern);
+
+  rb_cCairo_MeshPattern =
+    rb_define_class_under (rb_mCairo, "MeshPattern",
+                           rb_cCairo_Pattern);
+#if CAIRO_CHECK_VERSION(1, 11, 4)
+#endif
+  RB_CAIRO_DEF_SETTERS (rb_cCairo_MeshPattern);
 }

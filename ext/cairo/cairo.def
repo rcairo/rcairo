@@ -11,12 +11,15 @@ EXPORTS
     rb_cCairo_PathClosePath   DATA
     rb_cCairo_Matrix          DATA
     rb_cCairo_Region          DATA
+
     rb_cCairo_Pattern         DATA
     rb_cCairo_SolidPattern    DATA
     rb_cCairo_SurfacePattern  DATA
     rb_cCairo_GradientPattern DATA
     rb_cCairo_LinearPattern   DATA
     rb_cCairo_RadialPattern   DATA
+    rb_cCairo_MeshPattern     DATA
+
     rb_cCairo_FontFace        DATA
     rb_cCairo_ToyFontFace     DATA
     rb_cCairo_UserFontFace    DATA
