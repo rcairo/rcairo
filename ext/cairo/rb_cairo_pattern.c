@@ -448,6 +448,21 @@ cr_radial_pattern_get_radial_circles (VALUE self)
 /* Cairo::SurfacePattern */
 /* none */
 
+#if CAIRO_CHECK_VERSION(1, 11, 4)
+/* Cairo::MeshPattern */
+static VALUE
+cr_mesh_pattern_initialize (VALUE self)
+{
+  cairo_pattern_t *pattern;
+
+  pattern = cairo_pattern_create_mesh ();
+  cr_pattern_check_status (pattern);
+  DATA_PTR (self) = pattern;
+  return Qnil;
+}
+
+#endif
+
 void
 Init_cairo_pattern (void)
 {
@@ -549,6 +564,8 @@ Init_cairo_pattern (void)
     rb_define_class_under (rb_mCairo, "MeshPattern",
                            rb_cCairo_Pattern);
 #if CAIRO_CHECK_VERSION(1, 11, 4)
+  rb_define_method (rb_cCairo_MeshPattern, "initialize",
+                    cr_mesh_pattern_initialize, 0);
 #endif
   RB_CAIRO_DEF_SETTERS (rb_cCairo_MeshPattern);
 }
