@@ -604,6 +604,18 @@ cr_mesh_pattern_get_patch_count (VALUE self)
   rb_cairo_check_status (status);
   return UINT2NUM (count);
 }
+
+static VALUE
+cr_mesh_pattern_get_path (VALUE self, VALUE nth_patch)
+{
+  cairo_pattern_t *pattern;
+  cairo_path_t *path;
+
+  pattern = _SELF (self);
+  path = cairo_mesh_pattern_get_path (pattern, NUM2UINT (nth_patch));
+  rb_cairo_check_status (path->status);
+  return CRPATH2RVAL (path);
+}
 #endif
 
 void
@@ -729,6 +741,8 @@ Init_cairo_pattern (void)
                    "set_corner_color_rgba", "set_corner_color");
   rb_define_method (rb_cCairo_MeshPattern, "patch_count",
                     cr_mesh_pattern_get_patch_count, 0);
+  rb_define_method (rb_cCairo_MeshPattern, "get_path",
+                    cr_mesh_pattern_get_path, 1);
 #endif
   RB_CAIRO_DEF_SETTERS (rb_cCairo_MeshPattern);
 }
