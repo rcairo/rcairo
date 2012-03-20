@@ -485,6 +485,23 @@ cr_mesh_pattern_begin_patch (VALUE self)
   else
     return self;
 }
+
+static VALUE
+cr_mesh_pattern_curve_to (VALUE self,
+                          VALUE x1, VALUE y1,
+                          VALUE x2, VALUE y2,
+                          VALUE x3, VALUE y3)
+{
+  cairo_pattern_t *pattern;
+
+  pattern = _SELF (self);
+  cairo_mesh_pattern_curve_to (pattern,
+                               NUM2DBL (x1), NUM2DBL (y1),
+                               NUM2DBL (x2), NUM2DBL (y2),
+                               NUM2DBL (x3), NUM2DBL (y3));
+  cr_pattern_check_status (pattern);
+  return self;
+}
 #endif
 
 void
@@ -594,6 +611,8 @@ Init_cairo_pattern (void)
                     cr_mesh_pattern_begin_patch, 0);
   rb_define_method (rb_cCairo_MeshPattern, "end_patch",
                     cr_mesh_pattern_end_patch, 0);
+  rb_define_method (rb_cCairo_MeshPattern, "curve_to",
+                    cr_mesh_pattern_curve_to, 6);
 #endif
   RB_CAIRO_DEF_SETTERS (rb_cCairo_MeshPattern);
 }
