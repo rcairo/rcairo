@@ -524,6 +524,33 @@ cr_mesh_pattern_move_to (VALUE self, VALUE x, VALUE y)
   cr_pattern_check_status (pattern);
   return self;
 }
+
+static VALUE
+cr_mesh_pattern_set_control_point (VALUE self, VALUE rb_nth_point,
+                                   VALUE rb_x, VALUE rb_y)
+{
+  cairo_pattern_t *pattern;
+  unsigned int nth_point;
+
+  pattern = _SELF (self);
+  nth_point = NUM2UINT (rb_nth_point);
+  if (0 <= nth_point && nth_point <= 3)
+    {
+      cairo_mesh_pattern_set_control_point (pattern, nth_point,
+                                            NUM2DBL (rb_x), NUM2DBL (rb_y));
+    }
+  else
+    {
+      VALUE inspected;
+
+      inspected = rb_funcall (rb_ary_new3 (4, self, rb_nth_point, rb_x, rb_y),
+                              id_inspect, 0);
+      rb_raise (rb_eArgError, "nth_point must be 0, 1, 2 or 3: <%u>: <%s>",
+                nth_point, RVAL2CSTR (inspected));
+    }
+  cr_pattern_check_status (pattern);
+  return self;
+}
 #endif
 
 void
@@ -639,6 +666,8 @@ Init_cairo_pattern (void)
                     cr_mesh_pattern_line_to, 2);
   rb_define_method (rb_cCairo_MeshPattern, "move_to",
                     cr_mesh_pattern_move_to, 2);
+  rb_define_method (rb_cCairo_MeshPattern, "set_control_point",
+                    cr_mesh_pattern_set_control_point, 3);
 #endif
   RB_CAIRO_DEF_SETTERS (rb_cCairo_MeshPattern);
 }
