@@ -40,11 +40,11 @@ class RasterPatternSourceTest < Test::Unit::TestCase
       Cairo::RecordingSurface.new(0, 0, 100, 100) do |surface|
         Cairo::Context.new(surface) do |context|
           called = []
-          red_pattern = Cairo::RasterSourcePattern.new(100, 100)
-          red_pattern.snapshot do |pattern|
+          raster_source = Cairo::RasterSourcePattern.new(100, 100)
+          raster_source.snapshot do |pattern|
             called << :snapshot
           end
-          context.set_source(red_pattern)
+          context.set_source(raster_source)
           context.rectangle(40, 40, 20, 20)
           context.fill
           assert_equal([:snapshot], called)
@@ -57,12 +57,12 @@ class RasterPatternSourceTest < Test::Unit::TestCase
       Cairo::RecordingSurface.new(0, 0, 100, 100) do |surface|
         Cairo::Context.new(surface) do |context|
           called = []
-          red_pattern = Cairo::RasterSourcePattern.new(100, 100)
-          red_pattern.snapshot do |pattern|
+          raster_source = Cairo::RasterSourcePattern.new(100, 100)
+          raster_source.snapshot do |pattern|
             called << :snapshot
             raise NoMemoryError
           end
-          context.set_source(red_pattern)
+          context.set_source(raster_source)
           context.rectangle(40, 40, 20, 20)
           assert_raise(NoMemoryError) do
             context.fill
