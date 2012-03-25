@@ -7,7 +7,7 @@ require 'fileutils'
 require 'rubygems'
 require 'rubygems/package_task'
 require 'yard'
-require 'jeweler'
+require 'bundler/gem_helper'
 require 'rake/extensiontask'
 require 'packnga'
 
@@ -19,44 +19,9 @@ $LOAD_PATH.unshift(cairo_ext_dir)
 $LOAD_PATH.unshift(cairo_lib_dir)
 ENV["RUBYLIB"] = "#{cairo_lib_dir}:#{cairo_ext_dir}:#{ENV['RUBYLIB']}"
 
-def guess_rcairo_version(cairo_ext_dir)
-  version = {}
-  File.open(File.join(cairo_ext_dir, "rb_cairo.h")) do |rb_cairo_h|
-    rb_cairo_h.each_line do |line|
-      case line
-      when /\A#define RB_CAIRO_VERSION_([A-Z]+) (\d+)/
-        version[$1.downcase] = $2
-      end
-    end
-  end
-  [version["major"], version["minor"], version["micro"]].join(".")
-end
-
-ENV["VERSION"] ||= guess_rcairo_version(cairo_ext_dir)
-version = ENV["VERSION"].dup
-spec = nil
-Jeweler::Tasks.new do |_spec|
-  spec = _spec
-  spec.name = "cairo"
-  spec.version = version
-  spec.rubyforge_project = 'cairo'
-  spec.homepage = 'http://cairographics.org/rcairo'
-  authors = File.join(base_dir, "AUTHORS")
-  spec.authors = ["Kouhei Sutou"]
-  spec.email = ["kou@cozmixng.org"]
-  spec.summary = 'Ruby bindings for cairo'
-  spec.description = "Ruby bindings for cairo"
-  spec.license = "Ruby's"
-  spec.files = FileList["{lib,samples}/**/*.rb",
-                        "ext/**/{*.def,depend,*.rb,*.c,*.h}",
-                        "AUTHORS", "COPYING", "GPL", "Gemfile",
-                        "NEWS", "README.rdoc", "Rakefile"]
-  spec.test_files = FileList["test/**/*.rb"]
-end
-
-Rake::Task["release"].prerequisites.clear
-Jeweler::RubygemsDotOrgTasks.new do
-end
+helper = Bundler::GemHelper.new(base_dir)
+helper.install
+spec = helper.gemspec
 
 Gem::PackageTask.new(spec) do |pkg|
   pkg.need_tar_gz = true
@@ -132,7 +97,7 @@ end
 
 # for releasing
 task :dist do
-  sh "./dist.sh", version
+  sh "./dist.sh", spec.version
 end
 
 # for documentation
