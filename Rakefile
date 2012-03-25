@@ -42,14 +42,8 @@ Jeweler::Tasks.new do |_spec|
   spec.rubyforge_project = 'cairo'
   spec.homepage = 'http://cairographics.org/rcairo'
   authors = File.join(base_dir, "AUTHORS")
-  spec.authors = File.readlines(authors).collect do |line|
-    if /\s*<[^<>]*>$/ =~ line
-      $PREMATCH
-    else
-      nil
-    end
-  end.compact
-  spec.email = ['cairo@cairographics.org']
+  spec.authors = ["Kouhei Sutou"]
+  spec.email = ["kou@cozmixng.org"]
   spec.summary = 'Ruby bindings for cairo'
   spec.description = "Ruby bindings for cairo"
   spec.license = "Ruby's"
