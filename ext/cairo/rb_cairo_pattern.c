@@ -715,6 +715,24 @@ cr_raster_source_acquire_callback (cairo_pattern_t *pattern,
   return acquired_surface;
 }
 
+static void
+cr_raster_source_release_callback (cairo_pattern_t *pattern,
+                                   void *callback_data,
+                                   cairo_surface_t *surface)
+{
+  VALUE rb_pattern;
+  VALUE rb_release;
+  VALUE rb_surface;
+
+  rb_pattern = POINTER2RVAL (callback_data);
+  rb_release = rb_iv_get (rb_pattern, "@release");
+  if (NIL_P (rb_release))
+    return;
+
+  rb_surface = CRSURFACE2RVAL (surface);
+  rb_funcall (rb_release, id_call, 2, rb_pattern, rb_surface);
+}
+
 static VALUE
 cr_raster_source_pattern_initialize (int argc, VALUE *argv, VALUE self)
 {
@@ -744,10 +762,11 @@ cr_raster_source_pattern_initialize (int argc, VALUE *argv, VALUE self)
 
   DATA_PTR (self) = pattern;
   rb_iv_set (self, "@acquire", Qnil);
+  rb_iv_set (self, "@release", Qnil);
 
   cairo_raster_source_pattern_set_acquire (pattern,
                                            cr_raster_source_acquire_callback,
-                                           NULL);
+                                           cr_raster_source_release_callback);
 
   return Qnil;
 }
@@ -765,6 +784,23 @@ cr_raster_source_pattern_acquire (VALUE self)
     }
 
   rb_iv_set (self, "@acquire", rb_block_proc ());
+
+  return self;
+}
+
+static VALUE
+cr_raster_source_pattern_release (VALUE self)
+{
+  if (!rb_block_given_p ())
+    {
+      VALUE inspected;
+
+      inspected = rb_funcall (self, id_inspect, 0);
+      rb_raise (rb_eArgError, "release block is missing: %s",
+                RVAL2CSTR (inspected));
+    }
+
+  rb_iv_set (self, "@release", rb_block_proc ());
 
   return self;
 }
@@ -912,6 +948,8 @@ Init_cairo_pattern (void)
                     cr_raster_source_pattern_initialize, -1);
   rb_define_method (rb_cCairo_RasterSourcePattern, "acquire",
                     cr_raster_source_pattern_acquire, 0);
+  rb_define_method (rb_cCairo_RasterSourcePattern, "release",
+                    cr_raster_source_pattern_release, 0);
 #endif
   RB_CAIRO_DEF_SETTERS (rb_cCairo_RasterSourcePattern);
 }
