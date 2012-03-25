@@ -97,7 +97,7 @@ end
 
 # for releasing
 task :dist do
-  sh "./dist.sh", spec.version
+  sh "./dist.sh", spec.version.to_s
 end
 
 # for documentation
