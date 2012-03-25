@@ -51,7 +51,7 @@ Options to extconf.rb:
 
 == Windows
 
-cairo-X.Y.Z-x86-mswin32.gem includes cairo related binaries.
+cairo-X.Y.Z-x86-mingw32.gem includes cairo related binaries.
 
 * cairo related binaries:
   http://ftp.gnome.org/pub/gnome/binaries/win32/dependencies/
