@@ -162,6 +162,8 @@ RB_CAIRO_VAR VALUE rb_mCairo_Color;
 RB_CAIRO_VAR VALUE rb_cCairo_Color_Base;
 RB_CAIRO_VAR VALUE rb_cCairo_Paper;
 
+#define RVAL2POINTER(obj)       ((void *)(obj))
+#define POINTER2RVAL(pointer)   ((VALUE)(pointer))
 
 #define RVAL2CRCONTEXT(obj)     (rb_cairo_context_from_ruby_object(obj))
 #define CRCONTEXT2RVAL(cr)      (rb_cairo_context_to_ruby_object(cr))

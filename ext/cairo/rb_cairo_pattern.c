@@ -25,7 +25,7 @@ VALUE rb_cCairo_RadialPattern;
 VALUE rb_cCairo_MeshPattern;
 VALUE rb_cCairo_RasterSourcePattern;
 
-static ID id_parse, id_to_rgb, id_to_a, id_inspect;
+static ID id_parse, id_to_rgb, id_to_a, id_inspect, id_new, id_call;
 
 #define _SELF(self)  (RVAL2CRPATTERN(self))
 
@@ -682,6 +682,39 @@ cr_mesh_pattern_get_control_point (VALUE self,
 }
 
 /* Cairo::RasterPattern */
+static cairo_surface_t *
+cr_raster_source_acquire_callback (cairo_pattern_t *pattern,
+                                   void *callback_data,
+                                   cairo_surface_t *target,
+                                   const cairo_rectangle_int_t *extents)
+{
+  VALUE rb_pattern;
+  VALUE rb_acquire;
+  cairo_surface_t *acquired_surface = NULL;
+
+  rb_pattern = POINTER2RVAL (callback_data);
+  rb_acquire = rb_iv_get (rb_pattern, "@acquire");
+  if (!NIL_P (rb_acquire))
+    {
+      VALUE rb_acquired_surface;
+      VALUE rb_target;
+      VALUE rb_extents;
+
+      rb_target = CRSURFACE2RVAL (target);
+      rb_extents = rb_funcall (rb_cCairo_Rectangle, id_new, 4,
+                               INT2NUM (extents->x),
+                               INT2NUM (extents->y),
+                               INT2NUM (extents->width),
+                               INT2NUM (extents->height));
+      rb_acquired_surface = rb_funcall (rb_acquire, id_call, 3,
+                                        rb_pattern, rb_target, rb_extents);
+      if (!NIL_P (rb_acquired_surface))
+        acquired_surface = RVAL2CRSURFACE (rb_acquired_surface);
+    }
+
+  return acquired_surface;
+}
+
 static VALUE
 cr_raster_source_pattern_initialize (int argc, VALUE *argv, VALUE self)
 {
@@ -705,10 +738,35 @@ cr_raster_source_pattern_initialize (int argc, VALUE *argv, VALUE self)
       height = NUM2INT (arg3);
     }
 
-  pattern = cairo_pattern_create_raster_source (&self, content, width, height);
+  pattern = cairo_pattern_create_raster_source (RVAL2POINTER (self),
+                                                content, width, height);
   cr_pattern_check_status (pattern);
+
   DATA_PTR (self) = pattern;
+  rb_iv_set (self, "@acquire", Qnil);
+
+  cairo_raster_source_pattern_set_acquire (pattern,
+                                           cr_raster_source_acquire_callback,
+                                           NULL);
+
   return Qnil;
+}
+
+static VALUE
+cr_raster_source_pattern_acquire (VALUE self)
+{
+  if (!rb_block_given_p ())
+    {
+      VALUE inspected;
+
+      inspected = rb_funcall (self, id_inspect, 0);
+      rb_raise (rb_eArgError, "acquire block is missing: %s",
+                RVAL2CSTR (inspected));
+    }
+
+  rb_iv_set (self, "@acquire", rb_block_proc ());
+
+  return self;
 }
 #endif
 
@@ -719,6 +777,8 @@ Init_cairo_pattern (void)
   id_to_rgb = rb_intern ("to_rgb");
   id_to_a = rb_intern ("to_a");
   id_inspect = rb_intern ("inspect");
+  id_new = rb_intern ("new");
+  id_call = rb_intern ("call");
 
   rb_cCairo_Pattern =
     rb_define_class_under (rb_mCairo, "Pattern", rb_cObject);
@@ -850,6 +910,8 @@ Init_cairo_pattern (void)
 #if CAIRO_CHECK_VERSION(1, 11, 4)
   rb_define_method (rb_cCairo_RasterSourcePattern, "initialize",
                     cr_raster_source_pattern_initialize, -1);
+  rb_define_method (rb_cCairo_RasterSourcePattern, "acquire",
+                    cr_raster_source_pattern_acquire, 0);
 #endif
   RB_CAIRO_DEF_SETTERS (rb_cCairo_RasterSourcePattern);
 }
