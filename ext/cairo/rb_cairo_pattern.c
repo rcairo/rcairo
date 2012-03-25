@@ -23,6 +23,7 @@ VALUE rb_cCairo_GradientPattern;
 VALUE rb_cCairo_LinearPattern;
 VALUE rb_cCairo_RadialPattern;
 VALUE rb_cCairo_MeshPattern;
+VALUE rb_cCairo_RasterPattern;
 
 static ID id_parse, id_to_rgb, id_to_a, id_inspect;
 
@@ -679,6 +680,36 @@ cr_mesh_pattern_get_control_point (VALUE self,
   rb_cairo_check_status (status);
   return rb_ary_new3 (2, rb_float_new (x), rb_float_new (y));
 }
+
+/* Cairo::RasterPattern */
+static VALUE
+cr_raster_pattern_initialize (int argc, VALUE *argv, VALUE self)
+{
+  cairo_pattern_t *pattern;
+  cairo_content_t content;
+  int width, height;
+  VALUE arg1, arg2, arg3;
+
+  rb_scan_args (argc, argv, "21", &arg1, &arg2, &arg3);
+
+  if (argc == 2)
+    {
+      content = CAIRO_CONTENT_COLOR_ALPHA;
+      width = NUM2INT (arg1);
+      height = NUM2INT (arg2);
+    }
+  else
+    {
+      content = RVAL2CRCONTENT (arg1);
+      width = NUM2INT (arg2);
+      height = NUM2INT (arg3);
+    }
+
+  pattern = cairo_pattern_create_raster_source (&self, content, width, height);
+  cr_pattern_check_status (pattern);
+  DATA_PTR (self) = pattern;
+  return Qnil;
+}
 #endif
 
 void
@@ -812,4 +843,13 @@ Init_cairo_pattern (void)
                     cr_mesh_pattern_get_control_point, 2);
 #endif
   RB_CAIRO_DEF_SETTERS (rb_cCairo_MeshPattern);
+
+  rb_cCairo_RasterPattern =
+    rb_define_class_under (rb_mCairo, "RasterPattern",
+                           rb_cCairo_Pattern);
+#if CAIRO_CHECK_VERSION(1, 11, 4)
+  rb_define_method (rb_cCairo_RasterPattern, "initialize",
+                    cr_raster_pattern_initialize, -1);
+#endif
+  RB_CAIRO_DEF_SETTERS (rb_cCairo_RasterPattern);
 }
