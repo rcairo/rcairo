@@ -320,8 +320,12 @@ yield_and_finish (VALUE self)
   rb_yield (self);
 
   surface = _SELF;
-  if (!cairo_surface_get_user_data (surface, &cr_finished_key))
-    cr_surface_finish (self);
+  if (cairo_surface_status (surface) != CAIRO_STATUS_SUCCESS)
+    return;
+  if (cairo_surface_get_user_data (surface, &cr_finished_key))
+    return;
+
+  cr_surface_finish (self);
 }
 
 static VALUE
