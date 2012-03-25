@@ -66,6 +66,9 @@ cr_pattern_get_klass (cairo_pattern_t *pattern)
     case CAIRO_PATTERN_TYPE_MESH:
       klass = rb_cCairo_MeshPattern;
       break;
+    case CAIRO_PATTERN_TYPE_RASTER_SOURCE:
+      klass = rb_cCairo_RasterSourcePattern;
+      break;
 #endif
     default:
       rb_raise (rb_eArgError, "unknown pattern type: %d", type);
