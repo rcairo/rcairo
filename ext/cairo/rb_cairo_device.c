@@ -430,13 +430,11 @@ Init_cairo_device (void)
   RB_CAIRO_DEF_SETTERS (rb_cCairo_XMLDevice);
 #  endif
 
-#  if CAIRO_CHECK_VERSION(1, 11, 4)
   rb_cCairo_CoglDevice =
     rb_define_class_under (rb_mCairo, "CoglDevice", rb_cCairo_Device);
 
   rb_cCairo_Win32Device =
     rb_define_class_under (rb_mCairo, "Win32Device", rb_cCairo_Device);
-#  endif
 
 #endif
 }
