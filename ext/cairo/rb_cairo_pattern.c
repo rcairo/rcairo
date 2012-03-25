@@ -736,17 +736,17 @@ cr_raster_source_release_callback (cairo_pattern_t *pattern,
   rb_funcall (rb_release, id_call, 2, rb_pattern, rb_surface);
 }
 
-typedef struct cr_raster_source_snapshot_callback_data
+typedef struct cr_raster_source_notify_callback_data
 {
   VALUE pattern;
   VALUE callback;
   cairo_status_t status;
-} cr_raster_source_snapshot_callback_data_t;
+} cr_raster_source_notify_callback_data_t;
 
 static VALUE
-cr_raster_source_snapshot_callback_body (VALUE data)
+cr_raster_source_notify_callback_body (VALUE data)
 {
-  cr_raster_source_snapshot_callback_data_t* callback_data;
+  cr_raster_source_notify_callback_data_t* callback_data;
 
   callback_data = RVAL2POINTER (data);
   rb_funcall (callback_data->callback, id_call, 1, callback_data->pattern);
@@ -754,9 +754,9 @@ cr_raster_source_snapshot_callback_body (VALUE data)
 }
 
 static VALUE
-cr_raster_source_snapshot_callback_rescue (VALUE data, VALUE exception)
+cr_raster_source_notify_callback_rescue (VALUE data, VALUE exception)
 {
-  cr_raster_source_snapshot_callback_data_t *callback_data;
+  cr_raster_source_notify_callback_data_t *callback_data;
 
   callback_data = RVAL2POINTER (data);
   callback_data->status = rb_cairo__exception_to_status (exception);
@@ -773,7 +773,7 @@ cr_raster_source_snapshot_callback (cairo_pattern_t *pattern,
 {
   VALUE rb_pattern;
   VALUE rb_snapshot;
-  cr_raster_source_snapshot_callback_data_t data;
+  cr_raster_source_notify_callback_data_t data;
 
   rb_pattern = POINTER2RVAL (callback_data);
   rb_snapshot = rb_iv_get (rb_pattern, "@snapshot");
@@ -783,9 +783,13 @@ cr_raster_source_snapshot_callback (cairo_pattern_t *pattern,
   data.pattern = rb_pattern;
   data.callback = rb_snapshot;
   data.status = CAIRO_STATUS_SUCCESS;
-  rb_rescue2 (cr_raster_source_snapshot_callback_body,
+  rb_rescue2 (cr_raster_source_notify_callback_body,
               POINTER2RVAL (&data),
-              cr_raster_source_snapshot_callback_rescue,
+              cr_raster_source_notify_callback_rescue,
+              POINTER2RVAL (&data),
+              rb_eException);
+  return data.status;
+}
               POINTER2RVAL (&data),
               rb_eException);
   return data.status;
