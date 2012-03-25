@@ -14,7 +14,7 @@ class RasterPatternSourceTest < Test::Unit::TestCase
         red_pattern = Cairo::RasterSourcePattern.new(100, 100)
         red_pattern.acquire do |pattern, target, extents|
           called << :acquire
-          red_image = target.create_similar_image(extents.width, extents.height);
+          red_image = target.create_similar_image(extents.width, extents.height)
           red_image.set_device_offset(extents.x, extents.y)
           Cairo::Context.new(red_image) do |red_image_context|
             red_image_context.set_source(1, 0, 0)
