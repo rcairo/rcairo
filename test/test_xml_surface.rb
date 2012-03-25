@@ -6,6 +6,7 @@ class XMLSurfaceTest < Test::Unit::TestCase
   end
 
   def test_new
+    only_cairo_version(1, 12, 0)
     output = StringIO.new
     device = Cairo::XMLDevice.new(output)
     surface = Cairo::XMLSurface.new(device, 100, 200)
@@ -26,7 +27,7 @@ class XMLSurfaceTest < Test::Unit::TestCase
   </source-pattern>
   <path> 15 30 m 80 100 l</path>
   <tolerance>0.1</tolerance>
-  <antialias>ANTIALIAS_DEFAULT</antialias>
+  <antialias>DEFAULT</antialias>
 </stroke>
 EOX
   end
