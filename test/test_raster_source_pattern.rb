@@ -35,6 +35,45 @@ class RasterPatternSourceTest < Test::Unit::TestCase
     end
   end
 
+  class SnapshotTest < self
+    def test_success
+      Cairo::RecordingSurface.new(0, 0, 100, 100) do |surface|
+        Cairo::Context.new(surface) do |context|
+          called = []
+          red_pattern = Cairo::RasterSourcePattern.new(100, 100)
+          red_pattern.snapshot do |pattern|
+            called << :snapshot
+          end
+          context.set_source(red_pattern)
+          context.rectangle(40, 40, 20, 20)
+          context.fill
+          assert_equal([:snapshot], called)
+        end
+        show_result(surface)
+      end
+    end
+
+    def test_error
+      Cairo::RecordingSurface.new(0, 0, 100, 100) do |surface|
+        Cairo::Context.new(surface) do |context|
+          called = []
+          red_pattern = Cairo::RasterSourcePattern.new(100, 100)
+          red_pattern.snapshot do |pattern|
+            called << :snapshot
+            raise NoMemoryError
+          end
+          context.set_source(red_pattern)
+          context.rectangle(40, 40, 20, 20)
+          assert_raise(NoMemoryError) do
+            context.fill
+          end
+          assert_equal([:snapshot], called)
+        end
+        show_result(surface)
+      end
+    end
+  end
+
   private
   def show_result(image_surface)
     return if ENV["RCAIRO_TEST_SHOW_RESULT"] != "yes"

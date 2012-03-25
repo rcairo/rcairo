@@ -733,6 +733,61 @@ cr_raster_source_release_callback (cairo_pattern_t *pattern,
   rb_funcall (rb_release, id_call, 2, rb_pattern, rb_surface);
 }
 
+typedef struct cr_raster_source_snapshot_callback_data
+{
+  VALUE pattern;
+  VALUE callback;
+  cairo_status_t status;
+} cr_raster_source_snapshot_callback_data_t;
+
+static VALUE
+cr_raster_source_snapshot_callback_body (VALUE data)
+{
+  cr_raster_source_snapshot_callback_data_t* callback_data;
+
+  callback_data = RVAL2POINTER (data);
+  rb_funcall (callback_data->callback, id_call, 1, callback_data->pattern);
+  return Qnil;
+}
+
+static VALUE
+cr_raster_source_snapshot_callback_rescue (VALUE data, VALUE exception)
+{
+  cr_raster_source_snapshot_callback_data_t *callback_data;
+
+  callback_data = RVAL2POINTER (data);
+  callback_data->status = rb_cairo__exception_to_status (exception);
+
+  if (callback_data->status == (cairo_status_t)-1)
+    rb_exc_raise (exception);
+
+  return Qnil;
+}
+
+static cairo_status_t
+cr_raster_source_snapshot_callback (cairo_pattern_t *pattern,
+                                    void *callback_data)
+{
+  VALUE rb_pattern;
+  VALUE rb_snapshot;
+  cr_raster_source_snapshot_callback_data_t data;
+
+  rb_pattern = POINTER2RVAL (callback_data);
+  rb_snapshot = rb_iv_get (rb_pattern, "@snapshot");
+  if (NIL_P (rb_snapshot))
+    return CAIRO_STATUS_SUCCESS;
+
+  data.pattern = rb_pattern;
+  data.callback = rb_snapshot;
+  data.status = CAIRO_STATUS_SUCCESS;
+  rb_rescue2 (cr_raster_source_snapshot_callback_body,
+              POINTER2RVAL (&data),
+              cr_raster_source_snapshot_callback_rescue,
+              POINTER2RVAL (&data),
+              rb_eException);
+  return data.status;
+}
+
 static VALUE
 cr_raster_source_pattern_initialize (int argc, VALUE *argv, VALUE self)
 {
@@ -763,10 +818,13 @@ cr_raster_source_pattern_initialize (int argc, VALUE *argv, VALUE self)
   DATA_PTR (self) = pattern;
   rb_iv_set (self, "@acquire", Qnil);
   rb_iv_set (self, "@release", Qnil);
+  rb_iv_set (self, "@snapshot", Qnil);
 
   cairo_raster_source_pattern_set_acquire (pattern,
                                            cr_raster_source_acquire_callback,
                                            cr_raster_source_release_callback);
+  cairo_raster_source_pattern_set_snapshot (pattern,
+                                            cr_raster_source_snapshot_callback);
 
   return Qnil;
 }
@@ -801,6 +859,23 @@ cr_raster_source_pattern_release (VALUE self)
     }
 
   rb_iv_set (self, "@release", rb_block_proc ());
+
+  return self;
+}
+
+static VALUE
+cr_raster_source_pattern_snapshot (VALUE self)
+{
+  if (!rb_block_given_p ())
+    {
+      VALUE inspected;
+
+      inspected = rb_funcall (self, id_inspect, 0);
+      rb_raise (rb_eArgError, "snapshot block is missing: %s",
+                RVAL2CSTR (inspected));
+    }
+
+  rb_iv_set (self, "@snapshot", rb_block_proc ());
 
   return self;
 }
@@ -950,6 +1025,8 @@ Init_cairo_pattern (void)
                     cr_raster_source_pattern_acquire, 0);
   rb_define_method (rb_cCairo_RasterSourcePattern, "release",
                     cr_raster_source_pattern_release, 0);
+  rb_define_method (rb_cCairo_RasterSourcePattern, "snapshot",
+                    cr_raster_source_pattern_snapshot, 0);
 #endif
   RB_CAIRO_DEF_SETTERS (rb_cCairo_RasterSourcePattern);
 }
