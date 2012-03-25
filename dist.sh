@@ -7,7 +7,7 @@ if [ $# = 0 ]; then
 fi
 
 VERSION=$1
-TAG=RELEASE_`echo $VERSION | sed -e 's/\./_/g'`
+TAG="v$VERSION"
 
 dest=annarchy.freedesktop.org:/srv/cairo.freedesktop.org/www/releases/
 
