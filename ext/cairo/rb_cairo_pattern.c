@@ -827,7 +827,7 @@ cr_raster_source_finish_callback (cairo_pattern_t *pattern, void *callback_data)
   if (NIL_P (rb_finish))
     return;
 
-  rb_function (rb_finish, id_call, 1, rb_pattern);
+  rb_funcall (rb_finish, id_call, 1, rb_pattern);
 }
 
 static VALUE
