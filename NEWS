@@ -1,3 +1,31 @@
+Release 1.12.0 (2012-03-25) Kouhei Sutou <kou@cozmixng.org>)
+============================================================
+
+Improvements
+------------
+
+  * Supported cairo 1.12.0.
+    * Cairo::Surface#supported_mime_type?
+    * Cairo::Surface#create_similar_image
+    * Cairo::Surface#map_to_image
+    * Cairo::Surface#unmap_to_image
+    * Cairo::RecordingSurface#extents
+    * Cairo::MeshPattern
+    * Cairo::RasterSourcePattern
+    * Cairo::MimeType::UNIQUE_ID
+  * Supported glesv2 surface.
+
+Fixes
+-----
+
+  * Fixed a bug that Cairo::HINT_METRICS_ON can't be specified. #8
+    [Vasily Fedoseyev]
+
+Thanks
+------
+
+  * Vasily Fedoseyev
+
 Release 1.10.2 (2011-11-20) Kouhei Sutou <kou@cozmixng.org>)
 ============================================================
 
