@@ -192,7 +192,11 @@ rb_cairo_check_status (cairo_status_t status)
       rb_raise (rb_eCairo_DeviceFinished, "%s", string);
       break;
 #endif
+#if CAIRO_CHECK_VERSION(1, 10, 0)
     case CAIRO_STATUS_LAST_STATUS:
+#else
+    default:
+#endif
       rb_raise (rb_eArgError, "bug: %s: %d", string, status);
       break;
     }
