@@ -1,3 +1,22 @@
+Release 1.12.1 (2012-03-31) Kouhei Sutou <kou@cozmixng.org>)
+============================================================
+
+Improvements
+------------
+
+  * Re-supported cairo < 1.10.0.
+    [ruby-gnome2-devel-en] Help me install my own program [Eric C.]
+
+Fixes
+-----
+
+  * Fixed a problem that an unresolved symbol is referenced.
+
+Thanks
+------
+
+  * Eric C.
+
 Release 1.12.0 (2012-03-25) Kouhei Sutou <kou@cozmixng.org>)
 ============================================================
 
