@@ -11,3 +11,4 @@
 /pkg/
 /Makefile
 /Makefile.lib
+/Gemfile.lock
