@@ -13,7 +13,7 @@ end
 
 require 'rubygems'
 require 'bundler/setup'
-require 'test/unit'
+require 'test-unit'
 
 $LOAD_PATH.unshift(base_dir)
 $LOAD_PATH.unshift(ext_dir)
