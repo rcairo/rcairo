@@ -2,4 +2,4 @@
 
 source "http://rubygems.org/"
 
-gemfile
+gemspec
