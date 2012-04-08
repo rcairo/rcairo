@@ -18,9 +18,10 @@ module CairoTestUtils
   end
 
   def only_device(name)
-    device_class = "#{name}Device"
-    unless Cairo.const_defined?(device_class)
-      omit("Only for #{device_class} device available")
+    only_cairo_version(1, 10)
+
+    unless Cairo::Device.supported?(name)
+      omit("Only for #{name} device available")
     end
   end
 

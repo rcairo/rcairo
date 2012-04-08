@@ -96,6 +96,26 @@ cr_device_get_klass (cairo_device_t *device)
   return klass;
 }
 
+static VALUE
+cr_device_script_supported_p (VALUE klass)
+{
+#ifdef CAIRO_HAS_SCRIPT_SURFACE
+  return Qtrue;
+#else
+  return Qfalse;
+#endif
+}
+
+static VALUE
+cr_device_xml_supported_p (VALUE klass)
+{
+#ifdef CAIRO_HAS_XML_SURFACE
+  return Qtrue;
+#else
+  return Qfalse;
+#endif
+}
+
 /* constructor/de-constructor */
 cairo_device_t *
 rb_cairo_device_from_ruby_object (VALUE obj)
@@ -166,6 +186,16 @@ static VALUE
 cr_device_allocate (VALUE klass)
 {
   return Data_Wrap_Struct (klass, NULL, cr_device_free, NULL);
+}
+
+static VALUE
+cr_device_initialize (int argc, VALUE *argv, VALUE self)
+{
+  rb_raise(rb_eNotImpError,
+           "%s class creation isn't supported on this cairo installation",
+           rb_obj_classname(self));
+
+  return Qnil;
 }
 
 /* Backend device manipulation */
@@ -377,7 +407,12 @@ Init_cairo_device (void)
   rb_cairo__initialize_gc_guard_holder_class (rb_cCairo_Device);
   rb_set_end_proc(cr_finish_all_guarded_devices_at_end, Qnil);
 
+  rb_define_singleton_method (rb_cCairo_Device, "script_supported?",
+                              cr_device_script_supported_p, 0);
+  rb_define_singleton_method (rb_cCairo_Device, "xml_supported?",
+                              cr_device_xml_supported_p, 0);
 
+  rb_define_method (rb_cCairo_Device, "initialize", cr_device_initialize, -1);
   rb_define_method (rb_cCairo_Device, "destroy", cr_device_destroy, 0);
   rb_define_method (rb_cCairo_Device, "finish", cr_device_finish, 0);
   rb_define_method (rb_cCairo_Device, "flush", cr_device_flush, 0);

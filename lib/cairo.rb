@@ -142,6 +142,7 @@ require 'cairo/point'
 require 'cairo/colors'
 require 'cairo/papers'
 require 'cairo/context'
+require 'cairo/device'
 require 'cairo/path'
 
 module Cairo
