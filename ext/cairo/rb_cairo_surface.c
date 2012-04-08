@@ -219,9 +219,9 @@ cr_surface_image_supported_p (VALUE klass)
 }
 
 static VALUE
-cr_surface_recording_supported_p (VALUE klass)
+cr_surface_pdf_supported_p (VALUE klass)
 {
-#ifdef CAIRO_HAS_RECORDING_SURFACE
+#ifdef CAIRO_HAS_PDF_SURFACE
   return Qtrue;
 #else
   return Qfalse;
@@ -239,39 +239,9 @@ cr_surface_ps_supported_p (VALUE klass)
 }
 
 static VALUE
-cr_surface_pdf_supported_p (VALUE klass)
-{
-#ifdef CAIRO_HAS_PDF_SURFACE
-  return Qtrue;
-#else
-  return Qfalse;
-#endif
-}
-
-static VALUE
 cr_surface_xcb_supported_p (VALUE klass)
 {
 #ifdef CAIRO_HAS_XCB_SURFACE
-  return Qtrue;
-#else
-  return Qfalse;
-#endif
-}
-
-static VALUE
-cr_surface_svg_supported_p (VALUE klass)
-{
-#ifdef CAIRO_HAS_SVG_SURFACE
-  return Qtrue;
-#else
-  return Qfalse;
-#endif
-}
-
-static VALUE
-cr_surface_win32_supported_p (VALUE klass)
-{
-#ifdef CAIRO_HAS_WIN32_SURFACE
   return Qtrue;
 #else
   return Qfalse;
@@ -289,6 +259,26 @@ cr_surface_quartz_supported_p (VALUE klass)
 }
 
 static VALUE
+cr_surface_win32_supported_p (VALUE klass)
+{
+#ifdef CAIRO_HAS_WIN32_SURFACE
+  return Qtrue;
+#else
+  return Qfalse;
+#endif
+}
+
+static VALUE
+cr_surface_svg_supported_p (VALUE klass)
+{
+#ifdef CAIRO_HAS_SVG_SURFACE
+  return Qtrue;
+#else
+  return Qfalse;
+#endif
+}
+
+static VALUE
 cr_surface_script_supported_p (VALUE klass)
 {
 #ifdef CAIRO_HAS_SCRIPT_SURFACE
@@ -299,19 +289,9 @@ cr_surface_script_supported_p (VALUE klass)
 }
 
 static VALUE
-cr_surface_xml_supported_p (VALUE klass)
+cr_surface_recording_supported_p (VALUE klass)
 {
-#ifdef CAIRO_HAS_XML_SURFACE
-  return Qtrue;
-#else
-  return Qfalse;
-#endif
-}
-
-static VALUE
-cr_surface_tee_supported_p (VALUE klass)
-{
-#ifdef CAIRO_HAS_TEE_SURFACE
+#ifdef CAIRO_HAS_RECORDING_SURFACE
   return Qtrue;
 #else
   return Qfalse;
@@ -332,6 +312,26 @@ static VALUE
 cr_surface_gl_texture_supported_p (VALUE klass)
 {
 #ifdef RB_CAIRO_HAS_GL_SURFACE
+  return Qtrue;
+#else
+  return Qfalse;
+#endif
+}
+
+static VALUE
+cr_surface_tee_supported_p (VALUE klass)
+{
+#ifdef CAIRO_HAS_TEE_SURFACE
+  return Qtrue;
+#else
+  return Qfalse;
+#endif
+}
+
+static VALUE
+cr_surface_xml_supported_p (VALUE klass)
+{
+#ifdef CAIRO_HAS_XML_SURFACE
   return Qtrue;
 #else
   return Qfalse;
@@ -1894,30 +1894,30 @@ Init_cairo_surface (void)
 
   rb_define_singleton_method (rb_cCairo_Surface, "image_supported?",
                               cr_surface_image_supported_p, 0);
-  rb_define_singleton_method (rb_cCairo_Surface, "recording_supported?",
-                              cr_surface_recording_supported_p, 0);
-  rb_define_singleton_method (rb_cCairo_Surface, "ps_supported?",
-                              cr_surface_ps_supported_p, 0);
   rb_define_singleton_method (rb_cCairo_Surface, "pdf_supported?",
                               cr_surface_pdf_supported_p, 0);
+  rb_define_singleton_method (rb_cCairo_Surface, "ps_supported?",
+                              cr_surface_ps_supported_p, 0);
   rb_define_singleton_method (rb_cCairo_Surface, "xcb_supported?",
                               cr_surface_xcb_supported_p, 0);
-  rb_define_singleton_method (rb_cCairo_Surface, "svg_supported?",
-                              cr_surface_svg_supported_p, 0);
-  rb_define_singleton_method (rb_cCairo_Surface, "win32_supported?",
-                              cr_surface_win32_supported_p, 0);
   rb_define_singleton_method (rb_cCairo_Surface, "quartz_supported?",
                               cr_surface_quartz_supported_p, 0);
+  rb_define_singleton_method (rb_cCairo_Surface, "win32_supported?",
+                              cr_surface_win32_supported_p, 0);
+  rb_define_singleton_method (rb_cCairo_Surface, "svg_supported?",
+                              cr_surface_svg_supported_p, 0);
   rb_define_singleton_method (rb_cCairo_Surface, "script_supported?",
                               cr_surface_script_supported_p, 0);
-  rb_define_singleton_method (rb_cCairo_Surface, "xml_supported?",
-                              cr_surface_xml_supported_p, 0);
-  rb_define_singleton_method (rb_cCairo_Surface, "tee_supported?",
-                              cr_surface_tee_supported_p, 0);
+  rb_define_singleton_method (rb_cCairo_Surface, "recording_supported?",
+                              cr_surface_recording_supported_p, 0);
   rb_define_singleton_method (rb_cCairo_Surface, "gl_supported?",
                               cr_surface_gl_supported_p, 0);
   rb_define_singleton_method (rb_cCairo_Surface, "gl_texture_supported?",
                               cr_surface_gl_texture_supported_p, 0);
+  rb_define_singleton_method (rb_cCairo_Surface, "tee_supported?",
+                              cr_surface_tee_supported_p, 0);
+  rb_define_singleton_method (rb_cCairo_Surface, "xml_supported?",
+                              cr_surface_xml_supported_p, 0);
 
   rb_define_method (rb_cCairo_Surface, "initialize",
                     cr_surface_initialize, -1);
