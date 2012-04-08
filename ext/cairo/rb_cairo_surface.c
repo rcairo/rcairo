@@ -328,6 +328,16 @@ cr_surface_gl_supported_p (VALUE klass)
 #endif
 }
 
+static VALUE
+cr_surface_gl_texture_supported_p (VALUE klass)
+{
+#ifdef RB_CAIRO_HAS_GL_SURFACE
+  return Qtrue;
+#else
+  return Qfalse;
+#endif
+}
+
 /* constructor/de-constructor */
 cairo_surface_t *
 rb_cairo_surface_from_ruby_object (VALUE obj)
@@ -1906,6 +1916,8 @@ Init_cairo_surface (void)
                               cr_surface_tee_supported_p, 0);
   rb_define_singleton_method (rb_cCairo_Surface, "gl_supported?",
                               cr_surface_gl_supported_p, 0);
+  rb_define_singleton_method (rb_cCairo_Surface, "gl_texture_supported?",
+                              cr_surface_gl_texture_supported_p, 0);
 
   rb_define_method (rb_cCairo_Surface, "initialize",
                     cr_surface_initialize, -1);
