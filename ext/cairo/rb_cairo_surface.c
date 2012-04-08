@@ -756,7 +756,7 @@ cr_surface_mark_dirty (int argc, VALUE *argv, VALUE self)
 {
   VALUE x, y, width, height;
   int n;
-  
+
   n = rb_scan_args (argc, argv, "04", &x, &y, &width, &height);
 
   if (n == 0)
@@ -916,7 +916,7 @@ cr_image_surface_create_for_data (VALUE self, VALUE rb_data, VALUE format,
   unsigned char *data;
 
   data = (unsigned char *)StringValuePtr (rb_data);
-  
+
   return cairo_image_surface_create_for_data (data,
                                               RVAL2CRFORMAT (format),
                                               NUM2INT (width),
@@ -930,7 +930,7 @@ cr_image_surface_initialize (int argc, VALUE *argv, VALUE self)
   cairo_surface_t *surface;
   VALUE arg1, arg2, arg3, arg4, arg5;
   int n;
-  
+
   n = rb_scan_args (argc, argv, "23", &arg1, &arg2, &arg3, &arg4, &arg5);
 
   if (n == 2)
@@ -1985,12 +1985,12 @@ Init_cairo_surface (void)
   /* Image-surface */
   rb_cCairo_ImageSurface =
     rb_define_class_under (rb_mCairo, "ImageSurface", rb_cCairo_Surface);
-  
+
 #ifdef CAIRO_HAS_PNG_FUNCTIONS
   rb_define_singleton_method (rb_cCairo_ImageSurface, "from_png",
                               cr_image_surface_create_from_png_generic, 1);
 #endif
-  
+
   rb_define_method (rb_cCairo_ImageSurface, "initialize",
                     cr_image_surface_initialize, -1);
 
