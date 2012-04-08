@@ -44,6 +44,9 @@ enum ruby_value_type {
 #  undef T_DATA
 #  include <cairo-quartz.h>
 #  define T_DATA RUBY_T_DATA
+#  ifdef HAVE_RUBY_COCOA
+#    define RB_CAIRO_HAS_QUARTZ_SURFACE
+#  endif
 #endif
 
 #ifdef CAIRO_HAS_XML_SURFACE
@@ -209,6 +212,122 @@ cr_surface_get_klass (cairo_surface_t *surface)
   return klass;
 }
 
+static VALUE
+cr_surface_image_supported_p (VALUE klass)
+{
+  return Qtrue;
+}
+
+static VALUE
+cr_surface_recording_supported_p (VALUE klass)
+{
+#ifdef CAIRO_HAS_RECORDING_SURFACE
+  return Qtrue;
+#else
+  return Qfalse;
+#endif
+}
+
+static VALUE
+cr_surface_ps_supported_p (VALUE klass)
+{
+#ifdef CAIRO_HAS_PS_SURFACE
+  return Qtrue;
+#else
+  return Qfalse;
+#endif
+}
+
+static VALUE
+cr_surface_pdf_supported_p (VALUE klass)
+{
+#ifdef CAIRO_HAS_PDF_SURFACE
+  return Qtrue;
+#else
+  return Qfalse;
+#endif
+}
+
+static VALUE
+cr_surface_xcb_supported_p (VALUE klass)
+{
+#ifdef CAIRO_HAS_XCB_SURFACE
+  return Qtrue;
+#else
+  return Qfalse;
+#endif
+}
+
+static VALUE
+cr_surface_svg_supported_p (VALUE klass)
+{
+#ifdef CAIRO_HAS_SVG_SURFACE
+  return Qtrue;
+#else
+  return Qfalse;
+#endif
+}
+
+static VALUE
+cr_surface_win32_supported_p (VALUE klass)
+{
+#ifdef CAIRO_HAS_WIN32_SURFACE
+  return Qtrue;
+#else
+  return Qfalse;
+#endif
+}
+
+static VALUE
+cr_surface_quartz_supported_p (VALUE klass)
+{
+#ifdef RB_CAIRO_HAS_QUARTZ_SURFACE
+  return Qtrue;
+#else
+  return Qfalse;
+#endif
+}
+
+static VALUE
+cr_surface_script_supported_p (VALUE klass)
+{
+#ifdef CAIRO_HAS_SCRIPT_SURFACE
+  return Qtrue;
+#else
+  return Qfalse;
+#endif
+}
+
+static VALUE
+cr_surface_xml_supported_p (VALUE klass)
+{
+#ifdef CAIRO_HAS_XML_SURFACE
+  return Qtrue;
+#else
+  return Qfalse;
+#endif
+}
+
+static VALUE
+cr_surface_tee_supported_p (VALUE klass)
+{
+#ifdef CAIRO_HAS_TEE_SURFACE
+  return Qtrue;
+#else
+  return Qfalse;
+#endif
+}
+
+static VALUE
+cr_surface_gl_supported_p (VALUE klass)
+{
+#ifdef RB_CAIRO_HAS_GL_SURFACE
+  return Qtrue;
+#else
+  return Qfalse;
+#endif
+}
+
 /* constructor/de-constructor */
 cairo_surface_t *
 rb_cairo_surface_from_ruby_object (VALUE obj)
@@ -277,6 +396,16 @@ static VALUE
 cr_surface_allocate (VALUE klass)
 {
   return Data_Wrap_Struct (klass, NULL, cr_surface_free, NULL);
+}
+
+static VALUE
+cr_surface_initialize (int argc, VALUE *argv, VALUE self)
+{
+  rb_raise(rb_eNotImpError,
+           "%s class creation isn't supported on this cairo installation",
+           rb_obj_classname(self));
+
+  return Qnil;
 }
 
 /* Surface manipulation */
@@ -1290,7 +1419,7 @@ cr_win32_surface_get_image (VALUE self)
 #  endif
 #endif
 
-#if defined(CAIRO_HAS_QUARTZ_SURFACE) && defined(HAVE_RUBY_COCOA)
+#ifdef RB_CAIRO_HAS_QUARTZ_SURFACE
 /* Quartz-surface functions */
 
 #include <objc/objc-runtime.h>
@@ -1753,6 +1882,33 @@ Init_cairo_surface (void)
   rb_cairo__initialize_gc_guard_holder_class (rb_cCairo_Surface);
   rb_set_end_proc(cr_finish_all_guarded_surfaces_at_end, Qnil);
 
+  rb_define_singleton_method (rb_cCairo_Surface, "image_supported?",
+                              cr_surface_image_supported_p, 0);
+  rb_define_singleton_method (rb_cCairo_Surface, "recording_supported?",
+                              cr_surface_recording_supported_p, 0);
+  rb_define_singleton_method (rb_cCairo_Surface, "ps_supported?",
+                              cr_surface_ps_supported_p, 0);
+  rb_define_singleton_method (rb_cCairo_Surface, "pdf_supported?",
+                              cr_surface_pdf_supported_p, 0);
+  rb_define_singleton_method (rb_cCairo_Surface, "xcb_supported?",
+                              cr_surface_xcb_supported_p, 0);
+  rb_define_singleton_method (rb_cCairo_Surface, "svg_supported?",
+                              cr_surface_svg_supported_p, 0);
+  rb_define_singleton_method (rb_cCairo_Surface, "win32_supported?",
+                              cr_surface_win32_supported_p, 0);
+  rb_define_singleton_method (rb_cCairo_Surface, "quartz_supported?",
+                              cr_surface_quartz_supported_p, 0);
+  rb_define_singleton_method (rb_cCairo_Surface, "script_supported?",
+                              cr_surface_script_supported_p, 0);
+  rb_define_singleton_method (rb_cCairo_Surface, "xml_supported?",
+                              cr_surface_xml_supported_p, 0);
+  rb_define_singleton_method (rb_cCairo_Surface, "tee_supported?",
+                              cr_surface_tee_supported_p, 0);
+  rb_define_singleton_method (rb_cCairo_Surface, "gl_supported?",
+                              cr_surface_gl_supported_p, 0);
+
+  rb_define_method (rb_cCairo_Surface, "initialize",
+                    cr_surface_initialize, -1);
 
   rb_define_method (rb_cCairo_Surface, "create_similar",
                     cr_surface_create_similar, -1);
@@ -1948,7 +2104,7 @@ Init_cairo_surface (void)
 
 #endif
 
-#if defined(CAIRO_HAS_QUARTZ_SURFACE) && defined(HAVE_RUBY_COCOA)
+#ifdef RB_CAIRO_HAS_QUARTZ_SURFACE
   /* Quartz-surface */
 
   rb_cCairo_QuartzSurface =
