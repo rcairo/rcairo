@@ -876,7 +876,7 @@ cr_surface_show_page (VALUE self)
 }
 #endif
 
-/* Image-surface functions */
+/* image surface functions */
 #ifdef CAIRO_HAS_PNG_FUNCTIONS
 static cairo_surface_t *
 cr_image_surface_create_from_png_stream (VALUE target)
@@ -1016,94 +1016,7 @@ cr_image_surface_get_stride (VALUE self)
   return INT2NUM (cairo_image_surface_get_stride (_SELF));
 }
 
-#ifdef CAIRO_HAS_RECORDING_SURFACE
-/* Recording-surface functions */
-static VALUE
-cr_recording_surface_initialize (int argc, VALUE *argv, VALUE self)
-{
-  VALUE arg1, arg2, arg3, arg4, arg5;
-  cairo_surface_t *surface;
-  cairo_content_t content = CAIRO_CONTENT_COLOR_ALPHA;
-  cairo_rectangle_t extents;
-  const char *error_message =
-    "invalid argument (expect "
-    "(x, y, width, height), "
-    "([x, y, width, height]),"
-    "(x, y, width, height, content) or "
-    "([x, y, width, height], content)): %s";
-
-  rb_scan_args (argc, argv, "14", &arg1, &arg2, &arg3, &arg4, &arg5);
-  if (argc == 1 || argc == 2)
-    {
-      VALUE rb_extents;
-
-      rb_extents = rb_check_array_type (arg1);
-      if (RARRAY_LEN (rb_extents) != 4)
-        rb_raise (rb_eArgError, error_message, rb_cairo__inspect (arg1));
-      extents.x = NUM2DBL (RARRAY_PTR (rb_extents)[0]);
-      extents.y = NUM2DBL (RARRAY_PTR (rb_extents)[1]);
-      extents.width = NUM2DBL (RARRAY_PTR (rb_extents)[2]);
-      extents.height = NUM2DBL (RARRAY_PTR (rb_extents)[3]);
-      if (!NIL_P (arg2))
-        content = RVAL2CRCONTENT (arg2);
-    }
-  else if (argc == 4 || argc == 5)
-    {
-      extents.x = NUM2DBL (arg1);
-      extents.y = NUM2DBL (arg2);
-      extents.width = NUM2DBL (arg3);
-      extents.height = NUM2DBL (arg4);
-      if (!NIL_P (arg5))
-        content = RVAL2CRCONTENT (arg5);
-    }
-  else
-    {
-      rb_raise (rb_eArgError, error_message,
-                rb_cairo__inspect (rb_ary_new4 (argc, argv)));
-    }
-
-  surface = cairo_recording_surface_create (content, &extents);
-  cr_surface_check_status (surface);
-  DATA_PTR (self) = surface;
-  if (rb_block_given_p ())
-    yield_and_finish (self);
-  return Qnil;
-}
-
-static VALUE
-cr_recording_surface_get_ink_extents (VALUE self)
-{
-  cairo_surface_t *surface;
-  double x, y, width, height;
-
-  surface = _SELF;
-  cairo_recording_surface_ink_extents (surface, &x, &y, &width, &height);
-  cr_surface_check_status (surface);
-  return rb_ary_new3 (4,
-                      rb_float_new (x), rb_float_new (y),
-                      rb_float_new (width), rb_float_new (height));
-}
-
-#  if CAIRO_CHECK_VERSION(1, 11, 4)
-static VALUE
-cr_recording_surface_get_extents (VALUE self)
-{
-  cairo_surface_t *surface;
-  cairo_rectangle_t extents;
-
-  surface = _SELF;
-  cairo_recording_surface_get_extents (surface, &extents);
-  cr_surface_check_status (surface);
-  return rb_ary_new3 (4,
-                      rb_float_new (extents.x),
-                      rb_float_new (extents.y),
-                      rb_float_new (extents.width),
-                      rb_float_new (extents.height));
-}
-#  endif
-#endif
-
-/* Printing surfaces */
+/* printing surfaces */
 #define DEFINE_SURFACE(type)                                            \
 static VALUE                                                            \
 cr_ ## type ## _surface_initialize (int argc, VALUE *argv, VALUE self)  \
@@ -1204,6 +1117,22 @@ cr_ ## type ## _surface_set_size (int argc, VALUE *argv, VALUE self)    \
   return Qnil;                                                          \
 }
 
+#ifdef CAIRO_HAS_PDF_SURFACE
+/* PDF-surface functions */
+DEFINE_SURFACE(pdf)
+DEFINE_SURFACE_SET_SIZE(pdf)
+
+#  if CAIRO_CHECK_VERSION(1, 10, 0)
+static VALUE
+cr_pdf_surface_restrict_to_version (VALUE self, VALUE version)
+{
+  cairo_pdf_surface_restrict_to_version (_SELF, RVAL2CRPDFVERSION (version));
+  cr_surface_check_status (_SELF);
+  return Qnil;
+}
+#  endif
+#endif
+
 #ifdef CAIRO_HAS_PS_SURFACE
 /* PS-surface functions */
 DEFINE_SURFACE(ps)
@@ -1264,46 +1193,108 @@ cr_ps_surface_set_eps (VALUE self, VALUE eps)
 #  endif
 #endif
 
-#ifdef CAIRO_HAS_PDF_SURFACE
-/* PDF-surface functions */
-DEFINE_SURFACE(pdf)
-DEFINE_SURFACE_SET_SIZE(pdf)
+#ifdef RB_CAIRO_HAS_QUARTZ_SURFACE
+/* Quartz-surface functions */
+#include <objc/objc-runtime.h>
 
-#  if CAIRO_CHECK_VERSION(1, 10, 0)
+BOOL rbobj_to_nsobj (VALUE obj, id* nsobj);
+VALUE ocid_to_rbobj (VALUE context_obj, id ocid);
+
 static VALUE
-cr_pdf_surface_restrict_to_version (VALUE self, VALUE version)
+cr_quartz_surface_initialize (int argc, VALUE *argv, VALUE self)
 {
-  cairo_pdf_surface_restrict_to_version (_SELF, RVAL2CRPDFVERSION (version));
-  cr_surface_check_status (_SELF);
+  id objc_object = nil;
+  CGContextRef context;
+  unsigned int width, height;
+  cairo_surface_t *surface = NULL;
+  cairo_format_t format = CAIRO_FORMAT_ARGB32;
+  VALUE arg1, arg2, arg3, rb_width, rb_height;
+  static VALUE rb_cOSXCGContextRef = Qnil;
+
+  rb_scan_args (argc, argv, "21", &arg1, &arg2, &arg3);
+
+  if (argc == 2)
+    {
+      rb_width = arg1;
+      rb_height = arg2;
+    }
+  else
+    {
+      switch (TYPE (arg1))
+        {
+        case T_NIL:
+          break;
+        case T_STRING:
+        case T_SYMBOL:
+        case T_FIXNUM:
+          format = RVAL2CRFORMAT (arg1);
+          break;
+        default:
+          if (NIL_P (rb_cOSXCGContextRef))
+            rb_cOSXCGContextRef =
+              rb_const_get (rb_const_get (rb_cObject, rb_intern ("OSX")),
+                            rb_intern ("CGContextRef"));
+
+          if (RTEST (rb_obj_is_kind_of (arg1, rb_cOSXCGContextRef)))
+            rbobj_to_nsobj (arg1, &objc_object);
+          else
+            rb_raise (rb_eArgError,
+                      "invalid argument (expect "
+                      "(width, height), "
+                      "(format, width, height) or "
+                      "(cg_context, width, height)): %s",
+                      rb_cairo__inspect (rb_ary_new3 (3, arg1, arg2, arg3)));
+          break;
+        }
+
+      rb_width = arg2;
+      rb_height = arg3;
+    }
+
+  width = NUM2UINT (rb_width);
+  height = NUM2UINT (rb_height);
+
+  if (objc_object == nil)
+    {
+      surface = cairo_quartz_surface_create (format, width, height);
+    }
+  else
+    {
+      context = (CGContextRef)objc_object;
+      surface =
+        cairo_quartz_surface_create_for_cg_context (context, width, height);
+    }
+
+  cr_surface_check_status (surface);
+  DATA_PTR (self) = surface;
+  if (rb_block_given_p ())
+    yield_and_finish (self);
   return Qnil;
 }
-#  endif
-#endif
-
-#ifdef CAIRO_HAS_SVG_SURFACE
-/* SVG-surface functions */
-DEFINE_SURFACE(svg)
 
 static VALUE
-cr_svg_surface_restrict_to_version (VALUE self, VALUE version)
+cr_quartz_surface_get_cg_context (VALUE self)
 {
-  cairo_svg_surface_restrict_to_version (_SELF, RVAL2CRSVGVERSION (version));
-  cr_surface_check_status (_SELF);
-  return Qnil;
+  CGContextRef context;
+  id objc_object;
+
+  context = cairo_quartz_surface_get_cg_context (_SELF);
+  objc_object = (id)context;
+  return ocid_to_rbobj (Qnil, objc_object);
 }
 #endif
 
 #ifdef CAIRO_HAS_WIN32_SURFACE
-/* WIN32-surface functions */
+/* Win32 surface functions */
 
 /* from dl/dl.h (ruby 1.9) */
-#if SIZEOF_LONG == SIZEOF_VOIDP
-#  define PTR2NUM(x)   (ULONG2NUM((unsigned long)(x)))
-#  define NUM2PTR(x)   ((void *)(NUM2ULONG(x)))
-#else
-#  define PTR2NUM(x)   (ULL2NUM((unsigned long long)(x)))
-#  define NUM2PTR(x)   ((void *)(NUM2ULL(x)))
-#endif
+#  if SIZEOF_LONG == SIZEOF_VOIDP
+#    define PTR2NUM(x)   (ULONG2NUM((unsigned long)(x)))
+#    define NUM2PTR(x)   ((void *)(NUM2ULONG(x)))
+#  else
+#    define PTR2NUM(x)   (ULL2NUM((unsigned long long)(x)))
+#    define NUM2PTR(x)   ((void *)(NUM2ULL(x)))
+#  endif
 
 static VALUE
 cr_win32_surface_initialize (int argc, VALUE *argv, VALUE self)
@@ -1416,7 +1407,21 @@ cr_win32_surface_get_image (VALUE self)
 #  endif
 #endif
 
+#ifdef CAIRO_HAS_SVG_SURFACE
+/* SVG-surface functions */
+DEFINE_SURFACE(svg)
+
+static VALUE
+cr_svg_surface_restrict_to_version (VALUE self, VALUE version)
+{
+  cairo_svg_surface_restrict_to_version (_SELF, RVAL2CRSVGVERSION (version));
+  cr_surface_check_status (_SELF);
+  return Qnil;
+}
+#endif
+
 #ifdef RB_CAIRO_HAS_WIN32_PRINTING_SURFACE
+/* Win32 printing surface functions */
 static VALUE
 cr_win32_printing_surface_initialize (VALUE self, VALUE hdc)
 {
@@ -1431,100 +1436,8 @@ cr_win32_printing_surface_initialize (VALUE self, VALUE hdc)
 }
 #endif
 
-#ifdef RB_CAIRO_HAS_QUARTZ_SURFACE
-/* Quartz-surface functions */
-
-#include <objc/objc-runtime.h>
-
-BOOL rbobj_to_nsobj (VALUE obj, id* nsobj);
-VALUE ocid_to_rbobj (VALUE context_obj, id ocid);
-
-static VALUE
-cr_quartz_surface_initialize (int argc, VALUE *argv, VALUE self)
-{
-  id objc_object = nil;
-  CGContextRef context;
-  unsigned int width, height;
-  cairo_surface_t *surface = NULL;
-  cairo_format_t format = CAIRO_FORMAT_ARGB32;
-  VALUE arg1, arg2, arg3, rb_width, rb_height;
-  static VALUE rb_cOSXCGContextRef = Qnil;
-
-  rb_scan_args (argc, argv, "21", &arg1, &arg2, &arg3);
-
-  if (argc == 2)
-    {
-      rb_width = arg1;
-      rb_height = arg2;
-    }
-  else
-    {
-      switch (TYPE (arg1))
-        {
-        case T_NIL:
-          break;
-        case T_STRING:
-        case T_SYMBOL:
-        case T_FIXNUM:
-          format = RVAL2CRFORMAT (arg1);
-          break;
-        default:
-          if (NIL_P (rb_cOSXCGContextRef))
-            rb_cOSXCGContextRef =
-              rb_const_get (rb_const_get (rb_cObject, rb_intern ("OSX")),
-                            rb_intern ("CGContextRef"));
-
-          if (RTEST (rb_obj_is_kind_of (arg1, rb_cOSXCGContextRef)))
-            rbobj_to_nsobj (arg1, &objc_object);
-          else
-            rb_raise (rb_eArgError,
-                      "invalid argument (expect "
-                      "(width, height), "
-                      "(format, width, height) or "
-                      "(cg_context, width, height)): %s",
-                      rb_cairo__inspect (rb_ary_new3 (3, arg1, arg2, arg3)));
-          break;
-        }
-
-      rb_width = arg2;
-      rb_height = arg3;
-    }
-
-  width = NUM2UINT (rb_width);
-  height = NUM2UINT (rb_height);
-
-  if (objc_object == nil)
-    {
-      surface = cairo_quartz_surface_create (format, width, height);
-    }
-  else
-    {
-      context = (CGContextRef)objc_object;
-      surface =
-        cairo_quartz_surface_create_for_cg_context (context, width, height);
-    }
-
-  cr_surface_check_status (surface);
-  DATA_PTR (self) = surface;
-  if (rb_block_given_p ())
-    yield_and_finish (self);
-  return Qnil;
-}
-
-static VALUE
-cr_quartz_surface_get_cg_context (VALUE self)
-{
-  CGContextRef context;
-  id objc_object;
-
-  context = cairo_quartz_surface_get_cg_context (_SELF);
-  objc_object = (id)context;
-  return ocid_to_rbobj (Qnil, objc_object);
-}
-
-#endif
-
 #ifdef RB_CAIRO_HAS_QUARTZ_IMAGE_SURFACE
+/* Quartz image surface functions */
 static VALUE
 cr_quartz_image_surface_initialize (VALUE self, VALUE image_surface)
 {
@@ -1552,6 +1465,7 @@ cr_quartz_image_surface_get_image (VALUE self)
 #endif
 
 #ifdef CAIRO_HAS_SCRIPT_SURFACE
+/* script surface functions */
 static VALUE
 cr_script_surface_initialize (int argc, VALUE *argv, VALUE self)
 {
@@ -1605,143 +1519,95 @@ cr_script_surface_initialize (int argc, VALUE *argv, VALUE self)
 }
 #endif
 
-#ifdef CAIRO_HAS_XML_SURFACE
+#ifdef CAIRO_HAS_RECORDING_SURFACE
+/* recording surface functions */
 static VALUE
-cr_xml_surface_initialize (int argc, VALUE *argv, VALUE self)
+cr_recording_surface_initialize (int argc, VALUE *argv, VALUE self)
 {
+  VALUE arg1, arg2, arg3, arg4, arg5;
   cairo_surface_t *surface;
-  cairo_device_t *device;
-  double width, height;
   cairo_content_t content = CAIRO_CONTENT_COLOR_ALPHA;
-  VALUE rb_device, rb_width, rb_height, rb_content;
+  cairo_rectangle_t extents;
+  const char *error_message =
+    "invalid argument (expect "
+    "(x, y, width, height), "
+    "([x, y, width, height]),"
+    "(x, y, width, height, content) or "
+    "([x, y, width, height], content)): %s";
 
-  rb_scan_args (argc, argv, "31",
-                &rb_device, &rb_width, &rb_height, &rb_content);
-
-  device = RVAL2CRDEVICE (rb_device);
-  width = NUM2DBL (rb_width);
-  height = NUM2DBL (rb_height);
-  switch (TYPE (rb_content))
+  rb_scan_args (argc, argv, "14", &arg1, &arg2, &arg3, &arg4, &arg5);
+  if (argc == 1 || argc == 2)
     {
-    case T_NIL:
-      break;
-    case T_STRING:
-    case T_SYMBOL:
-    case T_FIXNUM:
-      content = RVAL2CRCONTENT (rb_content);
-      break;
-    default:
-      rb_raise (rb_eArgError,
-                "invalid argument (expect "
-                "(device, width, height) or "
-                "(device, width, height, content)): %s",
-                rb_cairo__inspect (rb_ary_new4 (argc, argv)));
-      break;
+      VALUE rb_extents;
+
+      rb_extents = rb_check_array_type (arg1);
+      if (RARRAY_LEN (rb_extents) != 4)
+        rb_raise (rb_eArgError, error_message, rb_cairo__inspect (arg1));
+      extents.x = NUM2DBL (RARRAY_PTR (rb_extents)[0]);
+      extents.y = NUM2DBL (RARRAY_PTR (rb_extents)[1]);
+      extents.width = NUM2DBL (RARRAY_PTR (rb_extents)[2]);
+      extents.height = NUM2DBL (RARRAY_PTR (rb_extents)[3]);
+      if (!NIL_P (arg2))
+        content = RVAL2CRCONTENT (arg2);
     }
-
-  surface = cairo_xml_surface_create (device, content, width, height);
-
-  cr_surface_check_status (surface);
-  DATA_PTR (self) = surface;
-  if (rb_block_given_p ())
-    yield_and_finish (self);
-  return Qnil;
-}
-#endif
-
-#ifdef CAIRO_HAS_TEE_SURFACE
-static VALUE
-cr_tee_surface_initialize (VALUE self, VALUE master)
-{
-  cairo_surface_t *surface = NULL;
-
-  surface = cairo_tee_surface_create (RVAL2CRSURFACE (master));
-  cr_surface_check_status (surface);
-  DATA_PTR (self) = surface;
-  rb_iv_set (self, "surfaces", rb_ary_new3 (1, master));
-  if (rb_block_given_p ())
-    yield_and_finish (self);
-  return Qnil;
-}
-
-static VALUE
-cr_tee_surface_add (VALUE self, VALUE target)
-{
-  cairo_surface_t *surface = NULL;
-
-  surface = _SELF;
-  cairo_tee_surface_add (surface, RVAL2CRSURFACE (target));
-  cr_surface_check_status (surface);
-  rb_ary_push (rb_iv_get (self, "surfaces"), target);
-  return Qnil;
-}
-
-static VALUE
-cr_tee_surface_shift_operator (VALUE self, VALUE target)
-{
-  cr_tee_surface_add (self, target);
-  return self;
-}
-
-static VALUE
-cr_tee_surface_remove (VALUE self, VALUE target_or_index)
-{
-  cairo_surface_t *surface = NULL, *target;
-  VALUE rb_surfaces;
-  int i;
-
-  surface = _SELF;
-  if (rb_cairo__is_kind_of (target_or_index, rb_cCairo_Surface))
+  else if (argc == 4 || argc == 5)
     {
-      target = RVAL2CRSURFACE (target_or_index);
+      extents.x = NUM2DBL (arg1);
+      extents.y = NUM2DBL (arg2);
+      extents.width = NUM2DBL (arg3);
+      extents.height = NUM2DBL (arg4);
+      if (!NIL_P (arg5))
+        content = RVAL2CRCONTENT (arg5);
     }
   else
     {
-      VALUE index;
-
-      index = rb_check_to_integer (target_or_index, "to_int");
-      if (NIL_P (index))
-        rb_raise (rb_eArgError,
-                  "invalid argument (expect (surface) or (index)): %s",
-                  rb_cairo__inspect (target_or_index));
-      target = cairo_tee_surface_index (surface, NUM2INT (index));
+      rb_raise (rb_eArgError, error_message,
+                rb_cairo__inspect (rb_ary_new4 (argc, argv)));
     }
-  cairo_tee_surface_remove (surface, target);
+
+  surface = cairo_recording_surface_create (content, &extents);
   cr_surface_check_status (surface);
-
-  rb_surfaces = rb_iv_get (self, "surfaces");
-  for (i = 0; i < RARRAY_LEN (rb_surfaces); i++)
-    {
-      VALUE rb_marked_surface;
-      cairo_surface_t *marked_surface;
-
-      rb_marked_surface = RARRAY_PTR (rb_surfaces)[i];
-      marked_surface = RVAL2CRSURFACE (rb_marked_surface);
-      if (marked_surface == target)
-        {
-          rb_ary_delete (rb_surfaces, rb_marked_surface);
-          break;
-        }
-    }
-
+  DATA_PTR (self) = surface;
+  if (rb_block_given_p ())
+    yield_and_finish (self);
   return Qnil;
 }
 
 static VALUE
-cr_tee_surface_array_reference (VALUE self, VALUE index)
+cr_recording_surface_get_ink_extents (VALUE self)
 {
-  cairo_surface_t *surface = NULL, *target;
+  cairo_surface_t *surface;
+  double x, y, width, height;
 
   surface = _SELF;
-  index = rb_Integer (index);
-  target = cairo_tee_surface_index (surface, NUM2UINT (index));
+  cairo_recording_surface_ink_extents (surface, &x, &y, &width, &height);
   cr_surface_check_status (surface);
-  cr_surface_check_status (target);
-  return CRSURFACE2RVAL (target);
+  return rb_ary_new3 (4,
+                      rb_float_new (x), rb_float_new (y),
+                      rb_float_new (width), rb_float_new (height));
 }
+
+#  if CAIRO_CHECK_VERSION(1, 11, 4)
+static VALUE
+cr_recording_surface_get_extents (VALUE self)
+{
+  cairo_surface_t *surface;
+  cairo_rectangle_t extents;
+
+  surface = _SELF;
+  cairo_recording_surface_get_extents (surface, &extents);
+  cr_surface_check_status (surface);
+  return rb_ary_new3 (4,
+                      rb_float_new (extents.x),
+                      rb_float_new (extents.y),
+                      rb_float_new (extents.width),
+                      rb_float_new (extents.height));
+}
+#  endif
 #endif
 
 #ifdef RB_CAIRO_HAS_GL_SURFACE
+/* GL surface functions */
 static VALUE
 cr_gl_surface_initialize (int argc, VALUE *argv, VALUE self)
 {
@@ -1862,6 +1728,144 @@ cr_gl_surface_swap_buffers (VALUE self)
   surface = _SELF;
   cairo_gl_surface_swapbuffers (surface);
   cr_surface_check_status (surface);
+  return Qnil;
+}
+#endif
+
+#ifdef CAIRO_HAS_TEE_SURFACE
+/* tee surface functions */
+static VALUE
+cr_tee_surface_initialize (VALUE self, VALUE master)
+{
+  cairo_surface_t *surface = NULL;
+
+  surface = cairo_tee_surface_create (RVAL2CRSURFACE (master));
+  cr_surface_check_status (surface);
+  DATA_PTR (self) = surface;
+  rb_iv_set (self, "surfaces", rb_ary_new3 (1, master));
+  if (rb_block_given_p ())
+    yield_and_finish (self);
+  return Qnil;
+}
+
+static VALUE
+cr_tee_surface_add (VALUE self, VALUE target)
+{
+  cairo_surface_t *surface = NULL;
+
+  surface = _SELF;
+  cairo_tee_surface_add (surface, RVAL2CRSURFACE (target));
+  cr_surface_check_status (surface);
+  rb_ary_push (rb_iv_get (self, "surfaces"), target);
+  return Qnil;
+}
+
+static VALUE
+cr_tee_surface_shift_operator (VALUE self, VALUE target)
+{
+  cr_tee_surface_add (self, target);
+  return self;
+}
+
+static VALUE
+cr_tee_surface_remove (VALUE self, VALUE target_or_index)
+{
+  cairo_surface_t *surface = NULL, *target;
+  VALUE rb_surfaces;
+  int i;
+
+  surface = _SELF;
+  if (rb_cairo__is_kind_of (target_or_index, rb_cCairo_Surface))
+    {
+      target = RVAL2CRSURFACE (target_or_index);
+    }
+  else
+    {
+      VALUE index;
+
+      index = rb_check_to_integer (target_or_index, "to_int");
+      if (NIL_P (index))
+        rb_raise (rb_eArgError,
+                  "invalid argument (expect (surface) or (index)): %s",
+                  rb_cairo__inspect (target_or_index));
+      target = cairo_tee_surface_index (surface, NUM2INT (index));
+    }
+  cairo_tee_surface_remove (surface, target);
+  cr_surface_check_status (surface);
+
+  rb_surfaces = rb_iv_get (self, "surfaces");
+  for (i = 0; i < RARRAY_LEN (rb_surfaces); i++)
+    {
+      VALUE rb_marked_surface;
+      cairo_surface_t *marked_surface;
+
+      rb_marked_surface = RARRAY_PTR (rb_surfaces)[i];
+      marked_surface = RVAL2CRSURFACE (rb_marked_surface);
+      if (marked_surface == target)
+        {
+          rb_ary_delete (rb_surfaces, rb_marked_surface);
+          break;
+        }
+    }
+
+  return Qnil;
+}
+
+static VALUE
+cr_tee_surface_array_reference (VALUE self, VALUE index)
+{
+  cairo_surface_t *surface = NULL, *target;
+
+  surface = _SELF;
+  index = rb_Integer (index);
+  target = cairo_tee_surface_index (surface, NUM2UINT (index));
+  cr_surface_check_status (surface);
+  cr_surface_check_status (target);
+  return CRSURFACE2RVAL (target);
+}
+#endif
+
+#ifdef CAIRO_HAS_XML_SURFACE
+/* XML surface functions */
+static VALUE
+cr_xml_surface_initialize (int argc, VALUE *argv, VALUE self)
+{
+  cairo_surface_t *surface;
+  cairo_device_t *device;
+  double width, height;
+  cairo_content_t content = CAIRO_CONTENT_COLOR_ALPHA;
+  VALUE rb_device, rb_width, rb_height, rb_content;
+
+  rb_scan_args (argc, argv, "31",
+                &rb_device, &rb_width, &rb_height, &rb_content);
+
+  device = RVAL2CRDEVICE (rb_device);
+  width = NUM2DBL (rb_width);
+  height = NUM2DBL (rb_height);
+  switch (TYPE (rb_content))
+    {
+    case T_NIL:
+      break;
+    case T_STRING:
+    case T_SYMBOL:
+    case T_FIXNUM:
+      content = RVAL2CRCONTENT (rb_content);
+      break;
+    default:
+      rb_raise (rb_eArgError,
+                "invalid argument (expect "
+                "(device, width, height) or "
+                "(device, width, height, content)): %s",
+                rb_cairo__inspect (rb_ary_new4 (argc, argv)));
+      break;
+    }
+
+  surface = cairo_xml_surface_create (device, content, width, height);
+
+  cr_surface_check_status (surface);
+  DATA_PTR (self) = surface;
+  if (rb_block_given_p ())
+    yield_and_finish (self);
   return Qnil;
 }
 #endif
@@ -1987,7 +1991,7 @@ Init_cairo_surface (void)
 
   RB_CAIRO_DEF_SETTERS (rb_cCairo_Surface);
 
-  /* Image-surface */
+  /* image surface */
   rb_cCairo_ImageSurface =
     rb_define_class_under (rb_mCairo, "ImageSurface", rb_cCairo_Surface);
 
@@ -2010,22 +2014,25 @@ Init_cairo_surface (void)
   rb_define_method (rb_cCairo_ImageSurface, "stride",
                     cr_image_surface_get_stride, 0);
 
-  /* Recording-surface */
-  rb_cCairo_RecordingSurface =
-    rb_define_class_under (rb_mCairo, "RecordingSurface", rb_cCairo_Surface);
-#ifdef CAIRO_HAS_RECORDING_SURFACE
-  rb_define_method (rb_cCairo_RecordingSurface, "initialize",
-                    cr_recording_surface_initialize, -1);
+  /* PDF surface */
+  rb_cCairo_PDFSurface =
+    rb_define_class_under (rb_mCairo, "PDFSurface", rb_cCairo_Surface);
+#ifdef CAIRO_HAS_PDF_SURFACE
+  rb_define_method (rb_cCairo_PDFSurface, "initialize",
+                    cr_pdf_surface_initialize, -1);
 
-  rb_define_method (rb_cCairo_RecordingSurface, "ink_extents",
-                    cr_recording_surface_get_ink_extents, 0);
-#  if CAIRO_CHECK_VERSION(1, 11, 4)
-  rb_define_method (rb_cCairo_RecordingSurface, "extents",
-                    cr_recording_surface_get_extents, 0);
+  rb_define_method (rb_cCairo_PDFSurface, "set_size",
+                    cr_pdf_surface_set_size, -1);
+
+#  if CAIRO_CHECK_VERSION(1, 10, 0)
+  rb_define_method (rb_cCairo_PDFSurface, "restrict_to_version",
+                    cr_pdf_surface_restrict_to_version, 1);
 #  endif
+
+  RB_CAIRO_DEF_SETTERS (rb_cCairo_PDFSurface);
 #endif
 
-  /* PS-surface */
+  /* PS surface */
   rb_cCairo_PSSurface =
     rb_define_class_under (rb_mCairo, "PSSurface", rb_cCairo_Surface);
 #ifdef CAIRO_HAS_PS_SURFACE
@@ -2049,49 +2056,27 @@ Init_cairo_surface (void)
   RB_CAIRO_DEF_SETTERS (rb_cCairo_PSSurface);
 #endif
 
-  /* PDF-surface */
-  rb_cCairo_PDFSurface =
-    rb_define_class_under (rb_mCairo, "PDFSurface", rb_cCairo_Surface);
-#ifdef CAIRO_HAS_PDF_SURFACE
-  rb_define_method (rb_cCairo_PDFSurface, "initialize",
-                    cr_pdf_surface_initialize, -1);
-
-  rb_define_method (rb_cCairo_PDFSurface, "set_size",
-                    cr_pdf_surface_set_size, -1);
-
-#  if CAIRO_CHECK_VERSION(1, 10, 0)
-  rb_define_method (rb_cCairo_PDFSurface, "restrict_to_version",
-                    cr_pdf_surface_restrict_to_version, 1);
-#  endif
-
-  RB_CAIRO_DEF_SETTERS (rb_cCairo_PDFSurface);
-#endif
-
-  /* XLib-surface */
+  /* XLib surface */
   rb_cCairo_XLibSurface =
     rb_define_class_under (rb_mCairo, "XLibSurface", rb_cCairo_Surface);
 
-  /* XCB-surface */
+  /* XCB surface */
   rb_cCairo_XCBSurface =
     rb_define_class_under (rb_mCairo, "XCBSurface", rb_cCairo_Surface);
 
-  /* SVG-surface */
-  rb_cCairo_SVGSurface =
-    rb_define_class_under (rb_mCairo, "SVGSurface", rb_cCairo_Surface);
-#ifdef CAIRO_HAS_SVG_SURFACE
-  rb_define_method (rb_cCairo_SVGSurface, "initialize",
-                    cr_svg_surface_initialize, -1);
-  rb_define_method (rb_cCairo_SVGSurface, "restrict_to_version",
-                    cr_svg_surface_restrict_to_version, 1);
-
-  RB_CAIRO_DEF_SETTERS (rb_cCairo_SVGSurface);
+  /* Quartz surface */
+  rb_cCairo_QuartzSurface =
+    rb_define_class_under (rb_mCairo, "QuartzSurface", rb_cCairo_Surface);
+#ifdef RB_CAIRO_HAS_QUARTZ_SURFACE
+  rb_define_method (rb_cCairo_QuartzSurface, "initialize",
+                    cr_quartz_surface_initialize, -1);
+  rb_define_method (rb_cCairo_QuartzSurface, "cg_context",
+                    cr_quartz_surface_get_cg_context, 0);
 #endif
 
-  /* Win32-surface */
+  /* Win32 surface */
   rb_cCairo_Win32Surface =
     rb_define_class_under (rb_mCairo, "Win32Surface", rb_cCairo_Surface);
-  rb_cCairo_Win32PrintingSurface =
-    rb_define_class_under (rb_mCairo, "Win32PrintingSurface", rb_cCairo_Surface);
 #ifdef CAIRO_HAS_WIN32_SURFACE
   rb_define_method (rb_cCairo_Win32Surface, "initialize",
                     cr_win32_surface_initialize, -1);
@@ -2103,6 +2088,21 @@ Init_cairo_surface (void)
 #  endif
 #endif
 
+  /* SVG surface */
+  rb_cCairo_SVGSurface =
+    rb_define_class_under (rb_mCairo, "SVGSurface", rb_cCairo_Surface);
+#ifdef CAIRO_HAS_SVG_SURFACE
+  rb_define_method (rb_cCairo_SVGSurface, "initialize",
+                    cr_svg_surface_initialize, -1);
+  rb_define_method (rb_cCairo_SVGSurface, "restrict_to_version",
+                    cr_svg_surface_restrict_to_version, 1);
+
+  RB_CAIRO_DEF_SETTERS (rb_cCairo_SVGSurface);
+#endif
+
+  /* Win32 printing surface */
+  rb_cCairo_Win32PrintingSurface =
+    rb_define_class_under (rb_mCairo, "Win32PrintingSurface", rb_cCairo_Surface);
 #ifdef RB_CAIRO_HAS_WIN32_PRINTING_SURFACE
   rb_define_method (rb_cCairo_Win32PrintingSurface, "initialize",
                     cr_win32_printing_surface_initialize, -1);
@@ -2110,18 +2110,9 @@ Init_cairo_surface (void)
                     cr_win32_surface_get_hdc, 0);
 #endif
 
-  /* Quartz-surface */
-  rb_cCairo_QuartzSurface =
-    rb_define_class_under (rb_mCairo, "QuartzSurface", rb_cCairo_Surface);
+  /* Quartz image surface */
   rb_cCairo_QuartzImageSurface =
     rb_define_class_under (rb_mCairo, "QuartzImageSurface", rb_cCairo_Surface);
-#ifdef RB_CAIRO_HAS_QUARTZ_SURFACE
-  rb_define_method (rb_cCairo_QuartzSurface, "initialize",
-                    cr_quartz_surface_initialize, -1);
-  rb_define_method (rb_cCairo_QuartzSurface, "cg_context",
-                    cr_quartz_surface_get_cg_context, 0);
-#endif
-
 #ifdef RB_CAIRO_HAS_QUARTZ_IMAGE_SURFACE
   rb_define_method (rb_cCairo_QuartzImageSurface, "initialize",
                     cr_quartz_image_surface_initialize, 1);
@@ -2129,6 +2120,7 @@ Init_cairo_surface (void)
                     cr_quartz_image_surface_get_image, 0);
 #endif
 
+  /* script surface */
   rb_cCairo_ScriptSurface =
     rb_define_class_under (rb_mCairo, "ScriptSurface", rb_cCairo_Surface);
 #ifdef CAIRO_HAS_SCRIPT_SURFACE
@@ -2138,33 +2130,22 @@ Init_cairo_surface (void)
   RB_CAIRO_DEF_SETTERS (rb_cCairo_ScriptSurface);
 #endif
 
-  rb_cCairo_XMLSurface =
-    rb_define_class_under (rb_mCairo, "XMLSurface", rb_cCairo_Surface);
-#ifdef CAIRO_HAS_XML_SURFACE
-  rb_define_method (rb_cCairo_XMLSurface, "initialize",
-                    cr_xml_surface_initialize, -1);
+  /* recording surface */
+  rb_cCairo_RecordingSurface =
+    rb_define_class_under (rb_mCairo, "RecordingSurface", rb_cCairo_Surface);
+#ifdef CAIRO_HAS_RECORDING_SURFACE
+  rb_define_method (rb_cCairo_RecordingSurface, "initialize",
+                    cr_recording_surface_initialize, -1);
 
-  RB_CAIRO_DEF_SETTERS (rb_cCairo_XMLSurface);
+  rb_define_method (rb_cCairo_RecordingSurface, "ink_extents",
+                    cr_recording_surface_get_ink_extents, 0);
+#  if CAIRO_CHECK_VERSION(1, 11, 4)
+  rb_define_method (rb_cCairo_RecordingSurface, "extents",
+                    cr_recording_surface_get_extents, 0);
+#  endif
 #endif
 
-  rb_cCairo_TeeSurface =
-    rb_define_class_under (rb_mCairo, "TeeSurface", rb_cCairo_Surface);
-#ifdef CAIRO_HAS_TEE_SURFACE
-  rb_define_method (rb_cCairo_TeeSurface, "initialize",
-                    cr_tee_surface_initialize, 1);
-
-  rb_define_method (rb_cCairo_TeeSurface, "add",
-                    cr_tee_surface_add, 1);
-  rb_define_method (rb_cCairo_TeeSurface, "<<",
-                    cr_tee_surface_shift_operator, 1);
-  rb_define_method (rb_cCairo_TeeSurface, "remove",
-                    cr_tee_surface_remove, 1);
-  rb_define_method (rb_cCairo_TeeSurface, "[]",
-                    cr_tee_surface_array_reference, 1);
-
-  RB_CAIRO_DEF_SETTERS (rb_cCairo_TeeSurface);
-#endif
-
+  /* GL surface */
   rb_cCairo_GLSurface =
     rb_define_class_under (rb_mCairo, "GLSurface", rb_cCairo_Surface);
   rb_cCairo_GLTextureSurface =
@@ -2188,5 +2169,34 @@ Init_cairo_surface (void)
                     cr_gl_texture_surface_initialize, 1);
 
   RB_CAIRO_DEF_SETTERS (rb_cCairo_GLTextureSurface);
+#endif
+
+  /* tee surface */
+  rb_cCairo_TeeSurface =
+    rb_define_class_under (rb_mCairo, "TeeSurface", rb_cCairo_Surface);
+#ifdef CAIRO_HAS_TEE_SURFACE
+  rb_define_method (rb_cCairo_TeeSurface, "initialize",
+                    cr_tee_surface_initialize, 1);
+
+  rb_define_method (rb_cCairo_TeeSurface, "add",
+                    cr_tee_surface_add, 1);
+  rb_define_method (rb_cCairo_TeeSurface, "<<",
+                    cr_tee_surface_shift_operator, 1);
+  rb_define_method (rb_cCairo_TeeSurface, "remove",
+                    cr_tee_surface_remove, 1);
+  rb_define_method (rb_cCairo_TeeSurface, "[]",
+                    cr_tee_surface_array_reference, 1);
+
+  RB_CAIRO_DEF_SETTERS (rb_cCairo_TeeSurface);
+#endif
+
+  /* XML surface */
+  rb_cCairo_XMLSurface =
+    rb_define_class_under (rb_mCairo, "XMLSurface", rb_cCairo_Surface);
+#ifdef CAIRO_HAS_XML_SURFACE
+  rb_define_method (rb_cCairo_XMLSurface, "initialize",
+                    cr_xml_surface_initialize, -1);
+
+  RB_CAIRO_DEF_SETTERS (rb_cCairo_XMLSurface);
 #endif
 }
