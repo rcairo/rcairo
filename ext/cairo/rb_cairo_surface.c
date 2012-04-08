@@ -27,6 +27,9 @@
 #  define OpenFile OpenFile_win32
 #  include <cairo-win32.h>
 #  undef OpenFile
+#  if CAIRO_CHECK_VERSION(1, 5, 2)
+#    define RB_CAIRO_HAS_WIN32_PRINTING_SURFACE
+#  endif
 #endif
 
 #ifdef HAVE_RUBY_IO_H
@@ -46,6 +49,9 @@ enum ruby_value_type {
 #  define T_DATA RUBY_T_DATA
 #  ifdef HAVE_RUBY_COCOA
 #    define RB_CAIRO_HAS_QUARTZ_SURFACE
+#    if CAIRO_CHECK_VERSION(1, 5, 12)
+#      define RB_CAIRO_HAS_QUARTZ_IMAGE_SURFACE
+#    endif
 #  endif
 #endif
 
@@ -239,16 +245,6 @@ cr_surface_ps_supported_p (VALUE klass)
 }
 
 static VALUE
-cr_surface_xcb_supported_p (VALUE klass)
-{
-#ifdef CAIRO_HAS_XCB_SURFACE
-  return Qtrue;
-#else
-  return Qfalse;
-#endif
-}
-
-static VALUE
 cr_surface_quartz_supported_p (VALUE klass)
 {
 #ifdef RB_CAIRO_HAS_QUARTZ_SURFACE
@@ -272,6 +268,26 @@ static VALUE
 cr_surface_svg_supported_p (VALUE klass)
 {
 #ifdef CAIRO_HAS_SVG_SURFACE
+  return Qtrue;
+#else
+  return Qfalse;
+#endif
+}
+
+static VALUE
+cr_surface_win32_printing_supported_p (VALUE klass)
+{
+#ifdef RB_CAIRO_HAS_WIN32_PRINTING_SURFACE
+  return Qtrue;
+#else
+  return Qfalse;
+#endif
+}
+
+static VALUE
+cr_surface_quartz_image_supported_p (VALUE klass)
+{
+#ifdef RB_CAIRO_HAS_QUARTZ_IMAGE_SURFACE
   return Qtrue;
 #else
   return Qfalse;
@@ -311,11 +327,7 @@ cr_surface_gl_supported_p (VALUE klass)
 static VALUE
 cr_surface_gl_texture_supported_p (VALUE klass)
 {
-#ifdef RB_CAIRO_HAS_GL_SURFACE
-  return Qtrue;
-#else
-  return Qfalse;
-#endif
+  return cr_surface_gl_supported_p(klass);
 }
 
 static VALUE
@@ -1898,14 +1910,16 @@ Init_cairo_surface (void)
                               cr_surface_pdf_supported_p, 0);
   rb_define_singleton_method (rb_cCairo_Surface, "ps_supported?",
                               cr_surface_ps_supported_p, 0);
-  rb_define_singleton_method (rb_cCairo_Surface, "xcb_supported?",
-                              cr_surface_xcb_supported_p, 0);
   rb_define_singleton_method (rb_cCairo_Surface, "quartz_supported?",
                               cr_surface_quartz_supported_p, 0);
   rb_define_singleton_method (rb_cCairo_Surface, "win32_supported?",
                               cr_surface_win32_supported_p, 0);
   rb_define_singleton_method (rb_cCairo_Surface, "svg_supported?",
                               cr_surface_svg_supported_p, 0);
+  rb_define_singleton_method (rb_cCairo_Surface, "win32_printing_supported?",
+                              cr_surface_win32_printing_supported_p, 0);
+  rb_define_singleton_method (rb_cCairo_Surface, "quartz_image_supported?",
+                              cr_surface_quartz_image_supported_p, 0);
   rb_define_singleton_method (rb_cCairo_Surface, "script_supported?",
                               cr_surface_script_supported_p, 0);
   rb_define_singleton_method (rb_cCairo_Surface, "recording_supported?",
