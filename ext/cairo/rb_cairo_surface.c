@@ -2005,11 +2005,10 @@ Init_cairo_surface (void)
   rb_define_method (rb_cCairo_ImageSurface, "stride",
                     cr_image_surface_get_stride, 0);
 
-#ifdef CAIRO_HAS_RECORDING_SURFACE
   /* Recording-surface */
   rb_cCairo_RecordingSurface =
     rb_define_class_under (rb_mCairo, "RecordingSurface", rb_cCairo_Surface);
-
+#ifdef CAIRO_HAS_RECORDING_SURFACE
   rb_define_method (rb_cCairo_RecordingSurface, "initialize",
                     cr_recording_surface_initialize, -1);
 
@@ -2021,18 +2020,12 @@ Init_cairo_surface (void)
 #  endif
 #endif
 
-#define INIT_SURFACE(type, name)                                        \
-  rb_cCairo_ ## name ## Surface =                                       \
-    rb_define_class_under (rb_mCairo, # name "Surface",                 \
-                           rb_cCairo_Surface);                          \
-                                                                        \
-  rb_define_method (rb_cCairo_ ## name ## Surface, "initialize",        \
-                    cr_ ## type ## _surface_initialize, -1);
-
-#ifdef CAIRO_HAS_PS_SURFACE
   /* PS-surface */
-  INIT_SURFACE(ps, PS)
-
+  rb_cCairo_PSSurface =
+    rb_define_class_under (rb_mCairo, "PSSurface", rb_cCairo_Surface);
+#ifdef CAIRO_HAS_PS_SURFACE
+  rb_define_method (rb_cCairo_PSSurface, "initialize",
+                    cr_ps_surface_initialize, -1);
   rb_define_method (rb_cCairo_PSSurface, "set_size", cr_ps_surface_set_size, -1);
   rb_define_method (rb_cCairo_PSSurface, "dsc_comment",
                     cr_ps_surface_dsc_comment, 1);
@@ -2051,9 +2044,12 @@ Init_cairo_surface (void)
   RB_CAIRO_DEF_SETTERS (rb_cCairo_PSSurface);
 #endif
 
-#ifdef CAIRO_HAS_PDF_SURFACE
   /* PDF-surface */
-  INIT_SURFACE(pdf, PDF)
+  rb_cCairo_PDFSurface =
+    rb_define_class_under (rb_mCairo, "PDFSurface", rb_cCairo_Surface);
+#ifdef CAIRO_HAS_PDF_SURFACE
+  rb_define_method (rb_cCairo_PDFSurface, "initialize",
+                    cr_pdf_surface_initialize, -1);
 
   rb_define_method (rb_cCairo_PDFSurface, "set_size",
                     cr_pdf_surface_set_size, -1);
@@ -2066,35 +2062,44 @@ Init_cairo_surface (void)
   RB_CAIRO_DEF_SETTERS (rb_cCairo_PDFSurface);
 #endif
 
-#ifdef CAIRO_HAS_XLIB_SURFACE
   /* XLib-surface */
-  INIT_SURFACE(xlib, XLib)
+  rb_cCairo_XLibSurface =
+    rb_define_class_under (rb_mCairo, "XLibSurface", rb_cCairo_Surface);
+#ifdef CAIRO_HAS_XLIB_SURFACE
+  rb_define_method (rb_cCairo_XLibSurface, "initialize",
+                    cr_xlib_surface_initialize, -1);
 
   RB_CAIRO_DEF_SETTERS (rb_cCairo_XLibSurface);
 #endif
 
+  /* XCB-surface */
+  rb_cCairo_XCBSurface =
+    rb_define_class_under (rb_mCairo, "XCBSurface", rb_cCairo_Surface);
 #ifdef CAIRO_HAS_XCB_SURFACE
-  /* XLib-surface */
-  INIT_SURFACE(xcb, XCB)
+  rb_define_method (rb_cCairo_XCBSurface, "initialize",
+                    cr_xcb_surface_initialize, -1);
 
   RB_CAIRO_DEF_SETTERS (rb_cCairo_XCBSurface);
 #endif
 
-#ifdef CAIRO_HAS_SVG_SURFACE
   /* SVG-surface */
-  INIT_SURFACE(svg, SVG)
-
+  rb_cCairo_SVGSurface =
+    rb_define_class_under (rb_mCairo, "SVGSurface", rb_cCairo_Surface);
+#ifdef CAIRO_HAS_SVG_SURFACE
+  rb_define_method (rb_cCairo_SVGSurface, "initialize",
+                    cr_svg_surface_initialize, -1);
   rb_define_method (rb_cCairo_SVGSurface, "restrict_to_version",
                     cr_svg_surface_restrict_to_version, 1);
 
   RB_CAIRO_DEF_SETTERS (rb_cCairo_SVGSurface);
 #endif
 
-#ifdef CAIRO_HAS_WIN32_SURFACE
   /* Win32-surface */
   rb_cCairo_Win32Surface =
     rb_define_class_under (rb_mCairo, "Win32Surface", rb_cCairo_Surface);
-
+  rb_cCairo_Win32PrintingSurface =
+    rb_define_class_under (rb_mCairo, "Win32PrintingSurface", rb_cCairo_Surface);
+#ifdef CAIRO_HAS_WIN32_SURFACE
   rb_define_method (rb_cCairo_Win32Surface, "initialize",
                     cr_win32_surface_initialize, -1);
   rb_define_method (rb_cCairo_Win32Surface, "hdc",
@@ -2105,9 +2110,6 @@ Init_cairo_surface (void)
 #  endif
 
 #  if CAIRO_CHECK_VERSION(1, 5, 2)
-  rb_cCairo_Win32PrintingSurface =
-    rb_define_class_under (rb_mCairo, "Win32PrintingSurface", rb_cCairo_Surface);
-
   rb_define_method (rb_cCairo_Win32PrintingSurface, "initialize",
                     cr_win32_printing_surface_initialize, -1);
   rb_define_method (rb_cCairo_Win32PrintingSurface, "hdc",
@@ -2116,21 +2118,18 @@ Init_cairo_surface (void)
 
 #endif
 
-#ifdef RB_CAIRO_HAS_QUARTZ_SURFACE
   /* Quartz-surface */
-
   rb_cCairo_QuartzSurface =
     rb_define_class_under (rb_mCairo, "QuartzSurface", rb_cCairo_Surface);
-
+  rb_cCairo_QuartzImageSurface =
+    rb_define_class_under (rb_mCairo, "QuartzImageSurface", rb_cCairo_Surface);
+#ifdef RB_CAIRO_HAS_QUARTZ_SURFACE
   rb_define_method (rb_cCairo_QuartzSurface, "initialize",
                     cr_quartz_surface_initialize, -1);
   rb_define_method (rb_cCairo_QuartzSurface, "cg_context",
                     cr_quartz_surface_get_cg_context, 0);
 
 #  if CAIRO_CHECK_VERSION(1, 5, 12)
-  rb_cCairo_QuartzImageSurface =
-    rb_define_class_under (rb_mCairo, "QuartzImageSurface", rb_cCairo_Surface);
-
   rb_define_method (rb_cCairo_QuartzImageSurface, "initialize",
                     cr_quartz_image_surface_initialize, 1);
   rb_define_method (rb_cCairo_QuartzImageSurface, "image",
@@ -2138,30 +2137,27 @@ Init_cairo_surface (void)
 #  endif
 #endif
 
-#ifdef CAIRO_HAS_SCRIPT_SURFACE
   rb_cCairo_ScriptSurface =
     rb_define_class_under (rb_mCairo, "ScriptSurface", rb_cCairo_Surface);
-
+#ifdef CAIRO_HAS_SCRIPT_SURFACE
   rb_define_method (rb_cCairo_ScriptSurface, "initialize",
                     cr_script_surface_initialize, -1);
 
   RB_CAIRO_DEF_SETTERS (rb_cCairo_ScriptSurface);
 #endif
 
-#ifdef CAIRO_HAS_XML_SURFACE
   rb_cCairo_XMLSurface =
     rb_define_class_under (rb_mCairo, "XMLSurface", rb_cCairo_Surface);
-
+#ifdef CAIRO_HAS_XML_SURFACE
   rb_define_method (rb_cCairo_XMLSurface, "initialize",
                     cr_xml_surface_initialize, -1);
 
   RB_CAIRO_DEF_SETTERS (rb_cCairo_XMLSurface);
 #endif
 
-#ifdef CAIRO_HAS_TEE_SURFACE
   rb_cCairo_TeeSurface =
     rb_define_class_under (rb_mCairo, "TeeSurface", rb_cCairo_Surface);
-
+#ifdef CAIRO_HAS_TEE_SURFACE
   rb_define_method (rb_cCairo_TeeSurface, "initialize",
                     cr_tee_surface_initialize, 1);
 
@@ -2177,10 +2173,11 @@ Init_cairo_surface (void)
   RB_CAIRO_DEF_SETTERS (rb_cCairo_TeeSurface);
 #endif
 
-#ifdef RB_CAIRO_HAS_GL_SURFACE
   rb_cCairo_GLSurface =
     rb_define_class_under (rb_mCairo, "GLSurface", rb_cCairo_Surface);
-
+  rb_cCairo_GLTextureSurface =
+    rb_define_class_under (rb_mCairo, "GLTextureSurface", rb_cCairo_GLSurface);
+#ifdef RB_CAIRO_HAS_GL_SURFACE
   rb_define_method (rb_cCairo_GLSurface, "initialize",
                     cr_gl_surface_initialize, 1);
 
@@ -2194,9 +2191,6 @@ Init_cairo_surface (void)
                     cr_gl_surface_swap_buffers, 0);
 
   RB_CAIRO_DEF_SETTERS (rb_cCairo_GLSurface);
-
-  rb_cCairo_GLTextureSurface =
-    rb_define_class_under (rb_mCairo, "GLTextureSurface", rb_cCairo_GLSurface);
 
   rb_define_method (rb_cCairo_GLTextureSurface, "initialize",
                     cr_gl_texture_surface_initialize, 1);
