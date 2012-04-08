@@ -23,11 +23,19 @@
 #  include <st.h>
 #endif
 
+#if CAIRO_CHECK_VERSION(1, 5, 2)
+#  define RB_CAIRO_HAS_WIN32_PRINTING_SURFACE_TYPE
+#endif
+
+#if CAIRO_CHECK_VERSION(1, 5, 12)
+#  define RB_CAIRO_HAS_QUARTZ_IMAGE_SURFACE_TYPE
+#endif
+
 #ifdef CAIRO_HAS_WIN32_SURFACE
 #  define OpenFile OpenFile_win32
 #  include <cairo-win32.h>
 #  undef OpenFile
-#  if CAIRO_CHECK_VERSION(1, 5, 2)
+#  ifdef RB_CAIRO_HAS_WIN32_PRINTING_SURFACE_TYPE
 #    define RB_CAIRO_HAS_WIN32_PRINTING_SURFACE
 #  endif
 #endif
@@ -49,7 +57,7 @@ enum ruby_value_type {
 #  define T_DATA RUBY_T_DATA
 #  ifdef HAVE_RUBY_COCOA
 #    define RB_CAIRO_HAS_QUARTZ_SURFACE
-#    if CAIRO_CHECK_VERSION(1, 5, 12)
+#    ifdef RB_CAIRO_HAS_QUARTZ_IMAGE_SURFACE_TYPE
 #      define RB_CAIRO_HAS_QUARTZ_IMAGE_SURFACE
 #    endif
 #  endif
@@ -160,12 +168,12 @@ cr_surface_get_klass (cairo_surface_t *surface)
     case CAIRO_SURFACE_TYPE_SVG:
       klass = rb_cCairo_SVGSurface;
       break;
-#if CAIRO_CHECK_VERSION(1, 5, 2)
+#ifdef RB_CAIRO_HAS_WIN32_PRINTING_SURFACE_TYPE
     case CAIRO_SURFACE_TYPE_WIN32_PRINTING:
       klass = rb_cCairo_Win32PrintingSurface;
       break;
 #endif
-#if CAIRO_CHECK_VERSION(1, 5, 12)
+#ifdef RB_CAIRO_HAS_QUARTZ_IMAGE_SURFACE_TYPE
     case CAIRO_SURFACE_TYPE_QUARTZ_IMAGE:
       klass = rb_cCairo_QuartzImageSurface;
       break;
@@ -1399,21 +1407,6 @@ cr_win32_surface_initialize (int argc, VALUE *argv, VALUE self)
   return Qnil;
 }
 
-#  if CAIRO_CHECK_VERSION(1, 5, 2)
-static VALUE
-cr_win32_printing_surface_initialize (VALUE self, VALUE hdc)
-{
-  cairo_surface_t *surface = NULL;
-
-  surface = cairo_win32_printing_surface_create (NUM2PTR (hdc));
-  cr_surface_check_status (surface);
-  DATA_PTR (self) = surface;
-  if (rb_block_given_p ())
-    yield_and_finish (self);
-  return Qnil;
-}
-#  endif
-
 static VALUE
 cr_win32_surface_get_hdc (VALUE self)
 {
@@ -1439,6 +1432,21 @@ cr_win32_surface_get_image (VALUE self)
   return CRSURFACE2RVAL (surface);
 }
 #  endif
+#endif
+
+#ifdef RB_CAIRO_HAS_WIN32_PRINTING_SURFACE
+static VALUE
+cr_win32_printing_surface_initialize (VALUE self, VALUE hdc)
+{
+  cairo_surface_t *surface = NULL;
+
+  surface = cairo_win32_printing_surface_create (NUM2PTR (hdc));
+  cr_surface_check_status (surface);
+  DATA_PTR (self) = surface;
+  if (rb_block_given_p ())
+    yield_and_finish (self);
+  return Qnil;
+}
 #endif
 
 #ifdef RB_CAIRO_HAS_QUARTZ_SURFACE
@@ -1532,7 +1540,9 @@ cr_quartz_surface_get_cg_context (VALUE self)
   return ocid_to_rbobj (Qnil, objc_object);
 }
 
-#  if CAIRO_CHECK_VERSION(1, 5, 12)
+#endif
+
+#ifdef RB_CAIRO_HAS_QUARTZ_IMAGE_SURFACE
 static VALUE
 cr_quartz_image_surface_initialize (VALUE self, VALUE image_surface)
 {
@@ -1557,7 +1567,6 @@ cr_quartz_image_surface_get_image (VALUE self)
   cr_surface_check_status (surface);
   return CRSURFACE2RVAL (surface);
 }
-#  endif
 #endif
 
 #ifdef CAIRO_HAS_SCRIPT_SURFACE
@@ -2122,14 +2131,13 @@ Init_cairo_surface (void)
   rb_define_method (rb_cCairo_Win32Surface, "image",
                     cr_win32_surface_get_image, 0);
 #  endif
+#endif
 
-#  if CAIRO_CHECK_VERSION(1, 5, 2)
+#ifdef RB_CAIRO_HAS_WIN32_PRINTING_SURFACE
   rb_define_method (rb_cCairo_Win32PrintingSurface, "initialize",
                     cr_win32_printing_surface_initialize, -1);
   rb_define_method (rb_cCairo_Win32PrintingSurface, "hdc",
                     cr_win32_surface_get_hdc, 0);
-#  endif
-
 #endif
 
   /* Quartz-surface */
@@ -2142,13 +2150,13 @@ Init_cairo_surface (void)
                     cr_quartz_surface_initialize, -1);
   rb_define_method (rb_cCairo_QuartzSurface, "cg_context",
                     cr_quartz_surface_get_cg_context, 0);
+#endif
 
-#  if CAIRO_CHECK_VERSION(1, 5, 12)
+#ifdef RB_CAIRO_HAS_QUARTZ_IMAGE_SURFACE
   rb_define_method (rb_cCairo_QuartzImageSurface, "initialize",
                     cr_quartz_image_surface_initialize, 1);
   rb_define_method (rb_cCairo_QuartzImageSurface, "image",
                     cr_quartz_image_surface_get_image, 0);
-#  endif
 #endif
 
   rb_cCairo_ScriptSurface =
