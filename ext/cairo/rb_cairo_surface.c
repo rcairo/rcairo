@@ -2130,6 +2130,10 @@ Init_cairo_surface (void)
   RB_CAIRO_DEF_SETTERS (rb_cCairo_ScriptSurface);
 #endif
 
+  /* Qt surface */
+  rb_cCairo_QtSurface =
+    rb_define_class_under (rb_mCairo, "QtSurface", rb_cCairo_Surface);
+
   /* recording surface */
   rb_cCairo_RecordingSurface =
     rb_define_class_under (rb_mCairo, "RecordingSurface", rb_cCairo_Surface);
@@ -2144,6 +2148,10 @@ Init_cairo_surface (void)
                     cr_recording_surface_get_extents, 0);
 #  endif
 #endif
+
+  /* VG surface */
+  rb_cCairo_VGSurface =
+    rb_define_class_under (rb_mCairo, "VGSurface", rb_cCairo_Surface);
 
   /* GL surface */
   rb_cCairo_GLSurface =
@@ -2170,6 +2178,10 @@ Init_cairo_surface (void)
 
   RB_CAIRO_DEF_SETTERS (rb_cCairo_GLTextureSurface);
 #endif
+
+  /* DRM surface */
+  rb_cCairo_DRMSurface =
+    rb_define_class_under (rb_mCairo, "DRMSurface", rb_cCairo_Surface);
 
   /* tee surface */
   rb_cCairo_TeeSurface =
@@ -2199,4 +2211,16 @@ Init_cairo_surface (void)
 
   RB_CAIRO_DEF_SETTERS (rb_cCairo_XMLSurface);
 #endif
+
+  /* Skia surface */
+  rb_cCairo_SkiaSurface =
+    rb_define_class_under (rb_mCairo, "SkiaSurface", rb_cCairo_Surface);
+
+  /* sub surface */
+  rb_cCairo_SubSurface =
+    rb_define_class_under (rb_mCairo, "SubSurface", rb_cCairo_Surface);
+
+  /* Cogl surface */
+  rb_cCairo_CoglSurface =
+    rb_define_class_under (rb_mCairo, "CoglSurface", rb_cCairo_Surface);
 }
