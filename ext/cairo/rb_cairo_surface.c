@@ -1280,24 +1280,6 @@ cr_pdf_surface_restrict_to_version (VALUE self, VALUE version)
 #  endif
 #endif
 
-#ifdef CAIRO_HAS_XLIB_SURFACE
-static VALUE
-cr_xlib_surface_initialize (int argc, VALUE *argv, VALUE self)
-{
-  rb_notimplement();
-  return Qnil;
-}
-#endif
-
-#ifdef CAIRO_HAS_XCB_SURFACE
-static VALUE
-cr_xcb_surface_initialize (int argc, VALUE *argv, VALUE self)
-{
-  rb_notimplement();
-  return Qnil;
-}
-#endif
-
 #ifdef CAIRO_HAS_SVG_SURFACE
 /* SVG-surface functions */
 DEFINE_SURFACE(svg)
@@ -2088,22 +2070,10 @@ Init_cairo_surface (void)
   /* XLib-surface */
   rb_cCairo_XLibSurface =
     rb_define_class_under (rb_mCairo, "XLibSurface", rb_cCairo_Surface);
-#ifdef CAIRO_HAS_XLIB_SURFACE
-  rb_define_method (rb_cCairo_XLibSurface, "initialize",
-                    cr_xlib_surface_initialize, -1);
-
-  RB_CAIRO_DEF_SETTERS (rb_cCairo_XLibSurface);
-#endif
 
   /* XCB-surface */
   rb_cCairo_XCBSurface =
     rb_define_class_under (rb_mCairo, "XCBSurface", rb_cCairo_Surface);
-#ifdef CAIRO_HAS_XCB_SURFACE
-  rb_define_method (rb_cCairo_XCBSurface, "initialize",
-                    cr_xcb_surface_initialize, -1);
-
-  RB_CAIRO_DEF_SETTERS (rb_cCairo_XCBSurface);
-#endif
 
   /* SVG-surface */
   rb_cCairo_SVGSurface =
