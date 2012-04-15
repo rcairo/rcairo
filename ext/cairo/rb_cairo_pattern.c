@@ -29,6 +29,11 @@ static ID id_parse, id_to_rgb, id_to_a, id_inspect, id_new, id_call;
 
 #define _SELF(self)  (RVAL2CRPATTERN(self))
 
+#if CAIRO_CHECK_VERSION(1, 11, 4)
+#  define RB_CAIRO_HAS_MESH_PATTERN
+#  define RB_CAIRO_HAS_RASTER_SOURCE_PATTERN
+#endif
+
 static VALUE
 cr_color_parse (VALUE color)
 {
@@ -78,6 +83,55 @@ cr_pattern_get_klass (cairo_pattern_t *pattern)
   return klass;
 }
 
+static VALUE
+cr_pattern_solid_supported_p (VALUE klass)
+{
+  return Qtrue;
+}
+
+static VALUE
+cr_pattern_surface_supported_p (VALUE klass)
+{
+  return Qtrue;
+}
+
+static VALUE
+cr_pattern_gradient_supported_p (VALUE klass)
+{
+  return Qtrue;
+}
+
+static VALUE
+cr_pattern_linear_supported_p (VALUE klass)
+{
+  return Qtrue;
+}
+
+static VALUE
+cr_pattern_radial_supported_p (VALUE klass)
+{
+  return Qtrue;
+}
+
+static VALUE
+cr_pattern_mesh_supported_p (VALUE klass)
+{
+#ifdef RB_CAIRO_HAS_MESH_PATTERN
+  return Qtrue;
+#else
+  return Qfalse;
+#endif
+}
+
+static VALUE
+cr_pattern_raster_source_supported_p (VALUE klass)
+{
+#ifdef RB_CAIRO_HAS_RASTER_SOURCE_PATTERN
+  return Qtrue;
+#else
+  return Qfalse;
+#endif
+}
 
 cairo_pattern_t *
 rb_cairo_pattern_from_ruby_object (VALUE obj)
@@ -123,9 +177,12 @@ cr_pattern_allocate (VALUE klass)
 }
 
 static VALUE
-cr_pattern_initialize (VALUE self)
+cr_pattern_initialize (int argc, VALUE *argv, VALUE self)
 {
-  rb_raise (rb_eTypeError, "abstract class");
+  rb_raise(rb_eNotImpError,
+           "%s class instantiation isn't supported on this cairo installation",
+           rb_obj_classname(self));
+
   return Qnil;
 }
 
@@ -452,7 +509,7 @@ cr_radial_pattern_get_radial_circles (VALUE self)
 /* Cairo::SurfacePattern */
 /* none */
 
-#if CAIRO_CHECK_VERSION(1, 11, 4)
+#ifdef RB_CAIRO_HAS_MESH_PATTERN
 /* Cairo::MeshPattern */
 static VALUE
 cr_mesh_pattern_initialize (VALUE self)
@@ -683,8 +740,10 @@ cr_mesh_pattern_get_control_point (VALUE self,
   rb_cairo_check_status (status);
   return rb_ary_new3 (2, rb_float_new (x), rb_float_new (y));
 }
+#endif
 
-/* Cairo::RasterPattern */
+#ifdef RB_CAIRO_HAS_RASTER_SOURCE_PATTERN
+/* Cairo::RasterSourcePattern */
 static cairo_surface_t *
 cr_raster_source_acquire_callback (cairo_pattern_t *pattern,
                                    void *callback_data,
@@ -978,7 +1037,22 @@ Init_cairo_pattern (void)
 
   rb_define_alloc_func (rb_cCairo_Pattern, cr_pattern_allocate);
 
-  rb_define_method (rb_cCairo_Pattern, "initialize", cr_pattern_initialize, 0);
+  rb_define_singleton_method (rb_cCairo_Pattern, "solid_supported?",
+                              cr_pattern_solid_supported_p, 0);
+  rb_define_singleton_method (rb_cCairo_Pattern, "surface_supported?",
+                              cr_pattern_surface_supported_p, 0);
+  rb_define_singleton_method (rb_cCairo_Pattern, "gradient_supported?",
+                              cr_pattern_gradient_supported_p, 0);
+  rb_define_singleton_method (rb_cCairo_Pattern, "linear_supported?",
+                              cr_pattern_linear_supported_p, 0);
+  rb_define_singleton_method (rb_cCairo_Pattern, "radial_supported?",
+                              cr_pattern_radial_supported_p, 0);
+  rb_define_singleton_method (rb_cCairo_Pattern, "mesh_supported?",
+                              cr_pattern_mesh_supported_p, 0);
+  rb_define_singleton_method (rb_cCairo_Pattern, "raster_source_supported?",
+                              cr_pattern_raster_source_supported_p, 0);
+
+  rb_define_method (rb_cCairo_Pattern, "initialize", cr_pattern_initialize, -1);
 
   rb_define_method (rb_cCairo_Pattern, "set_matrix", cr_pattern_set_matrix, 1);
   rb_define_method (rb_cCairo_Pattern, "matrix", cr_pattern_get_matrix, 0);
@@ -1065,7 +1139,7 @@ Init_cairo_pattern (void)
   rb_cCairo_MeshPattern =
     rb_define_class_under (rb_mCairo, "MeshPattern",
                            rb_cCairo_Pattern);
-#if CAIRO_CHECK_VERSION(1, 11, 4)
+#ifdef RB_CAIRO_HAS_MESH_PATTERN
   rb_define_method (rb_cCairo_MeshPattern, "initialize",
                     cr_mesh_pattern_initialize, 0);
   rb_define_method (rb_cCairo_MeshPattern, "begin_patch",
@@ -1100,7 +1174,7 @@ Init_cairo_pattern (void)
   rb_cCairo_RasterSourcePattern =
     rb_define_class_under (rb_mCairo, "RasterSourcePattern",
                            rb_cCairo_Pattern);
-#if CAIRO_CHECK_VERSION(1, 11, 4)
+#ifdef RB_CAIRO_HAS_RASTER_SOURCE_PATTERN
   rb_define_method (rb_cCairo_RasterSourcePattern, "initialize",
                     cr_raster_source_pattern_initialize, -1);
   rb_define_method (rb_cCairo_RasterSourcePattern, "acquire",

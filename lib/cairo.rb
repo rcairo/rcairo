@@ -144,6 +144,7 @@ require 'cairo/papers'
 require 'cairo/context'
 require 'cairo/device'
 require 'cairo/surface'
+require 'cairo/pattern'
 require 'cairo/path'
 
 module Cairo

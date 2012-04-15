@@ -1,8 +1,12 @@
 require "cairo"
 require "tempfile"
 
-class RasterPatternSourceTest < Test::Unit::TestCase
+class RasterSourcePatternTest < Test::Unit::TestCase
   include CairoTestUtils
+
+  def setup
+    only_pattern("RasterSource")
+  end
 
   def test_acquire_and_release
     Cairo::ImageSurface.new(100, 100) do |surface|
@@ -36,6 +40,11 @@ class RasterPatternSourceTest < Test::Unit::TestCase
   end
 
   class SnapshotTest < self
+    def setup
+      super
+      only_surface("Recording")
+    end
+
     def test_success
       Cairo::RecordingSurface.new(0, 0, 100, 100) do |surface|
         Cairo::Context.new(surface) do |context|
@@ -75,6 +84,11 @@ class RasterPatternSourceTest < Test::Unit::TestCase
   end
 
   class CopyTest < self
+    def setup
+      super
+      only_surface("Script")
+    end
+
     def test_success
       output = StringIO.new
       device = Cairo::ScriptDevice.new(output)

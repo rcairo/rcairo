@@ -30,4 +30,10 @@ module CairoTestUtils
       omit("Only for #{name} device available")
     end
   end
+
+  def only_pattern(name)
+    unless Cairo::Pattern.supported?(name)
+      omit("Only for #{name} device available")
+    end
+  end
 end
