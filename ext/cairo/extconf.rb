@@ -68,7 +68,115 @@ checking_for(checking_message("Mac OS X")) do
   end
 end
 
-PKGConfig.have_package(package, major, minor, micro) or exit 1
+def package_platform
+  if File.exist?("/etc/debian_version")
+    :debian
+  elsif File.exist?("/etc/fedora-release")
+    :fedora
+  elsif File.exist?("/etc/redhat-release")
+    :redhat
+  else
+    :unknown
+  end
+end
+
+def super_user?
+  Process.uid.zero?
+end
+
+def normalize_native_package_info(native_package_info)
+  native_package_info ||= {}
+  native_package_info = native_package_info.dup
+  native_package_info[:fedora] ||= native_package_info[:redhat]
+  native_package_info
+end
+
+def install_missing_native_package(native_package_info)
+  platform = package_platform
+  native_package_info = normalize_native_package_info(native_package_info)
+  package = native_package_info[platform]
+  return false if package.nil?
+
+  case platform
+  when :debian
+    install_command = "apt-get install -V -y #{package}"
+  when :fedora, :redhat
+    install_command = "yum install -y #{package}"
+  else
+    return false
+  end
+
+  unless super_user?
+    sudo = find_executable("sudo")
+  end
+
+  installing_message = "installing '#{package}' native package... "
+  message("%s", installing_message)
+  need_root_priviledge = false
+  if super_user?
+    succeeded = xsystem(install_command)
+  else
+    if sudo
+      install_command = "#{sudo} #{install_command}"
+      succeeded = xsystem(install_command)
+    else
+      need_root_priviledge = true
+    end
+  end
+
+  if need_root_priviledge
+    result_message = "require root privilege"
+  else
+    result_message = succeeded ? "succeeded" : "failed"
+  end
+  Logging.postpone do
+    "#{installing_message}#{result_message}\n"
+  end
+  message("#{result_message}\n")
+
+  error_message = nil
+  if need_root_priviledge
+    error_message = <<-EOM
+'#{package}' native package is required.
+run the following command as super user to install required native package:
+  \# #{install_command}
+EOM
+  else
+    unless succeeded
+      error_message = <<-EOM
+failed to run '#{install_command}'.
+EOM
+    end
+  end
+  if error_message
+    message("%s", error_message)
+    Logging.message("%s", error_message)
+  end
+
+  Logging.message("--------------------\n\n")
+
+  succeeded
+end
+
+def required_pkg_config_package(package_info, native_package_info=nil)
+  if package_info.is_a?(Array)
+    required_package_info = package_info
+  else
+    required_package_info = [package_info]
+  end
+  return true if PKGConfig.have_package(*required_package_info)
+
+  native_package_info ||= {}
+  return false unless install_missing_native_package(native_package_info)
+
+  PKGConfig.have_package(*required_package_info)
+end
+
+unless required_pkg_config_package([package, major, minor, micro],
+                                   :debian => "libcairo2-dev",
+                                   :redhat => "cairo-devel")
+  exit(false)
+end
 
 $defs << "-DRB_CAIRO_COMPILATION"
 
