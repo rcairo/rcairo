@@ -1,3 +1,26 @@
+Release 1.12.2 (2012-06-03) Kouhei Sutou <kou@cozmixng.org>)
+============================================================
+
+Improvements
+------------
+
+  * Added Cairo::Device.supported?.
+    [GitHub#11] [Reported by Cédric Boutillier]
+  * Added Cairo::Device.gl_texture_supported?.
+  * Added Cairo::Surface.supported?.
+  * Defined all surfaces even if a surface isn't available. Use
+    Cairo::Surface.XXX_supported? method to check surface
+    availability.
+  * Added Cairo::Pattern.xxx_supported?.
+    [GitHub#12] [Reported by Mamoru Tasaka]
+  * [experimental] Supported auto native package install.
+
+Thanks
+------
+
+  * Cédric Boutillier
+  * Mamoru Tasaka
+
 Release 1.12.1 (2012-03-31) Kouhei Sutou <kou@cozmixng.org>)
 ============================================================
 
