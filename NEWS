@@ -1,5 +1,5 @@
-Release 1.12.2 (2012-06-03) Kouhei Sutou <kou@cozmixng.org>)
-============================================================
+Release 1.12.2 (2012-06-03) Kouhei Sutou <kou@cozmixng.org>
+===========================================================
 
 Improvements
 ------------
@@ -21,8 +21,8 @@ Thanks
   * Cédric Boutillier
   * Mamoru Tasaka
 
-Release 1.12.1 (2012-03-31) Kouhei Sutou <kou@cozmixng.org>)
-============================================================
+Release 1.12.1 (2012-03-31) Kouhei Sutou <kou@cozmixng.org>
+===========================================================
 
 Improvements
 ------------
@@ -40,8 +40,8 @@ Thanks
 
   * Eric C.
 
-Release 1.12.0 (2012-03-25) Kouhei Sutou <kou@cozmixng.org>)
-============================================================
+Release 1.12.0 (2012-03-25) Kouhei Sutou <kou@cozmixng.org>
+===========================================================
 
 Improvements
 ------------
@@ -68,8 +68,8 @@ Thanks
 
   * Vasily Fedoseyev
 
-Release 1.10.2 (2011-11-20) Kouhei Sutou <kou@cozmixng.org>)
-============================================================
+Release 1.10.2 (2011-11-20) Kouhei Sutou <kou@cozmixng.org>
+===========================================================
 
 Fixes
 -----
@@ -81,8 +81,8 @@ Thanks
 
   * Will Bryant
 
-Release 1.10.1 (2011-10-12) Kouhei Sutou <kou@cozmixng.org>)
-============================================================
+Release 1.10.1 (2011-10-12) Kouhei Sutou <kou@cozmixng.org>
+===========================================================
 
 Features
 --------
@@ -106,7 +106,7 @@ Thanks
   * Matt Bramlage
   * Nikolai Weibull
 
-Release 1.10.0 (2010-09-12) Kouhei Sutou <kou@cozmixng.org>)
+Release 1.10.0 (2010-09-12) Kouhei Sutou <kou@cozmixng.org>
 ===========================================================
 
 Features
@@ -114,8 +114,8 @@ Features
 
   * Support cairo 1.10.0.
 
-Release 1.8.5 (2010-08-28) Kouhei Sutou <kou@cozmixng.org>)
-===========================================================
+Release 1.8.5 (2010-08-28) Kouhei Sutou <kou@cozmixng.org>
+==========================================================
 
 Fixes
 -----
@@ -129,8 +129,8 @@ Thanks
   * OBATA Akio
   * Masaya TARUI
 
-Release 1.8.3 (2010-08-26) Kouhei Sutou <kou@cozmixng.org>)
-===========================================================
+Release 1.8.3 (2010-08-26) Kouhei Sutou <kou@cozmixng.org>
+==========================================================
 
 Features
 --------
@@ -145,24 +145,24 @@ Thanks
   * Tasuku SUENAGA
   * kimura wataru
 
-Release 1.8.1 (2009-12-13) Kouhei Sutou <kou@cozmixng.org>)
-===========================================================
+Release 1.8.1 (2009-12-13) Kouhei Sutou <kou@cozmixng.org>
+==========================================================
 
 Features
 --------
   * Support cairo 1.8.8.
   * Improve auto .pc detection.
 
-Release 1.8.0 (2008-09-26) Kouhei Sutou <kou@cozmixng.org>)
-===========================================================
+Release 1.8.0 (2008-09-26) Kouhei Sutou <kou@cozmixng.org>
+==========================================================
 
 Features
 --------
   * Support cairo 1.8.0.
   * Resupport cairo 1.2.x. (reported by Yusuke ENDOH)
 
-Release 1.7.0 (2008-08-17) Kouhei Sutou <kou@cozmixng.org>)
-===========================================================
+Release 1.7.0 (2008-08-17) Kouhei Sutou <kou@cozmixng.org>
+==========================================================
 
 Features
 --------
@@ -174,8 +174,8 @@ Features
   * Resupport ruby 1.9. (suggested by Paul van Tilburg)
   * Fix README. (suggested by Davide Rambaldi)
 
-Release 1.6.3 (2008-07-19) Kouhei Sutou <kou@cozmixng.org>)
-===========================================================
+Release 1.6.3 (2008-07-19) Kouhei Sutou <kou@cozmixng.org>
+==========================================================
 
 Features
 --------
@@ -184,8 +184,8 @@ Features
   * Improve building on MacOS X. (suggested by Carsten Bormann)
   * Fix install location of cairo.so. (suggested by OBATA Akio)
 
-Release 1.6.2 (2008-06-14) Kouhei Sutou <kou@cozmixng.org>)
-===========================================================
+Release 1.6.2 (2008-06-14) Kouhei Sutou <kou@cozmixng.org>
+==========================================================
 
 Features
 --------
@@ -194,8 +194,8 @@ Features
   * Fix build failure with old Ruby.
   * Fix build failure with Ruby 1.9.
 
-Release 1.6.1 (2008-04-24) Kouhei Sutou <kou@cozmixng.org>)
-===========================================================
+Release 1.6.1 (2008-04-24) Kouhei Sutou <kou@cozmixng.org>
+==========================================================
 
 Features
 --------
@@ -203,8 +203,8 @@ Features
   * Support PKG_CONFIG_LIBDIR. (thanks to OBATA Akio)
   * Support RubyGems for mswin32.
 
-Release 1.6.0 (2008-04-11) Kouhei Sutou <kou@cozmixng.org>)
-===========================================================
+Release 1.6.0 (2008-04-11) Kouhei Sutou <kou@cozmixng.org>
+==========================================================
 
 Features
 --------
@@ -217,8 +217,8 @@ Features
     * Improve size specification of Cairo::PSSurface,
       Cairo::PDFSurface, Cairo::SVGSurface.
 
-Release 1.5.1 (2008-01-11) Kouhei Sutou <kou@cozmixng.org>)
-===========================================================
+Release 1.5.1 (2008-01-11) Kouhei Sutou <kou@cozmixng.org>
+==========================================================
 
 Features
 --------
@@ -231,8 +231,8 @@ Features
     * Cairo::WIN32Surface is still available for backward compatibility but
       don't use in newly written code.
 
-Release 1.5.0 (2007-05-27) Kouhei Sutou <kou@cozmixng.org>)
-===========================================================
+Release 1.5.0 (2007-05-27) Kouhei Sutou <kou@cozmixng.org>
+==========================================================
 
 Many API improvement.
 
