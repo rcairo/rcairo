@@ -111,7 +111,9 @@ http://cairographics.org/cgi-bin/mailman/listinfo/cairo
 * Masayas TARUI:
   * Windows support.
 * Stefan Salewski: reports a bug.
-* Mamoru Tasaka: reports a bug.
+* Mamoru Tasaka: reports bugs.
 * Nikolai Weibull: reports problems.
 * Will Bryant: reports a bug.
 * Vasily Fedoseyev: fixes a bug.
+* Eric C.: reports a bug.
+* Cédric Boutillier: reports a bug.
