@@ -117,3 +117,4 @@ http://cairographics.org/cgi-bin/mailman/listinfo/cairo
 * Vasily Fedoseyev: fixes a bug.
 * Eric C.: reports a bug.
 * Cédric Boutillier: reports a bug.
+* tmtms: reports a bug.
