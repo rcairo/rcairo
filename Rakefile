@@ -27,11 +27,7 @@ Gem::PackageTask.new(spec) do |pkg|
   pkg.need_tar_gz = true
 end
 
-document_task = Packnga::DocumentTask.new(spec) do |t|
-  t.yard do |yard_task|
-    yard_task.files += FileList["ext/**/*.c"]
-    # yard_task.options += ["--markup", "textile"]
-  end
+Packnga::DocumentTask.new(spec) do |task|
 end
 
 Packnga::ReleaseTask.new(spec) do |task|

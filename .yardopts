@@ -1,0 +1,4 @@
+--output-dir doc/reference/en
+--use-cache .yardoc
+lib/**/*.rb
+ext/**/*.c
