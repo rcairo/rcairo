@@ -47,27 +47,6 @@ checking_for(checking_message("Win32 OS")) do
   end
 end
 
-checking_for(checking_message("Mac OS X")) do
-  case RUBY_PLATFORM
-  when /darwin/
-    if have_macro("CAIRO_HAS_QUARTZ_SURFACE", ["cairo.h"])
-      checking_for("RubyCocoa") do
-        begin
-          require 'osx/cocoa'
-          $defs << "-DHAVE_RUBY_COCOA"
-          $DLDFLAGS << " -Wl,-framework,RubyCocoa"
-          true
-        rescue LoadError
-          false
-        end
-      end
-    end
-    true
-  else
-    false
-  end
-end
-
 def package_platform
   if File.exist?("/etc/debian_version")
     :debian
@@ -190,6 +169,27 @@ unless required_pkg_config_package([package, major, minor, micro],
                                    :homebrew => "cairo",
                                    :macports => "cairo")
   exit(false)
+end
+
+checking_for(checking_message("Mac OS X")) do
+  case RUBY_PLATFORM
+  when /darwin/
+    if have_macro("CAIRO_HAS_QUARTZ_SURFACE", ["cairo.h"])
+      checking_for("RubyCocoa") do
+        begin
+          require 'osx/cocoa'
+          $defs << "-DHAVE_RUBY_COCOA"
+          $DLDFLAGS << " -Wl,-framework,RubyCocoa"
+          true
+        rescue LoadError
+          false
+        end
+      end
+    end
+    true
+  else
+    false
+  end
 end
 
 $defs << "-DRB_CAIRO_COMPILATION"
