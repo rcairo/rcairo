@@ -1,3 +1,11 @@
+Release 1.12.4 (2013-03-11) Kouhei Sutou <kou@cozmixng.org>
+===========================================================
+
+Improvements
+------------
+
+  * Added Windows binary for Ruby 2.0.0.
+
 Release 1.12.3 (2012-12-04) Kouhei Sutou <kou@cozmixng.org>
 ===========================================================
 
