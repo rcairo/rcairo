@@ -4,6 +4,7 @@ require 'English'
 
 require 'find'
 require 'fileutils'
+require 'open-uri'
 require 'rubygems'
 require 'rubygems/package_task'
 require 'yard'
@@ -49,47 +50,359 @@ Rake::ExtensionTask.new("cairo", spec) do |ext|
   end
 end
 
-task 'cross' => "download_windows_binaries"
+class Package < Struct.new(:name,
+                           :label,
+                           :version,
+                           :compression_method,
+                           :download_site,
+                           :download_base_url,
+                           :windows)
+  def initialize(parameters)
+    super()
+    parameters.each do |key, value|
+      __send__("#{key}=", value)
+    end
+  end
 
-def download_windows_binaries(binary_dir)
-  base_url = "http://ftp.gnome.org/pub/gnome/binaries/win32/dependencies/"
-  dependencies = [
-                  ["cairo", "1.10.2-2"],
-                  ["libpng", "1.4.12-1"],
-                  ["zlib", "1.2.5-2"],
-                  ["expat", "2.1.0-1"],
-                  ["fontconfig", "2.8.0-2"],
-                  ["freetype", "2.4.10-1"],
-                 ]
-  dependencies.each do |name, version|
-    ["", "-dev"].each do |suffix|
-      file_name = "#{name}#{suffix}_#{version}_win32.zip"
-      full_file_name = File.join(binary_dir, file_name)
-      next if File.exist?(full_file_name)
-      open("#{base_url}#{file_name}", "rb") do |input|
-        File.open(full_file_name, "wb") do |output|
-          output.print(input.read)
+  def label
+    super || name
+  end
+
+  def base_name
+    "#{name}-#{version}"
+  end
+
+  def compression_method
+    super || "xz"
+  end
+
+  def archive_path
+    "#{base_name}.tar.#{compression_method}"
+  end
+
+  def archive_url
+    "#{download_base_url}/#{archive_path}"
+  end
+
+  def download_base_url
+    super || download_site_base_url
+  end
+
+  def download_site_base_url
+    case download_site
+    when :cairo
+      base_url = "http://cairographics.org/releases"
+    when :gnome
+      base_url = "http://ftp.gnome.org/pub/gnome/sources"
+      release_series = version.gsub(/\A(\d+\.\d+).+\z/, '\1')
+      base_url << "/#{name}/#{release_series}"
+    else
+      base_url = nil
+    end
+    base_url
+  end
+
+  def windows
+    Windows.new(super || {})
+  end
+
+  class Windows < Struct.new(:builder,
+                             :build_host,
+                             :configure_args,
+                             :built_file)
+    def initialize(parameters)
+      super()
+      parameters.each do |key, value|
+        __send__("#{key}=", value)
+      end
+    end
+
+    def build_host
+      "i686-w64-mingw32"
+    end
+
+    def configure_args
+      super || []
+    end
+  end
+end
+
+class WindowsTask
+  include Rake::DSL
+
+  def initialize(spec, base_dir=".")
+    @spec = spec
+    @base_dir = Pathname.new(base_dir).expand_path
+    yield(self)
+  end
+
+  def define
+    define_download_task
+  end
+
+  def packages=(packages)
+    @packages = packages.collect do |parameters|
+      Package.new(parameters)
+    end
+  end
+
+  private
+  def define_download_task
+    define_source_download_task
+    define_build_task
+  end
+
+  def define_source_download_task
+    namespace :source do
+      tasks = []
+      @packages.each do |package|
+        namespace package.name do
+          archive_path = downloaded_archive_path(package)
+          file archive_path.to_s do
+            mkdir_p(archive_path.dirname.to_s)
+            download(package, archive_path)
+          end
+
+          desc "Download #{package.name} source"
+          task :download => archive_path.to_s
+          tasks << (Rake.application.current_scope + ["download"]).join(":")
         end
       end
-      sh("unzip", "-o", full_file_name, "-d", binary_dir)
+      desc "Download sources"
+      task :download => tasks
     end
   end
-  Dir.glob("#{binary_dir}/lib/pkgconfig/*.pc") do |pc_path|
-    pc = File.read(pc_path)
-    pc = pc.gsub(/\Aprefix=.+$/) {"prefix=#{File.expand_path(binary_dir)}"}
-    File.open(pc_path, "w") do |pc_file|
-      pc_file.print(pc)
+
+  def download(package, archive_path)
+    open(package.archive_url) do |downloaded_archive|
+      begin
+        archive_path.open("wb") do |archive_file|
+          buffer = ""
+          while downloaded_archive.read(4096, buffer)
+            archive_file.print(buffer)
+          end
+        end
+      rescue Exception
+        rm_rf(archive_path.to_s)
+        raise
+      end
     end
+  end
+
+  def define_build_task
+    namespace :windows do
+      tasks = []
+      @packages.each do |package|
+        namespace package.name do
+          built_file = install_dir + package.windows.built_file
+          file built_file.to_s do
+            Rake::Task["source:#{package.name}:download"].invoke
+            build(package)
+          end
+
+          desc "Build #{package.label} package"
+          task :build => built_file.to_s
+          tasks << (Rake.application.current_scope + ["build"]).join(":")
+        end
+      end
+      desc "Build packages"
+      task :build => tasks
+    end
+  end
+
+  def build(package)
+    ENV["PKG_CONFIG_LIBDIR"] = "#{install_dir}/lib/pkgconfig"
+    ENV["PKG_CONFIG_PATH"] = nil
+
+    package_build_dir = build_dir + package.name
+    rm_rf(package_build_dir.to_s)
+    mkdir_p(package_build_dir.to_s)
+
+    archive_path = downloaded_archive_path(package).expand_path
+
+    Dir.chdir(package_build_dir.to_s) do
+      sh("tar", "xf", archive_path.to_s)
+      Dir.chdir(package.base_name.to_s) do
+        custom_builder = package.windows.builder
+        if custom_builder
+          custom_builder.build(package, install_dir)
+        else
+          build_with_gnu_build_system(package)
+        end
+        package_license_dir = license_dir + package.name
+        package_license_files = Dir.glob("{README*,AUTHORS,COPYING*}")
+        mkdir_p(package_license_dir.to_s)
+        cp(package_license_files, package_license_dir.to_s)
+      end
+    end
+  end
+
+  def build_with_gnu_build_system(package)
+    configure_args = [
+      "CPPFLAGS=#{cppflags(package)}",
+      "LDFLAGS=#{ldflags(package)}",
+      "--prefix=#{install_dir}",
+      "--host=#{package.windows.build_host}",
+    ]
+    configure_args += package.windows.configure_args
+    sh("./configure", *configure_args)
+    ENV["GREP_OPTIONS"] = "--text"
+    sh("nice", "make", *build_make_args(package))
+    sh("nice", "make", "install", *install_make_args(package))
+  end
+
+  def cppflags(package)
+    include_paths = [
+      install_dir + "include",
+    ]
+    flags = include_paths.collect do |path|
+      "-I#{path}"
+    end
+    flags.join(" ")
+  end
+
+  def ldflags(package)
+    library_paths = [
+      install_dir + "lib",
+    ]
+    flags = library_paths.collect do |path|
+      "-L#{path}"
+    end
+    flags.join(" ")
+  end
+
+  def build_make_args(package)
+    args = []
+    make_n_jobs = ENV["MAKE_N_JOBS"]
+    args << "-j#{make_n_jobs}" if make_n_jobs
+    args
+  end
+
+  def install_make_args(package)
+    []
+  end
+
+  def tmp_dir
+    @base_dir + "tmp"
+  end
+
+  def download_dir
+    tmp_dir + "download"
+  end
+
+  def build_dir
+    tmp_dir + "build"
+  end
+
+  def install_dir
+    @base_dir + "vendor" + "local"
+  end
+
+  def license_dir
+    install_dir + "share" + "license"
+  end
+
+  def downloaded_archive_path(package)
+    download_dir + package.archive_path
   end
 end
 
-task "download_windows_binaries" do
-  require 'open-uri'
-  unless File.exist?(binary_dir)
-    mkdir_p(binary_dir)
-    download_windows_binaries(binary_dir)
+class ZlibBuilder
+  include Rake::DSL
+
+  def build(package, install_dir)
+    sh("make",
+       "PREFIX=#{package.windows.build_host}-",
+       "-f",
+       "win32/Makefile.gcc")
+    include_path = install_dir + "include"
+    library_path = install_dir + "lib"
+    binary_path  = install_dir + "bin"
+    sh("make",
+       "INCLUDE_PATH=#{include_path}",
+       "LIBRARY_PATH=#{library_path}",
+       "BINARY_PATH=#{binary_path}",
+       "SHARED_MODE=1",
+       "-f",
+       "win32/Makefile.gcc",
+       "install")
   end
 end
+
+windows_task = WindowsTask.new(spec) do |task|
+  task.packages = [
+    {
+      :name => "zlib",
+      :version => "1.2.8",
+      :download_base_url => "http://sourceforge.net/projects/libpng/files/zlib/1.2.8",
+      :compression_method => "gz",
+      :windows => {
+        :builder => ZlibBuilder.new,
+        :built_file => "bin/zlib1.dll",
+      },
+    },
+    {
+      :name => "libpng",
+      :version => "1.6.2",
+      :download_base_url => "http://sourceforge.net/projects/libpng/files/libpng16/1.6.2",
+      :windows => {
+        :built_file => "bin/libpng16-16.dll",
+      },
+    },
+    {
+      :name => "freetype",
+      :version => "2.4.12",
+      :download_base_url => "http://sourceforge.net/projects/freetype/files/freetype2/2.4.12",
+      :compression_method => "bz2",
+      :windows => {
+        :built_file => "bin/libfreetype-6.dll",
+      },
+    },
+    {
+      :name => "libxml2",
+      :version => "2.9.1",
+      :download_base_url => "ftp://xmlsoft.org/libxml2",
+      :compression_method => "gz",
+      :windows => {
+        :built_file => "bin/libxml2-2.dll",
+        :configure_args => [
+          "--without-python",
+        ],
+      },
+    },
+    {
+      :name => "fontconfig",
+      :version => "2.10.92",
+      :download_base_url => "http://www.freedesktop.org/software/fontconfig/release",
+      :compression_method => "bz2",
+      :windows => {
+        :built_file => "bin/libfontconfig-1.dll",
+        :configure_args => [
+          "--enable-libxml2",
+          "--disable-docs",
+        ],
+      },
+    },
+    {
+      :name => "pixman",
+      :version => "0.30.0",
+      :download_site => :cairo,
+      :compression_method => "gz",
+      :windows => {
+        :built_file => "bin/libpixman-1-0.dll",
+      },
+    },
+    {
+      :name => "cairo",
+      :version => "1.12.14",
+      :download_site => :cairo,
+      :windows => {
+        :built_file => "bin/libcairo-2.dll",
+      },
+    },
+  ]
+end
+windows_task.define
 
 # for releasing
 task :dist do
