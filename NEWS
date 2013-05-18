@@ -1,3 +1,11 @@
+Release 1.12.5 (2013-05-18) Kouhei Sutou <kou@cozmixng.org>
+===========================================================
+
+Improvements
+------------
+
+  * Updated bundled cairo binary for Windows to 1.12.14.
+
 Release 1.12.4 (2013-03-11) Kouhei Sutou <kou@cozmixng.org>
 ===========================================================
 
