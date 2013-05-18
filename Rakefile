@@ -212,7 +212,9 @@ class WindowsTask
 
   def build(package)
     ENV["PKG_CONFIG_LIBDIR"] = "#{install_dir}/lib/pkgconfig"
-    ENV["PKG_CONFIG_PATH"] = nil
+    ENV["PKG_CONFIG_PATH"] = [
+      ruby_glib2_pkg_config_path,
+    ].join(":")
 
     package_build_dir = build_dir + package.name
     rm_rf(package_build_dir.to_s)
@@ -304,6 +306,14 @@ class WindowsTask
 
   def downloaded_archive_path(package)
     download_dir + package.archive_path
+  end
+
+  def ruby_gnome2_dir
+    @base_dir.parent + "ruby-gnome2.win32"
+  end
+
+  def ruby_glib2_pkg_config_path
+    ruby_gnome2_dir + "glib2/vendor/local/lib/pkgconfig"
   end
 end
 
@@ -398,6 +408,9 @@ windows_task = WindowsTask.new(spec) do |task|
       :download_site => :cairo,
       :windows => {
         :built_file => "bin/libcairo-2.dll",
+        :configure_args => [
+          "--enable-gobject",
+        ],
       },
     },
   ]
