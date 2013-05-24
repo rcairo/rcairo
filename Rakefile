@@ -109,7 +109,9 @@ class Package < Struct.new(:name,
   class Windows < Struct.new(:builder,
                              :build_host,
                              :configure_args,
-                             :built_file)
+                             :built_file,
+                             :patches,
+                             :need_autoreconf)
     def initialize(parameters)
       super()
       parameters.each do |key, value|
@@ -123,6 +125,14 @@ class Package < Struct.new(:name,
 
     def configure_args
       super || []
+    end
+
+    def patches
+      super || []
+    end
+
+    def need_autoreconf?
+      need_autoreconf
     end
   end
 end
@@ -225,6 +235,10 @@ class WindowsTask
     Dir.chdir(package_build_dir.to_s) do
       sh("tar", "xf", archive_path.to_s)
       Dir.chdir(package.base_name.to_s) do
+        package.windows.patches.each do |patch|
+          sh("patch", "-p1", "--input", (patches_dir + patch).to_s)
+        end
+        sh("autoreconf", "--install") if package.windows.need_autoreconf?
         custom_builder = package.windows.builder
         if custom_builder
           custom_builder.build(package, install_dir)
@@ -306,6 +320,10 @@ class WindowsTask
 
   def downloaded_archive_path(package)
     download_dir + package.archive_path
+  end
+
+  def patches_dir
+    @base_dir + "patches"
   end
 
   def ruby_gnome2_dir
@@ -391,6 +409,10 @@ windows_task = WindowsTask.new(spec) do |task|
           "--enable-libxml2",
           "--disable-docs",
         ],
+        :patches => [
+          "fontconfig-2.10.92-disable-mktemp-s.diff",
+        ],
+        :need_autoreconf => true,
       },
     },
     {

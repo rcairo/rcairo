@@ -1,0 +1,12 @@
+diff -ru fontconfig-2.10.92.orig/configure.ac fontconfig-2.10.92/configure.ac
+--- fontconfig-2.10.92.orig/configure.ac	2013-03-29 16:10:15.000000000 +0900
++++ fontconfig-2.10.92/configure.ac	2013-05-24 21:59:32.255272468 +0900
+@@ -145,7 +145,7 @@
+ # Checks for library functions.
+ AC_FUNC_VPRINTF
+ AC_FUNC_MMAP
+-AC_CHECK_FUNCS([link mkstemp mkostemp _mktemp_s getopt getopt_long getprogname getexecname rand random lrand48 random_r rand_r regcomp regerror regexec regfree fstatvfs fstatfs lstat])
++AC_CHECK_FUNCS([link mkstemp mkostemp getopt getopt_long getprogname getexecname rand random lrand48 random_r rand_r regcomp regerror regexec regfree fstatvfs fstatfs lstat])
+ 
+ dnl AC_CHECK_FUNCS doesn't check for header files.
+ dnl posix_fadvise() may be not available in older libc.
