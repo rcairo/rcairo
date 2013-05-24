@@ -1,3 +1,19 @@
+Release 1.12.6 (2013-05-24) Kouhei Sutou <kou@cozmixng.org>
+===========================================================
+
+Improvements
+------------
+
+  * Supported Windows XP again.
+    [ruby-list:49392][Reported by 5.5]
+    [ruby-list:49401][Researched by myokoym]
+
+Thanks
+------
+
+  * 5.5
+  * myokoym
+
 Release 1.12.5 (2013-05-18) Kouhei Sutou <kou@cozmixng.org>
 ===========================================================
 
