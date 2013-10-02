@@ -935,6 +935,8 @@ cr_image_surface_create_for_data (VALUE self, VALUE rb_data, VALUE format,
 {
   unsigned char *data;
 
+  rb_data = StringValue (rb_data);
+  rb_str_modify (rb_data);
   data = (unsigned char *)StringValuePtr (rb_data);
 
   return cairo_image_surface_create_for_data (data,
