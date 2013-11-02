@@ -175,7 +175,7 @@ class WindowsTask
 
           desc "Download #{package.name} source"
           task :download => archive_path.to_s
-          tasks << (Rake.application.current_scope + ["download"]).join(":")
+          tasks << join_task_name(Rake.application.current_scope, "download")
         end
       end
       desc "Download sources"
@@ -212,11 +212,19 @@ class WindowsTask
 
           desc "Build #{package.label} package"
           task :build => built_file.to_s
-          tasks << (Rake.application.current_scope + ["build"]).join(":")
+          tasks << join_task_name(Rake.application.current_scope, "build")
         end
       end
       desc "Build packages"
       task :build => tasks
+    end
+  end
+
+  def join_task_name(current_scope, task_name)
+    if Rake.const_defined?(:Scope)
+      current_scope.path_with_task_name(task_name)
+    else
+      (current_scope + [task_name]).join(":")
     end
   end
 
