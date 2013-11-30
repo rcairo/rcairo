@@ -5,7 +5,7 @@ cairo_ext_dir = File.join(base_dir, "ext", "cairo")
 
 guess_rcairo_version = lambda do |cairo_ext_dir|
   version = {}
-  File.open(File.join(cairo_ext_dir, "rb_cairo.h")) do |rb_cairo_h|
+  File.open(File.join(cairo_ext_dir, "rb_cairo.h"), "r:utf-8") do |rb_cairo_h|
     rb_cairo_h.each_line do |line|
       case line
       when /\A#define RB_CAIRO_VERSION_([A-Z]+) (\d+)/
