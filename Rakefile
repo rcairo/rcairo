@@ -158,8 +158,30 @@ class WindowsTask
 
   private
   def define_download_task
+    define_gcc_task
     define_source_download_task
     define_build_task
+  end
+
+  def define_gcc_task
+    namespace :windows do
+      namespace :gcc do
+        namespace :dll do
+          desc "Bundle GCC related DLLs"
+          task :bundle do
+            dll_names = ["libgcc_s_sjlj-1.dll"]
+            dll_names.each do |dll_name|
+              cp(absolete_gcc_dll_path(dll_name), install_dir + "bin")
+            end
+          end
+        end
+      end
+    end
+  end
+
+  def absolete_gcc_dll_path(dll_name)
+    build_host = @packages.first.windows.build_host
+    `#{build_host}-gcc -print-file-name=#{dll_name}`.strip
   end
 
   def define_source_download_task
@@ -216,7 +238,7 @@ class WindowsTask
         end
       end
       desc "Build packages"
-      task :build => tasks
+      task :build => ["windows:gcc:dll:bundle"] + tasks
     end
   end
 
