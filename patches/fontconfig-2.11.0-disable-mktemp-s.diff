@@ -1,7 +1,6 @@
-diff -ru fontconfig-2.10.92.orig/configure.ac fontconfig-2.10.92/configure.ac
---- fontconfig-2.10.92.orig/configure.ac	2013-03-29 16:10:15.000000000 +0900
-+++ fontconfig-2.10.92/configure.ac	2013-05-24 21:59:32.255272468 +0900
-@@ -145,7 +145,7 @@
+--- fontconfig-2.11.0.orig/configure.ac	2013-10-11 13:27:42.000000000 +0900
++++ fontconfig-2.11.0/configure.ac	2013-12-23 21:50:42.418095806 +0900
+@@ -148,7 +148,7 @@
  # Checks for library functions.
  AC_FUNC_VPRINTF
  AC_FUNC_MMAP
