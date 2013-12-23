@@ -229,6 +229,7 @@ class WindowsTask
   end
 
   def build(package)
+    ENV["PATH"] = ["#{install_dir}/bin", ENV["PATH"]].join(File::PATH_SEPARATOR)
     ENV["PKG_CONFIG_LIBDIR"] = "#{install_dir}/lib/pkgconfig"
     ENV["PKG_CONFIG_PATH"] = [
       ruby_glib2_pkg_config_path,
