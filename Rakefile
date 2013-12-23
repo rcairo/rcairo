@@ -36,16 +36,27 @@ end
 
 binary_dir = File.join("vendor", "local")
 Rake::ExtensionTask.new("cairo", spec) do |ext|
+  ext.cross_platform = ["x86-mingw32"]
   ext.cross_compile = true
-  ext.cross_compiling do |spec|
-    if /mingw|mswin/ =~ spec.platform.to_s
+  ext.cross_compiling do |_spec|
+    if /mingw|mswin/ =~ _spec.platform.to_s
       binary_files = []
       Find.find(binary_dir) do |name|
         next unless File.file?(name)
         next if /\.zip\z/i =~ name
         binary_files << name
       end
-      spec.files += binary_files
+      _spec.files += binary_files
+
+      stage_path = "#{ext.tmp_dir}/#{_spec.platform}/stage"
+      binary_files.each do |binary_file|
+        stage_binary_file = "#{stage_path}/#{binary_file}"
+        stage_binary_dir = File.dirname(stage_binary_file)
+        directory stage_binary_dir
+        file stage_binary_file => [stage_binary_dir, binary_file] do
+          cp(binary_file, stage_binary_file)
+        end
+      end
     end
   end
 end
