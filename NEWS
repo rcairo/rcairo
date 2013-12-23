@@ -1,3 +1,27 @@
+Release 1.12.7 (2013-12-23) Kouhei Sutou <kou@cozmixng.org>
+===========================================================
+
+Improvements
+------------
+
+  * Added paper sizes of ISO B series and JIS B series.
+    [Patch by 5.5]
+  * Added Windows binary for Ruby 2.1.0.
+  * Updated bundled cairo to 1.12.16 from 1.12.14 for Windows.
+
+Fixes
+-----
+
+  * Fixed a bug that Cairo::ImageSurface.new(cloned_data, ...)
+    changes both the original data and the cloned data.
+    [Patch by Naoyuki Hirayama]
+
+Thanks
+------
+
+  * 5.5
+  * Naoyuki Hirayama
+
 Release 1.12.6 (2013-05-24) Kouhei Sutou <kou@cozmixng.org>
 ===========================================================
 
