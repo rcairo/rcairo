@@ -178,12 +178,13 @@ class WindowsTask
     namespace :windows do
       namespace :gcc do
         namespace :dll do
-          directory (install_dir + "bin").to_s
+          binary_path = install_dir + "bin"
+          directory binary_path.to_s
           desc "Bundle GCC related DLLs"
-          task :bundle => install_dir + "bin" do
+          task :bundle => binary_path do
             dll_names = ["libgcc_s_sjlj-1.dll", "libwinpthread-1.dll"]
             dll_names.each do |dll_name|
-              cp(absolete_gcc_dll_path(dll_name), install_dir + "bin")
+              cp(absolete_gcc_dll_path(dll_name), binary_path)
             end
           end
         end
