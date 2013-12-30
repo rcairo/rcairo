@@ -36,7 +36,7 @@ Gem::Specification.new do |s|
   s.test_files = Dir.glob("test/**/*.rb")
   s.extra_rdoc_files = ["README.rdoc"]
 
-  s.add_runtime_dependency("pkg-config")
+  s.add_runtime_dependency("pkg-config", ">= 1.1.5")
   s.add_development_dependency("bundler")
   s.add_development_dependency("test-unit-notify")
   s.add_development_dependency("rake-compiler")
