@@ -1206,9 +1206,9 @@ cr_quartz_surface_initialize (int argc, VALUE *argv, VALUE self)
   cairo_surface_t *surface = NULL;
   cairo_format_t format = CAIRO_FORMAT_ARGB32;
   VALUE arg1, arg2, arg3, rb_width, rb_height;
-  #ifdef HAVE_RUBY_COCOA
+#ifdef HAVE_RUBY_COCOA
   static VALUE rb_cOSXCGContextRef = Qnil;
-  #endif
+#endif
   static VALUE rb_cFFIPointer = Qnil;
 
   rb_scan_args (argc, argv, "21", &arg1, &arg2, &arg3);
@@ -1230,23 +1230,23 @@ cr_quartz_surface_initialize (int argc, VALUE *argv, VALUE self)
           format = RVAL2CRFORMAT (arg1);
           break;
         default:
-          #ifdef HAVE_RUBY_COCOA
+#ifdef HAVE_RUBY_COCOA
           if (NIL_P (rb_cOSXCGContextRef))
             rb_cOSXCGContextRef =
               rb_const_get (rb_const_get (rb_cObject, rb_intern ("OSX")),
                             rb_intern ("CGContextRef"));
-          #endif
+#endif
 
           if (NIL_P (rb_cFFIPointer))
             rb_cFFIPointer =
               rb_const_get (rb_const_get (rb_cObject, rb_intern ("FFI")),
                             rb_intern ("Pointer"));
 
-          #ifdef HAVE_RUBY_COCOA
+#ifdef HAVE_RUBY_COCOA
           if (RTEST (rb_obj_is_kind_of (arg1, rb_cOSXCGContextRef)))
             rbobj_to_nsobj (arg1, &objc_object);
           else
-          #endif
+#endif
           if (RTEST (rb_obj_is_kind_of (arg1, rb_cFFIPointer)))
             objc_object = NUM2ULONG(rb_funcall(arg1,rb_intern("address"),0,NULL));
           else
