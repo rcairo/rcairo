@@ -1249,8 +1249,8 @@ cr_quartz_surface_initialize (int argc, VALUE *argv, VALUE self)
               rbobj_to_nsobj (arg1, &objc_object);
             }
           else
-            {
 #endif
+            {
               if (RTEST (rb_obj_is_kind_of (arg1, rb_cFFIPointer)))
                 {
                   objc_object = NUM2ULONG(rb_funcall(arg1,rb_intern("address"),0,NULL));
