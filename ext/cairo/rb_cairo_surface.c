@@ -1245,18 +1245,26 @@ cr_quartz_surface_initialize (int argc, VALUE *argv, VALUE self)
 
 #ifdef HAVE_RUBY_COCOA
           if (RTEST (rb_obj_is_kind_of (arg1, rb_cOSXCGContextRef)))
-            rbobj_to_nsobj (arg1, &objc_object);
+            {
+              rbobj_to_nsobj (arg1, &objc_object);
+            }
           else
+            {
 #endif
-          if (RTEST (rb_obj_is_kind_of (arg1, rb_cFFIPointer)))
-            objc_object = NUM2ULONG(rb_funcall(arg1,rb_intern("address"),0,NULL));
-          else
-            rb_raise (rb_eArgError,
-                      "invalid argument (expect "
-                      "(width, height), "
-                      "(format, width, height) or "
-                      "(cg_context, width, height)): %s",
-                      rb_cairo__inspect (rb_ary_new3 (3, arg1, arg2, arg3)));
+              if (RTEST (rb_obj_is_kind_of (arg1, rb_cFFIPointer)))
+                {
+                  objc_object = NUM2ULONG(rb_funcall(arg1,rb_intern("address"),0,NULL));
+                }
+              else
+                {
+                  rb_raise (rb_eArgError,
+                            "invalid argument (expect "
+                            "(width, height), "
+                            "(format, width, height) or "
+                            "(cg_context, width, height)): %s",
+                            rb_cairo__inspect (rb_ary_new3 (3, arg1, arg2, arg3)));
+                }
+            }
           break;
         }
 
