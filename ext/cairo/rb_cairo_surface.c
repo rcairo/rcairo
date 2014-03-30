@@ -1264,8 +1264,9 @@ cr_quartz_surface_initialize (int argc, VALUE *argv, VALUE self)
                   rb_raise (rb_eArgError,
                             "invalid argument (expect "
                             "(width, height), "
-                            "(format, width, height) or "
-                            "(cg_context, width, height)): %s",
+                            "(format, width, height), "
+                            "(cg_context, width, height) or "
+                            "(ffi_pointer, width, height)): %s",
                             rb_cairo__inspect (rb_ary_new3 (3, arg1, arg2, arg3)));
                 }
             }
