@@ -2,9 +2,6 @@
 /*
  * Ruby Cairo Binding
  *
- * $Author: kou $
- * $Date: 2008-11-01 14:23:14 $
- *
  * Copyright 2005-2012 Kouhei Sutou <kou@cozmixng.org>
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
