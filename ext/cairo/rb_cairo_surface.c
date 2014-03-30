@@ -1253,7 +1253,11 @@ cr_quartz_surface_initialize (int argc, VALUE *argv, VALUE self)
             {
               if (RTEST (rb_obj_is_kind_of (arg1, rb_cFFIPointer)))
                 {
-                  objc_object = NUM2ULONG(rb_funcall(arg1,rb_intern("address"),0,NULL));
+                  VALUE rb_objc_pointer;
+                  rb_objc_pointer = rb_funcall (arg1,
+                                                rb_intern ("address"),
+                                                0);
+                  objc_object = NUM2ULONG (rb_objc_pointer);
                 }
               else
                 {
