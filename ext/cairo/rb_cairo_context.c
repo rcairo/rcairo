@@ -15,6 +15,7 @@
 
 #include "rb_cairo.h"
 #include "rb_cairo_private.h"
+#include "rb_cairo_io.h"
 
 #ifdef HAVE_RUBY_ST_H
 #  include <ruby/st.h>
@@ -154,10 +155,11 @@ cr_initialize (VALUE self, VALUE target)
   cr = cairo_create (RVAL2CRSURFACE (target));
   cr_check_status (cr);
   rb_ivar_set (self, cr_id_surface, target);
-  cr_set_user_data (cr,
-                    &cr_object_holder_key,
-                    cr_object_holder_new(self),
-                    cr_object_holder_free);
+  if (rb_ivar_defined (target, rb_cairo__io_id_output))
+    cr_set_user_data (cr,
+                      &cr_object_holder_key,
+                      cr_object_holder_new (self),
+                      cr_object_holder_free);
   DATA_PTR (self) = cr;
   if (rb_block_given_p ())
     result = rb_ensure (rb_yield, self, cr_destroy_with_destroy_check, self);
