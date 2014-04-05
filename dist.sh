@@ -15,8 +15,6 @@ base=rcairo-$VERSION
 tgz=$base.tar.gz
 
 
-git tag -a $TAG -m "release ${VERSION}!!!"
-git push --tags
 mkdir -p tmp
 git clone git@github.com:rcairo/rcairo.git tmp/$base
 cd tmp/$base
