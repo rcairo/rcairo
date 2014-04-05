@@ -48,6 +48,7 @@ extern void Init_cairo_io (void);
 extern void Init_cairo_constants (void);
 
 extern void Init_cairo_context (void);
+extern void Init_cairo_rectangle (void);
 extern void Init_cairo_path (void);
 extern void Init_cairo_matrix (void);
 extern void Init_cairo_region (void);

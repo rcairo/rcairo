@@ -93,6 +93,7 @@ Init_cairo ()
   Init_cairo_constants ();
 
   Init_cairo_context ();
+  Init_cairo_rectangle ();
   Init_cairo_path ();
   Init_cairo_matrix ();
   Init_cairo_region ();
