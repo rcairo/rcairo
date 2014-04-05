@@ -34,9 +34,17 @@ end
 Packnga::ReleaseTask.new(spec) do |task|
 end
 
+module RCairoBuild
+  class << self
+    def for_64bit?
+      ENV["RCAIRO_WINDOWS_64"] == "yes"
+    end
+  end
+end
+
 binary_dir = File.join("vendor", "local")
 Rake::ExtensionTask.new("cairo", spec) do |ext|
-  if ENV["RCAIRO_WINDOWS_64"] == "yes"
+  if RCairoBuild.for_64bit?
     ext.cross_platform = ["x64-mingw32"]
   else
     ext.cross_platform = ["x86-mingw32"]
@@ -135,7 +143,7 @@ class Package < Struct.new(:name,
     end
 
     def build_host
-      if ENV["RCAIRO_WINDOWS_64"] == "yes"
+      if RCairoBuild.for_64bit?
         "x86_64-w64-mingw32"
       else
         "i686-w64-mingw32"
@@ -379,7 +387,11 @@ class WindowsTask
   end
 
   def ruby_gnome2_dir
-    @base_dir.parent + "ruby-gnome2.win32"
+    if RCairoBuild.for_64bit?
+      @base_dir.parent + "ruby-gnome2.win64"
+    else
+      @base_dir.parent + "ruby-gnome2.win32"
+    end
   end
 
   def ruby_glib2_pkg_config_path
