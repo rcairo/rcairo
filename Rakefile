@@ -36,7 +36,11 @@ end
 
 binary_dir = File.join("vendor", "local")
 Rake::ExtensionTask.new("cairo", spec) do |ext|
-  ext.cross_platform = ["x86-mingw32"]
+  if ENV["RCAIRO_WINDOWS_64"] == "yes"
+    ext.cross_platform = ["x64-mingw32"]
+  else
+    ext.cross_platform = ["x86-mingw32"]
+  end
   ext.cross_compile = true
   ext.cross_compiling do |_spec|
     if /mingw|mswin/ =~ _spec.platform.to_s
@@ -131,7 +135,11 @@ class Package < Struct.new(:name,
     end
 
     def build_host
-      "i686-w64-mingw32"
+      if ENV["RCAIRO_WINDOWS_64"] == "yes"
+        "x86_64-w64-mingw32"
+      else
+        "i686-w64-mingw32"
+      end
     end
 
     def configure_args
