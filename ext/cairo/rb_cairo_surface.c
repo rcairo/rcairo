@@ -102,6 +102,10 @@ VALUE rb_cCairo_CoglSurface = Qnil;
 static ID cr_id_parse;
 static ID cr_id_size;
 static ID cr_id_set_unit;
+static ID cr_id_x;
+static ID cr_id_y;
+static ID cr_id_width;
+static ID cr_id_height;
 static cairo_user_data_key_t cr_closure_key;
 static cairo_user_data_key_t cr_object_holder_key;
 static cairo_user_data_key_t cr_finished_key;
@@ -567,10 +571,10 @@ cr_surface_map_to_image (int argc, VALUE *argv, VALUE self)
       extents = &extents_value;
       if (rb_cairo__is_kind_of (rb_extents, rb_cCairo_Rectangle))
         {
-          extents->x = NUM2INT (rb_iv_get (rb_extents, "@x"));
-          extents->y = NUM2INT (rb_iv_get (rb_extents, "@y"));
-          extents->width = NUM2INT (rb_iv_get (rb_extents, "@width"));
-          extents->height = NUM2INT (rb_iv_get (rb_extents, "@height"));
+          extents->x = NUM2INT (rb_funcall (rb_extents, cr_id_x, 0));
+          extents->y = NUM2INT (rb_funcall (rb_extents, cr_id_y, 0));
+          extents->width = NUM2INT (rb_funcall (rb_extents, cr_id_width, 0));
+          extents->height = NUM2INT (rb_funcall (rb_extents, cr_id_height, 0));
         }
       else
         {
@@ -1917,6 +1921,10 @@ Init_cairo_surface (void)
   cr_id_parse = rb_intern ("parse");
   cr_id_size = rb_intern ("size");
   cr_id_set_unit = rb_intern ("unit=");
+  cr_id_x = rb_intern ("x");
+  cr_id_y = rb_intern ("y");
+  cr_id_width = rb_intern ("width");
+  cr_id_height = rb_intern ("height");
 
   rb_cCairo_Surface =
     rb_define_class_under (rb_mCairo, "Surface", rb_cObject);

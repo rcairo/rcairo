@@ -34,20 +34,54 @@ static cairo_user_data_key_t cr_object_holder_key;
 
 static VALUE cr_get_current_point (VALUE self);
 
-#if CAIRO_CHECK_VERSION(1, 3, 0)
-static ID at_x, at_y, at_width, at_height;
+#if CAIRO_CHECK_VERSION(1, 10, 0)
+static VALUE
+cr_rectangle_allocate (VALUE klass)
+{
+  return Data_Wrap_Struct (klass, NULL, xfree, NULL);
+}
 
 static VALUE
 cr_rectangle_initialize (VALUE self, VALUE x, VALUE y,
                          VALUE width, VALUE height)
 {
-  rb_ivar_set (self, at_x, x);
-  rb_ivar_set (self, at_y, y);
-  rb_ivar_set (self, at_width, width);
-  rb_ivar_set (self, at_height, height);
+  cairo_rectangle_int_t *rectangle;
+
+  rectangle = ALLOC (cairo_rectangle_int_t);
+  DATA_PTR (self) = rectangle;
+
+  rectangle->x = NUM2INT (x);
+  rectangle->y = NUM2INT (y);
+  rectangle->width = NUM2INT (width);
+  rectangle->height = NUM2INT (height);
 
   return Qnil;
 }
+
+#  define DEFINE_RECTANGLE_ACCESSOR(name)               \
+static VALUE                                            \
+cr_rectangle_get_ ## name (VALUE self)                  \
+{                                                       \
+  cairo_rectangle_t *rectangle;                         \
+  rectangle = DATA_PTR (self);                          \
+  return INT2NUM (rectangle->name);                     \
+}                                                       \
+                                                        \
+static VALUE                                            \
+cr_rectangle_set_ ## name (VALUE self, VALUE value)     \
+{                                                       \
+  cairo_rectangle_t *rectangle;                         \
+  rectangle = DATA_PTR (self);                          \
+  rectangle->name = NUM2INT (value);                    \
+  return self;                                          \
+}
+
+DEFINE_RECTANGLE_ACCESSOR(x)
+DEFINE_RECTANGLE_ACCESSOR(y)
+DEFINE_RECTANGLE_ACCESSOR(width)
+DEFINE_RECTANGLE_ACCESSOR(height)
+
+#  undef DEFINE_RECTANGLE_ACCESSOR
 #endif
 
 static inline void
@@ -1535,21 +1569,22 @@ Init_cairo_context (void)
   cr_id_multi = rb_intern ("*");
   cr_id_div = rb_intern ("/");
 
-#if CAIRO_CHECK_VERSION(1, 3, 0)
+#if CAIRO_CHECK_VERSION(1, 10, 0)
   rb_cCairo_Rectangle =
     rb_define_class_under (rb_mCairo, "Rectangle", rb_cObject);
-  at_x = rb_intern ("@x");
-  at_y = rb_intern ("@y");
-  at_width = rb_intern ("@width");
-  at_height = rb_intern ("@height");
-
-  rb_define_attr (rb_cCairo_Rectangle, "x", CR_TRUE, CR_TRUE);
-  rb_define_attr (rb_cCairo_Rectangle, "y", CR_TRUE, CR_TRUE);
-  rb_define_attr (rb_cCairo_Rectangle, "width", CR_TRUE, CR_TRUE);
-  rb_define_attr (rb_cCairo_Rectangle, "height", CR_TRUE, CR_TRUE);
+  rb_define_alloc_func (rb_cCairo_Rectangle, cr_rectangle_allocate);
 
   rb_define_method (rb_cCairo_Rectangle, "initialize",
                     cr_rectangle_initialize, 4);
+
+  rb_define_method (rb_cCairo_Rectangle, "x",  cr_rectangle_get_x, 0);
+  rb_define_method (rb_cCairo_Rectangle, "x=", cr_rectangle_set_x, 1);
+  rb_define_method (rb_cCairo_Rectangle, "y",  cr_rectangle_get_y, 0);
+  rb_define_method (rb_cCairo_Rectangle, "y=", cr_rectangle_set_y, 1);
+  rb_define_method (rb_cCairo_Rectangle, "width",  cr_rectangle_get_width, 0);
+  rb_define_method (rb_cCairo_Rectangle, "width=", cr_rectangle_set_width, 1);
+  rb_define_method (rb_cCairo_Rectangle, "height",  cr_rectangle_get_height, 0);
+  rb_define_method (rb_cCairo_Rectangle, "height=", cr_rectangle_set_height, 1);
 #endif
 
   rb_cCairo_Context =
