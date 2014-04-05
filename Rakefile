@@ -454,8 +454,7 @@ windows_task = WindowsTask.new(spec) do |task|
           "--disable-docs",
         ],
         :patches => [
-          "fontconfig-2.11.0-disable-mktemp-s.diff",
-          "fontconfig-2.11.0-disable-test.diff",
+          "fontconfig-2.11.1-disable-mktemp-s.diff",
         ],
         :need_autoreconf => true,
       },
