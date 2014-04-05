@@ -7,6 +7,8 @@ Improvements
   * Supported cocoa gem. [Patch by Patrick Hanevold]
   * Made Cairo::Rectangle based on cairo_rectangle_int_t. It improves
     Ruby/GDK3 integration.
+  * windows: Provided binary packages for 64bit.
+  * windows: Dropped binary packages support for Ruby 1.9.3.
 
 Fixes
 -----
