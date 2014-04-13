@@ -29,7 +29,7 @@ major, minor, micro = 1, 2, 0
 base_dir = Pathname(__FILE__).dirname.parent.parent
 checking_for(checking_message("Win32 OS")) do
   case RUBY_PLATFORM
-  when /cygwin|mingw|mswin32/
+  when /mingw|mswin32/
     $defs << "-DRUBY_CAIRO_PLATFORM_WIN32"
     import_library_name = "libruby-#{module_name}.a"
     $DLDFLAGS << " -Wl,--out-implib=#{import_library_name}"
