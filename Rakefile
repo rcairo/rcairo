@@ -581,3 +581,15 @@ langs.each do |lang,|
     rm Dir[File.join(lang_doc_dir, "*.{rd,rdc,rbl}")]
   end
 end
+
+file "Makefile" => ["extconf.rb", "ext/cairo/extconf.rb"] do
+  ruby("extconf.rb")
+end
+
+desc "Configure"
+task :configure => "Makefile"
+
+desc "Run test"
+task :test => :configure do
+  ruby("test/run-test.rb")
+end
