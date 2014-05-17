@@ -67,7 +67,7 @@ cairo-X.Y.Z-x86-mingw32.gem includes cairo related binaries.
 == Documents
 
 * Reference manual:
-  http://cairo.rubyforge.org/doc/
+  http://rcairo.github.io/doc/
 * Repository of the reference manual:
   http://github.com/rcairo/doc
 * An article for rcairo on Rubyst Magazine a.k.a. RubiMa (in Japanese):
