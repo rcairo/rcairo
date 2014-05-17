@@ -1,21 +1,21 @@
 # -*- coding: utf-8; mode: ruby -*-
 
-require 'English'
+require "English"
 
-require 'find'
-require 'fileutils'
-require 'open-uri'
-require 'rubygems'
-require 'rubygems/package_task'
-require 'yard'
-require 'bundler/gem_helper'
-require 'rake/extensiontask'
-require 'packnga'
+require "find"
+require "fileutils"
+require "open-uri"
+require "rubygems"
+require "rubygems/package_task"
+require "yard"
+require "bundler/gem_helper"
+require "rake/extensiontask"
+require "packnga"
 
 base_dir = File.join(File.dirname(__FILE__))
 
-cairo_ext_dir = File.join(base_dir, 'ext', 'cairo')
-cairo_lib_dir = File.join(base_dir, 'lib')
+cairo_ext_dir = File.join(base_dir, "ext", "cairo")
+cairo_lib_dir = File.join(base_dir, "lib")
 $LOAD_PATH.unshift(cairo_ext_dir)
 $LOAD_PATH.unshift(cairo_lib_dir)
 ENV["RUBYLIB"] = "#{cairo_lib_dir}:#{cairo_ext_dir}:#{ENV['RUBYLIB']}"
