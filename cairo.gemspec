@@ -26,7 +26,6 @@ Gem::Specification.new do |s|
   s.homepage = "http://cairographics.org/rcairo"
   s.licenses = ["Ruby's"]
   s.require_paths = ["lib"]
-  s.rubyforge_project = "cairo"
   s.extensions = ["ext/cairo/extconf.rb"]
 
   s.files = ["AUTHORS", "COPYING", "GPL", "Gemfile", "NEWS", "README.rdoc"]
