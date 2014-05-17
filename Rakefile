@@ -593,3 +593,5 @@ desc "Run test"
 task :test => :configure do
   ruby("test/run-test.rb")
 end
+
+task :default => :test
