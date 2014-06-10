@@ -1242,11 +1242,10 @@ cr_quartz_surface_initialize (int argc, VALUE *argv, VALUE self)
                             rb_intern ("CGContextRef"));
 #endif
 
-          if (NIL_P (rb_cFFIPointer))
+          if (NIL_P (rb_cFFIPointer) && rb_const_defined (rb_cObject, rb_intern ("FFI")))
             rb_cFFIPointer =
               rb_const_get (rb_const_get (rb_cObject, rb_intern ("FFI")),
                             rb_intern ("Pointer"));
-
 #ifdef HAVE_RUBY_COCOA
           if (RTEST (rb_obj_is_kind_of (arg1, rb_cOSXCGContextRef)))
             {
@@ -1255,7 +1254,7 @@ cr_quartz_surface_initialize (int argc, VALUE *argv, VALUE self)
           else
 #endif
             {
-              if (RTEST (rb_obj_is_kind_of (arg1, rb_cFFIPointer)))
+              if (!NIL_P (rb_cFFIPointer) && RTEST (rb_obj_is_kind_of (arg1, rb_cFFIPointer)))
                 {
                   VALUE rb_objc_pointer;
                   rb_objc_pointer = rb_funcall (arg1,
