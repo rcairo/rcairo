@@ -166,8 +166,16 @@ cr_initialize (VALUE self, VALUE target)
 static VALUE
 cr_to_ptr (VALUE self)
 {
-  VALUE pointer = rb_const_get (rb_const_get (rb_cObject, rb_intern ("FFI")), rb_intern ("Pointer"));
-  return rb_funcall (pointer, rb_intern ("new"), 1, LL2NUM(_SELF));
+  if(rb_const_defined (rb_cObject, rb_intern ("FFI")))
+  {
+    VALUE pointer = rb_const_get (rb_const_get (rb_cObject, rb_intern ("FFI")), rb_intern ("Pointer"));
+    return rb_funcall (pointer, rb_intern ("new"), 1, LL2NUM(_SELF));
+  }
+  else
+  {
+    rb_raise (rb_eRuntimeError,"ffi gem required");
+    return rb_nil_value();
+  }
 }
 
 
@@ -1697,8 +1705,7 @@ Init_cairo_context (void)
   rb_define_method (rb_cCairo_Context, "copy_path_flat", cr_copy_path_flat, 0);
   rb_define_method (rb_cCairo_Context, "append_path", cr_copy_append_path, 1);
 
-  if(rb_const_defined (rb_cObject, rb_intern ("FFI")))
-    rb_define_method (rb_cCairo_Context, "to_ptr", cr_to_ptr, 0);
+  rb_define_method (rb_cCairo_Context, "to_ptr", cr_to_ptr, 0);
 
   RB_CAIRO_DEF_SETTERS (rb_cCairo_Context);
 }
