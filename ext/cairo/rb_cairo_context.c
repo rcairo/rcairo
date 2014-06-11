@@ -139,7 +139,7 @@ cr_initialize (VALUE self, VALUE target)
       RTEST (rb_obj_is_kind_of (target, rb_cairo__cFFIPointer)))
     {
       VALUE rb_cr_pointer = rb_funcall (target, rb_intern ("address"), 0);
-      cr = (cairo_t *)NUM2ULL(rb_cr_pointer);
+      cr = NUM2PTR(rb_cr_pointer);
       cairo_reference (cr);
     }
   else
