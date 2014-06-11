@@ -5,7 +5,7 @@
  * $Author: kou $
  * $Date: 2008-08-17 07:21:42 $
  *
- * Copyright 2005-2008 Kouhei Sutou <kou@cozmixng.org>
+ * Copyright 2005-2014 Kouhei Sutou <kou@cozmixng.org>
  *
  * This file is made available under the same terms as Ruby
  *
@@ -239,4 +239,15 @@ Init_cairo_private (void)
   cr_id_dup = rb_intern ("dup");
   cr_id_inspect = rb_intern ("inspect");
   cr_id_exit_application = rb_intern ("exit_application");
+
+  if (rb_const_defined (rb_cObject, rb_intern ("FFI")))
+    {
+      rb_cairo__cFFIPointer =
+        rb_const_get (rb_const_get (rb_cObject, rb_intern ("FFI")),
+                      rb_intern ("Pointer"));
+    }
+  else
+    {
+      rb_cairo__cFFIPointer = Qnil;
+    }
 }

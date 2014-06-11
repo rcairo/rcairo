@@ -134,21 +134,18 @@ cr_initialize (VALUE self, VALUE target)
 {
   cairo_t *cr;
   VALUE result = Qnil;
-  static VALUE rb_cFFIPointer = Qnil;
 
-  if (NIL_P (rb_cFFIPointer) && rb_const_defined (rb_cObject, rb_intern ("FFI")))
-    rb_cFFIPointer =
-      rb_const_get (rb_const_get (rb_cObject, rb_intern ("FFI")),
-                    rb_intern ("Pointer"));
-
-  if(!NIL_P(rb_cFFIPointer) && RTEST (rb_obj_is_kind_of (target, rb_cFFIPointer)))
-  {
-    VALUE rb_objc_pointer = rb_funcall (target, rb_intern ("address"), 0);
-    cr = (cairo_t*)NUM2ULL(rb_objc_pointer);
-    cairo_reference (cr);
-  }
+  if (!NIL_P (rb_cairo__cFFIPointer) &&
+      RTEST (rb_obj_is_kind_of (target, rb_cairo__cFFIPointer)))
+    {
+      VALUE rb_cr_pointer = rb_funcall (target, rb_intern ("address"), 0);
+      cr = (cairo_t *)NUM2ULL(rb_cr_pointer);
+      cairo_reference (cr);
+    }
   else
-    cr = cairo_create (RVAL2CRSURFACE (target));
+    {
+      cr = cairo_create (RVAL2CRSURFACE (target));
+    }
 
   cr_check_status (cr);
   rb_ivar_set (self, cr_id_surface, target);
@@ -166,16 +163,15 @@ cr_initialize (VALUE self, VALUE target)
 static VALUE
 cr_to_ptr (VALUE self)
 {
-  if(rb_const_defined (rb_cObject, rb_intern ("FFI")))
-  {
-    VALUE pointer = rb_const_get (rb_const_get (rb_cObject, rb_intern ("FFI")), rb_intern ("Pointer"));
-    return rb_funcall (pointer, rb_intern ("new"), 1, LL2NUM(_SELF));
-  }
+  if (!NIL_P (rb_cairo__cFFIPointer))
+    {
+      return rb_funcall (rb_cairo__cFFIPointer, rb_intern ("new"),
+                         1, PTR2NUM(_SELF));
+    }
   else
-  {
-    rb_raise (rb_eRuntimeError,"ffi gem required");
-    return rb_nil_value();
-  }
+    {
+      return Qnil;
+    }
 }
 
 

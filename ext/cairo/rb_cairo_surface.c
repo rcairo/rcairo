@@ -1214,7 +1214,6 @@ cr_quartz_surface_initialize (int argc, VALUE *argv, VALUE self)
 #ifdef HAVE_RUBY_COCOA
   static VALUE rb_cOSXCGContextRef = Qnil;
 #endif
-  static VALUE rb_cFFIPointer = Qnil;
 
   rb_scan_args (argc, argv, "21", &arg1, &arg2, &arg3);
 
@@ -1242,10 +1241,6 @@ cr_quartz_surface_initialize (int argc, VALUE *argv, VALUE self)
                             rb_intern ("CGContextRef"));
 #endif
 
-          if (NIL_P (rb_cFFIPointer) && rb_const_defined (rb_cObject, rb_intern ("FFI")))
-            rb_cFFIPointer =
-              rb_const_get (rb_const_get (rb_cObject, rb_intern ("FFI")),
-                            rb_intern ("Pointer"));
 #ifdef HAVE_RUBY_COCOA
           if (RTEST (rb_obj_is_kind_of (arg1, rb_cOSXCGContextRef)))
             {
@@ -1254,7 +1249,8 @@ cr_quartz_surface_initialize (int argc, VALUE *argv, VALUE self)
           else
 #endif
             {
-              if (!NIL_P (rb_cFFIPointer) && RTEST (rb_obj_is_kind_of (arg1, rb_cFFIPointer)))
+              if (!NIL_P (rb_cairo__cFFIPointer) &&
+                  RTEST (rb_obj_is_kind_of (arg1, rb_cairo__cFFIPointer)))
                 {
                   VALUE rb_objc_pointer;
                   rb_objc_pointer = rb_funcall (arg1,
@@ -1315,15 +1311,6 @@ cr_quartz_surface_get_cg_context (VALUE self)
 
 #ifdef CAIRO_HAS_WIN32_SURFACE
 /* Win32 surface functions */
-
-/* from dl/dl.h (ruby 1.9) */
-#  if SIZEOF_LONG == SIZEOF_VOIDP
-#    define PTR2NUM(x)   (ULONG2NUM((unsigned long)(x)))
-#    define NUM2PTR(x)   ((void *)(NUM2ULONG(x)))
-#  else
-#    define PTR2NUM(x)   (ULL2NUM((unsigned long long)(x)))
-#    define NUM2PTR(x)   ((void *)(NUM2ULL(x)))
-#  endif
 
 static VALUE
 cr_win32_surface_initialize (int argc, VALUE *argv, VALUE self)
