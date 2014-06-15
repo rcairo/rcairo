@@ -5,7 +5,7 @@
  * $Author: kou $
  * $Date: 2008-09-26 13:52:08 $
  *
- * Copyright 2005-2010 Kouhei Sutou <kou@cozmixng.org>
+ * Copyright 2005-2014 Kouhei Sutou <kou@cozmixng.org>
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
  *
@@ -130,23 +130,57 @@ cr_destroy_with_destroy_check (VALUE self)
 }
 
 static VALUE
+cr_s_wrap (VALUE self, VALUE pointer)
+{
+  VALUE result;
+  VALUE rb_cr;
+  cairo_t *cr;
+
+  if (NIL_P (rb_cairo__cFFIPointer))
+    {
+      rb_raise (rb_eNotImpError,
+                "%s: FFI::Pointer is required",
+                rb_id2name (rb_frame_this_func ()));
+    }
+
+  if (!RTEST (rb_obj_is_kind_of (pointer, rb_cairo__cFFIPointer)))
+    {
+      rb_raise (rb_eArgError,
+                "must be FFI::Pointer: %s",
+                rb_cairo__inspect (pointer));
+    }
+
+  {
+    VALUE rb_cr_address;
+    rb_cr_address = rb_funcall (pointer, rb_intern ("address"), 0);
+    cr = NUM2PTR (rb_cr_address);
+    cr_check_status (cr);
+  }
+
+  rb_cr = rb_obj_alloc (self);
+  cairo_reference (cr);
+  DATA_PTR (rb_cr) = cr;
+  rb_ivar_set (rb_cr, cr_id_surface, Qnil);
+
+  if (rb_block_given_p ())
+    {
+      result = rb_ensure (rb_yield, rb_cr, cr_destroy_with_destroy_check, rb_cr);
+    }
+  else
+    {
+      result = rb_cr;
+    }
+
+  return result;
+}
+
+static VALUE
 cr_initialize (VALUE self, VALUE target)
 {
   cairo_t *cr;
   VALUE result = Qnil;
 
-  if (!NIL_P (rb_cairo__cFFIPointer) &&
-      RTEST (rb_obj_is_kind_of (target, rb_cairo__cFFIPointer)))
-    {
-      VALUE rb_cr_pointer = rb_funcall (target, rb_intern ("address"), 0);
-      cr = NUM2PTR(rb_cr_pointer);
-      cairo_reference (cr);
-    }
-  else
-    {
-      cr = cairo_create (RVAL2CRSURFACE (target));
-    }
-
+  cr = cairo_create (RVAL2CRSURFACE (target));
   cr_check_status (cr);
   rb_ivar_set (self, cr_id_surface, target);
   if (rb_ivar_defined (target, rb_cairo__io_id_output))
@@ -1547,6 +1581,9 @@ Init_cairo_context (void)
 
   rb_cairo__initialize_gc_guard_holder_class (rb_cCairo_Context);
   rb_set_end_proc(cr_destroy_all_guarded_contexts_at_end, Qnil);
+
+  /* For integrate other libraries such as a FFI based library. */
+  rb_define_singleton_method (rb_cCairo_Context, "wrap", cr_s_wrap, 1);
 
   /* Functions for manipulating state objects */
   rb_define_method (rb_cCairo_Context, "initialize", cr_initialize, 1);
