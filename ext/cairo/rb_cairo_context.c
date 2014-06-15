@@ -166,7 +166,7 @@ cr_to_ptr (VALUE self)
   if (!NIL_P (rb_cairo__cFFIPointer))
     {
       return rb_funcall (rb_cairo__cFFIPointer, rb_intern ("new"),
-                         1, PTR2NUM(_SELF));
+                         1, PTR2NUM (_SELF));
     }
   else
     {
