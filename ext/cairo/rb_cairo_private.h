@@ -124,6 +124,6 @@ cairo_status_t rb_cairo__exception_to_status (VALUE exception);
 typedef VALUE (*cr_callback_func_t) (VALUE user_data);
 VALUE rb_cairo__invoke_callback (cr_callback_func_t func, VALUE user_data);
 
-VALUE rb_cairo__cFFIPointer;
+extern VALUE rb_cairo__cFFIPointer;
 
 #endif

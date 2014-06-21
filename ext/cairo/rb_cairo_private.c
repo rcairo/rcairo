@@ -14,6 +14,8 @@
 #include "rb_cairo.h"
 #include "rb_cairo_private.h"
 
+VALUE rb_cairo__cFFIPointer;
+
 static ID cr_id_normalize_const_name;
 static ID cr_id_objects;
 static ID cr_id_dup;
