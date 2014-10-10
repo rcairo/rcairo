@@ -34,8 +34,8 @@ checking_for(checking_message("Win32 OS")) do
     import_library_name = "libruby-#{module_name}.a"
     $DLDFLAGS << " -Wl,--out-implib=#{import_library_name}"
     $cleanfiles << import_library_name
-    if with_config('vendor-override', true)
-      binary_base_dir = base_dir + "vendor" + "local"
+    binary_base_dir = base_dir + "vendor" + "local"
+    if with_config('vendor-override', binary_base_dir.exist?)
       $CFLAGS += " -I#{binary_base_dir}/include"
       pkg_config_dir = binary_base_dir + "lib" + "pkgconfig"
       PKGConfig.add_path(pkg_config_dir.to_s)
