@@ -12,7 +12,7 @@ http://cairographics.org/
 
 == Dependencies
 
-* ruby >= 1.9.3 (2.0.0 also supported!)
+* ruby >= 1.9.3 (2.2 also supported!)
 * cairo >= 1.2.0 (1.12.0 also supported!)
 
 == Install
