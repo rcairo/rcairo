@@ -38,11 +38,11 @@ Compiling:
   % make               # to compile
 
   # make install       # to install the cairo extension.
-		       # The samples in the samples folder should be able
-		       # to run before installation except text-on-path.rb
-		       # and text2.rb. They uses Ruby/Pango with rcairo
-		       # support. So you need to install rcairo and build
-		       # Ruby/Pango with it before you run them.
+                       # The samples in the samples folder should be able
+                       # to run before installation except text-on-path.rb
+                       # and text2.rb. They uses Ruby/Pango with rcairo
+                       # support. So you need to install rcairo and build
+                       # Ruby/Pango with it before you run them.
 
 Options to extconf.rb:
 
