@@ -829,6 +829,27 @@ cr_surface_get_device_offset (VALUE self)
   return rb_ary_new3 (2, rb_float_new (x_offset), rb_float_new (y_offset));
 }
 
+#if CAIRO_CHECK_VERSION(1, 14, 0)
+static VALUE
+cr_surface_set_device_scale (VALUE self, VALUE x_scale, VALUE y_scale)
+{
+  cairo_surface_set_device_scale ((_SELF),
+                                  NUM2DBL (x_scale),
+                                  NUM2DBL (y_scale));
+  cr_surface_check_status (_SELF);
+  return self;
+}
+
+static VALUE
+cr_surface_get_device_scale (VALUE self)
+{
+  double x_scale, y_scale;
+
+  cairo_surface_get_device_scale ((_SELF), &x_scale, &y_scale);
+  return rb_ary_new3(2, rb_float_new(x_scale), rb_float_new(y_scale));
+}
+#endif
+
 static VALUE
 cr_surface_set_fallback_resolution (VALUE self,
                                     VALUE x_pixels_per_inch,
@@ -1991,6 +2012,12 @@ Init_cairo_surface (void)
                     cr_surface_set_device_offset, 2);
   rb_define_method (rb_cCairo_Surface, "device_offset",
                     cr_surface_get_device_offset, 0);
+#if CAIRO_CHECK_VERSION(1, 14, 0)
+  rb_define_method (rb_cCairo_Surface, "set_device_scale",
+                    cr_surface_set_device_scale, 2);
+  rb_define_method (rb_cCairo_Surface, "device_scale",
+                    cr_surface_get_device_scale, 0);
+#endif
   rb_define_method (rb_cCairo_Surface, "set_fallback_resolution",
                     cr_surface_set_fallback_resolution, 2);
 #if CAIRO_CHECK_VERSION(1, 7, 2)
