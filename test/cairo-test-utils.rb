@@ -17,6 +17,10 @@ module CairoTestUtils
     /cygwin|mingw|mswin32|bccwin32/.match(RUBY_PLATFORM) ? true : false
   end
 
+  def quartz?
+    Cairo::FontFace.quartz_supported?
+  end
+
   def only_device(name)
     only_cairo_version(1, 10)
 
