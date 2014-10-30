@@ -28,6 +28,16 @@ class SurfaceTest < Test::Unit::TestCase
     end
   end
 
+  def test_device_scale
+    only_cairo_version(1, 14, 0)
+    surface = Cairo::ImageSurface.new(100, 100)
+
+    assert_equal([1.0, 1.0], surface.device_scale)
+
+    surface.set_device_scale(3.0, 3.0)
+    assert_equal([3.0, 3.0], surface.device_scale)
+  end
+
   def test_fallback_resolution
     only_cairo_version(1, 7, 2)
 
