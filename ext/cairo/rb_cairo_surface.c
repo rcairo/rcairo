@@ -833,7 +833,7 @@ cr_surface_get_device_offset (VALUE self)
 static VALUE
 cr_surface_set_device_scale (VALUE self, VALUE x_scale, VALUE y_scale)
 {
-  cairo_surface_set_device_scale ((_SELF),
+  cairo_surface_set_device_scale (_SELF,
                                   NUM2DBL (x_scale),
                                   NUM2DBL (y_scale));
   cr_surface_check_status (_SELF);
@@ -845,7 +845,7 @@ cr_surface_get_device_scale (VALUE self)
 {
   double x_scale, y_scale;
 
-  cairo_surface_get_device_scale ((_SELF), &x_scale, &y_scale);
+  cairo_surface_get_device_scale (_SELF, &x_scale, &y_scale);
   return rb_ary_new3 (2, rb_float_new (x_scale), rb_float_new (y_scale));
 }
 #endif
