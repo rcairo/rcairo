@@ -35,6 +35,10 @@
 #  include <cairo-script.h>
 #endif
 
+#ifdef CAIRO_HAS_QUARTZ_IMAGE_SURFACE
+#  include <cairo-quartz-image.h>
+#endif
+
 #define CAIRO_CHECK_VERSION(major, minor, micro)    \
     (CAIRO_VERSION_MAJOR > (major) || \
      (CAIRO_VERSION_MAJOR == (major) && CAIRO_VERSION_MINOR > (minor)) || \
