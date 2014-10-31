@@ -61,6 +61,9 @@ static VALUE rb_eCairo_DeviceError;
 static VALUE rb_eCairo_InvalidMeshConstruction;
 static VALUE rb_eCairo_DeviceFinished;
 #endif
+#if CAIRO_CHECK_VERSION(1, 14, 0)
+static VALUE rb_eCairo_Jbig2GlobalMissing;
+#endif
 
 void
 rb_cairo_check_status (cairo_status_t status)
@@ -192,6 +195,11 @@ rb_cairo_check_status (cairo_status_t status)
       rb_raise (rb_eCairo_DeviceFinished, "%s", string);
       break;
 #endif
+#if CAIRO_CHECK_VERSION(1, 14, 0)
+    case CAIRO_STATUS_JBIG2_GLOBAL_MISSING:
+      rb_raise (rb_eCairo_Jbig2GlobalMissing, "%s", string);
+      break;
+#endif
 #if CAIRO_CHECK_VERSION(1, 10, 0)
     case CAIRO_STATUS_LAST_STATUS:
 #else
@@ -284,6 +292,10 @@ rb_cairo__exception_to_status (VALUE exception)
     return CAIRO_STATUS_DEVICE_TYPE_MISMATCH;
   else if (rb_cairo__is_kind_of (exception, rb_eCairo_DeviceError))
     return CAIRO_STATUS_DEVICE_ERROR;
+#endif
+#if CAIRO_CHECK_VERSION(1, 14, 0)
+  else if (rb_cairo__is_kind_of (exception, rb_eCairo_Jbig2GlobalMissing))
+    return CAIRO_STATUS_JBIG2_GLOBAL_MISSING;
 #endif
 
   return -1;
@@ -424,6 +436,11 @@ Init_cairo_exception ()
                            rb_eArgError);
   rb_eCairo_DeviceFinished =
     rb_define_class_under (rb_mCairo, "DeviceFinished",
+                           rb_eCairo_Error);
+#endif
+#if CAIRO_CHECK_VERSION(1, 14, 0)
+  rb_eCairo_Jbig2GlobalMissing =
+    rb_define_class_under (rb_mCairo, "Jbig2GlobalMissing",
                            rb_eCairo_Error);
 #endif
 }
