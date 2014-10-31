@@ -846,7 +846,7 @@ cr_surface_get_device_scale (VALUE self)
   double x_scale, y_scale;
 
   cairo_surface_get_device_scale ((_SELF), &x_scale, &y_scale);
-  return rb_ary_new3 (2, rb_float_new(x_scale), rb_float_new(y_scale));
+  return rb_ary_new3 (2, rb_float_new (x_scale), rb_float_new (y_scale));
 }
 #endif
 
