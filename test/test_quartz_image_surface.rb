@@ -2,7 +2,7 @@ class QuartzImageSurfaceTest < Test::Unit::TestCase
   include CairoTestUtils
 
   def setup
-    only_surface("Quartz")
+    only_surface("QuartzImage")
   end
 
   def test_quartz_image_surface
