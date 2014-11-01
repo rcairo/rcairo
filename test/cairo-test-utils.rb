@@ -21,10 +21,6 @@ module CairoTestUtils
     Cairo::FontFace.quartz_supported?
   end
 
-  def os_x?
-    /darwin/.match(RUBY_PLATFORM) ? true : false
-  end
-
   def only_device(name)
     only_cairo_version(1, 10)
 
