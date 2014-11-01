@@ -34,8 +34,8 @@ class SurfaceTest < Test::Unit::TestCase
 
     assert_equal([1.0, 1.0], surface.device_scale)
 
-    surface.set_device_scale(3.0, 3.0)
-    assert_equal([3.0, 3.0], surface.device_scale)
+    surface.set_device_scale(3.0, 4.0)
+    assert_equal([3.0, 4.0], surface.device_scale)
   end
 
   def test_fallback_resolution
