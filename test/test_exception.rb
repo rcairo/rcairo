@@ -16,6 +16,15 @@ class ExceptionTest < Test::Unit::TestCase
     send(assertion, "InvalidWeight")
   end
 
+  def test_new_symbols_since_1_14_0
+    if Cairo.satisfied_version?(1, 14, 0)
+      assertion = :assert_defined
+    else
+      assertion = :assert_not_defined
+    end
+    send(assertion, "Jbig2GlobalMissing")
+  end
+
   private
   def assert_defined(name)
     assert_true(Cairo.const_defined?(name))
