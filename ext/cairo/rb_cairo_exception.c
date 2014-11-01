@@ -62,7 +62,7 @@ static VALUE rb_eCairo_InvalidMeshConstruction;
 static VALUE rb_eCairo_DeviceFinished;
 #endif
 #if CAIRO_CHECK_VERSION(1, 14, 0)
-static VALUE rb_eCairo_Jbig2GlobalMissing;
+static VALUE rb_eCairo_JBIG2GlobalMissing;
 #endif
 
 void
@@ -197,7 +197,7 @@ rb_cairo_check_status (cairo_status_t status)
 #endif
 #if CAIRO_CHECK_VERSION(1, 14, 0)
     case CAIRO_STATUS_JBIG2_GLOBAL_MISSING:
-      rb_raise (rb_eCairo_Jbig2GlobalMissing, "%s", string);
+      rb_raise (rb_eCairo_JBIG2GlobalMissing, "%s", string);
       break;
 #endif
 #if CAIRO_CHECK_VERSION(1, 10, 0)
@@ -294,7 +294,7 @@ rb_cairo__exception_to_status (VALUE exception)
     return CAIRO_STATUS_DEVICE_ERROR;
 #endif
 #if CAIRO_CHECK_VERSION(1, 14, 0)
-  else if (rb_cairo__is_kind_of (exception, rb_eCairo_Jbig2GlobalMissing))
+  else if (rb_cairo__is_kind_of (exception, rb_eCairo_JBIG2GlobalMissing))
     return CAIRO_STATUS_JBIG2_GLOBAL_MISSING;
 #endif
 
@@ -439,8 +439,8 @@ Init_cairo_exception ()
                            rb_eCairo_Error);
 #endif
 #if CAIRO_CHECK_VERSION(1, 14, 0)
-  rb_eCairo_Jbig2GlobalMissing =
-    rb_define_class_under (rb_mCairo, "Jbig2GlobalMissing",
+  rb_eCairo_JBIG2GlobalMissing =
+    rb_define_class_under (rb_mCairo, "JBIG2GlobalMissing",
                            rb_eCairo_Error);
 #endif
 }

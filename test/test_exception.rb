@@ -22,7 +22,7 @@ class ExceptionTest < Test::Unit::TestCase
     else
       assertion = :assert_not_defined
     end
-    send(assertion, "Jbig2GlobalMissing")
+    send(assertion, "JBIG2GlobalMissing")
   end
 
   private
