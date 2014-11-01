@@ -1453,6 +1453,9 @@ cr_win32_printing_surface_initialize (VALUE self, VALUE hdc)
 #endif
 
 #ifdef RB_CAIRO_HAS_QUARTZ_IMAGE_SURFACE
+
+#include <cairo-quartz-image.h>
+
 /* Quartz image surface functions */
 static VALUE
 cr_quartz_image_surface_initialize (VALUE self, VALUE image_surface)
