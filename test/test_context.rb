@@ -73,7 +73,7 @@ class ContextTest < Test::Unit::TestCase
 
     face = context.font_face
     default_font_family = ""
-    default_font_family = "Helvetica" if os_x?
+    default_font_family = "Helvetica" if quartz?
     default_font_family = "Arial" if win32?
     assert_equal([default_font_family,
                   Cairo::FONT_SLANT_NORMAL,
