@@ -112,7 +112,7 @@ cr_font_face_allocate (VALUE klass)
 }
 
 static VALUE
-cr_font_quartz_supported_p (VALUE klass)
+cr_font_face_quartz_supported_p (VALUE klass)
 {
 #ifdef CAIRO_HAS_QUARTZ_FONT
   return Qtrue;
@@ -663,7 +663,7 @@ Init_cairo_font (void)
   rb_define_alloc_func (rb_cCairo_FontFace, cr_font_face_allocate);
 
   rb_define_singleton_method (rb_cCairo_FontFace, "quartz_supported?",
-                              cr_font_quartz_supported_p, 0);
+                              cr_font_face_quartz_supported_p, 0);
 
 #if CAIRO_CHECK_VERSION(1, 7, 6)
   rb_cCairo_ToyFontFace =
