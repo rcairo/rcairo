@@ -55,6 +55,7 @@ enum ruby_value_type {
 #  define T_DATA RUBY_T_DATA
 #  define RB_CAIRO_HAS_QUARTZ_SURFACE
 #  ifdef RB_CAIRO_HAS_QUARTZ_IMAGE_SURFACE_TYPE
+#    include <cairo-quartz-image.h>
 #    define RB_CAIRO_HAS_QUARTZ_IMAGE_SURFACE
 #  endif
 #endif
@@ -1474,8 +1475,6 @@ cr_win32_printing_surface_initialize (VALUE self, VALUE hdc)
 #endif
 
 #ifdef RB_CAIRO_HAS_QUARTZ_IMAGE_SURFACE
-
-#include <cairo-quartz-image.h>
 
 /* Quartz image surface functions */
 static VALUE
