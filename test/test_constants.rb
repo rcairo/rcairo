@@ -13,4 +13,15 @@ class ConstantsTest < Test::Unit::TestCase
                  [0,
                   Cairo::TextClusterFlag::BACKWARD])
   end
+
+  def test_new_constants_since_1_14_0
+    if Cairo.satisfied_version?(1, 14, 0)
+      assertion = :assert_const_defined
+    else
+      assertion = :assert_not_const_defined
+    end
+    send(assertion, Cairo::MimeType, :JBIG2)
+    send(assertion, Cairo::MimeType, :JBIG2_GLOBAL)
+    send(assertion, Cairo::MimeType, :JBIG2_GLOBAL_ID)
+  end
 end
