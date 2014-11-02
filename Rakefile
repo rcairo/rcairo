@@ -437,8 +437,8 @@ windows_task = WindowsTask.new(spec) do |task|
     },
     {
       :name => "libpng",
-      :version => "1.6.10",
-      :download_base_url => "http://sourceforge.net/projects/libpng/files/libpng16/1.6.10",
+      :version => "1.6.14",
+      :download_base_url => "http://sourceforge.net/projects/libpng/files/libpng16/1.6.14",
       :windows => {
         :built_file => "bin/libpng16-16.dll",
       },
