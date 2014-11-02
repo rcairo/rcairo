@@ -499,6 +499,10 @@ windows_task = WindowsTask.new(spec) do |task|
         :configure_args => [
           "--enable-gobject",
         ],
+        :patches => [
+          "cairo-1.14-missing-exeext-float-m4.diff"
+        ],
+        :need_autoreconf => true,
       },
     },
   ]
