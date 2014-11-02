@@ -483,7 +483,7 @@ windows_task = WindowsTask.new(spec) do |task|
     },
     {
       :name => "pixman",
-      :version => "0.32.4",
+      :version => "0.32.6",
       :download_site => :cairo,
       :compression_method => "gz",
       :windows => {
