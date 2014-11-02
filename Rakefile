@@ -492,7 +492,7 @@ windows_task = WindowsTask.new(spec) do |task|
     },
     {
       :name => "cairo",
-      :version => "1.12.16",
+      :version => "1.14.0",
       :download_site => :cairo,
       :windows => {
         :built_file => "bin/libcairo-2.dll",
