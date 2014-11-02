@@ -454,7 +454,7 @@ windows_task = WindowsTask.new(spec) do |task|
     },
     {
       :name => "libxml2",
-      :version => "2.9.1",
+      :version => "2.9.2",
       :download_base_url => "ftp://xmlsoft.org/libxml2",
       :compression_method => "gz",
       :windows => {
@@ -462,6 +462,10 @@ windows_task = WindowsTask.new(spec) do |task|
         :configure_args => [
           "--without-python",
         ],
+        :patches => [
+          "remove-empty-z_dir-ldflags.diff",
+        ],
+        :need_autoreconf => true,
       },
     },
     {
