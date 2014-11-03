@@ -201,6 +201,11 @@ class WindowsTask
           desc "Bundle GCC related DLLs"
           task :bundle => binary_path do
             dll_names = ["libstdc++-6.dll", "libwinpthread-1.dll"]
+            if RCairoBuild.for_64bit?
+              dll_names << "libgcc_s_sjlj-1.dll"
+            else
+              dll_names << "libgcc_s_seh-1.dll"
+            end
             dll_names.each do |dll_name|
               cp(absolete_gcc_dll_path(dll_name), binary_path)
             end
