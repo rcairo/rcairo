@@ -437,8 +437,8 @@ windows_task = WindowsTask.new(spec) do |task|
     },
     {
       :name => "libpng",
-      :version => "1.6.10",
-      :download_base_url => "http://sourceforge.net/projects/libpng/files/libpng16/1.6.10",
+      :version => "1.6.14",
+      :download_base_url => "http://sourceforge.net/projects/libpng/files/libpng16/1.6.14",
       :windows => {
         :built_file => "bin/libpng16-16.dll",
       },
@@ -454,7 +454,7 @@ windows_task = WindowsTask.new(spec) do |task|
     },
     {
       :name => "libxml2",
-      :version => "2.9.1",
+      :version => "2.9.2",
       :download_base_url => "ftp://xmlsoft.org/libxml2",
       :compression_method => "gz",
       :windows => {
@@ -462,6 +462,10 @@ windows_task = WindowsTask.new(spec) do |task|
         :configure_args => [
           "--without-python",
         ],
+        :patches => [
+          "remove-empty-z_dir-ldflags.diff",
+        ],
+        :need_autoreconf => true,
       },
     },
     {
@@ -483,7 +487,7 @@ windows_task = WindowsTask.new(spec) do |task|
     },
     {
       :name => "pixman",
-      :version => "0.32.4",
+      :version => "0.32.6",
       :download_site => :cairo,
       :compression_method => "gz",
       :windows => {
@@ -492,13 +496,17 @@ windows_task = WindowsTask.new(spec) do |task|
     },
     {
       :name => "cairo",
-      :version => "1.12.16",
+      :version => "1.14.0",
       :download_site => :cairo,
       :windows => {
         :built_file => "bin/libcairo-2.dll",
         :configure_args => [
           "--enable-gobject",
         ],
+        :patches => [
+          "cairo-1.14-missing-exeext-float-m4.diff"
+        ],
+        :need_autoreconf => true,
       },
     },
   ]
