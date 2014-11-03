@@ -54,7 +54,7 @@ enum ruby_value_type {
 #  include <cairo-quartz.h>
 #  define T_DATA RUBY_T_DATA
 #  define RB_CAIRO_HAS_QUARTZ_SURFACE
-#  ifdef RB_CAIRO_HAS_QUARTZ_IMAGE_SURFACE_TYPE
+#  ifdef CAIRO_HAS_QUARTZ_IMAGE_SURFACE
 #    include <cairo-quartz-image.h>
 #    define RB_CAIRO_HAS_QUARTZ_IMAGE_SURFACE
 #  endif
