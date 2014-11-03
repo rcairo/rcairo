@@ -207,7 +207,9 @@ class WindowsTask
               dll_names << "libgcc_s_seh-1.dll"
             end
             dll_names.each do |dll_name|
-              cp(absolete_gcc_dll_path(dll_name), binary_path)
+              destination_path = binary_path + dll_name
+              cp(absolete_gcc_dll_path(dll_name), destination_path)
+              chmod(0755, destination_path)
             end
           end
         end
