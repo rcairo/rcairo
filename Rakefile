@@ -237,6 +237,7 @@ class WindowsTask
   end
 
   def download(package, archive_path)
+    rake_output_message "Downloading... #{package.archive_url}"
     open(package.archive_url) do |downloaded_archive|
       begin
         archive_path.open("wb") do |archive_file|
