@@ -1221,8 +1221,10 @@ cr_ps_surface_set_eps (VALUE self, VALUE eps)
 /* Quartz-surface functions */
 #include <objc/objc-runtime.h>
 
+#ifdef HAVE_RUBY_COCOA
 BOOL rbobj_to_nsobj (VALUE obj, id* nsobj);
 VALUE ocid_to_rbobj (VALUE context_obj, id ocid);
+#endif
 
 static VALUE
 cr_quartz_surface_initialize (int argc, VALUE *argv, VALUE self)
@@ -1322,12 +1324,19 @@ cr_quartz_surface_initialize (int argc, VALUE *argv, VALUE self)
 static VALUE
 cr_quartz_surface_get_cg_context (VALUE self)
 {
+#ifdef HAVE_RUBY_COCOA
   CGContextRef context;
   id objc_object;
 
   context = cairo_quartz_surface_get_cg_context (_SELF);
   objc_object = (id)context;
   return ocid_to_rbobj (Qnil, objc_object);
+#else
+  rb_raise (rb_eNotImpError,
+            "%s#cg_context requires RubyCocoa",
+            rb_obj_classname(self));
+  return Qnil;
+#endif
 }
 #endif
 
