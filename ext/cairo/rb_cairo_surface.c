@@ -1221,10 +1221,10 @@ cr_ps_surface_set_eps (VALUE self, VALUE eps)
 /* Quartz-surface functions */
 #include <objc/objc-runtime.h>
 
-#ifdef HAVE_RUBY_COCOA
+#  ifdef HAVE_RUBY_COCOA
 BOOL rbobj_to_nsobj (VALUE obj, id* nsobj);
 VALUE ocid_to_rbobj (VALUE context_obj, id ocid);
-#endif
+#  endif
 
 static VALUE
 cr_quartz_surface_initialize (int argc, VALUE *argv, VALUE self)
@@ -1235,9 +1235,9 @@ cr_quartz_surface_initialize (int argc, VALUE *argv, VALUE self)
   cairo_surface_t *surface = NULL;
   cairo_format_t format = CAIRO_FORMAT_ARGB32;
   VALUE arg1, arg2, arg3, rb_width, rb_height;
-#ifdef HAVE_RUBY_COCOA
+#  ifdef HAVE_RUBY_COCOA
   static VALUE rb_cOSXCGContextRef = Qnil;
-#endif
+#  endif
 
   rb_scan_args (argc, argv, "21", &arg1, &arg2, &arg3);
 
@@ -1258,20 +1258,20 @@ cr_quartz_surface_initialize (int argc, VALUE *argv, VALUE self)
           format = RVAL2CRFORMAT (arg1);
           break;
         default:
-#ifdef HAVE_RUBY_COCOA
+#  ifdef HAVE_RUBY_COCOA
           if (NIL_P (rb_cOSXCGContextRef))
             rb_cOSXCGContextRef =
               rb_const_get (rb_const_get (rb_cObject, rb_intern ("OSX")),
                             rb_intern ("CGContextRef"));
-#endif
+#  endif
 
-#ifdef HAVE_RUBY_COCOA
+#  ifdef HAVE_RUBY_COCOA
           if (RTEST (rb_obj_is_kind_of (arg1, rb_cOSXCGContextRef)))
             {
               rbobj_to_nsobj (arg1, &objc_object);
             }
           else
-#endif
+#  endif
             {
               if (!NIL_P (rb_cairo__cFFIPointer) &&
                   RTEST (rb_obj_is_kind_of (arg1, rb_cairo__cFFIPointer)))
@@ -1324,19 +1324,19 @@ cr_quartz_surface_initialize (int argc, VALUE *argv, VALUE self)
 static VALUE
 cr_quartz_surface_get_cg_context (VALUE self)
 {
-#ifdef HAVE_RUBY_COCOA
+#  ifdef HAVE_RUBY_COCOA
   CGContextRef context;
   id objc_object;
 
   context = cairo_quartz_surface_get_cg_context (_SELF);
   objc_object = (id)context;
   return ocid_to_rbobj (Qnil, objc_object);
-#else
+#  else
   rb_raise (rb_eNotImpError,
             "%s#cg_context requires RubyCocoa",
             rb_obj_classname(self));
   return Qnil;
-#endif
+#  endif
 }
 #endif
 
