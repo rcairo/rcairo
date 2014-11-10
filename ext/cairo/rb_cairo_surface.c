@@ -1280,7 +1280,7 @@ cr_quartz_surface_initialize (int argc, VALUE *argv, VALUE self)
                   rb_objc_pointer = rb_funcall (arg1,
                                                 rb_intern ("address"),
                                                 0);
-                  objc_object = NUM2ULONG (rb_objc_pointer);
+                  objc_object = (id)rb_objc_pointer;
                 }
               else
                 {
