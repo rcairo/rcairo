@@ -183,6 +183,7 @@ cr_initialize (VALUE self, VALUE target)
   cr = cairo_create (RVAL2CRSURFACE (target));
   cr_check_status (cr);
   rb_ivar_set (self, cr_id_surface, target);
+  rb_ivar_set (self, cr_id_source, Qnil);
   if (rb_ivar_defined (target, rb_cairo__io_id_output))
     cr_set_user_data (cr,
                       &cr_object_holder_key,
