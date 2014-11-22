@@ -200,15 +200,20 @@ class WindowsTask
           directory binary_path.to_s
           desc "Bundle GCC related DLLs"
           task :bundle => binary_path do
-            dll_names = ["libstdc++-6.dll", "libwinpthread-1.dll"]
-            if RCairoBuild.for_64bit?
-              dll_names << "libgcc_s_sjlj-1.dll"
-            else
-              dll_names << "libgcc_s_seh-1.dll"
-            end
+            dll_names = [
+              "libstdc++-6.dll",
+              "libwinpthread-1.dll",
+              "libgcc_s_sjlj-1.dll",
+              "libgcc_s_seh-1.dll",
+            ]
             dll_names.each do |dll_name|
               destination_path = binary_path + dll_name
-              cp(absolete_gcc_dll_path(dll_name), destination_path)
+              dll_path = absolete_gcc_dll_path(dll_name)
+              unless File.exist?(dll_path)
+                puts("#{dll_name} doesn't exist.")
+                next
+              end
+              cp(dll_path, destination_path)
               chmod(0755, destination_path)
             end
           end
