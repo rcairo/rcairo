@@ -609,6 +609,16 @@ file "Makefile" => ["extconf.rb", "ext/cairo/extconf.rb"] do
   ruby("extconf.rb")
 end
 
+namespace :make do
+  namespace :debug_flags do
+    task :reset do
+      ENV["MAKE"] ||= "make debugflags="
+    end
+  end
+end
+
+task :cross => "make:debug_flags:reset"
+
 desc "Configure"
 task :configure => "Makefile"
 
