@@ -98,7 +98,7 @@ run rake native:build
 
 run cd ~/rcairo.${DIRECTORY_SUFFIX}
 run rake windows:build
-run rake cross compile native
+run rake cross compile native gem
 
 run mkdir -p /vagrant/pkg
 run cp */pkg/*.gem /vagrant/pkg/
