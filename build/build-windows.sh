@@ -101,4 +101,4 @@ run rake windows:build
 run rake cross compile native gem
 
 run mkdir -p /vagrant/pkg
-run cp */pkg/*.gem /vagrant/pkg/
+run cp pkg/*.gem /vagrant/pkg/
