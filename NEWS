@@ -1,3 +1,15 @@
+Release 1.14.1 (2014-12-23) Kouhei Sutou <kou@cozmixng.org>
+===========================================================
+
+Windows users must upgrade. Non Windows users doesn't need to
+upgrade.
+
+Improvements
+------------
+
+ * Upgraded bundled libraries for Windows. libpng is upgraded to
+   1.6.16 from 1.6.14. libpng 1.6.14 has vulnerability.
+
 Release 1.14.0 (2014-11-24) Kouhei Sutou <kou@cozmixng.org>
 ===========================================================
 
