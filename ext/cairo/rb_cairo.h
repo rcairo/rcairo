@@ -296,7 +296,7 @@ VALUE                 rb_cairo_device_to_ruby_object         (cairo_device_t *de
 #define RVAL2CRSCRIPTMODE(obj)    (rb_cairo_script_mode_from_ruby_object(obj))
 #endif
 #if CAIRO_CHECK_VERSION(1, 10, 0)
-#define RVAL2CRREGIONOVERLAP(obj) (rb_cairo_region_overalap_from_ruby_object(obj))
+#define RVAL2CRREGIONOVERLAP(obj) (rb_cairo_region_overlap_from_ruby_object(obj))
 #endif
 
 cairo_operator_t       rb_cairo_operator_from_ruby_object       (VALUE obj);
