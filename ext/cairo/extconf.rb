@@ -103,6 +103,11 @@ def install_missing_native_package(native_package_info)
   installing_message = "installing '#{package}' native package... "
   message("%s", installing_message)
   failed_to_get_super_user_priviledge = false
+
+  succeeded = false
+  execution_result = ""
+  File.open("mkmf.log") do |log|
+    log.seek(0, IO::SEEK_END)
   if have_priviledge
     succeeded = xsystem(install_command)
   else
@@ -113,6 +118,9 @@ def install_missing_native_package(native_package_info)
       succeeded = false
       failed_to_get_super_user_priviledge = true
     end
+  end
+    executed_command_line = log.gets
+    execution_result = log.read
   end
 
   if failed_to_get_super_user_priviledge
@@ -135,7 +143,10 @@ Run the following command as super user to install required native package:
 EOM
     else
       error_message = <<-EOM
-Failed to run '#{install_command}'.
+Failed to run '#{install_command}':
+--
+#{execution_result.chomp}
+--
 EOM
     end
   end
