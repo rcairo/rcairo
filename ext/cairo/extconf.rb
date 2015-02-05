@@ -108,17 +108,17 @@ def install_missing_native_package(native_package_info)
   execution_result = ""
   File.open("mkmf.log") do |log|
     log.seek(0, IO::SEEK_END)
-  if have_priviledge
-    succeeded = xsystem(install_command)
-  else
-    if sudo
-      install_command = "#{sudo} #{install_command}"
+    if have_priviledge
       succeeded = xsystem(install_command)
     else
-      succeeded = false
-      failed_to_get_super_user_priviledge = true
+      if sudo
+        install_command = "#{sudo} #{install_command}"
+        succeeded = xsystem(install_command)
+      else
+        succeeded = false
+        failed_to_get_super_user_priviledge = true
+      end
     end
-  end
     executed_command_line = log.gets
     execution_result = log.read
   end
