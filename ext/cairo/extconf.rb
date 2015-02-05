@@ -130,12 +130,12 @@ def install_missing_native_package(native_package_info)
     if failed_to_get_super_user_priviledge
       error_message = <<-EOM
 '#{package}' native package is required.
-run the following command as super user to install required native package:
+Run the following command as super user to install required native package:
   \# #{install_command}
 EOM
     else
       error_message = <<-EOM
-failed to run '#{install_command}'.
+Failed to run '#{install_command}'.
 EOM
     end
   end
