@@ -25,6 +25,32 @@ class RegionTest < Test::Unit::TestCase
     assert_equal([0, 0, 10, 10], region[0])
   end
 
+  def test_each_rectangle
+    region = Cairo::Region.new
+    region.union!([0, 0, 10, 10])
+    region.union!([20, 20, 40, 40])
+    rectangles = []
+    region.each_rectangle do |rectangle|
+      rectangles << rectangle
+    end
+    assert_equal([
+                   [0, 0, 10, 10],
+                   [20, 20, 40, 40],
+                 ],
+                 rectangles)
+  end
+
+  def test_rectangles
+    region = Cairo::Region.new
+    region.union!([0, 0, 10, 10])
+    region.union!([20, 20, 40, 40])
+    assert_equal([
+                   [0, 0, 10, 10],
+                   [20, 20, 40, 40],
+                 ],
+                 region.rectangles)
+  end
+
   def test_dup
     region = Cairo::Region.new([0, 0, 10, 10])
     region.dup.subtract!([5, 5, 5, 5])

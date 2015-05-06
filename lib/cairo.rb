@@ -146,6 +146,7 @@ require 'cairo/device'
 require 'cairo/surface'
 require 'cairo/pattern'
 require 'cairo/path'
+require 'cairo/region'
 
 module Cairo
   if const_defined?(:Win32Surface)
