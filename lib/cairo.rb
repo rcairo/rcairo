@@ -1,19 +1,19 @@
 # vim: filetype=ruby:expandtab:shiftwidth=2:tabstop=8:softtabstop=2 :
 
 if /mingw|mswin|mswin32/ =~ RUBY_PLATFORM
-  require 'pathname'
+  require "pathname"
   base_dir = Pathname(File.dirname(__FILE__))
   base_dir = base_dir.parent + "vendor" + "local"
   if base_dir.exist?
     base_dir = base_dir.to_s.gsub(/\//, "\\")
-    ENV['PATH'] = %w(bin lib).collect do |dir|
+    ENV["PATH"] = %w(bin lib).collect do |dir|
       "#{base_dir}\\#{dir};"
-    end.join('') + ENV['PATH']
+    end.join("") + ENV["PATH"]
   else
-    require 'rbconfig'
-    ENV['PATH'] = %w(bin lib).collect do |dir|
+    require "rbconfig"
+    ENV["PATH"] = %w(bin lib).collect do |dir|
       "#{RbConfig::CONFIG["prefix"]}\\lib\\GTK\\#{dir};"
-    end.join('') + ENV['PATH']
+    end.join("") + ENV["PATH"]
   end
 end
 
@@ -36,16 +36,16 @@ module Cairo
   end
 end
 
-require 'cairo/color'
-require 'cairo/paper'
+require "cairo/color"
+require "cairo/paper"
 
 begin
   major, minor, _ = RUBY_VERSION.split(/\./)
   require "#{major}.#{minor}/cairo.so"
 rescue LoadError
-  require 'cairo.so'
+  require "cairo.so"
 end
-require 'cairo/constants'
+require "cairo/constants"
 
 module Cairo
   class << self
@@ -53,7 +53,7 @@ module Cairo
 
     def bindings_version
       major, minor, micro, tag = BINDINGS_VERSION
-      version = [major, minor, micro].join('.')
+      version = [major, minor, micro].join(".")
       version << "-#{tag}" if tag
       version
     end
@@ -138,15 +138,15 @@ module Cairo
   end
 end
 
-require 'cairo/point'
-require 'cairo/colors'
-require 'cairo/papers'
-require 'cairo/context'
-require 'cairo/device'
-require 'cairo/surface'
-require 'cairo/pattern'
-require 'cairo/path'
-require 'cairo/region'
+require "cairo/point"
+require "cairo/colors"
+require "cairo/papers"
+require "cairo/context"
+require "cairo/device"
+require "cairo/surface"
+require "cairo/pattern"
+require "cairo/path"
+require "cairo/region"
 
 module Cairo
   if const_defined?(:Win32Surface)
