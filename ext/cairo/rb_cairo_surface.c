@@ -1069,6 +1069,12 @@ cr_ ## type ## _surface_initialize (int argc, VALUE *argv, VALUE self)  \
   width_in_points = NUM2DBL (rb_width_in_points);                       \
   height_in_points = NUM2DBL (rb_height_in_points);                     \
                                                                         \
+  if (rb_respond_to (target, rb_cairo__io_id_to_path) &&                \
+      !rb_respond_to (target, rb_cairo__io_id_to_io))                   \
+    {                                                                   \
+      target = rb_funcall (target, rb_cairo__io_id_to_path, 0);         \
+    }                                                                   \
+                                                                        \
   if (rb_respond_to (target, rb_cairo__io_id_write))                    \
     {                                                                   \
       rb_cairo__io_callback_closure_t *closure;                         \
