@@ -880,7 +880,7 @@ cr_paint_with_alpha (VALUE self, VALUE alpha)
 }
 
 static VALUE
-cr_paint_generic(int argc, VALUE *argv, VALUE self)
+cr_paint_generic (int argc, VALUE *argv, VALUE self)
 {
   VALUE alpha;
   int n;
