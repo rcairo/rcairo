@@ -595,7 +595,7 @@ cr_mesh_pattern_set_control_point (VALUE self, VALUE rb_nth_point,
 
   pattern = _SELF (self);
   nth_point = NUM2UINT (rb_nth_point);
-  if (0 <= nth_point && nth_point <= 3)
+  if (nth_point <= 3)
     {
       cairo_mesh_pattern_set_control_point (pattern, nth_point,
                                             NUM2DBL (rb_x), NUM2DBL (rb_y));
@@ -625,7 +625,7 @@ cr_mesh_pattern_set_corner_color_generic (int argc, VALUE *argv, VALUE self)
                 &rb_nth_corner, &rb_red, &rb_green, &rb_blue, &rb_alpha);
 
   nth_corner = NUM2UINT (rb_nth_corner);
-  if (!(0 <= nth_corner && nth_corner <= 3))
+  if (nth_corner > 3)
     {
       VALUE inspected;
 
@@ -723,7 +723,7 @@ cr_mesh_pattern_get_control_point (VALUE self,
 
   nth_patch = NUM2UINT (rb_nth_patch);
   nth_point = NUM2UINT (rb_nth_point);
-  if (!(0 <= nth_point && nth_point <= 3))
+  if (nth_point > 3)
     {
       VALUE inspected;
 
