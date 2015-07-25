@@ -32,9 +32,6 @@ enum ruby_value_type {
 #  endif
 #endif
 
-VALUE rb_cCairo_QuartzSurface = Qnil;
-VALUE rb_cCairo_QuartzImageSurface = Qnil;
-
 #define _SELF  (RVAL2CRSURFACE(self))
 
 #ifdef RB_CAIRO_HAS_QUARTZ_SURFACE
@@ -193,8 +190,6 @@ void
 Init_cairo_quartz_surface (void)
 {
   /* Quartz surface */
-  rb_cCairo_QuartzSurface =
-    rb_define_class_under (rb_mCairo, "QuartzSurface", rb_cCairo_Surface);
 #ifdef RB_CAIRO_HAS_QUARTZ_SURFACE
   rb_define_method (rb_cCairo_QuartzSurface, "initialize",
                     cr_quartz_surface_initialize, -1);
@@ -203,8 +198,6 @@ Init_cairo_quartz_surface (void)
 #endif
 
   /* Quartz image surface */
-  rb_cCairo_QuartzImageSurface =
-    rb_define_class_under (rb_mCairo, "QuartzImageSurface", rb_cCairo_Surface);
 #ifdef RB_CAIRO_HAS_QUARTZ_IMAGE_SURFACE
   rb_define_method (rb_cCairo_QuartzImageSurface, "initialize",
                     cr_quartz_image_surface_initialize, 1);

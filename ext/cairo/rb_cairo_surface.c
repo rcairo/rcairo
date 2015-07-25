@@ -75,6 +75,8 @@ VALUE rb_cCairo_XCBSurface = Qnil;
 VALUE rb_cCairo_SVGSurface = Qnil;
 VALUE rb_cCairo_Win32Surface = Qnil;
 VALUE rb_cCairo_Win32PrintingSurface = Qnil;
+VALUE rb_cCairo_QuartzSurface = Qnil;
+VALUE rb_cCairo_QuartzImageSurface = Qnil;
 VALUE rb_cCairo_ScriptSurface = Qnil;
 VALUE rb_cCairo_QtSurface = Qnil;
 VALUE rb_cCairo_RecordingSurface = Qnil;
@@ -1964,6 +1966,10 @@ Init_cairo_surface (void)
   rb_cCairo_XCBSurface =
     rb_define_class_under (rb_mCairo, "XCBSurface", rb_cCairo_Surface);
 
+  /* Quartz surface */
+  rb_cCairo_QuartzSurface =
+    rb_define_class_under (rb_mCairo, "QuartzSurface", rb_cCairo_Surface);
+
   /* Win32 surface */
   rb_cCairo_Win32Surface =
     rb_define_class_under (rb_mCairo, "Win32Surface", rb_cCairo_Surface);
@@ -1999,6 +2005,10 @@ Init_cairo_surface (void)
   rb_define_method (rb_cCairo_Win32PrintingSurface, "hdc",
                     cr_win32_surface_get_hdc, 0);
 #endif
+
+  /* Quartz image surface */
+  rb_cCairo_QuartzImageSurface =
+    rb_define_class_under (rb_mCairo, "QuartzImageSurface", rb_cCairo_Surface);
 
   /* script surface */
   rb_cCairo_ScriptSurface =
