@@ -188,7 +188,7 @@ checking_for(checking_message("Mac OS X")) do
     if have_macro("CAIRO_HAS_QUARTZ_SURFACE", ["cairo.h"])
       checking_for("RubyCocoa") do
         begin
-          require 'osx/cocoa'
+          require "osx/cocoa"
           $defs << "-DHAVE_RUBY_COCOA"
           $DLDFLAGS << " -Wl,-framework,RubyCocoa"
           true
