@@ -131,7 +131,7 @@ cr_quartz_surface_initialize (int argc, VALUE *argv, VALUE self)
         cairo_quartz_surface_create_for_cg_context (context, width, height);
     }
 
-  cr_surface_check_status (surface);
+  rb_cairo_surface_check_status (surface);
   DATA_PTR (self) = surface;
   if (rb_block_given_p ())
     yield_and_finish (self);
@@ -166,7 +166,7 @@ cr_quartz_image_surface_initialize (VALUE self, VALUE image_surface)
   cairo_surface_t *surface;
 
   surface = cairo_quartz_image_surface_create (RVAL2CRSURFACE (image_surface));
-  cr_surface_check_status (surface);
+  rb_cairo_surface_check_status (surface);
   DATA_PTR (self) = surface;
   if (rb_block_given_p ())
     yield_and_finish (self);
@@ -181,7 +181,7 @@ cr_quartz_image_surface_get_image (VALUE self)
   surface = cairo_quartz_image_surface_get_image (_SELF);
   if (!surface)
     return Qnil;
-  cr_surface_check_status (surface);
+  rb_cairo_surface_check_status (surface);
   return CRSURFACE2RVAL (surface);
 }
 #endif

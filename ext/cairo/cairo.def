@@ -138,3 +138,4 @@ EXPORTS
     rb_cairo_pdf_version_from_ruby_object
     rb_cairo_text_cluster_flags_from_ruby_object
     rb_cairo_check_status
+    rb_cairo_surface_check_status

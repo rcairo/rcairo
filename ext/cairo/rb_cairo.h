@@ -338,7 +338,7 @@ cairo_region_overlap_t  rb_cairo_region_overlap_from_ruby_object(VALUE obj);
 #endif
 
 void rb_cairo_check_status (cairo_status_t status);
-
+void rb_cairo_surface_check_status (cairo_surface_t *surface);
 
 #define RB_CAIRO_DEF_SETTERS(klass) rb_cairo_def_setters(klass);
 void rb_cairo_def_setters (VALUE klass);

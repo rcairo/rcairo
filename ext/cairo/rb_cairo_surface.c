@@ -120,8 +120,8 @@ cr_paper_to_size_in_points (VALUE paper_description, VALUE *width, VALUE *height
   *height = RARRAY_PTR (size)[1];
 }
 
-static inline void
-cr_surface_check_status (cairo_surface_t *surface)
+void
+rb_cairo_surface_check_status (cairo_surface_t *surface)
 {
   rb_cairo_check_status (cairo_surface_status (surface));
 }
@@ -457,7 +457,7 @@ cr_surface_finish (VALUE self)
 
   if (closure && !NIL_P (closure->error))
     rb_exc_raise (closure->error);
-  cr_surface_check_status (surface);
+  rb_cairo_surface_check_status (surface);
 
   return self;
 }
@@ -504,7 +504,7 @@ cr_surface_create_similar (int argc, VALUE *argv, VALUE self)
 
   similar_surface = cairo_surface_create_similar (surface, content,
                                                   width, height);
-  cr_surface_check_status (similar_surface);
+  rb_cairo_surface_check_status (similar_surface);
   return CRSURFACE2RVAL_WITH_DESTROY (similar_surface);
 }
 
@@ -542,7 +542,7 @@ cr_surface_create_similar_image (int argc, VALUE *argv, VALUE self)
 
   similar_image = cairo_surface_create_similar_image (surface, format,
                                                       width, height);
-  cr_surface_check_status (similar_image);
+  rb_cairo_surface_check_status (similar_image);
   return CRSURFACE2RVAL_WITH_DESTROY (similar_image);
 }
 
@@ -580,7 +580,7 @@ cr_surface_map_to_image (int argc, VALUE *argv, VALUE self)
     }
 
   mapped_image = cairo_surface_map_to_image (surface, extents);
-  cr_surface_check_status (mapped_image);
+  rb_cairo_surface_check_status (mapped_image);
   return CRSURFACE2RVAL_WITH_DESTROY (mapped_image);
 }
 
@@ -617,7 +617,7 @@ cr_surface_create_sub_rectangle_surface (VALUE self, VALUE x, VALUE y,
                                                 NUM2DBL (y),
                                                 NUM2DBL (width),
                                                 NUM2INT (height));
-  cr_surface_check_status (surface);
+  rb_cairo_surface_check_status (surface);
   rb_surface = CRSURFACE2RVAL_WITH_DESTROY (surface);
   if (rb_block_given_p ())
     return rb_ensure (rb_yield, rb_surface,
@@ -749,7 +749,7 @@ cr_surface_get_font_options (VALUE self)
 {
   cairo_font_options_t *options = cairo_font_options_create();
   cairo_surface_get_font_options (_SELF, options);
-  cr_surface_check_status (_SELF);
+  rb_cairo_surface_check_status (_SELF);
   rb_cairo_check_status (cairo_font_options_status (options));
   return CRFONTOPTIONS2RVAL (options);
 }
@@ -758,7 +758,7 @@ static VALUE
 cr_surface_flush (VALUE self)
 {
   cairo_surface_flush (_SELF);
-  cr_surface_check_status (_SELF);
+  rb_cairo_surface_check_status (_SELF);
   return self;
 }
 
@@ -796,7 +796,7 @@ cr_surface_mark_dirty (int argc, VALUE *argv, VALUE self)
                 rb_cairo__inspect (args));
     }
 
-  cr_surface_check_status (_SELF);
+  rb_cairo_surface_check_status (_SELF);
   return self;
 }
 
@@ -806,7 +806,7 @@ cr_surface_set_device_offset (VALUE self, VALUE x_offset, VALUE y_offset)
   cairo_surface_set_device_offset (_SELF,
                                    NUM2DBL (x_offset),
                                    NUM2DBL (y_offset));
-  cr_surface_check_status (_SELF);
+  rb_cairo_surface_check_status (_SELF);
   return self;
 }
 
@@ -816,7 +816,7 @@ cr_surface_get_device_offset (VALUE self)
   double x_offset, y_offset;
 
   cairo_surface_get_device_offset (_SELF, &x_offset, &y_offset);
-  cr_surface_check_status (_SELF);
+  rb_cairo_surface_check_status (_SELF);
   return rb_ary_new3 (2, rb_float_new (x_offset), rb_float_new (y_offset));
 }
 
@@ -827,7 +827,7 @@ cr_surface_set_device_scale (VALUE self, VALUE x_scale, VALUE y_scale)
   cairo_surface_set_device_scale (_SELF,
                                   NUM2DBL (x_scale),
                                   NUM2DBL (y_scale));
-  cr_surface_check_status (_SELF);
+  rb_cairo_surface_check_status (_SELF);
   return self;
 }
 
@@ -849,7 +849,7 @@ cr_surface_set_fallback_resolution (VALUE self,
   cairo_surface_set_fallback_resolution (_SELF,
                                          NUM2DBL (x_pixels_per_inch),
                                          NUM2DBL (y_pixels_per_inch));
-  cr_surface_check_status (_SELF);
+  rb_cairo_surface_check_status (_SELF);
   return self;
 }
 
@@ -862,7 +862,7 @@ cr_surface_get_fallback_resolution (VALUE self)
   cairo_surface_get_fallback_resolution (_SELF,
                                          &x_pixels_per_inch,
                                          &y_pixels_per_inch);
-  cr_surface_check_status (_SELF);
+  rb_cairo_surface_check_status (_SELF);
   return rb_ary_new3 (2,
                       rb_float_new (x_pixels_per_inch),
                       rb_float_new (y_pixels_per_inch));
@@ -875,7 +875,7 @@ static VALUE
 cr_surface_copy_page (VALUE self)
 {
   cairo_surface_copy_page (_SELF);
-  cr_surface_check_status (_SELF);
+  rb_cairo_surface_check_status (_SELF);
   return self;
 }
 
@@ -883,7 +883,7 @@ static VALUE
 cr_surface_show_page (VALUE self)
 {
   cairo_surface_show_page (_SELF);
-  cr_surface_check_status (_SELF);
+  rb_cairo_surface_check_status (_SELF);
   return self;
 }
 #endif
@@ -924,7 +924,7 @@ cr_image_surface_create_from_png_generic (VALUE klass, VALUE target)
   else
     surface = cr_image_surface_create_from_png (target);
 
-  cr_surface_check_status (surface);
+  rb_cairo_surface_check_status (surface);
   rb_surface = cr_surface_allocate (klass);
   DATA_PTR (rb_surface) = surface;
   return rb_surface;
@@ -982,7 +982,7 @@ cr_image_surface_initialize (int argc, VALUE *argv, VALUE self)
               "(data, format, width, height, stride)): %s",
               rb_cairo__inspect (rb_ary_new3 (4, arg1, arg2, arg3, arg4)));
 
-  cr_surface_check_status (surface);
+  rb_cairo_surface_check_status (surface);
   DATA_PTR (self) = surface;
   if (rb_block_given_p ())
     yield_and_finish (self);
@@ -1100,7 +1100,7 @@ cr_ ## type ## _surface_initialize (int argc, VALUE *argv, VALUE self)  \
                                            height_in_points);           \
     }                                                                   \
                                                                         \
-  cr_surface_check_status (surface);                                    \
+  rb_cairo_surface_check_status (surface);                                    \
   DATA_PTR (self) = surface;                                            \
   if (rb_block_given_p ())                                              \
     yield_and_finish (self);                                            \
@@ -1133,7 +1133,7 @@ cr_ ## type ## _surface_set_size (int argc, VALUE *argv, VALUE self)    \
   cairo_ ## type ## _surface_set_size (_SELF,                           \
                                        NUM2DBL (width_in_points),       \
                                        NUM2DBL (height_in_points));     \
-  cr_surface_check_status (_SELF);                                      \
+  rb_cairo_surface_check_status (_SELF);                                      \
   return Qnil;                                                          \
 }
 
@@ -1147,7 +1147,7 @@ static VALUE
 cr_pdf_surface_restrict_to_version (VALUE self, VALUE version)
 {
   cairo_pdf_surface_restrict_to_version (_SELF, RVAL2CRPDFVERSION (version));
-  cr_surface_check_status (_SELF);
+  rb_cairo_surface_check_status (_SELF);
   return Qnil;
 }
 #  endif
@@ -1162,7 +1162,7 @@ static VALUE
 cr_ps_surface_dsc_comment (VALUE self, VALUE comment)
 {
   cairo_ps_surface_dsc_comment (_SELF, StringValueCStr (comment));
-  cr_surface_check_status (_SELF);
+  rb_cairo_surface_check_status (_SELF);
   return Qnil;
 }
 
@@ -1170,7 +1170,7 @@ static VALUE
 cr_ps_surface_dsc_begin_setup (VALUE self)
 {
   cairo_ps_surface_dsc_begin_setup (_SELF);
-  cr_surface_check_status (_SELF);
+  rb_cairo_surface_check_status (_SELF);
   if (rb_block_given_p ())
     return rb_yield (self);
   else
@@ -1181,7 +1181,7 @@ static VALUE
 cr_ps_surface_dsc_begin_page_setup (VALUE self)
 {
   cairo_ps_surface_dsc_begin_page_setup (_SELF);
-  cr_surface_check_status (_SELF);
+  rb_cairo_surface_check_status (_SELF);
   if (rb_block_given_p ())
     return rb_yield (self);
   else
@@ -1193,7 +1193,7 @@ static VALUE
 cr_ps_surface_restrict_to_level (VALUE self, VALUE level)
 {
   cairo_ps_surface_restrict_to_level (_SELF, RVAL2CRPSLEVEL (level));
-  cr_surface_check_status (_SELF);
+  rb_cairo_surface_check_status (_SELF);
   return Qnil;
 }
 
@@ -1207,7 +1207,7 @@ static VALUE
 cr_ps_surface_set_eps (VALUE self, VALUE eps)
 {
   cairo_ps_surface_set_eps (_SELF, RTEST (eps));
-  cr_surface_check_status (_SELF);
+  rb_cairo_surface_check_status (_SELF);
   return Qnil;
 }
 #  endif
@@ -1293,7 +1293,7 @@ cr_win32_surface_initialize (int argc, VALUE *argv, VALUE self)
 
   if (!surface)
     rb_cairo_check_status (CAIRO_STATUS_INVALID_FORMAT);
-  cr_surface_check_status (surface);
+  rb_cairo_surface_check_status (surface);
   DATA_PTR (self) = surface;
   if (rb_block_given_p ())
     yield_and_finish (self);
@@ -1321,7 +1321,7 @@ cr_win32_surface_get_image (VALUE self)
   surface = cairo_win32_surface_get_image (_SELF);
   if (!surface)
     return Qnil;
-  cr_surface_check_status (surface);
+  rb_cairo_surface_check_status (surface);
   return CRSURFACE2RVAL (surface);
 }
 #  endif
@@ -1335,7 +1335,7 @@ static VALUE
 cr_svg_surface_restrict_to_version (VALUE self, VALUE version)
 {
   cairo_svg_surface_restrict_to_version (_SELF, RVAL2CRSVGVERSION (version));
-  cr_surface_check_status (_SELF);
+  rb_cairo_surface_check_status (_SELF);
   return Qnil;
 }
 #endif
@@ -1348,7 +1348,7 @@ cr_win32_printing_surface_initialize (VALUE self, VALUE hdc)
   cairo_surface_t *surface = NULL;
 
   surface = cairo_win32_printing_surface_create (NUM2PTR (hdc));
-  cr_surface_check_status (surface);
+  rb_cairo_surface_check_status (surface);
   DATA_PTR (self) = surface;
   if (rb_block_given_p ())
     yield_and_finish (self);
@@ -1403,7 +1403,7 @@ cr_script_surface_initialize (int argc, VALUE *argv, VALUE self)
   else
     surface = cairo_script_surface_create (device, content, width, height);
 
-  cr_surface_check_status (surface);
+  rb_cairo_surface_check_status (surface);
   DATA_PTR (self) = surface;
   if (rb_block_given_p ())
     yield_and_finish (self);
@@ -1458,7 +1458,7 @@ cr_recording_surface_initialize (int argc, VALUE *argv, VALUE self)
     }
 
   surface = cairo_recording_surface_create (content, &extents);
-  cr_surface_check_status (surface);
+  rb_cairo_surface_check_status (surface);
   DATA_PTR (self) = surface;
   if (rb_block_given_p ())
     yield_and_finish (self);
@@ -1473,7 +1473,7 @@ cr_recording_surface_get_ink_extents (VALUE self)
 
   surface = _SELF;
   cairo_recording_surface_ink_extents (surface, &x, &y, &width, &height);
-  cr_surface_check_status (surface);
+  rb_cairo_surface_check_status (surface);
   return rb_ary_new3 (4,
                       rb_float_new (x), rb_float_new (y),
                       rb_float_new (width), rb_float_new (height));
@@ -1488,7 +1488,7 @@ cr_recording_surface_get_extents (VALUE self)
 
   surface = _SELF;
   cairo_recording_surface_get_extents (surface, &extents);
-  cr_surface_check_status (surface);
+  rb_cairo_surface_check_status (surface);
   return rb_ary_new3 (4,
                       rb_float_new (extents.x),
                       rb_float_new (extents.y),
@@ -1535,7 +1535,7 @@ cr_gl_surface_initialize (int argc, VALUE *argv, VALUE self)
 
   surface = cairo_gl_surface_create (device, content, width, height);
 
-  cr_surface_check_status (surface);
+  rb_cairo_surface_check_status (surface);
   DATA_PTR (self) = surface;
   if (rb_block_given_p ())
     yield_and_finish (self);
@@ -1582,7 +1582,7 @@ cr_gl_texture_surface_initialize (int argc, VALUE *argv, VALUE self)
                                                  width,
                                                  height);
 
-  cr_surface_check_status (surface);
+  rb_cairo_surface_check_status (surface);
   DATA_PTR (self) = surface;
   if (rb_block_given_p ())
     yield_and_finish (self);
@@ -1596,7 +1596,7 @@ cr_gl_surface_set_size (VALUE self, VALUE width, VALUE height)
 
   surface = _SELF;
   cairo_gl_surface_set_size (surface, NUM2INT (width), NUM2INT (height));
-  cr_surface_check_status (surface);
+  rb_cairo_surface_check_status (surface);
   return Qnil;
 }
 
@@ -1619,7 +1619,7 @@ cr_gl_surface_swap_buffers (VALUE self)
 
   surface = _SELF;
   cairo_gl_surface_swapbuffers (surface);
-  cr_surface_check_status (surface);
+  rb_cairo_surface_check_status (surface);
   return Qnil;
 }
 #endif
@@ -1632,7 +1632,7 @@ cr_tee_surface_initialize (VALUE self, VALUE master)
   cairo_surface_t *surface = NULL;
 
   surface = cairo_tee_surface_create (RVAL2CRSURFACE (master));
-  cr_surface_check_status (surface);
+  rb_cairo_surface_check_status (surface);
   DATA_PTR (self) = surface;
   rb_iv_set (self, "surfaces", rb_ary_new3 (1, master));
   if (rb_block_given_p ())
@@ -1647,7 +1647,7 @@ cr_tee_surface_add (VALUE self, VALUE target)
 
   surface = _SELF;
   cairo_tee_surface_add (surface, RVAL2CRSURFACE (target));
-  cr_surface_check_status (surface);
+  rb_cairo_surface_check_status (surface);
   rb_ary_push (rb_iv_get (self, "surfaces"), target);
   return Qnil;
 }
@@ -1683,7 +1683,7 @@ cr_tee_surface_remove (VALUE self, VALUE target_or_index)
       target = cairo_tee_surface_index (surface, NUM2INT (index));
     }
   cairo_tee_surface_remove (surface, target);
-  cr_surface_check_status (surface);
+  rb_cairo_surface_check_status (surface);
 
   rb_surfaces = rb_iv_get (self, "surfaces");
   for (i = 0; i < RARRAY_LEN (rb_surfaces); i++)
@@ -1711,8 +1711,8 @@ cr_tee_surface_array_reference (VALUE self, VALUE index)
   surface = _SELF;
   index = rb_Integer (index);
   target = cairo_tee_surface_index (surface, NUM2UINT (index));
-  cr_surface_check_status (surface);
-  cr_surface_check_status (target);
+  rb_cairo_surface_check_status (surface);
+  rb_cairo_surface_check_status (target);
   return CRSURFACE2RVAL (target);
 }
 #endif
@@ -1754,7 +1754,7 @@ cr_xml_surface_initialize (int argc, VALUE *argv, VALUE self)
 
   surface = cairo_xml_surface_create (device, content, width, height);
 
-  cr_surface_check_status (surface);
+  rb_cairo_surface_check_status (surface);
   DATA_PTR (self) = surface;
   if (rb_block_given_p ())
     yield_and_finish (self);
