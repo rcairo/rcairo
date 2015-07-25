@@ -1,6 +1,6 @@
 notifications:
   recipients:
-    - ruby-gnome2-cvs@lists.sourceforge.net
+    - rcairo@ml.commit-email.info
 rvm:
   - 2.0.0
   - 2.1
