@@ -126,4 +126,6 @@ VALUE rb_cairo__invoke_callback (cr_callback_func_t func, VALUE user_data);
 
 extern VALUE rb_cairo__cFFIPointer;
 
+void rb_cairo__surface_yield_and_finish (VALUE self);
+
 #endif

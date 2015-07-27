@@ -134,7 +134,7 @@ cr_quartz_surface_initialize (int argc, VALUE *argv, VALUE self)
   rb_cairo_surface_check_status (surface);
   DATA_PTR (self) = surface;
   if (rb_block_given_p ())
-    yield_and_finish (self);
+    rb_cairo__surface_yield_and_finish (self);
   return Qnil;
 }
 
@@ -169,7 +169,7 @@ cr_quartz_image_surface_initialize (VALUE self, VALUE image_surface)
   rb_cairo_surface_check_status (surface);
   DATA_PTR (self) = surface;
   if (rb_block_given_p ())
-    yield_and_finish (self);
+    rb_cairo__surface_yield_and_finish (self);
   return Qnil;
 }
 
