@@ -689,7 +689,7 @@ cr_mesh_pattern_get_corner_color (VALUE self,
 
   nth_patch = NUM2UINT (rb_nth_patch);
   nth_corner = NUM2UINT (rb_nth_corner);
-  if (!(0 <= nth_corner && nth_corner <= 3))
+  if (nth_corner > 3)
     {
       VALUE inspected;
 
