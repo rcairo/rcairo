@@ -450,16 +450,16 @@ windows_task = WindowsTask.new(spec) do |task|
     },
     {
       :name => "libpng",
-      :version => "1.6.16",
-      :download_base_url => "http://sourceforge.net/projects/libpng/files/libpng16/1.6.16",
+      :version => "1.6.18",
+      :download_base_url => "http://sourceforge.net/projects/libpng/files/libpng16/1.6.18",
       :windows => {
-        :built_file => "bin/libpng16-16.dll",
+        :built_file => "bin/libpng16-18.dll",
       },
     },
     {
       :name => "freetype",
-      :version => "2.5.4",
-      :download_base_url => "http://sourceforge.net/projects/freetype/files/freetype2/2.5.4",
+      :version => "2.6",
+      :download_base_url => "http://sourceforge.net/projects/freetype/files/freetype2/2.6",
       :compression_method => "bz2",
       :windows => {
         :built_file => "bin/libfreetype-6.dll",
@@ -509,7 +509,7 @@ windows_task = WindowsTask.new(spec) do |task|
     },
     {
       :name => "cairo",
-      :version => "1.14.0",
+      :version => "1.14.2",
       :download_site => :cairo,
       :windows => {
         :built_file => "bin/libcairo-2.dll",
@@ -517,7 +517,6 @@ windows_task = WindowsTask.new(spec) do |task|
           "--enable-gobject",
         ],
         :patches => [
-          "cairo-1.14-missing-exeext-float-m4.diff"
         ],
         :need_autoreconf => true,
       },
