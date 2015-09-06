@@ -525,6 +525,18 @@ windows_task = WindowsTask.new(spec) do |task|
 end
 windows_task.define
 
+namespace :vm do
+  namespace :windows do
+    desc "Build all packages for Windows in VM"
+    task :build do
+      cd("build") do
+        sh("vagrant", "destroy", "--force")
+        sh("vagrant", "up")
+      end
+    end
+  end
+end
+
 # for releasing
 task :dist do
   sh "./dist.sh", spec.version.to_s
