@@ -453,7 +453,7 @@ windows_task = WindowsTask.new(spec) do |task|
       :version => "1.6.18",
       :download_base_url => "http://sourceforge.net/projects/libpng/files/libpng16/1.6.18",
       :windows => {
-        :built_file => "bin/libpng16-18.dll",
+        :built_file => "bin/libpng16-16.dll",
       },
     },
     {
