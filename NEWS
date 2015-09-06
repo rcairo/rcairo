@@ -1,3 +1,24 @@
+Release 1.14.2 (2015-09-06) Kouhei Sutou <kou@cozmixng.org>
+===========================================================
+
+Improvements
+------------
+
+ * Supported showing command execution result on failure.
+   [GitHub#36][Reported by Paul McMahon]
+ * Cairo::Region#each_rectangle: Added a convenience method.
+ * Cairo::Region#rectangles: Added a convenience method.
+ * Supported Pathname as output target for surface.
+   [GitHub#37][Reported by scivola]
+ * Exported rb_cairo_surface_check_status().
+ * Windows: Upgraded bundled libraries.
+
+Thanks
+------
+
+ * Paul McMahon
+ * scivola
+
 Release 1.14.1 (2014-12-23) Kouhei Sutou <kou@cozmixng.org>
 ===========================================================
 
