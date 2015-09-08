@@ -527,13 +527,25 @@ windows_task.define
 
 namespace :vm do
   namespace :windows do
-    desc "Build all packages for Windows in VM"
-    task :build do
-      cd("build") do
-        sh("vagrant", "destroy", "--force")
-        sh("vagrant", "up")
+    architectures = ["32", "64"]
+    build_tasks = []
+
+    namespace :build do
+      architectures.each do |architecture|
+        desc "Build all packages for Windows #{architecture}"
+        task_name = "win#{architecture}"
+        build_tasks << task_name
+        task task_name do
+          cd("build") do
+            sh("vagrant", "destroy", "--force", task_name)
+            sh("vagrant", "up", task_name)
+          end
+        end
       end
     end
+
+    desc "Build all packages for Windows"
+    task :build => build_tasks
   end
 end
 
