@@ -199,8 +199,6 @@ checking_for(checking_message("Mac OS X")) do
     end
     true
   else
-    MakeMakefile::C_EXT.delete("m")
-    MakeMakefile::SRC_EXT.delete("m")
     false
   end
 end

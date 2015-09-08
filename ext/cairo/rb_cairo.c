@@ -99,9 +99,7 @@ Init_cairo ()
   Init_cairo_region ();
   Init_cairo_device ();
   Init_cairo_surface ();
-#ifdef CAIRO_HAS_QUARTZ_SURFACE
   Init_cairo_quartz_surface ();
-#endif
   Init_cairo_exception ();
   Init_cairo_font ();
   Init_cairo_font_extents ();
