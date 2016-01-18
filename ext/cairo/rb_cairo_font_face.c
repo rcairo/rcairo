@@ -121,6 +121,44 @@ cr_font_face_quartz_supported_p (VALUE klass)
 #endif
 }
 
+static void
+handle_ft_error(FT_Error error)
+{
+#undef __FTERRORS_H__
+#define FT_ERRORDEF( e, v, s )  { e, s },
+#define FT_ERROR_START_LIST     {
+#define FT_ERROR_END_LIST       { 0, 0 } };
+  int i = 0;
+  static const struct {
+    int          code;
+    const char  *str;
+  } errors[] =
+#include FT_ERRORS_H
+  for (i = 0; ((unsigned int) i) < sizeof(errors) / sizeof(errors[0]); i++)
+    if (error == errors[i].code)
+      rb_raise(rb_eStandardError, "FreeType2 Error: %s.", errors[i].str);
+
+  rb_raise(rb_eStandardError, "FreeType2 Error: Unknown error %d.", error);
+}
+
+static VALUE
+cr_font_face_create_for_ft_face (VALUE self, VALUE path)
+{
+  FT_Library library;
+  FT_Face face;
+  FT_Error error;
+
+  error = FT_Init_FreeType( &library );
+  if ( error )
+    handle_ft_error( error );
+
+  error = FT_New_Face( library, RSTRING_PTR(path), 0, &face );
+  if ( error != FT_Err_Ok )
+    handle_ft_error( error );
+
+  return rb_cairo_font_face_to_ruby_object (cairo_ft_font_face_create_for_ft_face (face, 0));
+}
+
 #if CAIRO_CHECK_VERSION(1, 7, 6)
 static VALUE
 cr_toy_font_face_initialize (int argc, VALUE *argv, VALUE self)
@@ -664,6 +702,8 @@ Init_cairo_font (void)
 
   rb_define_singleton_method (rb_cCairo_FontFace, "quartz_supported?",
                               cr_font_face_quartz_supported_p, 0);
+  rb_define_singleton_method (rb_cCairo_FontFace, "create_for_ft_face",
+                              cr_font_face_create_for_ft_face, 1);
 
 #if CAIRO_CHECK_VERSION(1, 7, 6)
   rb_cCairo_ToyFontFace =
