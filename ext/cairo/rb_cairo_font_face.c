@@ -121,6 +121,7 @@ cr_font_face_quartz_supported_p (VALUE klass)
 #endif
 }
 
+#if CAIRO_HAS_FT_FONT
 static void
 handle_ft_error(FT_Error error)
 {
@@ -158,6 +159,7 @@ cr_font_face_create_for_ft_face (VALUE self, VALUE path)
 
   return rb_cairo_font_face_to_ruby_object (cairo_ft_font_face_create_for_ft_face (face, 0));
 }
+#endif
 
 #if CAIRO_CHECK_VERSION(1, 7, 6)
 static VALUE
@@ -702,8 +704,10 @@ Init_cairo_font (void)
 
   rb_define_singleton_method (rb_cCairo_FontFace, "quartz_supported?",
                               cr_font_face_quartz_supported_p, 0);
+#if CAIRO_HAS_FT_FONT
   rb_define_singleton_method (rb_cCairo_FontFace, "create_for_ft_face",
                               cr_font_face_create_for_ft_face, 1);
+#endif
 
 #if CAIRO_CHECK_VERSION(1, 7, 6)
   rb_cCairo_ToyFontFace =
