@@ -148,6 +148,7 @@ cr_font_face_create_for_ft_face (VALUE self, VALUE path)
   FT_Library library;
   FT_Face face;
   FT_Error error;
+  cairo_font_face_t *cairo_face;
 
   error = FT_Init_FreeType( &library );
   if ( error )
@@ -157,7 +158,12 @@ cr_font_face_create_for_ft_face (VALUE self, VALUE path)
   if ( error != FT_Err_Ok )
     handle_ft_error( error );
 
-  return rb_cairo_font_face_to_ruby_object (cairo_ft_font_face_create_for_ft_face (face, 0));
+  cairo_face = cairo_ft_font_face_create_for_ft_face ( face, 0 );
+
+  FT_Done_Face ( face );
+  FT_Done_FreeType ( library );
+
+  return rb_cairo_font_face_to_ruby_object ( cairo_face );
 }
 #endif
 
