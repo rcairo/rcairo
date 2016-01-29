@@ -135,11 +135,12 @@ handle_ft_error(FT_Error error)
     const char  *str;
   } errors[] =
 #include FT_ERRORS_H
+  VALUE rb_eCairo_FreeType2Error = rb_define_class_under (rb_mCairo, "FreeType2Error", rb_eStandardError);
   for (i = 0; ((unsigned int) i) < sizeof(errors) / sizeof(errors[0]); i++)
     if (error == errors[i].code)
-      rb_raise(rb_eStandardError, "FreeType2 Error: %s.", errors[i].str);
+      rb_raise(rb_eCairo_FreeType2Error, "FreeType2 Error: %s.", errors[i].str);
 
-  rb_raise(rb_eStandardError, "FreeType2 Error: Unknown error %d.", error);
+  rb_raise(rb_eCairo_FreeType2Error, "FreeType2 Error: Unknown error %d.", error);
 }
 
 static VALUE
