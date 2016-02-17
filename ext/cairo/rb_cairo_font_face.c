@@ -41,6 +41,7 @@ static ID cr_id_at_need_cluster_flags;
 
 #if CAIRO_HAS_FT_FONT
 static FT_Library library;
+static void handle_ft_error(FT_Error error);
 #endif
 
 #define _SELF  (RVAL2CRFONTFACE(self))
@@ -72,6 +73,10 @@ rb_cairo_font_face_from_ruby_object (VALUE obj)
 static void
 cr_font_face_free (void *ptr)
 {
+#if CAIRO_HAS_FT_FONT
+  FT_Done_FreeType(library);
+#endif
+
   if (ptr)
     {
       cairo_font_face_t *face = ptr;
@@ -112,6 +117,11 @@ rb_cairo_font_face_to_ruby_object (cairo_font_face_t *face)
 static VALUE
 cr_font_face_allocate (VALUE klass)
 {
+#if CAIRO_HAS_FT_FONT
+  FT_Error error = FT_Init_FreeType(&library);
+  if (error)
+    handle_ft_error(error);
+#endif
   return Data_Wrap_Struct (klass, NULL, cr_font_face_free, NULL);
 }
 
@@ -729,10 +739,6 @@ Init_cairo_font (void)
 #if CAIRO_HAS_FT_FONT
   rb_define_singleton_method (rb_cCairo_FontFace, "create_for_ft_face",
                               cr_font_face_create_for_ft_face, 1);
-
-  FT_Error error = FT_Init_FreeType(&library);
-  if (error)
-    handle_ft_error(error);
 #endif
 
 #if CAIRO_CHECK_VERSION(1, 7, 6)
