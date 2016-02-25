@@ -2,7 +2,9 @@ notifications:
   recipients:
     - rcairo@ml.commit-email.info
 rvm:
-  - 2.0.0
   - 2.1
   - 2.2
+  - 2.3.0
   - ruby-head
+before_install:
+  - gem update bundler
