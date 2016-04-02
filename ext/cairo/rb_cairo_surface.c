@@ -1232,11 +1232,34 @@ cr_win32_surface_initialize (int argc, VALUE *argv, VALUE self)
       surface = cairo_win32_surface_create (NUM2PTR (hdc));
       break;
     case 2:
-      width = arg1;
-      height = arg2;
-      surface = cairo_win32_surface_create_with_dib (CAIRO_FORMAT_ARGB32,
-                                                     NUM2INT (width),
-                                                     NUM2INT (height));
+#  if CAIRO_CHECK_VERSION(1, 11, 4)
+#    define CAIRO_FORMAT_MAX CAIRO_FORMAT_RGB30
+#  else
+#    define CAIRO_FORMAT_MAX CAIRO_FORMAT_RGB16_565
+#  endif
+      if (CAIRO_FORMAT_ARGB32 <= NUM2INT (arg2) &&
+          NUM2INT (arg2) <= CAIRO_FORMAT_MAX)
+        {
+#  if CAIRO_CHECK_VERSION(1, 15, 2)
+          hdc = arg1;
+          format = arg2;
+          surface =
+            cairo_win32_surface_create_with_format (NUM2PTR (hdc),
+                                                    RVAL2CRFORMAT (format));
+#  else
+          rb_raise (rb_eArgError,
+                    "Cairo::Win32Surface.new(hdc, format) "
+                    "is available since cairo >= 1.15.2");
+#  endif
+        }
+      else
+        {
+          width = arg1;
+          height = arg2;
+          surface = cairo_win32_surface_create_with_dib (CAIRO_FORMAT_ARGB32,
+                                                         NUM2INT (width),
+                                                         NUM2INT (height));
+        }
       break;
     case 3:
       if (NIL_P (arg1) ||
