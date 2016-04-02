@@ -1,3 +1,12 @@
+Release 1.15.2 (2016-04-02) Kouhei Sutou <kou@cozmixng.org>
+===========================================================
+
+Improvements
+------------
+
+  * Supported cairo 1.15.2.
+  * Cairo::Win32Surface.new(hdc, format): Added.
+
 Release 1.14.3 (2015-09-08) Kouhei Sutou <kou@cozmixng.org>
 ===========================================================
 
