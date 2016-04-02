@@ -458,8 +458,8 @@ windows_task = WindowsTask.new(spec) do |task|
     },
     {
       :name => "freetype",
-      :version => "2.6",
-      :download_base_url => "https://sourceforge.net/projects/freetype/files/freetype2/2.6",
+      :version => "2.6.3",
+      :download_base_url => "https://sourceforge.net/projects/freetype/files/freetype2/2.6.3",
       :compression_method => "bz2",
       :windows => {
         :built_file => "bin/libfreetype-6.dll",
