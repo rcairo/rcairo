@@ -117,6 +117,8 @@ class Package < Struct.new(:name,
     case download_site
     when :cairo
       base_url = "http://cairographics.org/releases"
+    when :cairo_snapshots
+      base_url = "http://cairographics.org/snapshots"
     when :gnome
       base_url = "http://ftp.gnome.org/pub/gnome/sources"
       release_series = version.gsub(/\A(\d+\.\d+).+\z/, '\1')
@@ -510,7 +512,7 @@ windows_task = WindowsTask.new(spec) do |task|
     {
       :name => "cairo",
       :version => "1.15.2",
-      :download_site => :cairo,
+      :download_site => :cairo_snapshots,
       :windows => {
         :built_file => "bin/libcairo-2.dll",
         :configure_args => [
