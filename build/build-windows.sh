@@ -66,6 +66,7 @@ if [ ! -d ~/.wine/ ]; then
   until [ -f ~/.wine/system.reg ]; do
     sleep 1
   done
+  sleep 10
   wine_home="z:/home/vagrant"
   wine_rcairo="${wine_home}/rcairo.${DIRECTORY_SUFFIX}"
   wine_ruby_gnome2="${wine_home}/ruby-gnome2.${DIRECTORY_SUFFIX}"
