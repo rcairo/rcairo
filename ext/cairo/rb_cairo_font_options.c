@@ -96,6 +96,9 @@ cr_options_merge (VALUE self, VALUE other)
 static VALUE
 cr_options_equal (VALUE self, VALUE other)
 {
+  if (!rb_cairo__is_kind_of (other, rb_cCairo_FontOptions))
+    return Qfalse;
+
   return CBOOL2RVAL (cairo_font_options_equal (_SELF (self), _SELF (other)));
 }
 
@@ -174,6 +177,7 @@ Init_cairo_font_options (void)
   rb_define_method (rb_cCairo_FontOptions, "dup", cr_options_copy, 0);
   rb_define_method (rb_cCairo_FontOptions, "merge!", cr_options_merge, 1);
   rb_define_alias (rb_cCairo_FontOptions, "update", "merge!");
+  rb_define_method (rb_cCairo_FontOptions, "==", cr_options_equal, 1);
   rb_define_method (rb_cCairo_FontOptions, "eql?", cr_options_equal, 1);
   rb_define_method (rb_cCairo_FontOptions, "hash", cr_options_hash, 0);
   rb_define_method (rb_cCairo_FontOptions, "set_antialias",
