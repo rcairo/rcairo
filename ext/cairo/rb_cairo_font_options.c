@@ -168,7 +168,7 @@ Init_cairo_font_options (void)
     rb_define_class_under (rb_mCairo, "FontOptions", rb_cObject);
 
   rb_define_alloc_func (rb_cCairo_FontOptions, cr_options_allocate);
-  
+
   rb_define_method (rb_cCairo_FontOptions, "initialize", cr_options_create, 0);
 
   rb_define_method (rb_cCairo_FontOptions, "dup", cr_options_copy, 0);
