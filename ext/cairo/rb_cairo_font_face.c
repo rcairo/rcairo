@@ -40,6 +40,7 @@ static ID cr_id_at_need_cluster_flags;
 #endif
 
 #if CAIRO_HAS_FT_FONT
+VALUE rb_eCairo_FreeType2Error;
 static FT_Library library;
 static void handle_ft_error(FT_Error error);
 #endif
@@ -140,7 +141,6 @@ handle_ft_error(FT_Error error)
     const char  *str;
   } errors[] =
 #include FT_ERRORS_H
-  VALUE rb_eCairo_FreeType2Error = rb_define_class_under (rb_mCairo, "FreeType2Error", rb_eStandardError);
   for (i = 0; ((unsigned int) i) < sizeof(errors) / sizeof(errors[0]); i++)
     if (error == errors[i].code)
       rb_raise(rb_eCairo_FreeType2Error, "FreeType2 Error: %s.", errors[i].str);
@@ -731,6 +731,7 @@ Init_cairo_font (void)
 
   rb_define_singleton_method (rb_cCairo_FontFace, "create_for_ft_face",
                               cr_font_face_create_for_ft_face, 1);
+  rb_eCairo_FreeType2Error = rb_define_class_under (rb_mCairo, "FreeType2Error", rb_eStandardError);
 #endif
 
 #if CAIRO_CHECK_VERSION(1, 7, 6)
