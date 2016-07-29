@@ -116,9 +116,9 @@ class Package < Struct.new(:name,
   def download_site_base_url
     case download_site
     when :cairo
-      base_url = "http://cairographics.org/releases"
+      base_url = "https://cairographics.org/releases"
     when :cairo_snapshots
-      base_url = "http://cairographics.org/snapshots"
+      base_url = "https://cairographics.org/snapshots"
     when :gnome
       base_url = "http://ftp.gnome.org/pub/gnome/sources"
       release_series = version.gsub(/\A(\d+\.\d+).+\z/, '\1')
