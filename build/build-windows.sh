@@ -49,6 +49,11 @@ run \
   wine1.6 \
   mingw-w64
 
+run sudo update-alternatives --set \
+    ${BUILD_HOST}-gcc /usr/bin/${BUILD_HOST}-gcc-posix
+run sudo update-alternatives --set \
+    ${BUILD_HOST}-g++ /usr/bin/${BUILD_HOST}-g++-posix
+
 run git clone file:///pkg-config/.git
 run git clone file:///rcairo/.git rcairo.${DIRECTORY_SUFFIX}
 run git clone file:///ruby-gnome2/.git ruby-gnome2.${DIRECTORY_SUFFIX}
