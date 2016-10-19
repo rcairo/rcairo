@@ -1116,10 +1116,12 @@ cr_ ## type ## _surface_initialize (int argc, VALUE *argv, VALUE self)  \
     }                                                                   \
   else                                                                  \
     {                                                                   \
-      surface =                                                         \
-        cairo_ ## type ## _surface_create (StringValueCStr (target),    \
-                                           width_in_points,             \
-                                           height_in_points);           \
+      const char *filename = NULL;                                      \
+      if (!NIL_P (target))                                              \
+        filename = StringValueCStr (target);                            \
+      surface = cairo_ ## type ## _surface_create (filename,            \
+                                                   width_in_points,     \
+                                                   height_in_points);   \
     }                                                                   \
                                                                         \
   rb_cairo_surface_check_status (surface);                              \
