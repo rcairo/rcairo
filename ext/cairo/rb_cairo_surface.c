@@ -381,8 +381,21 @@ cr_surface_free (void *ptr)
 {
   cairo_surface_t *surface = ptr;
 
-  if (surface)
-    cairo_surface_destroy (surface);
+  if (!surface)
+    return;
+
+#ifdef HAVE_RB_GC_ADJUST_MEMORY_USAGE
+  if (cairo_surface_get_type (surface) == CAIRO_SURFACE_TYPE_IMAGE)
+    {
+      ssize_t memory_usage;
+      memory_usage =
+        cairo_image_surface_get_stride (surface) *
+        cairo_image_surface_get_height (surface);
+      rb_gc_adjust_memory_usage (-memory_usage);
+    }
+#endif
+
+  cairo_surface_destroy (surface);
 }
 
 VALUE
@@ -984,6 +997,15 @@ cr_image_surface_initialize (int argc, VALUE *argv, VALUE self)
 
   rb_cairo_surface_check_status (surface);
   DATA_PTR (self) = surface;
+#ifdef HAVE_RB_GC_ADJUST_MEMORY_USAGE
+  {
+    ssize_t memory_usage;
+    memory_usage =
+      cairo_image_surface_get_stride (surface) *
+      cairo_image_surface_get_height (surface);
+    rb_gc_adjust_memory_usage (memory_usage);
+  }
+#endif
   if (rb_block_given_p ())
     rb_cairo__surface_yield_and_finish (self);
   return Qnil;
