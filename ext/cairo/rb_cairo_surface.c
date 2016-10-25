@@ -349,6 +349,24 @@ cr_surface_xml_supported_p (VALUE klass)
 #endif
 }
 
+static void
+rb_cairo_surface_adjust_memory_usage (cairo_surface_t *surface,
+                                      cairo_bool_t new)
+{
+#ifdef HAVE_RB_GC_ADJUST_MEMORY_USAGE
+  if (cairo_surface_get_type (surface) == CAIRO_SURFACE_TYPE_IMAGE)
+    {
+      ssize_t memory_usage_diff;
+      memory_usage_diff =
+        cairo_image_surface_get_stride (surface) *
+        cairo_image_surface_get_height (surface);
+      if (!new)
+        memory_usage_diff = -memory_usage_diff;
+      rb_gc_adjust_memory_usage (memory_usage_diff);
+    }
+#endif
+}
+
 /* constructor/de-constructor */
 cairo_surface_t *
 rb_cairo_surface_from_ruby_object (VALUE obj)
@@ -384,16 +402,7 @@ cr_surface_free (void *ptr)
   if (!surface)
     return;
 
-#ifdef HAVE_RB_GC_ADJUST_MEMORY_USAGE
-  if (cairo_surface_get_type (surface) == CAIRO_SURFACE_TYPE_IMAGE)
-    {
-      ssize_t memory_usage;
-      memory_usage =
-        cairo_image_surface_get_stride (surface) *
-        cairo_image_surface_get_height (surface);
-      rb_gc_adjust_memory_usage (-memory_usage);
-    }
-#endif
+  rb_cairo_surface_adjust_memory_usage (surface, CR_FALSE);
 
   cairo_surface_destroy (surface);
 }
@@ -406,6 +415,7 @@ rb_cairo_surface_to_ruby_object (cairo_surface_t *surface)
       VALUE klass;
       klass = cr_surface_get_klass (surface);
       cairo_surface_reference (surface);
+      rb_cairo_surface_adjust_memory_usage (surface, CR_TRUE);
       return Data_Wrap_Struct (klass, NULL, cr_surface_free, surface);
     }
   else
@@ -997,15 +1007,7 @@ cr_image_surface_initialize (int argc, VALUE *argv, VALUE self)
 
   rb_cairo_surface_check_status (surface);
   DATA_PTR (self) = surface;
-#ifdef HAVE_RB_GC_ADJUST_MEMORY_USAGE
-  {
-    ssize_t memory_usage;
-    memory_usage =
-      cairo_image_surface_get_stride (surface) *
-      cairo_image_surface_get_height (surface);
-    rb_gc_adjust_memory_usage (memory_usage);
-  }
-#endif
+  rb_cairo_surface_adjust_memory_usage (surface, CR_TRUE);
   if (rb_block_given_p ())
     rb_cairo__surface_yield_and_finish (self);
   return Qnil;
