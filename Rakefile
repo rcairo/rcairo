@@ -477,10 +477,6 @@ windows_task = WindowsTask.new(spec) do |task|
         :configure_args => [
           "--without-python",
         ],
-        :patches => [
-          "remove-empty-z_dir-ldflags.diff",
-        ],
-        :need_autoreconf => true,
       },
     },
     {
