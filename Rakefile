@@ -452,24 +452,24 @@ windows_task = WindowsTask.new(spec) do |task|
     },
     {
       :name => "libpng",
-      :version => "1.6.23",
-      :download_base_url => "http://downloads.sourceforge.net/project/libpng/libpng16/1.6.23",
+      :version => "1.6.26",
+      :download_base_url => "http://downloads.sourceforge.net/project/libpng/libpng16/1.6.26",
       :windows => {
         :built_file => "bin/libpng16-16.dll",
       },
     },
     {
       :name => "freetype",
-      :version => "2.6.3",
-      :download_base_url => "http://downloads.sourceforge.net/project/freetype/freetype2/2.6.3",
+      :version => "2.7",
+      :download_base_url => "http://downloads.sourceforge.net/project/freetype/freetype2/2.7",
       :compression_method => "bz2",
       :windows => {
-        :built_file => "bin/libfreetype-6.dll",
+        :built_file => "bin/libfreetype-7.dll",
       },
     },
     {
       :name => "libxml2",
-      :version => "2.9.2",
+      :version => "2.9.4",
       :download_base_url => "ftp://xmlsoft.org/libxml2",
       :compression_method => "gz",
       :windows => {
@@ -485,7 +485,7 @@ windows_task = WindowsTask.new(spec) do |task|
     },
     {
       :name => "fontconfig",
-      :version => "2.11.1",
+      :version => "2.12.1",
       :download_base_url => "https://www.freedesktop.org/software/fontconfig/release",
       :compression_method => "bz2",
       :windows => {
@@ -502,7 +502,7 @@ windows_task = WindowsTask.new(spec) do |task|
     },
     {
       :name => "pixman",
-      :version => "0.32.6",
+      :version => "0.34.0",
       :download_site => :cairo,
       :compression_method => "gz",
       :windows => {
