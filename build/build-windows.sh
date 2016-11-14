@@ -25,6 +25,8 @@ while ! sudo apt update; do
   sleep 10
 done
 
+sudo rm -rf /etc/udev/rules.d/70-persistent-net.rules
+
 echo ttf-mscorefonts-installer \
      msttcorefonts/accepted-mscorefonts-eula \
      select true | \
