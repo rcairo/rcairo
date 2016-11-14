@@ -51,7 +51,8 @@ run \
   bison \
   python-dev \
   wine1.6 \
-  mingw-w64
+  mingw-w64 \
+  libmount-dev
 
 # run sudo update-alternatives --set \
 #     ${BUILD_HOST}-gcc /usr/bin/${BUILD_HOST}-gcc-posix
