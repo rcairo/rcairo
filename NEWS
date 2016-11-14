@@ -1,3 +1,23 @@
+Release 1.15.3 (2016-11-15) Kouhei Sutou <kou@cozmixng.org>
+===========================================================
+
+Improvements
+------------
+
+  * Changed Cairo::FontOptions#== behavior to value equality check
+    from object equality check.
+  * Windows: Supported Ruby 2.4.
+  * Windows: Updated bundled libpng.
+  * Windows: Updated bundled freetype.
+  * Windows: Updated bundled libxml.
+  * Windows: Updated bundled fontconfig.
+  * Windows: Updated bundled pixman.
+  * Made Cairo::ImageSurface GC friendly with Ruby 2.4.
+  * Cairo::SVGSurface: Accepted nil as filename.
+    [GitHub#43][Reported by Andy Meneely]
+  * Cairo::PSSurface: Accepted nil as filename.
+  * Cairo::PDFSurface: Accepted nil as filename.
+
 Release 1.15.2 (2016-04-02) Kouhei Sutou <kou@cozmixng.org>
 ===========================================================
 
