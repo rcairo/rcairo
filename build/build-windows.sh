@@ -21,7 +21,9 @@ run()
 }
 
 run sudo sed -i'' -e 's,http://us,http://jp,g' /etc/apt/sources.list
-run sudo apt-get update
+while ! sudo apt update; do
+  sleep 10
+done
 
 echo ttf-mscorefonts-installer \
      msttcorefonts/accepted-mscorefonts-eula \
