@@ -31,7 +31,7 @@ echo ttf-mscorefonts-installer \
   run sudo debconf-set-selections
 
 run \
-  sudo apt-get install -y -V \
+  sudo apt install -y -V \
   git \
   ruby \
   ruby-dev \
