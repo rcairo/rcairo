@@ -5,6 +5,7 @@
  * $Author: kou $
  * $Date: 2008-08-16 12:52:16 $
  *
+ * Copyright 2010-2016 Kouhei Sutou <kou@cozmixng.org>
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
  *
@@ -63,6 +64,12 @@ static VALUE rb_eCairo_DeviceFinished;
 #endif
 #if CAIRO_CHECK_VERSION(1, 14, 0)
 static VALUE rb_eCairo_JBIG2GlobalMissing;
+#endif
+#if CAIRO_CHECK_VERSION(1, 16, 0)
+static VALUE rb_eCairo_PNGError;
+static VALUE rb_eCairo_FreeTypeError;
+static VALUE rb_eCairo_Win32GDIError;
+static VALUE rb_eCairo_TagError;
 #endif
 
 void
@@ -200,6 +207,20 @@ rb_cairo_check_status (cairo_status_t status)
       rb_raise (rb_eCairo_JBIG2GlobalMissing, "%s", string);
       break;
 #endif
+#if CAIRO_CHECK_VERSION(1, 16, 0)
+    case CAIRO_STATUS_PNG_ERROR:
+      rb_raise (rb_eCairo_PNGError, "%s", string);
+      break;
+    case CAIRO_STATUS_FREETYPE_ERROR:
+      rb_raise (rb_eCairo_FreeTypeError, "%s", string);
+      break;
+    case CAIRO_STATUS_WIN32_GDI_ERROR:
+      rb_raise (rb_eCairo_Win32GDIError, "%s", string);
+      break;
+    case CAIRO_STATUS_TAG_ERROR:
+      rb_raise (rb_eCairo_TagError, "%s", string);
+      break;
+#endif
 #if CAIRO_CHECK_VERSION(1, 10, 0)
     case CAIRO_STATUS_LAST_STATUS:
 #else
@@ -296,6 +317,16 @@ rb_cairo__exception_to_status (VALUE exception)
 #if CAIRO_CHECK_VERSION(1, 14, 0)
   else if (rb_cairo__is_kind_of (exception, rb_eCairo_JBIG2GlobalMissing))
     return CAIRO_STATUS_JBIG2_GLOBAL_MISSING;
+#endif
+#if CAIRO_CHECK_VERSION(1, 16, 0)
+  else if (rb_cairo__is_kind_of (exception, rb_eCairo_PNGError))
+    return CAIRO_STATUS_PNG_ERROR;
+  else if (rb_cairo__is_kind_of (exception, rb_eCairo_FreeTypeError))
+    return CAIRO_STATUS_FREETYPE_ERROR;
+  else if (rb_cairo__is_kind_of (exception, rb_eCairo_Win32GDIError))
+    return CAIRO_STATUS_WIN32_GDI_ERROR;
+  else if (rb_cairo__is_kind_of (exception, rb_eCairo_TagError))
+    return CAIRO_STATUS_TAG_ERROR;
 #endif
 
   return -1;
@@ -441,6 +472,20 @@ Init_cairo_exception ()
 #if CAIRO_CHECK_VERSION(1, 14, 0)
   rb_eCairo_JBIG2GlobalMissing =
     rb_define_class_under (rb_mCairo, "JBIG2GlobalMissing",
+                           rb_eCairo_Error);
+#endif
+#if CAIRO_CHECK_VERSION(1, 16, 0)
+  rb_eCairo_PNGError =
+    rb_define_class_under (rb_mCairo, "PNGError",
+                           rb_eCairo_Error);
+  rb_eCairo_FreeTypeError =
+    rb_define_class_under (rb_mCairo, "FreeTypeError",
+                           rb_eCairo_Error);
+  rb_eCairo_Win32GDIError =
+    rb_define_class_under (rb_mCairo, "Win32GDIError",
+                           rb_eCairo_Error);
+  rb_eCairo_TagError =
+    rb_define_class_under (rb_mCairo, "TagError",
                            rb_eCairo_Error);
 #endif
 }

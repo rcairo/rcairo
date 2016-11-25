@@ -5,7 +5,7 @@
  * $Author: kou $
  * $Date: 2008-09-26 13:52:08 $
  *
- * Copyright 2005-2014 Kouhei Sutou <kou@cozmixng.org>
+ * Copyright 2005-2016 Kouhei Sutou <kou@cozmixng.org>
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
  *
@@ -1549,6 +1549,90 @@ cr_copy_append_path (VALUE self, VALUE path)
   return self;
 }
 
+#if CAIRO_CHECK_VERSION(1, 16, 0)
+/* Logical structure tagging functions */
+typedef struct rb_cairo_context_tag_ensure_data {
+  VALUE self;
+  const char *name;
+} rb_cairo_context_tag_ensure_data_t;
+
+static VALUE
+cr_tag_ensure (VALUE user_data)
+{
+  rb_cairo_context_tag_ensure_data_t *data =
+    (rb_cairo_context_tag_ensure_data_t *)user_data;
+  VALUE self;
+
+  self = data->self;
+  cairo_tag_end (_SELF, data->name);
+  cr_check_status (_SELF);
+
+  return Qnil;
+}
+
+static VALUE
+cr_tag (int argc, VALUE *argv, VALUE self)
+{
+  VALUE rb_name;
+  VALUE rb_attributes;
+  const char *name;
+  const char *attributes = NULL;
+
+  rb_scan_args (argc, argv, "11", &rb_name, &rb_attributes);
+
+  name = RVAL2CSTR (rb_name);
+  if (!NIL_P (rb_attributes))
+    attributes = RVAL2CSTR (rb_attributes);
+
+  cairo_tag_begin (_SELF, name, attributes);
+  cr_check_status (_SELF);
+  if (rb_block_given_p ())
+    {
+      rb_cairo_context_tag_ensure_data_t data;
+      data.self = self;
+      data.name = name;
+      return rb_ensure (rb_yield, self,
+                        cr_tag_ensure, (VALUE)&data);
+    }
+  else
+    {
+      return Qnil;
+    }
+}
+
+static VALUE
+cr_begin_tag (int argc, VALUE *argv, VALUE self)
+{
+  VALUE rb_name;
+  VALUE rb_attributes;
+  const char *name;
+  const char *attributes = NULL;
+
+  rb_scan_args (argc, argv, "11", &rb_name, &rb_attributes);
+
+  name = RVAL2CSTR (rb_name);
+  if (!NIL_P (rb_attributes))
+    attributes = RVAL2CSTR (rb_attributes);
+
+  cairo_tag_begin (_SELF, name, attributes);
+  cr_check_status (_SELF);
+
+  return Qnil;
+}
+
+static VALUE
+cr_end_tag (VALUE self, VALUE rb_name)
+{
+  const char *name;
+
+  name = RVAL2CSTR (rb_name);
+  cairo_tag_end (_SELF, name);
+  cr_check_status (_SELF);
+
+  return Qnil;
+}
+#endif
+
 static int
 cr_destroy_all_guarded_contexts_at_end_iter (VALUE key, VALUE value, VALUE data)
 {
@@ -1736,6 +1820,21 @@ Init_cairo_context (void)
   rb_define_method (rb_cCairo_Context, "append_path", cr_copy_append_path, 1);
 
   rb_define_method (rb_cCairo_Context, "to_ptr", cr_to_ptr, 0);
+
+#if CAIRO_CHECK_VERSION(1, 16, 0)
+  /* Logical structure tagging functions */
+  {
+    VALUE rb_mCairo_Tag;
+
+    rb_mCairo_Tag = rb_define_module_under (rb_mCairo, "Tag");
+    rb_define_const (rb_mCairo_Tag, "DEST", rb_str_new_cstr (CAIRO_TAG_DEST));
+    rb_define_const (rb_mCairo_Tag, "LINK", rb_str_new_cstr (CAIRO_TAG_LINK));
+
+    rb_define_method (rb_cCairo_Context, "tag", cr_tag, -1);
+    rb_define_method (rb_cCairo_Context, "begin_tag", cr_begin_tag, -1);
+    rb_define_method (rb_cCairo_Context, "end_tag", cr_end_tag, 1);
+  }
+#endif
 
   RB_CAIRO_DEF_SETTERS (rb_cCairo_Context);
 }
