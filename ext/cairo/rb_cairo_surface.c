@@ -2,7 +2,7 @@
 /*
  * Ruby Cairo Binding
  *
- * Copyright 2005-2015 Kouhei Sutou <kou@cozmixng.org>
+ * Copyright 2005-2017 Kouhei Sutou <kou@cozmixng.org>
  * Copyright 2014 Patrick Hanevold <patrick.hanevold@gmail.com>
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -1177,6 +1177,46 @@ cr_pdf_surface_restrict_to_version (VALUE self, VALUE version)
   return Qnil;
 }
 #  endif
+
+#  if CAIRO_CHECK_VERSION(1, 10, 0)
+static VALUE
+cr_pdf_surface_add_outline (VALUE self,
+                            VALUE rb_parent_id,
+                            VALUE rb_name,
+                            VALUE rb_destination,
+                            VALUE rb_flags)
+{
+  cairo_surface_t *surface;
+  int parent_id;
+  const char *name;
+  const char *destination;
+  cairo_pdf_outline_flags_t flags;
+  int id;
+
+  surface = _SELF;
+  if (NIL_P (rb_parent_id))
+    parent_id = 0;
+  else
+    parent_id = NUM2INT (rb_parent_id);
+  name = RVAL2CSTR (rb_name);
+  destination = RVAL2CSTR (rb_destination);
+  if (NIL_P (rb_flags))
+    flags = 0;
+  else
+    flags = NUM2INT (rb_flags);
+  id = cairo_pdf_surface_add_outline (surface,
+                                      parent_id,
+                                      name,
+                                      destination,
+                                      flags);
+  rb_cairo_surface_check_status (surface);
+
+  if (id == 0)
+    return Qnil;
+  else
+    return INT2NUM (id);
+}
+#  endif
 #endif
 
 #ifdef CAIRO_HAS_PS_SURFACE
@@ -1978,6 +2018,30 @@ Init_cairo_surface (void)
 #  if CAIRO_CHECK_VERSION(1, 10, 0)
   rb_define_method (rb_cCairo_PDFSurface, "restrict_to_version",
                     cr_pdf_surface_restrict_to_version, 1);
+#  endif
+
+#  if CAIRO_CHECK_VERSION(1, 15, 4)
+  {
+    VALUE rb_mCairo_PDFOutlineFlags;
+    VALUE rb_mCairo_PDFOutline;
+
+    rb_mCairo_PDFOutlineFlags =
+      rb_define_module_under (rb_mCairo, "PDFOutlineFlags");
+    rb_define_const (rb_mCairo_PDFOutlineFlags, "BOOKMARK_FLAG_OPEN",
+                     INT2NUM (CAIRO_BOOKMARK_FLAG_OPEN));
+    rb_define_const (rb_mCairo_PDFOutlineFlags, "BOOKMARK_FLAG_BOLD",
+                     INT2NUM (CAIRO_BOOKMARK_FLAG_BOLD));
+    rb_define_const (rb_mCairo_PDFOutlineFlags, "BOOKMARK_FLAG_ITALIC",
+                     INT2NUM (CAIRO_BOOKMARK_FLAG_ITALIC));
+
+    rb_mCairo_PDFOutline =
+      rb_define_module_under (rb_mCairo, "PDFOutline");
+    rb_define_const (rb_mCairo_PDFOutline, "ROOT",
+                     INT2NUM (CAIRO_PDF_OUTLINE_ROOT));
+
+    rb_define_method (rb_cCairo_PDFSurface, "add_outline",
+                      cr_pdf_surface_add_outline, 4);
+  }
 #  endif
 
   RB_CAIRO_DEF_SETTERS (rb_cCairo_PDFSurface);
