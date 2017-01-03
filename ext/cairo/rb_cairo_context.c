@@ -1549,7 +1549,7 @@ cr_copy_append_path (VALUE self, VALUE path)
   return self;
 }
 
-#if CAIRO_CHECK_VERSION(1, 16, 0)
+#if CAIRO_CHECK_VERSION(1, 15, 4)
 /* Logical structure tagging functions */
 typedef struct rb_cairo_context_tag_ensure_data {
   VALUE self;
@@ -1821,7 +1821,7 @@ Init_cairo_context (void)
 
   rb_define_method (rb_cCairo_Context, "to_ptr", cr_to_ptr, 0);
 
-#if CAIRO_CHECK_VERSION(1, 16, 0)
+#if CAIRO_CHECK_VERSION(1, 15, 4)
   /* Logical structure tagging functions */
   {
     VALUE rb_mCairo_Tag;
