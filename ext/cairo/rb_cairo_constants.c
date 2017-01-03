@@ -5,7 +5,7 @@
  * $Author: kou $
  * $Date: 2008-09-19 12:56:27 $
  *
- * Copyright 2005-2012 Kouhei Sutou <kou@cozmixng.org>
+ * Copyright 2005-2017 Kouhei Sutou <kou@cozmixng.org>
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
  *
@@ -39,6 +39,7 @@ VALUE rb_mCairo_PDFVersion = Qnil;
 VALUE rb_mCairo_ScriptMode = Qnil;
 VALUE rb_mCairo_MimeType = Qnil;
 VALUE rb_mCairo_RegionOverlap = Qnil;
+VALUE rb_mCairo_PDFOutlineFlags = Qnil;
 
 #define CAIRO_OPERATOR_MIN CAIRO_OPERATOR_CLEAR
 #if CAIRO_CHECK_VERSION(1, 10, 0)
@@ -125,6 +126,9 @@ VALUE rb_mCairo_RegionOverlap = Qnil;
 #define CAIRO_REGION_OVERLAP_MIN CAIRO_REGION_OVERLAP_IN
 #define CAIRO_REGION_OVERLAP_MAX CAIRO_REGION_OVERLAP_PART
 
+#define CAIRO_PDF_OUTLINE_FLAGS_MIN CAIRO_BOOKMARK_FLAG_OPEN
+#define CAIRO_PDF_OUTLINE_FLAGS_MAX CAIRO_BOOKMARK_FLAG_ITALIC
+
 #define DEFINE_RVAL2ENUM(name, const_name)                      \
 cairo_ ## name ## _t                                            \
 rb_cairo_ ## name ## _from_ruby_object (VALUE rb_ ## name)      \
@@ -192,6 +196,10 @@ DEFINE_RVAL2ENUM(script_mode, SCRIPT_MODE)
 
 #if CAIRO_CHECK_VERSION(1, 10, 0)
 DEFINE_RVAL2ENUM(region_overlap, REGION_OVERLAP)
+#endif
+
+#if CAIRO_CHECK_VERSION(1, 15, 4)
+DEFINE_RVAL2ENUM(pdf_outline_flags, PDF_OUTLINE_FLAGS)
 #endif
 
 #if defined(RB_CAIRO_PLATFORM_WIN32) && !defined(PS_LEVEL_ENUM_DEFINED)
@@ -669,5 +677,16 @@ Init_cairo_constants (void)
                    INT2FIX (CAIRO_REGION_OVERLAP_OUT));
   rb_define_const (rb_mCairo_RegionOverlap, "PART",
                    INT2FIX (CAIRO_REGION_OVERLAP_PART));
+#endif
+
+#if CAIRO_CHECK_VERSION(1, 15, 4)
+  rb_mCairo_PDFOutlineFlags =
+    rb_define_module_under (rb_mCairo, "PDFOutlineFlags");
+  rb_define_const (rb_mCairo_PDFOutlineFlags, "OPEN",
+                   INT2NUM (CAIRO_BOOKMARK_FLAG_OPEN));
+  rb_define_const (rb_mCairo_PDFOutlineFlags, "BOLD",
+                   INT2NUM (CAIRO_BOOKMARK_FLAG_BOLD));
+  rb_define_const (rb_mCairo_PDFOutlineFlags, "ITALIC",
+                   INT2NUM (CAIRO_BOOKMARK_FLAG_ITALIC));
 #endif
 }

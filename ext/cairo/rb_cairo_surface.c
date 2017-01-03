@@ -1203,7 +1203,7 @@ cr_pdf_surface_add_outline (VALUE self,
   if (NIL_P (rb_flags))
     flags = 0;
   else
-    flags = NUM2INT (rb_flags);
+    flags = RVAL2CRPDFOUTLINEFLAGS (rb_flags);
   id = cairo_pdf_surface_add_outline (surface,
                                       parent_id,
                                       name,
@@ -2022,17 +2022,8 @@ Init_cairo_surface (void)
 
 #  if CAIRO_CHECK_VERSION(1, 15, 4)
   {
-    VALUE rb_mCairo_PDFOutlineFlags;
     VALUE rb_mCairo_PDFOutline;
-
-    rb_mCairo_PDFOutlineFlags =
-      rb_define_module_under (rb_mCairo, "PDFOutlineFlags");
-    rb_define_const (rb_mCairo_PDFOutlineFlags, "BOOKMARK_FLAG_OPEN",
-                     INT2NUM (CAIRO_BOOKMARK_FLAG_OPEN));
-    rb_define_const (rb_mCairo_PDFOutlineFlags, "BOOKMARK_FLAG_BOLD",
-                     INT2NUM (CAIRO_BOOKMARK_FLAG_BOLD));
-    rb_define_const (rb_mCairo_PDFOutlineFlags, "BOOKMARK_FLAG_ITALIC",
-                     INT2NUM (CAIRO_BOOKMARK_FLAG_ITALIC));
+    VALUE rb_mCairo_PDFMetadata;
 
     rb_mCairo_PDFOutline =
       rb_define_module_under (rb_mCairo, "PDFOutline");
