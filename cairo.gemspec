@@ -40,4 +40,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency("test-unit-notify")
   s.add_development_dependency("rake-compiler")
   s.add_development_dependency("packnga")
+  s.add_development_dependency("poppler")
 end

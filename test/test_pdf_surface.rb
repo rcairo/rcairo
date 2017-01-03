@@ -25,4 +25,98 @@ class PDFSurfaceTest < Test::Unit::TestCase
       assert_equal(2, sub_id)
     end
   end
+
+  sub_test_case "#set_metadata" do
+    def create_pdf
+      pdf = StringIO.new
+      surface = Cairo::PDFSurface.new(pdf, 10, 20)
+      yield(surface)
+      surface.finish
+      Poppler::Document.new(pdf.string)
+    end
+
+    test "title" do
+      only_cairo_version(1, 15, 4)
+      pdf = create_pdf do |surface|
+        surface.set_metadata(Cairo::PDFMetadata::TITLE, "Hello")
+      end
+      assert_equal("Hello", pdf.title)
+    end
+
+    test "author" do
+      only_cairo_version(1, 15, 4)
+      pdf = create_pdf do |surface|
+        surface.set_metadata(Cairo::PDFMetadata::AUTHOR, "Alice")
+      end
+      assert_equal("Alice", pdf.author)
+    end
+
+    test "subject" do
+      only_cairo_version(1, 15, 4)
+      pdf = create_pdf do |surface|
+        surface.set_metadata(Cairo::PDFMetadata::SUBJECT, "This is world.")
+      end
+      assert_equal("This is world.", pdf.subject)
+    end
+
+    test "keywords" do
+      only_cairo_version(1, 15, 4)
+      pdf = create_pdf do |surface|
+        surface.set_metadata(Cairo::PDFMetadata::KEYWORDS, "hello, alice")
+      end
+      assert_equal("hello, alice", pdf.keywords)
+    end
+
+    test "creator" do
+      only_cairo_version(1, 15, 4)
+      pdf = create_pdf do |surface|
+        surface.set_metadata(Cairo::PDFMetadata::CREATOR, "cairo")
+      end
+      assert_equal("cairo", pdf.creator)
+    end
+
+    sub_test_case "create date" do
+      test "string" do
+        only_cairo_version(1, 15, 4)
+        pdf = create_pdf do |surface|
+          surface.set_metadata(Cairo::PDFMetadata::CREATE_DATE,
+                               "2017-01-04T02:17:01+09:00")
+        end
+        assert_equal(Time.parse("2017-01-04T02:17:01+09:00"),
+                     Time.at(pdf.creation_date))
+      end
+
+      test "time" do
+        only_cairo_version(1, 15, 4)
+        pdf = create_pdf do |surface|
+          surface.set_metadata(Cairo::PDFMetadata::CREATE_DATE,
+                               Time.parse("2017-01-04T02:17:01+09:00"))
+        end
+        assert_equal(Time.parse("2017-01-04T02:17:01+09:00"),
+                     Time.at(pdf.creation_date))
+      end
+    end
+
+    sub_test_case "modified date" do
+      test "string" do
+        only_cairo_version(1, 15, 4)
+        pdf = create_pdf do |surface|
+          surface.set_metadata(Cairo::PDFMetadata::MOD_DATE,
+                               "2017-01-04T02:17:01+09:00")
+        end
+        assert_equal(Time.parse("2017-01-04T02:17:01+09:00"),
+                     Time.at(pdf.mod_date))
+      end
+
+      test "time" do
+        only_cairo_version(1, 15, 4)
+        pdf = create_pdf do |surface|
+          surface.set_metadata(Cairo::PDFMetadata::MOD_DATE,
+                               Time.parse("2017-01-04T02:17:01+09:00"))
+        end
+        assert_equal(Time.parse("2017-01-04T02:17:01+09:00"),
+                     Time.at(pdf.mod_date))
+      end
+    end
+  end
 end

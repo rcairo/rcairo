@@ -161,6 +161,7 @@ RB_CAIRO_VAR VALUE rb_mCairo_ScriptMode;
 RB_CAIRO_VAR VALUE rb_mCairo_MimeType;
 RB_CAIRO_VAR VALUE rb_mCairo_RegionOverlap;
 RB_CAIRO_VAR VALUE rb_mCairo_PDFOutlineFlags;
+RB_CAIRO_VAR VALUE rb_mCairo_PDFMetadata;
 RB_CAIRO_VAR VALUE rb_mCairo_Color;
 RB_CAIRO_VAR VALUE rb_cCairo_Color_Base;
 RB_CAIRO_VAR VALUE rb_cCairo_Paper;
@@ -301,6 +302,7 @@ VALUE                 rb_cairo_device_to_ruby_object         (cairo_device_t *de
 #endif
 #if CAIRO_CHECK_VERSION(1, 15, 4)
 #define RVAL2CRPDFOUTLINEFLAGS(obj) (rb_cairo_pdf_outline_flags_from_ruby_object(obj))
+#define RVAL2CRPDFMETADATA(obj) (rb_cairo_pdf_metadata_from_ruby_object(obj))
 #endif
 
 cairo_operator_t       rb_cairo_operator_from_ruby_object       (VALUE obj);
@@ -342,6 +344,7 @@ cairo_region_overlap_t  rb_cairo_region_overlap_from_ruby_object(VALUE obj);
 #endif
 #if CAIRO_CHECK_VERSION(1, 15, 4)
 cairo_pdf_outline_flags_t rb_cairo_pdf_outline_flags_from_ruby_object(VALUE obj);
+cairo_pdf_metadata_t rb_cairo_pdf_metadata_from_ruby_object(VALUE obj);
 #endif
 
 void rb_cairo_check_status (cairo_status_t status);

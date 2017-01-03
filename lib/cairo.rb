@@ -17,6 +17,8 @@ if /mingw|mswin|mswin32/ =~ RUBY_PLATFORM
   end
 end
 
+require "time"
+
 module Cairo
   class << self
     def __add_one_arg_setter(klass)

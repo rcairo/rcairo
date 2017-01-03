@@ -40,6 +40,7 @@ VALUE rb_mCairo_ScriptMode = Qnil;
 VALUE rb_mCairo_MimeType = Qnil;
 VALUE rb_mCairo_RegionOverlap = Qnil;
 VALUE rb_mCairo_PDFOutlineFlags = Qnil;
+VALUE rb_mCairo_PDFMetadata = Qnil;
 
 #define CAIRO_OPERATOR_MIN CAIRO_OPERATOR_CLEAR
 #if CAIRO_CHECK_VERSION(1, 10, 0)
@@ -129,6 +130,9 @@ VALUE rb_mCairo_PDFOutlineFlags = Qnil;
 #define CAIRO_PDF_OUTLINE_FLAGS_MIN CAIRO_BOOKMARK_FLAG_OPEN
 #define CAIRO_PDF_OUTLINE_FLAGS_MAX CAIRO_BOOKMARK_FLAG_ITALIC
 
+#define CAIRO_PDF_METADATA_MIN CAIRO_PDF_METADATA_TITLE
+#define CAIRO_PDF_METADATA_MAX CAIRO_PDF_METADATA_MOD_DATE
+
 #define DEFINE_RVAL2ENUM(name, const_name)                      \
 cairo_ ## name ## _t                                            \
 rb_cairo_ ## name ## _from_ruby_object (VALUE rb_ ## name)      \
@@ -200,6 +204,7 @@ DEFINE_RVAL2ENUM(region_overlap, REGION_OVERLAP)
 
 #if CAIRO_CHECK_VERSION(1, 15, 4)
 DEFINE_RVAL2ENUM(pdf_outline_flags, PDF_OUTLINE_FLAGS)
+DEFINE_RVAL2ENUM(pdf_metadata, PDF_METADATA)
 #endif
 
 #if defined(RB_CAIRO_PLATFORM_WIN32) && !defined(PS_LEVEL_ENUM_DEFINED)
@@ -688,5 +693,22 @@ Init_cairo_constants (void)
                    INT2NUM (CAIRO_BOOKMARK_FLAG_BOLD));
   rb_define_const (rb_mCairo_PDFOutlineFlags, "ITALIC",
                    INT2NUM (CAIRO_BOOKMARK_FLAG_ITALIC));
+
+  rb_mCairo_PDFMetadata =
+    rb_define_module_under (rb_mCairo, "PDFMetadata");
+  rb_define_const (rb_mCairo_PDFMetadata, "TITLE",
+                   INT2NUM (CAIRO_PDF_METADATA_TITLE));
+  rb_define_const (rb_mCairo_PDFMetadata, "AUTHOR",
+                   INT2NUM (CAIRO_PDF_METADATA_AUTHOR));
+  rb_define_const (rb_mCairo_PDFMetadata, "SUBJECT",
+                   INT2NUM (CAIRO_PDF_METADATA_SUBJECT));
+  rb_define_const (rb_mCairo_PDFMetadata, "KEYWORDS",
+                   INT2NUM (CAIRO_PDF_METADATA_KEYWORDS));
+  rb_define_const (rb_mCairo_PDFMetadata, "CREATOR",
+                   INT2NUM (CAIRO_PDF_METADATA_CREATOR));
+  rb_define_const (rb_mCairo_PDFMetadata, "CREATE_DATE",
+                   INT2NUM (CAIRO_PDF_METADATA_CREATE_DATE));
+  rb_define_const (rb_mCairo_PDFMetadata, "MOD_DATE",
+                   INT2NUM (CAIRO_PDF_METADATA_MOD_DATE));
 #endif
 }

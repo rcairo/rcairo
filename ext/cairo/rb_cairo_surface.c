@@ -1216,6 +1216,38 @@ cr_pdf_surface_add_outline (VALUE self,
   else
     return INT2NUM (id);
 }
+
+static VALUE
+cr_pdf_surface_set_metadata (VALUE self,
+                             VALUE rb_metadata,
+                             VALUE rb_value)
+{
+  cairo_surface_t *surface;
+  cairo_pdf_metadata_t metadata;
+  const char *value;
+
+  surface = _SELF;
+  metadata = RVAL2CRPDFMETADATA (rb_metadata);
+  switch (metadata)
+    {
+    case CAIRO_PDF_METADATA_CREATE_DATE:
+    case CAIRO_PDF_METADATA_MOD_DATE:
+      if (rb_cairo__is_kind_of (rb_value, rb_cTime))
+        {
+          ID id_iso8601;
+          CONST_ID(id_iso8601, "iso8601");
+          rb_value = rb_funcall (rb_value, id_iso8601, 0);
+        }
+      break;
+    default:
+      break;
+    }
+  value = RVAL2CSTR (rb_value);
+  cairo_pdf_surface_set_metadata (surface, metadata, value);
+  rb_cairo_surface_check_status (surface);
+
+  return Qnil;
+}
 #  endif
 #endif
 
@@ -2023,7 +2055,6 @@ Init_cairo_surface (void)
 #  if CAIRO_CHECK_VERSION(1, 15, 4)
   {
     VALUE rb_mCairo_PDFOutline;
-    VALUE rb_mCairo_PDFMetadata;
 
     rb_mCairo_PDFOutline =
       rb_define_module_under (rb_mCairo, "PDFOutline");
@@ -2032,6 +2063,9 @@ Init_cairo_surface (void)
 
     rb_define_method (rb_cCairo_PDFSurface, "add_outline",
                       cr_pdf_surface_add_outline, 4);
+
+    rb_define_method (rb_cCairo_PDFSurface, "set_metadata",
+                      cr_pdf_surface_set_metadata, 2);
   }
 #  endif
 
