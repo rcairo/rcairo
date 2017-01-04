@@ -1178,7 +1178,7 @@ cr_pdf_surface_restrict_to_version (VALUE self, VALUE version)
 }
 #  endif
 
-#  if CAIRO_CHECK_VERSION(1, 10, 0)
+#  if CAIRO_CHECK_VERSION(1, 15, 4)
 static VALUE
 cr_pdf_surface_add_outline (VALUE self,
                             VALUE rb_parent_id,
