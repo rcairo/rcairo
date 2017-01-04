@@ -1,6 +1,14 @@
 class PDFSurfaceTest < Test::Unit::TestCase
   include CairoTestUtils
 
+  def create_pdf
+    pdf = StringIO.new
+    surface = Cairo::PDFSurface.new(pdf, 10, 20)
+    yield(surface)
+    surface.finish
+    Poppler::Document.new(pdf.string)
+  end
+
   def test_new_with_nil_target
     surface = Cairo::PDFSurface.new(nil, 10, 20)
     surface.finish
@@ -27,14 +35,6 @@ class PDFSurfaceTest < Test::Unit::TestCase
   end
 
   sub_test_case "#set_metadata" do
-    def create_pdf
-      pdf = StringIO.new
-      surface = Cairo::PDFSurface.new(pdf, 10, 20)
-      yield(surface)
-      surface.finish
-      Poppler::Document.new(pdf.string)
-    end
-
     test "title" do
       only_cairo_version(1, 15, 4)
       pdf = create_pdf do |surface|
@@ -118,5 +118,13 @@ class PDFSurfaceTest < Test::Unit::TestCase
                      Time.at(pdf.mod_date))
       end
     end
+  end
+
+  test "#page_label=" do
+    only_cairo_version(1, 15, 4)
+    pdf = create_pdf do |surface|
+      surface.page_label = "Hello"
+    end
+    assert_equal("Hello", pdf[0].label)
   end
 end
