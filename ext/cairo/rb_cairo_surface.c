@@ -1263,6 +1263,24 @@ cr_pdf_surface_set_page_label (VALUE self,
 
   return Qnil;
 }
+
+static VALUE
+cr_pdf_surface_set_thumbnail_size (VALUE self,
+                                   VALUE rb_width,
+                                   VALUE rb_height)
+{
+  cairo_surface_t *surface;
+  int width;
+  int height;
+
+  surface = _SELF;
+  width = NUM2INT (rb_width);
+  height = NUM2INT (rb_height);
+  cairo_pdf_surface_set_thumbnail_size (surface, width, height);
+  rb_cairo_surface_check_status (surface);
+
+  return Qnil;
+}
 #  endif
 #endif
 
@@ -2082,6 +2100,8 @@ Init_cairo_surface (void)
                       cr_pdf_surface_set_metadata, 2);
     rb_define_method (rb_cCairo_PDFSurface, "set_page_label",
                       cr_pdf_surface_set_page_label, 1);
+    rb_define_method (rb_cCairo_PDFSurface, "set_thumbnail_size",
+                      cr_pdf_surface_set_thumbnail_size, 2);
   }
 #  endif
 

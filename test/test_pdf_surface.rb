@@ -127,4 +127,12 @@ class PDFSurfaceTest < Test::Unit::TestCase
     end
     assert_equal("Hello", pdf[0].label)
   end
+
+  test "#set_thumbnail_size" do
+    only_cairo_version(1, 15, 4)
+    pdf = create_pdf do |surface|
+      surface.set_thumbnail_size(5, 10)
+    end
+    assert_equal([5, 10], pdf[0].thumbnail_size)
+  end
 end
