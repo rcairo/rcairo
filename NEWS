@@ -1,3 +1,27 @@
+Release 1.15.4 (2017-01-07) Kouhei Sutou <kou@cozmixng.org>
+===========================================================
+
+Improvements
+------------
+
+  * Supported cairo 1.15.4:
+    * Added Cairo::PNGError.
+    * Added Cairo::FreeTypeError.
+    * Added Cairo::Win32GDIError.
+    * Added Cairo::TagError.
+    * Added Cairo::Tag::DEST.
+    * Added Cairo::Tag::LINK.
+    * Added Cairo::Context#tag.
+    * Added Cairo::Context#begin_tag.
+    * Added Cairo::Context#end_tag.
+    * Added Cairo::PDFOutlineFlags.
+    * Added Cairo::PDFOutline.
+    * Added Cairo::PDFSurface#add_outline.
+    * Added Cairo::PDFMetadata.
+    * Added Cairo::PDFSurface#set_metadata.
+    * Added Cairo::PDFSurface#page_label=.
+    * Added Cairo::PDFSurface#set_thumbnail_size.
+
 Release 1.15.3 (2016-11-15) Kouhei Sutou <kou@cozmixng.org>
 ===========================================================
 
