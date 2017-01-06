@@ -111,7 +111,7 @@ class ContextTest < Test::Unit::TestCase
 
     test("LINK") do
       Cairo::Context.new(@surface) do |context|
-        context.tag(Cairo::Tag::LINK, "dest='http://localhost/'") do
+        context.tag(Cairo::Tag::LINK, "uri='http://localhost/'") do
           context.show_text("localhost")
         end
         @surface.finish
