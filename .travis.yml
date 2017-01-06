@@ -8,3 +8,4 @@ rvm:
   - 2.4.0
 before_install:
   - gem update bundler
+  - gem install cairo
