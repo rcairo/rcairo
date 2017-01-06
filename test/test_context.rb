@@ -102,4 +102,26 @@ class ContextTest < Test::Unit::TestCase
     assert_equal("family name should be nil, String or Symbol: [999]",
                  exception.message)
   end
+
+  sub_test_case("#tag") do
+    setup do
+      only_cairo_version(1, 15, 4)
+      omit("poppler 3.1.1 is required")
+    end
+
+    test("LINK") do
+      Cairo::Context.new(@surface) do |context|
+        context.tag(Cairo::Tag::LINK, "dest='http://localhost/'") do
+          context.show_text("localhost")
+        end
+        @surface.finish
+      end
+      document = Poppler::Document.new(@output.string)
+      uris = document[0].link_mapping.collect do |mapping|
+        mapping.action.uri
+      end
+      assert_equal(["http://localhost/"],
+                   uris)
+    end
+  end
 end

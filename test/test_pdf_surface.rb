@@ -2,6 +2,7 @@ class PDFSurfaceTest < Test::Unit::TestCase
   include CairoTestUtils
 
   def create_pdf
+    omit("poppler 3.1.1 is required")
     pdf = StringIO.new
     surface = Cairo::PDFSurface.new(pdf, 10, 20)
     yield(surface)
