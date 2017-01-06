@@ -127,8 +127,13 @@ VALUE rb_mCairo_PDFMetadata = Qnil;
 #define CAIRO_REGION_OVERLAP_MIN CAIRO_REGION_OVERLAP_IN
 #define CAIRO_REGION_OVERLAP_MAX CAIRO_REGION_OVERLAP_PART
 
-#define CAIRO_PDF_OUTLINE_FLAGS_MIN CAIRO_BOOKMARK_FLAG_OPEN
-#define CAIRO_PDF_OUTLINE_FLAGS_MAX CAIRO_BOOKMARK_FLAG_ITALIC
+#if CAIRO_CHECK_VERSION(1, 15, 6)
+#  define CAIRO_PDF_OUTLINE_FLAGS_MIN CAIRO_PDF_OUTLINE_FLAG_OPEN
+#  define CAIRO_PDF_OUTLINE_FLAGS_MAX CAIRO_PDF_OUTLINE_FLAG_ITALIC
+#else
+#  define CAIRO_PDF_OUTLINE_FLAGS_MIN CAIRO_BOOKMARK_FLAG_OPEN
+#  define CAIRO_PDF_OUTLINE_FLAGS_MAX CAIRO_BOOKMARK_FLAG_ITALIC
+#endif
 
 #define CAIRO_PDF_METADATA_MIN CAIRO_PDF_METADATA_TITLE
 #define CAIRO_PDF_METADATA_MAX CAIRO_PDF_METADATA_MOD_DATE
@@ -687,12 +692,21 @@ Init_cairo_constants (void)
 #if CAIRO_CHECK_VERSION(1, 15, 4)
   rb_mCairo_PDFOutlineFlags =
     rb_define_module_under (rb_mCairo, "PDFOutlineFlags");
+#  if CAIRO_CHECK_VERSION(1, 15, 6)
+  rb_define_const (rb_mCairo_PDFOutlineFlags, "OPEN",
+                   INT2NUM (CAIRO_PDF_OUTLINE_FLAG_OPEN));
+  rb_define_const (rb_mCairo_PDFOutlineFlags, "BOLD",
+                   INT2NUM (CAIRO_PDF_OUTLINE_FLAG_BOLD));
+  rb_define_const (rb_mCairo_PDFOutlineFlags, "ITALIC",
+                   INT2NUM (CAIRO_PDF_OUTLINE_FLAG_ITALIC));
+#  else
   rb_define_const (rb_mCairo_PDFOutlineFlags, "OPEN",
                    INT2NUM (CAIRO_BOOKMARK_FLAG_OPEN));
   rb_define_const (rb_mCairo_PDFOutlineFlags, "BOLD",
                    INT2NUM (CAIRO_BOOKMARK_FLAG_BOLD));
   rb_define_const (rb_mCairo_PDFOutlineFlags, "ITALIC",
                    INT2NUM (CAIRO_BOOKMARK_FLAG_ITALIC));
+#  endif
 
   rb_mCairo_PDFMetadata =
     rb_define_module_under (rb_mCairo, "PDFMetadata");
