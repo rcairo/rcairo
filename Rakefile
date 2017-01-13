@@ -511,6 +511,7 @@ windows_task = WindowsTask.new(spec) do |task|
           "--enable-gobject",
         ],
         :patches => [
+          "cairo-1.15.4-99054-fix-win32-backend-assertion-failure.diff"
         ],
         :need_autoreconf => true,
       },
