@@ -20,19 +20,17 @@ run()
   fi
 }
 
+run sudo systemctl stop apt-daily.service apt-daily.timer
+
 run sudo sed -i'' -e 's,http://us,http://jp,g' /etc/apt/sources.list
-while ! sudo apt update; do
-  sleep 10
-done
+run sudo apt update
 
 sudo rm -rf /etc/udev/rules.d/70-persistent-net.rules
 
-while ! (echo ttf-mscorefonts-installer \
-              msttcorefonts/accepted-mscorefonts-eula \
-              select true | \
-            sudo debconf-set-selections); do
-  sleep 10
-done
+echo ttf-mscorefonts-installer \
+     msttcorefonts/accepted-mscorefonts-eula \
+     select true | \
+  run sudo debconf-set-selections
 
 run \
   sudo apt install -y -V \
