@@ -443,7 +443,7 @@ windows_task = WindowsTask.new(spec) do |task|
     {
       :name => "zlib",
       :version => "1.2.10",
-      :download_base_url => "http://downloads.sourceforge.net/project/libpng/zlib/1.2.10",
+      :download_base_url => "https://downloads.sourceforge.net/project/libpng/zlib/1.2.10",
       :compression_method => "gz",
       :windows => {
         :builder => ZlibBuilder.new,
@@ -453,7 +453,7 @@ windows_task = WindowsTask.new(spec) do |task|
     {
       :name => "libpng",
       :version => "1.6.27",
-      :download_base_url => "http://downloads.sourceforge.net/project/libpng/libpng16/1.6.27",
+      :download_base_url => "https://downloads.sourceforge.net/project/libpng/libpng16/1.6.27",
       :windows => {
         :built_file => "bin/libpng16-16.dll",
       },
@@ -461,7 +461,7 @@ windows_task = WindowsTask.new(spec) do |task|
     {
       :name => "freetype",
       :version => "2.7",
-      :download_base_url => "http://downloads.sourceforge.net/project/freetype/freetype2/2.7",
+      :download_base_url => "https://downloads.sourceforge.net/project/freetype/freetype2/2.7",
       :compression_method => "bz2",
       :windows => {
         :built_file => "bin/libfreetype-7.dll",
