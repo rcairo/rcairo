@@ -1,3 +1,13 @@
+Release 1.15.5 (2017-01-14) Kouhei Sutou <kou@cozmixng.org>
+===========================================================
+
+Improvements
+------------
+
+  * Windows: Applied the patch at
+    https://bugs.freedesktop.org/show_bug.cgi?id=99054 that fixes
+    unexpected assertion failure in win32 surface.
+
 Release 1.15.4 (2017-01-07) Kouhei Sutou <kou@cozmixng.org>
 ===========================================================
 
