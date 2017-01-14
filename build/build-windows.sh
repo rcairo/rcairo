@@ -27,10 +27,10 @@ done
 
 sudo rm -rf /etc/udev/rules.d/70-persistent-net.rules
 
-while ! echo ttf-mscorefonts-installer \
-        msttcorefonts/accepted-mscorefonts-eula \
-        select true | \
-    run sudo debconf-set-selections; do
+while ! (echo ttf-mscorefonts-installer \
+              msttcorefonts/accepted-mscorefonts-eula \
+              select true | \
+            sudo debconf-set-selections); do
   sleep 10
 done
 
