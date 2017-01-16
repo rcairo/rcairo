@@ -442,8 +442,8 @@ windows_task = WindowsTask.new(spec) do |task|
   task.packages = [
     {
       :name => "zlib",
-      :version => "1.2.10",
-      :download_base_url => "https://downloads.sourceforge.net/project/libpng/zlib/1.2.10",
+      :version => "1.2.11",
+      :download_base_url => "https://downloads.sourceforge.net/project/libpng/zlib/1.2.11",
       :compression_method => "gz",
       :windows => {
         :builder => ZlibBuilder.new,
