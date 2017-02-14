@@ -466,6 +466,18 @@ cr_surface_destroy (VALUE self)
 }
 
 static VALUE
+cr_surface_get_reference_count (VALUE self)
+{
+  cairo_surface_t *surface;
+  unsigned int reference_count;
+
+  surface = _SELF;
+  reference_count = cairo_surface_get_reference_count (surface);
+
+  return UINT2NUM (reference_count);
+}
+
+static VALUE
 cr_surface_finish (VALUE self)
 {
   cairo_surface_t *surface;
@@ -1998,6 +2010,8 @@ Init_cairo_surface (void)
                     cr_surface_get_device, 0);
 #endif
   rb_define_method (rb_cCairo_Surface, "destroy", cr_surface_destroy, 0);
+  rb_define_method (rb_cCairo_Surface, "reference_count",
+                    cr_surface_get_reference_count, 0);
   rb_define_method (rb_cCairo_Surface, "finish", cr_surface_finish, 0);
   rb_define_method (rb_cCairo_Surface, "content", cr_surface_get_content, 0);
 

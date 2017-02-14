@@ -130,6 +130,18 @@ cr_destroy_with_destroy_check (VALUE self)
 }
 
 static VALUE
+cr_get_reference_count (VALUE self)
+{
+  cairo_t *cr;
+  unsigned int  reference_count;
+
+  cr = _SELF;
+  reference_count = cairo_get_reference_count (cr);
+
+  return UINT2NUM (reference_count);
+}
+
+static VALUE
 cr_s_wrap (VALUE self, VALUE pointer)
 {
   VALUE result;
@@ -1673,6 +1685,8 @@ Init_cairo_context (void)
   /* Functions for manipulating state objects */
   rb_define_method (rb_cCairo_Context, "initialize", cr_initialize, 1);
   rb_define_method (rb_cCairo_Context, "destroy", cr_destroy, 0);
+  rb_define_method (rb_cCairo_Context, "reference_count",
+                    cr_get_reference_count, 0);
 
   rb_define_method (rb_cCairo_Context, "save", cr_save, 0);
   rb_define_method (rb_cCairo_Context, "restore", cr_restore, 0);
