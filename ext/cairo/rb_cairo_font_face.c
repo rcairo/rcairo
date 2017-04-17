@@ -39,6 +39,11 @@ static ID cr_id_at_need_clusters;
 static ID cr_id_at_need_cluster_flags;
 #endif
 
+#if CAIRO_HAS_FT_FONT
+static FT_Library library;
+static void handle_ft_error(FT_Error error);
+#endif
+
 #define _SELF  (RVAL2CRFONTFACE(self))
 
 static inline void
@@ -68,6 +73,10 @@ rb_cairo_font_face_from_ruby_object (VALUE obj)
 static void
 cr_font_face_free (void *ptr)
 {
+#if CAIRO_HAS_FT_FONT
+  FT_Done_FreeType(library);
+#endif
+
   if (ptr)
     {
       cairo_font_face_t *face = ptr;
@@ -108,6 +117,11 @@ rb_cairo_font_face_to_ruby_object (cairo_font_face_t *face)
 static VALUE
 cr_font_face_allocate (VALUE klass)
 {
+#if CAIRO_HAS_FT_FONT
+  FT_Error error = FT_Init_FreeType(&library);
+  if (error)
+    handle_ft_error(error);
+#endif
   return Data_Wrap_Struct (klass, NULL, cr_font_face_free, NULL);
 }
 
@@ -120,6 +134,64 @@ cr_font_face_quartz_supported_p (VALUE klass)
   return Qfalse;
 #endif
 }
+
+#if CAIRO_HAS_FT_FONT
+static void
+handle_ft_error(FT_Error error)
+{
+#undef __FTERRORS_H__
+#define FT_ERRORDEF( e, v, s )  { e, s },
+#define FT_ERROR_START_LIST     {
+#define FT_ERROR_END_LIST       { 0, 0 } };
+  int i = 0;
+  static const struct {
+    int          code;
+    const char  *str;
+  } errors[] =
+#include FT_ERRORS_H
+  VALUE rb_eCairo_FreeType2Error = rb_define_class_under (rb_mCairo, "FreeType2Error", rb_eStandardError);
+  for (i = 0; ((unsigned int) i) < sizeof(errors) / sizeof(errors[0]); i++)
+    if (error == errors[i].code)
+      rb_raise(rb_eCairo_FreeType2Error, "FreeType2 Error: %s.", errors[i].str);
+
+  rb_raise(rb_eCairo_FreeType2Error, "FreeType2 Error: Unknown error %d.", error);
+}
+
+static void
+ft_face_free(void *ptr) {
+  FT_Face face = *((FT_Face *) ptr);
+  FT_Error err;
+
+  if ((err = FT_Done_Face(face)) != FT_Err_Ok)
+    handle_ft_error(err);
+}
+
+static VALUE
+cr_font_face_create_for_ft_face (VALUE self, VALUE path)
+{
+  FT_Library lib;
+  FT_Face face;
+  FT_Error error;
+  cairo_font_face_t *cairo_face;
+  cairo_status_t status;
+
+  lib = library;
+  error = FT_New_Face(lib, RSTRING_PTR(path), 0, &face);
+  if (error != FT_Err_Ok)
+    handle_ft_error(error);
+
+  cairo_face = cairo_ft_font_face_create_for_ft_face (face, 0);
+  status = cairo_font_face_set_user_data (cairo_face, &ruby_object_key, (void *) self, (cairo_destroy_func_t) ft_face_free);
+
+  if (status != CAIRO_STATUS_SUCCESS) {
+    cairo_font_face_destroy(cairo_face);
+    FT_Done_Face(face);
+    return Qnil;
+  }
+
+  return rb_cairo_font_face_to_ruby_object (cairo_face);
+}
+#endif
 
 #if CAIRO_CHECK_VERSION(1, 7, 6)
 static VALUE
@@ -664,6 +736,10 @@ Init_cairo_font (void)
 
   rb_define_singleton_method (rb_cCairo_FontFace, "quartz_supported?",
                               cr_font_face_quartz_supported_p, 0);
+#if CAIRO_HAS_FT_FONT
+  rb_define_singleton_method (rb_cCairo_FontFace, "create_for_ft_face",
+                              cr_font_face_create_for_ft_face, 1);
+#endif
 
 #if CAIRO_CHECK_VERSION(1, 7, 6)
   rb_cCairo_ToyFontFace =

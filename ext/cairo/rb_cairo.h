@@ -18,6 +18,7 @@
 #define RB_CAIRO_H
 
 #include <cairo.h>
+#include <cairo-ft.h>
 
 #ifdef CAIRO_HAS_PS_SURFACE
 #  include <cairo-ps.h>
