@@ -452,16 +452,16 @@ windows_task = WindowsTask.new(spec) do |task|
     },
     {
       :name => "libpng",
-      :version => "1.6.27",
-      :download_base_url => "https://downloads.sourceforge.net/project/libpng/libpng16/1.6.27",
+      :version => "1.6.29",
+      :download_base_url => "https://downloads.sourceforge.net/project/libpng/libpng16/1.6.29",
       :windows => {
         :built_file => "bin/libpng16-16.dll",
       },
     },
     {
       :name => "freetype",
-      :version => "2.7",
-      :download_base_url => "https://downloads.sourceforge.net/project/freetype/freetype2/2.7",
+      :version => "2.7.1",
+      :download_base_url => "https://downloads.sourceforge.net/project/freetype/freetype2/2.7.1",
       :compression_method => "bz2",
       :windows => {
         :built_file => "bin/libfreetype-7.dll",
