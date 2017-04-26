@@ -1,3 +1,16 @@
+Release 1.15.6 (2017-04-27) Kouhei Sutou <kou@cozmixng.org>
+===========================================================
+
+Improvements
+------------
+
+  * Added Cairo::Context#refrence_count.
+  * Windows: Update bundled libraries:
+    * zlib: 1.2.10 -> 1.2.11
+    * libpng: 1.6.27 -> 1.6.29
+    * FreeType: 2.7 -> 2.7.1
+  * Used native-package-installer gem.
+
 Release 1.15.5 (2017-01-14) Kouhei Sutou <kou@cozmixng.org>
 ===========================================================
 
