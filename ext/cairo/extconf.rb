@@ -6,12 +6,8 @@ require 'English'
 require 'mkmf'
 require 'fileutils'
 
-begin
-  require 'pkg-config'
-rescue LoadError
-  require 'rubygems'
-  require 'pkg-config'
-end
+require "pkg-config"
+require "native-package-installer"
 
 checking_for(checking_message("GCC")) do
   if macro_defined?("__GNUC__", "")
@@ -47,119 +43,6 @@ checking_for(checking_message("Win32 OS")) do
   end
 end
 
-def package_platform
-  if File.exist?("/etc/debian_version")
-    :debian
-  elsif File.exist?("/etc/fedora-release")
-    :fedora
-  elsif File.exist?("/etc/redhat-release")
-    :redhat
-  elsif find_executable("brew")
-    :homebrew
-  elsif find_executable("port")
-    :macports
-  else
-    :unknown
-  end
-end
-
-def super_user?
-  Process.uid.zero?
-end
-
-def normalize_native_package_info(native_package_info)
-  native_package_info ||= {}
-  native_package_info = native_package_info.dup
-  native_package_info[:fedora] ||= native_package_info[:redhat]
-  native_package_info
-end
-
-def install_missing_native_package(native_package_info)
-  platform = package_platform
-  native_package_info = normalize_native_package_info(native_package_info)
-  package = native_package_info[platform]
-  return false if package.nil?
-
-  need_super_user_priviledge = true
-  case platform
-  when :debian
-    install_command = "apt-get install -V -y #{package}"
-  when :fedora, :redhat
-    install_command = "yum install -y #{package}"
-  when :homebrew
-    need_super_user_priviledge = false
-    install_command = "brew install #{package}"
-  when :macports
-    install_command = "port install -y #{package}"
-  else
-    return false
-  end
-
-  have_priviledge = (not need_super_user_priviledge or super_user?)
-  unless have_priviledge
-    sudo = find_executable("sudo")
-  end
-
-  installing_message = "installing '#{package}' native package... "
-  message("%s", installing_message)
-  failed_to_get_super_user_priviledge = false
-
-  succeeded = false
-  execution_result = ""
-  File.open("mkmf.log") do |log|
-    log.seek(0, IO::SEEK_END)
-    if have_priviledge
-      succeeded = xsystem(install_command)
-    else
-      if sudo
-        install_command = "#{sudo} #{install_command}"
-        succeeded = xsystem(install_command)
-      else
-        succeeded = false
-        failed_to_get_super_user_priviledge = true
-      end
-    end
-    executed_command_line = log.gets
-    execution_result = log.read
-  end
-
-  if failed_to_get_super_user_priviledge
-    result_message = "require super user privilege"
-  else
-    result_message = succeeded ? "succeeded" : "failed"
-  end
-  Logging.postpone do
-    "#{installing_message}#{result_message}\n"
-  end
-  message("#{result_message}\n")
-
-  error_message = nil
-  unless succeeded
-    if failed_to_get_super_user_priviledge
-      error_message = <<-EOM
-'#{package}' native package is required.
-Run the following command as super user to install required native package:
-  \# #{install_command}
-EOM
-    else
-      error_message = <<-EOM
-Failed to run '#{install_command}':
---
-#{execution_result.chomp}
---
-EOM
-    end
-  end
-  if error_message
-    message("%s", error_message)
-    Logging.message("%s", error_message)
-  end
-
-  Logging.message("--------------------\n\n")
-
-  succeeded
-end
-
 def required_pkg_config_package(package_info, native_package_info=nil)
   if package_info.is_a?(Array)
     required_package_info = package_info
@@ -169,7 +52,7 @@ def required_pkg_config_package(package_info, native_package_info=nil)
   return true if PKGConfig.have_package(*required_package_info)
 
   native_package_info ||= {}
-  return false unless install_missing_native_package(native_package_info)
+  return false unless NativePackageInstaller.install(native_package_info)
 
   PKGConfig.have_package(*required_package_info)
 end
