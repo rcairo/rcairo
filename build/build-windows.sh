@@ -68,7 +68,7 @@ run sudo gem install --no-document \
     rake \
     bundler \
     pkg-config \
-    native-package-isntaller \
+    native-package-installer \
     rake-compiler \
     mechanize \
     packnga
