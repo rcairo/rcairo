@@ -17,6 +17,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
       node.vm.synced_folder("../", "/rcairo")
       node.vm.synced_folder("../../pkg-config", "/pkg-config")
+      node.vm.synced_folder("../../native-package-installer",
+                            "/native-package-installer")
       node.vm.synced_folder("../../ruby-gnome2", "/ruby-gnome2")
 
       node.vm.provision(:shell,
