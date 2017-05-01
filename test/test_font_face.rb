@@ -241,6 +241,21 @@ class FontFaceTest < Test::Unit::TestCase
                   result])
   end
 
+  def test_create_for_ft_face_valid
+    font_face = Cairo::FontFace.create_for_ft_face('test/data/SourceSansPro-Regular.otf')
+    assert_equal(classify_cairo_object(font_face), Cairo::FontFace)
+  end
+
+  def test_create_for_ft_face_error
+    assert_raise do
+      Cairo::FontFace.create_for_ft_face('test/data/SourceSansPro-Corrupted.otf')
+    end
+
+    assert_raise do
+      Cairo::FontFace.create_for_ft_face('test/data/InvalidFile.otf')
+    end
+  end
+
   def classify_cairo_object(object)
     if object.is_a?(Array)
       object.collect {|obj| classify_cairo_object(obj)}
