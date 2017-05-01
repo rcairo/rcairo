@@ -441,9 +441,10 @@ end
 windows_task = WindowsTask.new(spec) do |task|
   task.packages = [
     {
+      # We should use the same version as Ruby Installer.
       :name => "zlib",
-      :version => "1.2.11",
-      :download_base_url => "https://downloads.sourceforge.net/project/libpng/zlib/1.2.11",
+      :version => "1.2.8",
+      :download_base_url => "https://downloads.sourceforge.net/project/libpng/zlib/1.2.8",
       :compression_method => "gz",
       :windows => {
         :builder => ZlibBuilder.new,
