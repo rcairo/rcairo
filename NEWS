@@ -1,3 +1,18 @@
+Release 1.15.7 (2017-05-01) Kouhei Sutou <kou@cozmixng.org>
+===========================================================
+
+Fixes
+-----
+
+  * Windows: Fixed zlib version. We should use the same version
+    as Ruby Installer. Ruby Installer uses zlib 1.2.8.
+    [GitHub#47][Reported by jjgh]
+
+Thanks
+------
+
+  * jigh
+
 Release 1.15.6 (2017-04-27) Kouhei Sutou <kou@cozmixng.org>
 ===========================================================
 
@@ -5,7 +20,7 @@ Improvements
 ------------
 
   * Added Cairo::Context#refrence_count.
-  * Windows: Update bundled libraries:
+  * Windows: Updated bundled libraries:
     * zlib: 1.2.10 -> 1.2.11
     * libpng: 1.6.27 -> 1.6.29
     * FreeType: 2.7 -> 2.7.1
