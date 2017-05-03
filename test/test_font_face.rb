@@ -3,6 +3,52 @@ require 'cairo'
 class FontFaceTest < Test::Unit::TestCase
   include CairoTestUtils
 
+  sub_test_case("FreeTypeFontFace") do
+    setup do
+      omit("Need FreeType support") unless Cairo::FontFace.freetype_supported?
+    end
+
+    sub_test_case("initialize") do
+      test("valid") do
+        assert_nothing_raised do
+          Cairo::FreeTypeFontFace.new(fixture_path("a.otf"))
+        end
+      end
+
+      sub_test_case("invalid") do
+        setup do
+          if Cairo.const_defined?(:FreeTypeError)
+            @error_class = Cairo::FreeTypeError
+          else
+            @error_class = Cairo::Error
+          end
+        end
+
+        test("broken") do
+          path = __FILE__
+          message = "failed to open FreeType font: "
+          message << "FT_Err_Unknown_File_Format[2]: "
+          message << "unknown file format: "
+          message << path.inspect
+          assert_raise(@error_class.new(message)) do
+            Cairo::FreeTypeFontFace.new(path)
+          end
+        end
+
+        test("nonexistent") do
+          path = fixture_path("nonexistent.otf")
+          message = "failed to open FreeType font: "
+          message << "FT_Err_Cannot_Open_Resource[1]: "
+          message << "cannot open resource: "
+          message << path.inspect
+          assert_raise(@error_class.new(message)) do
+            Cairo::FreeTypeFontFace.new(path)
+          end
+        end
+      end
+    end
+  end
+
   def test_toy_font_face_new
     only_cairo_version(1, 7, 2)
 

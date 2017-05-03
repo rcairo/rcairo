@@ -17,9 +17,19 @@
 #include "rb_cairo_private.h"
 
 VALUE rb_cCairo_FontFace;
+VALUE rb_cCairo_FreeTypeFontFace = Qnil;
 VALUE rb_cCairo_ToyFontFace = Qnil;
 VALUE rb_cCairo_UserFontFace = Qnil;
 VALUE rb_cCairo_UserFontFace_TextToGlyphsData = Qnil;
+
+#ifdef CAIRO_HAS_FT_FONT
+#  include <cairo-ft.h>
+
+static cairo_user_data_key_t cr_freetype_face_key;
+static FT_Library cr_freetype_library;
+static int cr_freetype_n_faces = 0;
+static cairo_bool_t cr_freetype_finishing = CR_FALSE;
+#endif
 
 #if CAIRO_CHECK_VERSION(1, 7, 6)
 static cairo_user_data_key_t ruby_object_key;
@@ -84,6 +94,11 @@ rb_cairo_font_face_to_ruby_object (cairo_font_face_t *face)
 
       switch (cairo_font_face_get_type (face))
         {
+#ifdef CAIRO_HAS_FT_FONT
+        case CAIRO_FONT_TYPE_FT:
+          klass = rb_cCairo_FreeTypeFontFace;
+          break;
+#endif
 #if CAIRO_CHECK_VERSION(1, 7, 6)
         case CAIRO_FONT_TYPE_TOY:
           klass = rb_cCairo_ToyFontFace;
@@ -120,6 +135,143 @@ cr_font_face_quartz_supported_p (VALUE klass)
   return Qfalse;
 #endif
 }
+
+static VALUE
+cr_font_face_freetype_supported_p (VALUE klass)
+{
+#ifdef CAIRO_HAS_FT_FONT
+  return Qtrue;
+#else
+  return Qfalse;
+#endif
+}
+
+#ifdef CAIRO_HAS_FT_FONT
+static VALUE
+cr_freetype_done_library (VALUE data)
+{
+  cr_freetype_finishing = CR_TRUE;
+  if (cr_freetype_n_faces == 0)
+    FT_Done_FreeType (cr_freetype_library);
+  return Qnil;
+}
+
+static void
+cr_freetype_done_face (void *data)
+{
+  FT_Face face = data;
+
+  FT_Done_Face (face);
+  cr_freetype_n_faces--;
+  if (cr_freetype_n_faces == 0 && cr_freetype_finishing)
+    FT_Done_FreeType (cr_freetype_library);
+}
+
+static cairo_bool_t
+cr_freetype_error_detail (FT_Error error,
+                          const char **name,
+                          const char **message)
+{
+#undef __FTERRORS_H__
+#define FT_STRINGIFY(v) #v
+#define FT_ERRORDEF(e, v, s)    {FT_STRINGIFY(e), v, s},
+#define FT_ERROR_START_LIST     {
+#define FT_ERROR_END_LIST       {NULL, 0, NULL}};
+  size_t i = 0;
+  static const struct {
+    const char *name;
+    FT_Error code;
+    const char *message;
+  } errors[] =
+#include FT_ERRORS_H
+  for (i = 0; i < (sizeof (errors) / sizeof (errors[0])); i++)
+    {
+      if (errors[i].code == error)
+        {
+          *name = errors[i].name;
+          *message = errors[i].message;
+          return CR_TRUE;
+        }
+    }
+
+  return CR_FALSE;
+}
+
+static void
+cr_freetype_error_check (FT_Error error,
+                         const char *message,
+                         VALUE related_object)
+{
+  const char *name = NULL;
+  const char *system_message = NULL;
+  const char *error_class_name;
+  VALUE rb_eCairo_FreeTypeError;
+
+  if (error == FT_Err_Ok)
+    return;
+
+  cr_freetype_error_detail (error, &name, &system_message);
+#if CAIRO_CHECK_VERSION(1, 15, 4)
+  error_class_name = "FreeTypeError";
+#else
+  error_class_name = "Error";
+#endif
+  rb_eCairo_FreeTypeError =
+    rb_const_get (rb_mCairo, rb_intern (error_class_name));
+  if (NIL_P (related_object))
+    {
+      rb_raise (rb_eCairo_FreeTypeError,
+                "%s: %s[%d]: %s",
+                message,
+                name ? name : "unknown",
+                error,
+                system_message ? system_message : "unknown");
+    }
+  else
+    {
+      rb_raise (rb_eCairo_FreeTypeError,
+                "%s: %s[%d]: %s: %+" PRIsVALUE,
+                message,
+                name ? name : "unknown",
+                error,
+                system_message ? system_message : "unknown",
+                related_object);
+    }
+}
+
+static VALUE
+cr_freetype_font_face_initialize (VALUE self, VALUE path)
+{
+  FT_Face freetype_face;
+  FT_Error error;
+  cairo_font_face_t *face;
+  cairo_status_t status;
+
+  error = FT_New_Face (cr_freetype_library,
+                       StringValueCStr(path),
+                       0,
+                       &freetype_face);
+  cr_freetype_error_check (error, "failed to open FreeType font", path);
+  cr_freetype_n_faces++;
+
+  face = cairo_ft_font_face_create_for_ft_face (freetype_face, 0);
+  cr_font_face_check_status (face);
+  status =
+    cairo_font_face_set_user_data (face,
+                                   &cr_freetype_face_key,
+                                   freetype_face,
+                                   (cairo_destroy_func_t) cr_freetype_done_face);
+  if (status != CAIRO_STATUS_SUCCESS) {
+    cairo_font_face_destroy (face);
+    FT_Done_Face (freetype_face);
+    rb_cairo_check_status (status);
+  }
+
+  DATA_PTR (self) = face;
+
+  return Qnil;
+}
+#endif
 
 #if CAIRO_CHECK_VERSION(1, 7, 6)
 static VALUE
@@ -664,6 +816,26 @@ Init_cairo_font (void)
 
   rb_define_singleton_method (rb_cCairo_FontFace, "quartz_supported?",
                               cr_font_face_quartz_supported_p, 0);
+  rb_define_singleton_method (rb_cCairo_FontFace, "freetype_supported?",
+                              cr_font_face_freetype_supported_p, 0);
+
+#ifdef CAIRO_HAS_FT_FONT
+  rb_cCairo_FreeTypeFontFace =
+    rb_define_class_under (rb_mCairo, "FreeTypeFontFace", rb_cCairo_FontFace);
+
+  {
+    FT_Error error;
+
+    error = FT_Init_FreeType (&cr_freetype_library);
+    cr_freetype_error_check (error, "failed to initialize FreeType", Qnil);
+
+    rb_define_finalizer (rb_cCairo_FreeTypeFontFace,
+                         rb_proc_new (cr_freetype_done_library, Qnil));
+  }
+
+  rb_define_method (rb_cCairo_FreeTypeFontFace, "initialize",
+                    cr_freetype_font_face_initialize, 1);
+#endif
 
 #if CAIRO_CHECK_VERSION(1, 7, 6)
   rb_cCairo_ToyFontFace =

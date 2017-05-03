@@ -22,6 +22,7 @@ EXPORTS
     rb_cCairo_RasterSourcePattern DATA
 
     rb_cCairo_FontFace        DATA
+    rb_cCairo_FreeTypeFontFace DATA
     rb_cCairo_ToyFontFace     DATA
     rb_cCairo_UserFontFace    DATA
     rb_cCairo_UserFontFace_TextToGlyphsData DATA

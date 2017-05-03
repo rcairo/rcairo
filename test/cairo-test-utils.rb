@@ -42,4 +42,8 @@ module CairoTestUtils
       omit("Only for #{name} device available")
     end
   end
+
+  def fixture_path(*components)
+    File.join(__dir__, "fixture", *components)
+  end
 end

@@ -96,6 +96,7 @@ RB_CAIRO_VAR VALUE rb_cCairo_RadialPattern;
 RB_CAIRO_VAR VALUE rb_cCairo_MeshPattern;
 RB_CAIRO_VAR VALUE rb_cCairo_RasterSourcePattern;
 RB_CAIRO_VAR VALUE rb_cCairo_FontFace;
+RB_CAIRO_VAR VALUE rb_cCairo_FreeTypeFontFace;
 RB_CAIRO_VAR VALUE rb_cCairo_ToyFontFace;
 RB_CAIRO_VAR VALUE rb_cCairo_UserFontFace;
 RB_CAIRO_VAR VALUE rb_cCairo_UserFontFace_TextToGlyphsData;
