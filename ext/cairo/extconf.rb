@@ -61,7 +61,8 @@ unless required_pkg_config_package([package, major, minor, micro],
                                    :debian => "libcairo2-dev",
                                    :redhat => "cairo-devel",
                                    :homebrew => "cairo",
-                                   :macports => "cairo")
+                                   :macports => "cairo",
+                                   :msys2 => "cairo")
   exit(false)
 end
 
