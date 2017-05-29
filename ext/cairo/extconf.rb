@@ -66,6 +66,8 @@ unless required_pkg_config_package([package, major, minor, micro],
   exit(false)
 end
 
+PKGConfig.have_package("cairo-ft")
+
 checking_for(checking_message("Mac OS X")) do
   case RUBY_PLATFORM
   when /darwin/
