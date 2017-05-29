@@ -1702,6 +1702,8 @@ Init_cairo_context (void)
                     cr_set_source_rgb, -1);
   rb_define_method (rb_cCairo_Context, "set_source_rgba",
                     cr_set_source_rgba, -1);
+  rb_define_method (rb_cCairo_Context, "set_source_surface",
+                    cr_set_source_surface, 3);
   rb_define_method (rb_cCairo_Context, "set_tolerance", cr_set_tolerance, 1);
   rb_define_method (rb_cCairo_Context, "set_antialias", cr_set_antialias, 1);
   rb_define_method (rb_cCairo_Context, "set_fill_rule", cr_set_fill_rule, 1);
