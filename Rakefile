@@ -420,8 +420,11 @@ class ZlibBuilder
   include Rake::DSL
 
   def build(package, install_dir)
+    version_for_path = package.version.gsub(".", "")
+    dll_name = "zlib#{version_for_path}.dll"
     sh("make",
        "PREFIX=#{package.windows.build_host}-",
+       "SHAREDLIB=#{dll_name}",
        "-f",
        "win32/Makefile.gcc")
     include_path = install_dir + "include"
@@ -432,6 +435,7 @@ class ZlibBuilder
        "LIBRARY_PATH=#{library_path}",
        "BINARY_PATH=#{binary_path}",
        "SHARED_MODE=1",
+       "SHAREDLIB=#{dll_name}",
        "-f",
        "win32/Makefile.gcc",
        "install")
@@ -439,16 +443,17 @@ class ZlibBuilder
 end
 
 windows_task = WindowsTask.new(spec) do |task|
+  zlib_version = "1.2.11"
   task.packages = [
     {
       # We should use the same version as Ruby Installer.
       :name => "zlib",
-      :version => "1.2.8",
-      :download_base_url => "https://downloads.sourceforge.net/project/libpng/zlib/1.2.8",
+      :version => zlib_version,
+      :download_base_url => "https://downloads.sourceforge.net/project/libpng/zlib/#{zlib_version}",
       :compression_method => "gz",
       :windows => {
         :builder => ZlibBuilder.new,
-        :built_file => "bin/zlib1.dll",
+        :built_file => "bin/zlib#{zlib_version.gsub(".", "")}.dll",
       },
     },
     {
