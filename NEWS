@@ -1,3 +1,17 @@
+Release 1.15.9 (2017-06-03) Kouhei Sutou <kou@cozmixng.org>
+===========================================================
+
+Improvements
+------------
+
+  * Supported RubyInstaller2.
+    [GitHub#47][Reported by PLURIX]
+
+Thanks
+------
+
+  * PLURIX
+
 Release 1.15.8 (2017-05-29) Kouhei Sutou <kou@cozmixng.org>
 ===========================================================
 
