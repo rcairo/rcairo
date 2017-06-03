@@ -9,12 +9,12 @@ if /mingw|mswin|mswin32/ =~ RUBY_PLATFORM
     begin
       require "ruby_installer/runtime"
     rescue LoadError
-      ENV["PATH"] = %w(bin lib).collect do |dir|
-        "#{base_dir}\\#{dir};"
-      end.join("") + ENV["PATH"]
     else
       RubyInstaller::Runtime.add_dll_directory("#{base_dir}\\bin")
     end
+    ENV["PATH"] = %w(bin lib).collect do |dir|
+      "#{base_dir}\\#{dir};"
+    end.join("") + ENV["PATH"]
   else
     require "rbconfig"
     ENV["PATH"] = %w(bin lib).collect do |dir|
