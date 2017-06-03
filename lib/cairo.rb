@@ -13,7 +13,7 @@ if /mingw|mswin|mswin32/ =~ RUBY_PLATFORM
         "#{base_dir}\\#{dir};"
       end.join("") + ENV["PATH"]
     else
-      RubyInstaller::Runtime.add_dll_directory("#{base_dir}\\#{dir}")
+      RubyInstaller::Runtime.add_dll_directory("#{base_dir}\\bin")
     end
   else
     require "rbconfig"
