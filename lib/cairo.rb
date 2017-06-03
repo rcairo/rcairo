@@ -6,9 +6,15 @@ if /mingw|mswin|mswin32/ =~ RUBY_PLATFORM
   base_dir = base_dir.parent + "vendor" + "local"
   if base_dir.exist?
     base_dir = base_dir.to_s.gsub(/\//, "\\")
-    ENV["PATH"] = %w(bin lib).collect do |dir|
-      "#{base_dir}\\#{dir};"
-    end.join("") + ENV["PATH"]
+    begin
+      require "ruby_installer/runtime"
+    rescue LoadError
+      ENV["PATH"] = %w(bin lib).collect do |dir|
+        "#{base_dir}\\#{dir};"
+      end.join("") + ENV["PATH"]
+    else
+      RubyInstaller::Runtime.add_dll_directory("#{base_dir}\\#{dir}")
+    end
   else
     require "rbconfig"
     ENV["PATH"] = %w(bin lib).collect do |dir|
