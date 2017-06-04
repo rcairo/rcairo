@@ -32,6 +32,5 @@ build_script:
   - bundle exec make
 
 test_script:
-  - SET PATH=C:\msys64\usr\bin;%PATH%
-  - dir C:\msys64\usr\bin
+  - SET PATH=C:\msys64\mingw64\bin;%PATH%
   - bundle exec rake
