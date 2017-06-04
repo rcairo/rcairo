@@ -55,7 +55,7 @@ class FontFaceTest < Test::Unit::TestCase
     face = Cairo::ToyFontFace.new
     default_font_family = ""
     default_font_family = "Helvetica" if quartz?
-    default_font_family = "Arial" if win32?
+    default_font_family = "Arial" if windows?
     assert_equal([default_font_family,
                   Cairo::FONT_SLANT_NORMAL,
                   Cairo::FONT_WEIGHT_NORMAL],
