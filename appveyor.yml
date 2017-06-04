@@ -21,9 +21,9 @@ install:
   - SET PATH=C:\msys64\usr\bin;%PATH%
   - dir C:\msys64\usr\bin
   - pacman -Ss gcc
-  - pacman -S mingw64
   - ruby --version
   - gem --version
+  - gcc --version
   - gem install bundler --quiet --no-document
   - bundler --version
   - bundle install
