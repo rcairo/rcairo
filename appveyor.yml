@@ -9,16 +9,16 @@ notifications:
 
 environment:
   matrix:
-    - ruby_version: "21"
-      mingw_arch: "32"
-    - ruby_version: "21-x64"
-      mingw_arch: "64"
-    - ruby_version: "22"
-      mingw_arch: "32"
-    - ruby_version: "22-x64"
-      mingw_arch: "64"
-    - ruby_version: "23"
-      mingw_arch: "32"
+    # - ruby_version: "21"
+    #   mingw_arch: "32"
+    # - ruby_version: "21-x64"
+    #   mingw_arch: "64"
+    # - ruby_version: "22"
+    #   mingw_arch: "32"
+    # - ruby_version: "22-x64"
+    #   mingw_arch: "64"
+    # - ruby_version: "23"
+    #   mingw_arch: "32"
     - ruby_version: "23-x64"
       mingw_arch: "64"
 
@@ -26,9 +26,6 @@ install:
   - SET PATH=C:\Ruby%ruby_version%\bin;%PATH%
   - SET PATH=C:\Ruby%ruby_version%\DevKit\bin;%PATH%
   - SET PATH=C:\Ruby%ruby_version%\DevKit\mingw\bin;%PATH%
-  - dir C:\Ruby%ruby_version%
-  - dir C:\Ruby%ruby_version%\DevKit\bin
-  - dir C:\Ruby%ruby_version%\DevKit\mingw\bin
   - ruby --version
   - gem --version
   - gem install bundler --quiet --no-document
