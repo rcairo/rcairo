@@ -12,11 +12,11 @@ module CairoTestUtils
   end
 
   def only_windows
-    omit("Only for Windows platform") unless windows
+    omit("Only for Windows platform") unless windows?
   end
 
   def only_not_windows
-    omit("Only for not Windows platform") if windows
+    omit("Only for not Windows platform") if windows?
   end
 
   def windows?
