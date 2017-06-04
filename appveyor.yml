@@ -1,0 +1,33 @@
+version: "{build}"
+clone_depth: 10
+
+notifications:
+  - provider: Email
+    to:
+      - rcairo@ml.commit-email.info
+    on_build_status_changed: true
+
+environment:
+  matrix:
+    - ruby_version: "21"
+    - ruby_version: "21-x64"
+    - ruby_version: "22"
+    - ruby_version: "22-x64"
+    - ruby_version: "23"
+    - ruby_version: "23-x64"
+
+install:
+  - SET PATH=C:\Ruby%ruby_version%\bin;%PATH%
+  - SET PATH=C:\msys64\usr\bin;%PATH%
+  - ruby --version
+  - gem --version
+  - gem install bundler --quiet --no-document
+  - bundler --version
+  - bundle install
+
+build_script:
+  - bundle exec ruby extconf.rb
+  - bundle exec make
+
+test_script:
+  - bundle exec rake
