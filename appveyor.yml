@@ -19,6 +19,7 @@ environment:
 install:
   - SET PATH=C:\Ruby%ruby_version%\bin;%PATH%
   # - SET PATH=C:\msys64\usr\bin;%PATH%
+  - dir C:\msys64\usr\bin
   - ruby --version
   - gem --version
   - gem install bundler --quiet --no-document
@@ -26,6 +27,7 @@ install:
   - bundle install
 
 build_script:
+  - x86_64-w64-mingw32-gcc --version
   - bundle exec ruby extconf.rb || type ext\cairo\mkmf.log
   - bundle exec make
 
