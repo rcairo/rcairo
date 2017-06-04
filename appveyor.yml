@@ -18,12 +18,9 @@ environment:
 
 install:
   - SET PATH=C:\Ruby%ruby_version%\bin;%PATH%
-  - SET PATH=C:\msys64\usr\bin;%PATH%
-  - dir C:\msys64\usr\bin
-  - pacman -Ss gcc
+  # - SET PATH=C:\msys64\usr\bin;%PATH%
   - ruby --version
   - gem --version
-  - gcc --version
   - gem install bundler --quiet --no-document
   - bundler --version
   - bundle install
