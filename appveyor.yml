@@ -20,6 +20,7 @@ install:
   - SET PATH=C:\Ruby%ruby_version%\bin;%PATH%
   - SET PATH=C:\Ruby%ruby_version%\DevKit\bin;%PATH%
   # - SET PATH=C:\msys64\usr\bin;%PATH%
+  - dir C:\Ruby%ruby_version%\DevKit\bin
   - dir C:\msys64\usr\bin
   - ruby --version
   - gem --version
