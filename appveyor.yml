@@ -26,8 +26,7 @@ install:
   - SET PATH=C:\Ruby%ruby_version%\bin;%PATH%
   - SET PATH=C:\Ruby%ruby_version%\DevKit\bin;%PATH%
   - SET PATH=C:\Ruby%ruby_version%\DevKit\mingw\bin;%PATH%
-  - dir C:\DevKit\bin
-  - dir C:\DevKit\mingw\bin
+  - dir C:\Ruby%ruby_version%
   - dir C:\Ruby%ruby_version%\DevKit\bin
   - dir C:\Ruby%ruby_version%\DevKit\mingw\bin
   - ruby --version
