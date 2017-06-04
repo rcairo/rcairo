@@ -11,12 +11,16 @@ module CairoTestUtils
     end
   end
 
-  def only_win32
-    omit("Only for Win32 platform") unless win32
+  def only_windows
+    omit("Only for Windows platform") unless windows
   end
 
-  def win32?
-    /cygwin|mingw|mswin32|bccwin32/.match(RUBY_PLATFORM) ? true : false
+  def only_not_windows
+    omit("Only for not Windows platform") if windows
+  end
+
+  def windows?
+    /cygwin|mingw|mswin|bccwin/ === RUBY_PLATFORM
   end
 
   def quartz?

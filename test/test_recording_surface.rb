@@ -6,6 +6,7 @@ class RecordingSurfaceTest < Test::Unit::TestCase
   end
 
   def test_new
+    only_not_windows
     only_cairo_version(1, 12, 0)
     surface = Cairo::RecordingSurface.new(10, 20, 300, 400)
     assert_equal([0.0, 0.0, 0.0, 0.0], surface.ink_extents)
