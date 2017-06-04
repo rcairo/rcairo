@@ -26,7 +26,7 @@ install:
   - bundle install
 
 build_script:
-  - bundle exec ruby extconf.rb
+  - bundle exec ruby extconf.rb || type ext\cairo\mkmf.log
   - bundle exec make
 
 test_script:
