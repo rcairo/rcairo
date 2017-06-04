@@ -9,11 +9,11 @@ notifications:
 
 environment:
   matrix:
-    # - ruby_version: "21"
-    # - ruby_version: "21-x64"
-    # - ruby_version: "22"
-    # - ruby_version: "22-x64"
-    # - ruby_version: "23"
+    - ruby_version: "21"
+    - ruby_version: "21-x64"
+    - ruby_version: "22"
+    - ruby_version: "22-x64"
+    - ruby_version: "23"
     - ruby_version: "23-x64"
 
 install:
@@ -27,8 +27,7 @@ install:
   - bundle install
 
 build_script:
-  - x86_64-w64-mingw32-gcc --version
-  - bundle exec ruby extconf.rb || type ext\cairo\mkmf.log
+  - bundle exec ruby extconf.rb
   - bundle exec make
 
 test_script:
