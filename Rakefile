@@ -458,7 +458,7 @@ windows_task = WindowsTask.new(spec) do |task|
     },
     {
       :name => "libpng",
-      :version => "1.6.29",
+      :version => "1.6.32",
       :download_base_url => "https://downloads.sourceforge.net/project/libpng/libpng16/1.6.29",
       :windows => {
         :built_file => "bin/libpng16-16.dll",
@@ -466,8 +466,8 @@ windows_task = WindowsTask.new(spec) do |task|
     },
     {
       :name => "freetype",
-      :version => "2.7.1",
-      :download_base_url => "https://downloads.sourceforge.net/project/freetype/freetype2/2.7.1",
+      :version => "2.8.1",
+      :download_base_url => "https://downloads.sourceforge.net/project/freetype/freetype2/2.8.1",
       :compression_method => "bz2",
       :windows => {
         :built_file => "bin/libfreetype-7.dll",
@@ -475,7 +475,7 @@ windows_task = WindowsTask.new(spec) do |task|
     },
     {
       :name => "libxml2",
-      :version => "2.9.4",
+      :version => "2.9.6",
       :download_base_url => "ftp://xmlsoft.org/libxml2",
       :compression_method => "gz",
       :windows => {
@@ -487,7 +487,7 @@ windows_task = WindowsTask.new(spec) do |task|
     },
     {
       :name => "fontconfig",
-      :version => "2.12.1",
+      :version => "2.12.4",
       :download_base_url => "https://www.freedesktop.org/software/fontconfig/release",
       :compression_method => "bz2",
       :windows => {
@@ -509,7 +509,7 @@ windows_task = WindowsTask.new(spec) do |task|
     },
     {
       :name => "cairo",
-      :version => "1.15.4",
+      :version => "1.15.8",
       :download_site => :cairo_snapshots,
       :windows => {
         :built_file => "bin/libcairo-2.dll",
