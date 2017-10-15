@@ -444,6 +444,8 @@ end
 
 windows_task = WindowsTask.new(spec) do |task|
   zlib_version = "1.2.11"
+  libpng_version = "1.6.32"
+  freetype_version = "2.8.1"
   task.packages = [
     {
       # We should use the same version as Ruby Installer.
@@ -458,16 +460,16 @@ windows_task = WindowsTask.new(spec) do |task|
     },
     {
       :name => "libpng",
-      :version => "1.6.32",
-      :download_base_url => "https://downloads.sourceforge.net/project/libpng/libpng16/1.6.29",
+      :version => libpng_version,
+      :download_base_url => "https://downloads.sourceforge.net/project/libpng/libpng16/#{libpng_version}",
       :windows => {
         :built_file => "bin/libpng16-16.dll",
       },
     },
     {
       :name => "freetype",
-      :version => "2.8.1",
-      :download_base_url => "https://downloads.sourceforge.net/project/freetype/freetype2/2.8.1",
+      :version => freetype_version,
+      :download_base_url => "https://downloads.sourceforge.net/project/freetype/freetype2/#{freetype_version}",
       :compression_method => "bz2",
       :windows => {
         :built_file => "bin/libfreetype-7.dll",
