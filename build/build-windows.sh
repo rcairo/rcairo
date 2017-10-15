@@ -35,6 +35,7 @@ echo ttf-mscorefonts-installer \
 run \
   sudo apt install -y -V \
   git \
+  gperf \
   ruby \
   ruby-dev \
   build-essential \
