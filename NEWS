@@ -1,3 +1,23 @@
+Release 1.15.10 (2017-10-15) Kouhei Sutou <kou@cozmixng.org>
+============================================================
+
+Improvements
+------------
+
+  * Windows: Ensure setting PATH environment variable.
+
+  * Added cairo 1.15.8 support.
+
+  * Windows: Updated bundled libraries:
+
+    * libpng: 1.6.29 -> 1.6.32
+
+    * freetype: 2.9.4 -> 2.9.6
+
+    * fontconfig: 2.12.1 -> 2.12.4
+
+    * cairo: 1.15.4 -> 1.15.8
+
 Release 1.15.9 (2017-06-03) Kouhei Sutou <kou@cozmixng.org>
 ===========================================================
 
