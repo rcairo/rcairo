@@ -25,11 +25,11 @@ class PDFSurfaceTest < Test::Unit::TestCase
       end
       id = surface.add_outline(Cairo::PDFOutline::ROOT,
                                "top-level",
-                               "destination",
+                               "dest='destination'",
                                Cairo::PDFOutlineFlags::OPEN)
       sub_id = surface.add_outline(sub_id,
                                    "sub",
-                                   "destination",
+                                   "dest='destination'",
                                    Cairo::PDFOutlineFlags::OPEN)
       assert_equal(2, sub_id)
     end
