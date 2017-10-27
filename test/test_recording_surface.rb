@@ -15,6 +15,10 @@ class RecordingSurfaceTest < Test::Unit::TestCase
       context.line_to(80, 100)
       context.stroke
     end
-    assert_equal([10.0, 20.0, 61.0, 61.0], surface.ink_extents)
+    if Cairo.satisfied_version?(1, 15)
+      assert_equal([14.0, 29.0, 67.0, 72.0], surface.ink_extents)
+    else
+      assert_equal([10.0, 20.0, 61.0, 61.0], surface.ink_extents)
+    end
   end
 end
