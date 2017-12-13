@@ -4,8 +4,9 @@ notifications:
 rvm:
   - 2.1
   - 2.2
-  - 2.3.3
-  - 2.4.0
+  - 2.3.4
+  - 2.4.2
+  - ruby-head
 before_install:
   - gem update bundler
   - gem install cairo
