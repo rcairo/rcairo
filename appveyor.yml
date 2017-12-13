@@ -28,7 +28,6 @@ install:
   - SET PATH=C:\Ruby%ruby_version%\DevKit\mingw\bin;%PATH%
   - ruby --version
   - gem --version
-  - gem install bundler --quiet --no-document
   - bundler --version
   - bundle install
 
