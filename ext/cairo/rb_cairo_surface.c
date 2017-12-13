@@ -2201,7 +2201,7 @@ Init_cairo_surface (void)
                     cr_svg_surface_initialize, -1);
   rb_define_method (rb_cCairo_SVGSurface, "restrict_to_version",
                     cr_svg_surface_restrict_to_version, 1);
-#  if CAIRO_CHECK_VERSION(1, 5, 10)
+#  if CAIRO_CHECK_VERSION(1, 15, 10)
   rb_define_method (rb_cCairo_SVGSurface, "document_unit",
                     cr_svg_surface_get_document_unit, 0);
   rb_define_method (rb_cCairo_SVGSurface, "set_document_unit",
