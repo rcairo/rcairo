@@ -677,11 +677,15 @@ Init_cairo_constants (void)
   rb_define_const (rb_mCairo_MimeType, "JBIG2_GLOBAL_ID",
                    rb_str_new2 (CAIRO_MIME_TYPE_JBIG2_GLOBAL_ID));
 #endif
-#if CAIRO_CHECK_VERSION(1, 15, 9)
+#if CAIRO_CHECK_VERSION(1, 15, 10)
   rb_define_const (rb_mCairo_MimeType, "CCITT_FAX",
                    rb_str_new_cstr (CAIRO_MIME_TYPE_CCITT_FAX));
   rb_define_const (rb_mCairo_MimeType, "CCITT_FAX_PARAMS",
                    rb_str_new_cstr (CAIRO_MIME_TYPE_CCITT_FAX_PARAMS));
+  rb_define_const (rb_mCairo_MimeType, "EPS",
+                   rb_str_new_cstr (CAIRO_MIME_TYPE_EPS));
+  rb_define_const (rb_mCairo_MimeType, "EPS_PARAMS",
+                   rb_str_new_cstr (CAIRO_MIME_TYPE_EPS_PARAMS));
 #endif
 
 #if CAIRO_CHECK_VERSION(1, 10, 0)
