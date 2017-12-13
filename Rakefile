@@ -444,7 +444,7 @@ end
 
 windows_task = WindowsTask.new(spec) do |task|
   zlib_version = "1.2.11"
-  libpng_version = "1.6.32"
+  libpng_version = "1.6.34"
   freetype_version = "2.8.1"
   task.packages = [
     {
@@ -477,7 +477,7 @@ windows_task = WindowsTask.new(spec) do |task|
     },
     {
       :name => "libxml2",
-      :version => "2.9.6",
+      :version => "2.9.7",
       :download_base_url => "ftp://xmlsoft.org/libxml2",
       :compression_method => "gz",
       :windows => {
@@ -511,7 +511,7 @@ windows_task = WindowsTask.new(spec) do |task|
     },
     {
       :name => "cairo",
-      :version => "1.15.8",
+      :version => "1.15.10",
       :download_site => :cairo_snapshots,
       :windows => {
         :built_file => "bin/libcairo-2.dll",
