@@ -1504,6 +1504,27 @@ cr_svg_surface_restrict_to_version (VALUE self, VALUE version)
   rb_cairo_surface_check_status (_SELF);
   return Qnil;
 }
+
+#  if CAIRO_CHECK_VERSION(1, 5, 10)
+static VALUE
+cr_svg_surface_get_document_unit (VALUE self)
+{
+  cairo_svg_unit_t unit;
+  unit = cairo_svg_surface_get_document_unit (_SELF);
+  rb_cairo_surface_check_status (_SELF);
+  return INT2NUM (unit);
+}
+
+static VALUE
+cr_svg_surface_set_document_unit (VALUE self, VALUE rb_unit)
+{
+  cairo_svg_unit_t unit;
+  unit = RVAL2CRSVGUNIT (rb_unit);
+  cairo_svg_surface_set_document_unit (_SELF, unit);
+  rb_cairo_surface_check_status (_SELF);
+  return Qnil;
+}
+#  endif
 #endif
 
 #ifdef RB_CAIRO_HAS_WIN32_PRINTING_SURFACE
@@ -2180,6 +2201,12 @@ Init_cairo_surface (void)
                     cr_svg_surface_initialize, -1);
   rb_define_method (rb_cCairo_SVGSurface, "restrict_to_version",
                     cr_svg_surface_restrict_to_version, 1);
+#  if CAIRO_CHECK_VERSION(1, 5, 10)
+  rb_define_method (rb_cCairo_SVGSurface, "document_unit",
+                    cr_svg_surface_get_document_unit, 0);
+  rb_define_method (rb_cCairo_SVGSurface, "set_document_unit",
+                    cr_svg_surface_set_document_unit, 1);
+#  endif
 
   RB_CAIRO_DEF_SETTERS (rb_cCairo_SVGSurface);
 #endif

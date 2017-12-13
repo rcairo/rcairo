@@ -41,6 +41,7 @@ VALUE rb_mCairo_MimeType = Qnil;
 VALUE rb_mCairo_RegionOverlap = Qnil;
 VALUE rb_mCairo_PDFOutlineFlags = Qnil;
 VALUE rb_mCairo_PDFMetadata = Qnil;
+VALUE rb_mCairo_SVGUnit = Qnil;
 
 #define CAIRO_OPERATOR_MIN CAIRO_OPERATOR_CLEAR
 #if CAIRO_CHECK_VERSION(1, 10, 0)
@@ -138,6 +139,9 @@ VALUE rb_mCairo_PDFMetadata = Qnil;
 #define CAIRO_PDF_METADATA_MIN CAIRO_PDF_METADATA_TITLE
 #define CAIRO_PDF_METADATA_MAX CAIRO_PDF_METADATA_MOD_DATE
 
+#define CAIRO_SVG_UNIT_MIN CAIRO_SVG_UNIT_USER
+#define CAIRO_SVG_UNIT_MAX CAIRO_SVG_UNIT_PERCENT
+
 #define DEFINE_RVAL2ENUM(name, const_name)                      \
 cairo_ ## name ## _t                                            \
 rb_cairo_ ## name ## _from_ruby_object (VALUE rb_ ## name)      \
@@ -210,6 +214,10 @@ DEFINE_RVAL2ENUM(region_overlap, REGION_OVERLAP)
 #if CAIRO_CHECK_VERSION(1, 15, 4)
 DEFINE_RVAL2ENUM(pdf_outline_flags, PDF_OUTLINE_FLAGS)
 DEFINE_RVAL2ENUM(pdf_metadata, PDF_METADATA)
+#endif
+
+#if CAIRO_CHECK_VERSION(1, 15, 10)
+DEFINE_RVAL2ENUM(svg_unit, SVG_UNIT)
 #endif
 
 #if defined(RB_CAIRO_PLATFORM_WIN32) && !defined(PS_LEVEL_ENUM_DEFINED)
@@ -734,5 +742,30 @@ Init_cairo_constants (void)
                    INT2NUM (CAIRO_PDF_METADATA_CREATE_DATE));
   rb_define_const (rb_mCairo_PDFMetadata, "MOD_DATE",
                    INT2NUM (CAIRO_PDF_METADATA_MOD_DATE));
+#endif
+
+#if CAIRO_CHECK_VERSION(1, 15, 10)
+  rb_mCairo_SVGUnit =
+    rb_define_module_under (rb_mCairo, "SVGUnit");
+  rb_define_const (rb_mCairo_SVGUnit, "USER",
+                   INT2NUM (CAIRO_SVG_UNIT_USER));
+  rb_define_const (rb_mCairo_SVGUnit, "EM",
+                   INT2NUM (CAIRO_SVG_UNIT_EM));
+  rb_define_const (rb_mCairo_SVGUnit, "EX",
+                   INT2NUM (CAIRO_SVG_UNIT_EX));
+  rb_define_const (rb_mCairo_SVGUnit, "PX",
+                   INT2NUM (CAIRO_SVG_UNIT_PX));
+  rb_define_const (rb_mCairo_SVGUnit, "IN",
+                   INT2NUM (CAIRO_SVG_UNIT_IN));
+  rb_define_const (rb_mCairo_SVGUnit, "CM",
+                   INT2NUM (CAIRO_SVG_UNIT_CM));
+  rb_define_const (rb_mCairo_SVGUnit, "MM",
+                   INT2NUM (CAIRO_SVG_UNIT_MM));
+  rb_define_const (rb_mCairo_SVGUnit, "PT",
+                   INT2NUM (CAIRO_SVG_UNIT_PT));
+  rb_define_const (rb_mCairo_SVGUnit, "PC",
+                   INT2NUM (CAIRO_SVG_UNIT_PC));
+  rb_define_const (rb_mCairo_SVGUnit, "PERCENT",
+                   INT2NUM (CAIRO_SVG_UNIT_PERCENT));
 #endif
 }

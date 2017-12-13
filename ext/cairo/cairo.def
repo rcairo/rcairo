@@ -85,6 +85,10 @@ EXPORTS
     rb_mCairo_TextClusterFlag DATA
     rb_mCairo_ScriptMode      DATA
     rb_mCairo_MimeType        DATA
+    rb_mCairo_RegionOverlap   DATA
+    rb_mCairo_PDFOutlineFlags DATA
+    rb_mCairo_PDFMetadata     DATA
+    rb_mCairo_SVGUnit         DATA
 
     rb_mCairo_Color           DATA
     rb_cCairo_Color_Base      DATA
