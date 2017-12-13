@@ -1505,7 +1505,7 @@ cr_svg_surface_restrict_to_version (VALUE self, VALUE version)
   return Qnil;
 }
 
-#  if CAIRO_CHECK_VERSION(1, 5, 10)
+#  if CAIRO_CHECK_VERSION(1, 15, 10)
 static VALUE
 cr_svg_surface_get_document_unit (VALUE self)
 {
