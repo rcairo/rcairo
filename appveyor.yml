@@ -37,4 +37,5 @@ build_script:
 
 test_script:
   - SET PATH=C:\msys64\mingw%mingw_arch%\bin;%PATH%
+  - ruby -rfind -e 'Find.find(ARGV[0]) {|x| puts x}' C:\msys64\*
   - bundle exec rake
