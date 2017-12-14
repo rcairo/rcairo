@@ -37,6 +37,6 @@ build_script:
 
 test_script:
   - SET PATH=C:\msys64\mingw%mingw_arch%\bin;%PATH%
-  - dir C:\msys64\
-  - ruby -rfind -e "Find.find(ARGV[0]) {|x| puts x}" C:\msys64\
+  - dir C:\msys64\mingw%mingw_arch%\bin
+  - ruby -r cairo -e 'p Cairo::VERSION'
   - bundle exec rake
