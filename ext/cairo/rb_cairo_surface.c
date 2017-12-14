@@ -1443,7 +1443,7 @@ cr_win32_surface_initialize (int argc, VALUE *argv, VALUE self)
         format = arg2;
         width = arg3;
         height = arg4;
-        win32_hdc = NIL_P (hdc) ? NULL : (HDC) NUM2UINT (hdc);
+        win32_hdc = NIL_P (hdc) ? NULL : (HDC) (UINT_PTR) NUM2UINT (hdc);
         surface = cairo_win32_surface_create_with_ddb (win32_hdc,
                                                        RVAL2CRFORMAT (format),
                                                        NUM2INT (width),
