@@ -37,7 +37,4 @@ build_script:
 
 test_script:
   - SET PATH=C:\msys64\mingw%mingw_arch%\bin;%PATH%
-  - dir C:\msys64\mingw%mingw_arch%\bin
-  - objdump -p ext/cairo/cairo.so | grep -i dll
-  - ruby -I lib -I ext/cairo -r cairo -e 'p Cairo::VERSION'
   - bundle exec rake
