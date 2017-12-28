@@ -1,4 +1,5 @@
 require 'cairo'
+require 'poppler'
 require 'stringio'
 
 class ContextTest < Test::Unit::TestCase
@@ -106,7 +107,6 @@ class ContextTest < Test::Unit::TestCase
   sub_test_case("#tag") do
     setup do
       only_cairo_version(1, 15, 4)
-      omit("poppler 3.1.1 is required")
     end
 
     test("LINK") do
