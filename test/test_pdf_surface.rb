@@ -1,5 +1,3 @@
-require 'poppler'
-
 class PDFSurfaceTest < Test::Unit::TestCase
   include CairoTestUtils
 
@@ -135,6 +133,9 @@ class PDFSurfaceTest < Test::Unit::TestCase
     pdf = create_pdf do |surface|
       surface.set_thumbnail_size(5, 10)
     end
-    assert_equal([true, 5, 10], pdf[0].thumbnail_size)
+    thumbnail_size = pdf[0].thumbnail_size
+    # TODO: Workaround for poppler gem 3.2.1
+    thumbnail_size.shift if thumbnail_size.size == 3
+    assert_equal([5, 10], thumbnail_size)
   end
 end

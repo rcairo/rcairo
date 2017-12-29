@@ -1,5 +1,5 @@
 require 'cairo'
-#require 'poppler'
+require 'poppler'
 require 'stringio'
 require 'test/unit/notify'
 

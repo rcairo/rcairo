@@ -1,7 +1,3 @@
-require 'cairo'
-require 'poppler'
-require 'stringio'
-
 class ContextTest < Test::Unit::TestCase
   include CairoTestUtils
 
