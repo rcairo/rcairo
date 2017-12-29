@@ -1,8 +1,9 @@
+require 'poppler'
+
 class PDFSurfaceTest < Test::Unit::TestCase
   include CairoTestUtils
 
   def create_pdf
-    omit("poppler 3.1.1 is required")
     pdf = StringIO.new
     surface = Cairo::PDFSurface.new(pdf, 10, 20)
     yield(surface)
@@ -134,6 +135,6 @@ class PDFSurfaceTest < Test::Unit::TestCase
     pdf = create_pdf do |surface|
       surface.set_thumbnail_size(5, 10)
     end
-    assert_equal([5, 10], pdf[0].thumbnail_size)
+    assert_equal([true, 5, 10], pdf[0].thumbnail_size)
   end
 end
