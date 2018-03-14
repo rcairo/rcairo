@@ -1,3 +1,22 @@
+Release 1.15.12 (2018-03-14) Kouhei Sutou <kou@cozmixng.org>
+============================================================
+
+Improvements
+------------
+
+  * Re-enabled tests that need Poppler.
+    [GitHub#51][Patch by Mamoru TASAKA]
+
+  * Windows: Added Ruby 2.5 support.
+    [GitHub#52][Reported by Andy Meneely]
+
+Thanks
+------
+
+  * Mamoru TASAKA
+
+  * Andy Meneely
+
 Release 1.15.11 (2017-12-14) Kouhei Sutou <kou@cozmixng.org>
 ============================================================
 
