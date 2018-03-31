@@ -24,6 +24,7 @@ if [ ! -f ~/setup.timestamp ]; then
   run sudo systemctl stop apt-daily.service apt-daily.timer
 
   run sudo sed -i'' -e 's,http://us,http://jp,g' /etc/apt/sources.list
+  run sudo dpkg --add-architecture i386
   run sudo apt update
 
   sudo rm -rf /etc/udev/rules.d/70-persistent-net.rules
@@ -52,14 +53,18 @@ if [ ! -f ~/setup.timestamp ]; then
     flex \
     bison \
     python-dev \
-    wine1.6 \
+    wine-stable \
+    wine-binfmt \
     mingw-w64 \
-    libmount-dev
+    libmount-dev \
+    python3-pip
 
   # run sudo update-alternatives --set \
   #     ${BUILD_HOST}-gcc /usr/bin/${BUILD_HOST}-gcc-posix
   # run sudo update-alternatives --set \
   #     ${BUILD_HOST}-g++ /usr/bin/${BUILD_HOST}-g++-posix
+
+  run sudo pip3 install jsmin meson ninja
 
   run git clone file:///pkg-config/.git
   run git clone file:///native-package-installer/.git
