@@ -404,11 +404,7 @@ class WindowsTask
   end
 
   def ruby_gnome2_dir
-    if RCairoBuild.for_64bit?
-      @base_dir.parent + "ruby-gnome2.win64"
-    else
-      @base_dir.parent + "ruby-gnome2.win32"
-    end
+    @base_dir.parent + "ruby-gnome2"
   end
 
   def ruby_glib2_pkg_config_path
