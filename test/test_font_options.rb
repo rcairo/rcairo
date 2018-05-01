@@ -55,4 +55,11 @@ class FontOptionsTest < Test::Unit::TestCase
       assert_equal(:value, hash[@options.dup])
     end
   end
+
+  test "variations" do
+    only_cairo_version(1, 15, 12)
+    assert_nil(@options.variations)
+    @options.variations = "wdth=200"
+    assert_equal("wdth=200", @options.variations)
+  end
 end

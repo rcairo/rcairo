@@ -5,7 +5,7 @@
  * $Author: kou $
  * $Date: 2008-09-19 12:56:27 $
  *
- * Copyright 2005-2008 Kouhei Sutou <kou@cozmixng.org>
+ * Copyright 2005-2018 Kouhei Sutou <kou@cozmixng.org>
  *
  * This file is made available under the same terms as Ruby
  *
@@ -163,6 +163,27 @@ cr_options_get_hint_metrics (VALUE self)
   return INT2NUM (cairo_font_options_get_hint_metrics (_SELF (self)));
 }
 
+#if CAIRO_CHECK_VERSION(1, 15, 12)
+static VALUE
+cr_options_set_variations (VALUE self, VALUE variations)
+{
+  cairo_font_options_set_variations (_SELF (self),
+                                     RVAL2CSTR (variations));
+  return self;
+}
+
+static VALUE
+cr_options_get_variations (VALUE self)
+{
+  const char *variations;
+
+  variations = cairo_font_options_get_variations (_SELF (self));
+  if (!variations)
+    return Qnil;
+
+  return CSTR2RVAL (variations);
+}
+#endif
 
 void
 Init_cairo_font_options (void)
@@ -196,6 +217,12 @@ Init_cairo_font_options (void)
                     cr_options_set_hint_metrics, 1);
   rb_define_method (rb_cCairo_FontOptions, "hint_metrics",
                     cr_options_get_hint_metrics, 0);
+#if CAIRO_CHECK_VERSION(1, 15, 12)
+  rb_define_method (rb_cCairo_FontOptions, "set_variations",
+                    cr_options_set_variations, 1);
+  rb_define_method (rb_cCairo_FontOptions, "variations",
+                    cr_options_get_variations, 0);
+#endif
 
   RB_CAIRO_DEF_SETTERS (rb_cCairo_FontOptions);
 }
