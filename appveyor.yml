@@ -37,4 +37,5 @@ build_script:
 
 test_script:
   - SET PATH=C:\msys64\mingw%mingw_arch%\bin;%PATH%
+  - SET PATH=%cd%\ext\cairo;%PATH%
   - bundle exec rake
