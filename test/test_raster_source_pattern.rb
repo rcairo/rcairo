@@ -10,7 +10,7 @@ class RasterSourcePatternTest < Test::Unit::TestCase
 
   def test_acquire_and_release
     Cairo::ImageSurface.create(100, 100) do |surface|
-      Cairo::Context.new(surface) do |context|
+      Cairo::Context.create(surface) do |context|
         context.set_source(1, 1, 1)
         context.paint
 
@@ -20,7 +20,7 @@ class RasterSourcePatternTest < Test::Unit::TestCase
           called << :acquire
           red_image = target.create_similar_image(extents.width, extents.height)
           red_image.set_device_offset(extents.x, extents.y)
-          Cairo::Context.new(red_image) do |red_image_context|
+          Cairo::Context.create(red_image) do |red_image_context|
             red_image_context.set_source(1, 0, 0)
             red_image_context.paint
           end
@@ -47,7 +47,7 @@ class RasterSourcePatternTest < Test::Unit::TestCase
 
     def test_success
       Cairo::RecordingSurface.create(0, 0, 100, 100) do |surface|
-        Cairo::Context.new(surface) do |context|
+        Cairo::Context.create(surface) do |context|
           called = []
           raster_source = Cairo::RasterSourcePattern.new(100, 100)
           raster_source.snapshot do |pattern|
@@ -64,7 +64,7 @@ class RasterSourcePatternTest < Test::Unit::TestCase
 
     def test_error
       Cairo::RecordingSurface.create(0, 0, 100, 100) do |surface|
-        Cairo::Context.new(surface) do |context|
+        Cairo::Context.create(surface) do |context|
           called = []
           raster_source = Cairo::RasterSourcePattern.new(100, 100)
           raster_source.snapshot do |pattern|
@@ -93,7 +93,7 @@ class RasterSourcePatternTest < Test::Unit::TestCase
       output = StringIO.new
       device = Cairo::ScriptDevice.new(output)
       Cairo::ScriptSurface.create(device, 100, 200) do |surface|
-        Cairo::Context.new(surface) do |context|
+        Cairo::Context.create(surface) do |context|
           called = []
 
           raster_source = Cairo::RasterSourcePattern.new(100, 100)
@@ -102,7 +102,7 @@ class RasterSourcePatternTest < Test::Unit::TestCase
             red_image = target.create_similar_image(extents.width,
                                                     extents.height)
             red_image.set_device_offset(extents.x, extents.y)
-            Cairo::Context.new(red_image) do |red_image_context|
+            Cairo::Context.create(red_image) do |red_image_context|
               red_image_context.set_source(1, 0, 0)
               red_image_context.paint
             end
@@ -130,7 +130,7 @@ class RasterSourcePatternTest < Test::Unit::TestCase
       output = StringIO.new
       device = Cairo::ScriptDevice.new(output)
       Cairo::ScriptSurface.create(device, 100, 200) do |surface|
-        Cairo::Context.new(surface) do |context|
+        Cairo::Context.create(surface) do |context|
           called = []
 
           raster_source = Cairo::RasterSourcePattern.new(100, 100)

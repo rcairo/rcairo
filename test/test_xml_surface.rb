@@ -10,7 +10,7 @@ class XMLSurfaceTest < Test::Unit::TestCase
     output = StringIO.new
     device = Cairo::XMLDevice.new(output)
     surface = Cairo::XMLSurface.new(device, 100, 200)
-    Cairo::Context.new(surface) do |context|
+    Cairo::Context.create(surface) do |context|
       context.move_to(15, 30)
       context.line_to(80, 100)
       context.stroke

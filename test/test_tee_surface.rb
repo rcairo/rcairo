@@ -16,7 +16,7 @@ class TeeSurfaceTest < Test::Unit::TestCase
 
     surface = Cairo::TeeSurface.new(surface1)
     surface << surface2
-    Cairo::Context.new(surface) do |context|
+    Cairo::Context.create(surface) do |context|
       context.move_to(15, 30)
       context.line_to(80, 100)
       context.stroke

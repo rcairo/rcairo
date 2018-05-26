@@ -15,7 +15,7 @@ class ImageSurfaceTest < Test::Unit::TestCase
                                              :a1, width, height,
                                              original_surface.stride)
 
-    Cairo::Context.new(cloned_surface) do |context|
+    Cairo::Context.create(cloned_surface) do |context|
       context.set_source_rgb(255, 255, 255)
       context.scale(width, height)
       context.move_to(0, 0)

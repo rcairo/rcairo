@@ -10,7 +10,7 @@ class RecordingSurfaceTest < Test::Unit::TestCase
     only_cairo_version(1, 12, 0)
     surface = Cairo::RecordingSurface.new(10, 20, 300, 400)
     assert_equal([0.0, 0.0, 0.0, 0.0], surface.ink_extents)
-    Cairo::Context.new(surface) do |context|
+    Cairo::Context.create(surface) do |context|
       context.move_to(15, 30)
       context.line_to(80, 100)
       context.stroke

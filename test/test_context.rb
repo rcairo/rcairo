@@ -14,17 +14,17 @@ class ContextTest < Test::Unit::TestCase
     assert_equal("%%EOF\n", @output.string[-6..-1])
   end
 
-  def test_new_with_block
-    Cairo::Context.new(@surface) do |context|
+  def test_create_with_block
+    Cairo::Context.create(@surface) do |context|
       @surface.destroy
       assert_not_equal("%%EOF\n", @output.string[-6..-1])
     end
     assert_equal("%%EOF\n", @output.string[-6..-1])
   end
 
-  def test_new_with_block_and_destroy
+  def test_create_with_block_and_destroy
     assert_nothing_raised do
-      Cairo::Context.new(@surface) do |context|
+      Cairo::Context.create(@surface) do |context|
         context.destroy
       end
     end
@@ -106,7 +106,7 @@ class ContextTest < Test::Unit::TestCase
     end
 
     test("LINK") do
-      Cairo::Context.new(@surface) do |context|
+      Cairo::Context.create(@surface) do |context|
         context.tag(Cairo::Tag::LINK, "uri='http://localhost/'") do
           context.show_text("localhost")
         end

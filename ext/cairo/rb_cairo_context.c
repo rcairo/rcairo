@@ -5,7 +5,7 @@
  * $Author: kou $
  * $Date: 2008-09-26 13:52:08 $
  *
- * Copyright 2005-2016 Kouhei Sutou <kou@cozmixng.org>
+ * Copyright 2005-2018 Kouhei Sutou <kou@cozmixng.org>
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
  *
@@ -25,6 +25,7 @@
 
 VALUE rb_cCairo_Context;
 
+static ID cr_id_new;
 static ID cr_id_surface, cr_id_source;
 static ID cr_id_plus, cr_id_minus, cr_id_multi, cr_id_div;
 static cairo_user_data_key_t cr_object_holder_key;
@@ -139,6 +140,22 @@ cr_get_reference_count (VALUE self)
   reference_count = cairo_get_reference_count (cr);
 
   return UINT2NUM (reference_count);
+}
+
+static VALUE
+cr_s_create (int argc, VALUE *argv, VALUE klass)
+{
+  VALUE rb_cr;
+  rb_cr = rb_funcallv (klass, cr_id_new, argc, argv);
+  if (rb_block_given_p ())
+    {
+      return rb_ensure (rb_yield, rb_cr,
+                        cr_destroy_with_destroy_check, rb_cr);
+    }
+  else
+    {
+      return rb_cr;
+    }
 }
 
 static VALUE
@@ -1663,6 +1680,8 @@ cr_destroy_all_guarded_contexts_at_end (VALUE data)
 void
 Init_cairo_context (void)
 {
+  cr_id_new = rb_intern ("new");
+
   cr_id_surface = rb_intern ("surface");
   cr_id_source = rb_intern ("source");
 
@@ -1678,6 +1697,8 @@ Init_cairo_context (void)
 
   rb_cairo__initialize_gc_guard_holder_class (rb_cCairo_Context);
   rb_set_end_proc(cr_destroy_all_guarded_contexts_at_end, Qnil);
+
+  rb_define_singleton_method (rb_cCairo_Context, "create", cr_s_create, -1);
 
   /* For integrate other libraries such as a FFI based library. */
   rb_define_singleton_method (rb_cCairo_Context, "wrap", cr_s_wrap, 1);
