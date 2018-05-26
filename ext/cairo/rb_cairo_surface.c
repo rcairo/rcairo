@@ -236,7 +236,7 @@ rb_cairo_surface_adjust_memory_usage (cairo_surface_t *surface,
 #endif
 }
 
-static VALUE
+static void
 cr_surface_destroy_raw (cairo_surface_t *surface)
 {
   rb_cairo_surface_adjust_memory_usage (surface, CR_FALSE);
