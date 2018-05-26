@@ -2,7 +2,7 @@
 /*
  * Ruby Cairo Binding
  *
- * Copyright 2005-2017 Kouhei Sutou <kou@cozmixng.org>
+ * Copyright 2005-2018 Kouhei Sutou <kou@cozmixng.org>
  * Copyright 2014 Patrick Hanevold <patrick.hanevold@gmail.com>
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -90,6 +90,7 @@ VALUE rb_cCairo_SkiaSurface = Qnil;
 VALUE rb_cCairo_SubSurface = Qnil;
 VALUE rb_cCairo_CoglSurface = Qnil;
 
+static ID cr_id_new;
 static ID cr_id_parse;
 static ID cr_id_size;
 static ID cr_id_set_unit;
@@ -215,6 +216,67 @@ cr_surface_get_klass (cairo_surface_t *surface)
     rb_raise (rb_eArgError, "unknown source type: %d", type);
 
   return klass;
+}
+
+static void
+rb_cairo_surface_adjust_memory_usage (cairo_surface_t *surface,
+                                      cairo_bool_t new)
+{
+#ifdef HAVE_RB_GC_ADJUST_MEMORY_USAGE
+  if (cairo_surface_get_type (surface) == CAIRO_SURFACE_TYPE_IMAGE)
+    {
+      ssize_t memory_usage_diff;
+      memory_usage_diff =
+        cairo_image_surface_get_stride (surface) *
+        cairo_image_surface_get_height (surface);
+      if (!new)
+        memory_usage_diff = -memory_usage_diff;
+      rb_gc_adjust_memory_usage (memory_usage_diff);
+    }
+#endif
+}
+
+static VALUE
+cr_surface_destroy_raw (cairo_surface_t *surface)
+{
+  rb_cairo_surface_adjust_memory_usage (surface, CR_FALSE);
+  cairo_surface_destroy (surface);
+}
+
+static VALUE
+cr_surface_destroy (VALUE self)
+{
+  cairo_surface_t *surface;
+
+  surface = _SELF;
+  cr_surface_destroy_raw (surface);
+  DATA_PTR (self) = NULL;
+
+  return self;
+}
+
+static VALUE
+cr_surface_destroy_with_destroy_check (VALUE self)
+{
+  if (_SELF)
+    cr_surface_destroy (self);
+  return Qnil;
+}
+
+static VALUE
+cr_surface_create (int argc, VALUE *argv, VALUE klass)
+{
+  VALUE rb_surface;
+  rb_surface = rb_funcallv (klass, cr_id_new, argc, argv);
+  if (rb_block_given_p ())
+    {
+      return rb_ensure (rb_cairo__surface_yield_and_finish, rb_surface,
+                        cr_surface_destroy_with_destroy_check, rb_surface);
+    }
+  else
+    {
+      return rb_surface;
+    }
 }
 
 static VALUE
@@ -349,24 +411,6 @@ cr_surface_xml_supported_p (VALUE klass)
 #endif
 }
 
-static void
-rb_cairo_surface_adjust_memory_usage (cairo_surface_t *surface,
-                                      cairo_bool_t new)
-{
-#ifdef HAVE_RB_GC_ADJUST_MEMORY_USAGE
-  if (cairo_surface_get_type (surface) == CAIRO_SURFACE_TYPE_IMAGE)
-    {
-      ssize_t memory_usage_diff;
-      memory_usage_diff =
-        cairo_image_surface_get_stride (surface) *
-        cairo_image_surface_get_height (surface);
-      if (!new)
-        memory_usage_diff = -memory_usage_diff;
-      rb_gc_adjust_memory_usage (memory_usage_diff);
-    }
-#endif
-}
-
 /* constructor/de-constructor */
 cairo_surface_t *
 rb_cairo_surface_from_ruby_object (VALUE obj)
@@ -402,9 +446,7 @@ cr_surface_free (void *ptr)
   if (!surface)
     return;
 
-  rb_cairo_surface_adjust_memory_usage (surface, CR_FALSE);
-
-  cairo_surface_destroy (surface);
+  cr_surface_destroy_raw (surface);
 }
 
 VALUE
@@ -454,18 +496,6 @@ cr_surface_initialize (int argc, VALUE *argv, VALUE self)
 
 /* Surface manipulation */
 static VALUE
-cr_surface_destroy (VALUE self)
-{
-  cairo_surface_t *surface;
-
-  surface = _SELF;
-  cairo_surface_destroy (surface);
-  DATA_PTR (self) = NULL;
-
-  return self;
-}
-
-static VALUE
 cr_surface_get_reference_count (VALUE self)
 {
   cairo_surface_t *surface;
@@ -497,20 +527,25 @@ cr_surface_finish (VALUE self)
   return self;
 }
 
-void
+VALUE
 rb_cairo__surface_yield_and_finish (VALUE self)
 {
+  VALUE rb_result;
   cairo_surface_t *surface;
 
-  rb_yield (self);
+  rb_result = rb_yield (self);
 
   surface = _SELF;
+  if (!surface)
+    return rb_result;
   if (cairo_surface_status (surface) != CAIRO_STATUS_SUCCESS)
-    return;
+    return rb_result;
   if (cairo_surface_get_user_data (surface, &cr_finished_key))
-    return;
+    return rb_result;
 
   cr_surface_finish (self);
+
+  return rb_result;
 }
 
 static VALUE
@@ -632,14 +667,6 @@ cr_surface_unmap_image (VALUE self, VALUE rb_mapped_image)
 #endif
 
 #if CAIRO_CHECK_VERSION(1, 10, 0)
-static VALUE
-cr_surface_destroy_with_destroy_check (VALUE self)
-{
-  if (DATA_PTR (self))
-    cr_surface_destroy (self);
-  return Qnil;
-}
-
 static VALUE
 cr_surface_create_sub_rectangle_surface (VALUE self, VALUE x, VALUE y,
                                          VALUE width, VALUE height)
@@ -1967,6 +1994,7 @@ cr_finish_all_guarded_surfaces_at_end (VALUE data)
 void
 Init_cairo_surface (void)
 {
+  cr_id_new = rb_intern ("new");
   cr_id_parse = rb_intern ("parse");
   cr_id_size = rb_intern ("size");
   cr_id_set_unit = rb_intern ("unit=");
@@ -1982,6 +2010,8 @@ Init_cairo_surface (void)
   rb_cairo__initialize_gc_guard_holder_class (rb_cCairo_Surface);
   rb_set_end_proc(cr_finish_all_guarded_surfaces_at_end, Qnil);
 
+  rb_define_singleton_method (rb_cCairo_Surface, "create",
+                              cr_surface_create, -1);
   rb_define_singleton_method (rb_cCairo_Surface, "image_supported?",
                               cr_surface_image_supported_p, 0);
   rb_define_singleton_method (rb_cCairo_Surface, "pdf_supported?",

@@ -9,7 +9,7 @@ class RasterSourcePatternTest < Test::Unit::TestCase
   end
 
   def test_acquire_and_release
-    Cairo::ImageSurface.new(100, 100) do |surface|
+    Cairo::ImageSurface.create(100, 100) do |surface|
       Cairo::Context.new(surface) do |context|
         context.set_source(1, 1, 1)
         context.paint
@@ -46,7 +46,7 @@ class RasterSourcePatternTest < Test::Unit::TestCase
     end
 
     def test_success
-      Cairo::RecordingSurface.new(0, 0, 100, 100) do |surface|
+      Cairo::RecordingSurface.create(0, 0, 100, 100) do |surface|
         Cairo::Context.new(surface) do |context|
           called = []
           raster_source = Cairo::RasterSourcePattern.new(100, 100)
@@ -63,7 +63,7 @@ class RasterSourcePatternTest < Test::Unit::TestCase
     end
 
     def test_error
-      Cairo::RecordingSurface.new(0, 0, 100, 100) do |surface|
+      Cairo::RecordingSurface.create(0, 0, 100, 100) do |surface|
         Cairo::Context.new(surface) do |context|
           called = []
           raster_source = Cairo::RasterSourcePattern.new(100, 100)
@@ -92,7 +92,7 @@ class RasterSourcePatternTest < Test::Unit::TestCase
     def test_success
       output = StringIO.new
       device = Cairo::ScriptDevice.new(output)
-      Cairo::ScriptSurface.new(device, 100, 200) do |surface|
+      Cairo::ScriptSurface.create(device, 100, 200) do |surface|
         Cairo::Context.new(surface) do |context|
           called = []
 
@@ -129,7 +129,7 @@ class RasterSourcePatternTest < Test::Unit::TestCase
     def test_error
       output = StringIO.new
       device = Cairo::ScriptDevice.new(output)
-      Cairo::ScriptSurface.new(device, 100, 200) do |surface|
+      Cairo::ScriptSurface.create(device, 100, 200) do |surface|
         Cairo::Context.new(surface) do |context|
           called = []
 

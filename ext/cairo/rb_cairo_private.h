@@ -5,7 +5,7 @@
  * $Author: kou $
  * $Date: 2008-08-17 07:21:42 $
  *
- * Copyright 2005-2014 Kouhei Sutou <kou@cozmixng.org>
+ * Copyright 2005-2018 Kouhei Sutou <kou@cozmixng.org>
  *
  * This file is made available under the same terms as Ruby
  *
@@ -126,6 +126,6 @@ VALUE rb_cairo__invoke_callback (cr_callback_func_t func, VALUE user_data);
 
 extern VALUE rb_cairo__cFFIPointer;
 
-void rb_cairo__surface_yield_and_finish (VALUE self);
+VALUE rb_cairo__surface_yield_and_finish (VALUE self);
 
 #endif

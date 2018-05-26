@@ -12,17 +12,17 @@ class SurfaceTest < Test::Unit::TestCase
     assert_equal("%%EOF\n", output.string[-6..-1])
   end
 
-  def test_new_with_block
+  def test_create_with_block
     output = StringIO.new
-    Cairo::PDFSurface.new(output, 10, 10) do |surface|
+    Cairo::PDFSurface.create(output, 10, 10) do |surface|
       assert_not_equal("%%EOF\n", output.string[-6..-1])
     end
     assert_equal("%%EOF\n", output.string[-6..-1])
   end
 
-  def test_new_with_block_and_finish
+  def test_create_with_block_and_finish
     assert_nothing_raised do
-      Cairo::PDFSurface.new(StringIO.new, 10, 10) do |surface|
+      Cairo::PDFSurface.create(StringIO.new, 10, 10) do |surface|
         surface.finish
       end
     end
