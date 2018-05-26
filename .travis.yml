@@ -1,6 +1,7 @@
 notifications:
   recipients:
     - rcairo@ml.commit-email.info
+sudo: required
 rvm:
   - 2.1
   - 2.2
