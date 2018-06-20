@@ -54,6 +54,8 @@ Rake::ExtensionTask.new("cairo", spec) do |ext|
   ext.cross_compile = true
   ext.cross_compiling do |_spec|
     if /mingw|mswin/ =~ _spec.platform.to_s
+      _spec.metadata.delete("msys2_mingw_dependencies")
+
       binary_files = []
       Find.find(binary_dir) do |name|
         next unless File.file?(name)
