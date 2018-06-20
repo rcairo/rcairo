@@ -42,4 +42,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency("rake-compiler")
   s.add_development_dependency("packnga")
   s.add_development_dependency("poppler", ">= 3.1.1")
+
+  s.metadata["msys2_mingw_dependencies"] = "cairo"
 end
