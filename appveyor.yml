@@ -31,8 +31,8 @@ install:
   - bundle install
 
 build_script:
-  - bundle exec ruby extconf.rb
+  - bundle exec ruby -rdevkit extconf.rb
   - bundle exec make
 
 test_script:
-  - bundle exec rake
+  - bundle exec ruby -rdevkit -S rake
