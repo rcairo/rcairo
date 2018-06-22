@@ -19,13 +19,12 @@ environment:
     #   mingw_arch: "64"
     # - ruby_version: "23"
     #   mingw_arch: "32"
-    - ruby_version: "23-x64"
-      mingw_arch: "64"
+    # - ruby_version: "23-x64"
+    #   mingw_arch: "64"
+    - ruby_version: "25-x64"
 
 install:
   - SET PATH=C:\Ruby%ruby_version%\bin;%PATH%
-  - SET PATH=C:\Ruby%ruby_version%\DevKit\bin;%PATH%
-  - SET PATH=C:\Ruby%ruby_version%\DevKit\mingw\bin;%PATH%
   - ruby --version
   - gem --version
   - bundler --version
@@ -36,7 +35,4 @@ build_script:
   - bundle exec make
 
 test_script:
-  - SET PATH=C:\msys64\mingw%mingw_arch%\bin;%PATH%
-  - SET PATH=%cd%\ext\cairo;%PATH%
-  - echo %PATH%
   - bundle exec rake
