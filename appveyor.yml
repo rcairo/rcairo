@@ -24,7 +24,6 @@ environment:
     - ruby_version: "25-x64"
 
 install:
-  - set PATH=C:\msys64\usr\bin;%PATH%
   - SET PATH=C:\Ruby%ruby_version%\bin;%PATH%
   - ruby --version
   - gem --version
@@ -33,7 +32,7 @@ install:
 
 build_script:
   - bundle exec ruby -rdevkit extconf.rb
-  - bundle exec make
+  - bundle exec ruby -rdevkit -e 'system("make")'
 
 test_script:
   - bundle exec ruby -rdevkit -S rake
