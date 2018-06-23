@@ -28,7 +28,7 @@ install:
   - ruby --version
   - gem --version
   - bundler --version
-  - ridk exec pacman -Sy mingw-w64-x86_64-poppler
+  - ridk exec pacman -S --noconfirm mingw-w64-x86_64-poppler
   - bundle lock --add-platform ruby --remove-platform x64-mingw32
   - bundle install
 
