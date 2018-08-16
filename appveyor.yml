@@ -15,6 +15,7 @@ install:
   - ruby --version
   - gem --version
   - bundler --version
+  - ridk exec pacman -S --noconfirm mingw-w64-x86_64-poppler
   - bundle config --local force_ruby_platform true
   - gem build cairo.gemspec
   - gem install *.gem
