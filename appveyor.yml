@@ -7,18 +7,7 @@ notifications:
 
 environment:
   matrix:
-    # - ruby_version: "21"
-    #   mingw_arch: "32"
-    # - ruby_version: "21-x64"
-    #   mingw_arch: "64"
-    # - ruby_version: "22"
-    #   mingw_arch: "32"
-    # - ruby_version: "22-x64"
-    #   mingw_arch: "64"
-    # - ruby_version: "23"
-    #   mingw_arch: "32"
-    # - ruby_version: "23-x64"
-    #   mingw_arch: "64"
+    - ruby_version: "24-x64"
     - ruby_version: "25-x64"
 
 install:
