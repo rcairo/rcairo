@@ -23,7 +23,7 @@ Gem::Specification.new do |s|
   s.email = ["kou@cozmixng.org"]
   s.summary = "Ruby bindings for cairo"
   s.description = "Ruby bindings for cairo"
-  s.homepage = "http://cairographics.org/rcairo"
+  s.homepage = "https://rcairo.github.io/"
   s.licenses = ["Ruby"]
   s.require_paths = ["lib"]
   s.extensions = ["ext/cairo/extconf.rb"]
