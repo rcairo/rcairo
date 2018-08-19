@@ -24,4 +24,4 @@ build_script:
   - bundle install
 
 test_script:
-  - bundle exec test/run-test.rb
+  - bundle exec ruby test/run-test.rb
