@@ -8,12 +8,12 @@ rcairo
 
 Ruby bindings for cairo // cairo extension for Ruby
 
-http://cairographics.org/
+https://cairographics.org/
 
 == Dependencies
 
-* ruby >= 1.9.3 (2.2 also supported!)
-* cairo >= 1.2.0 (1.12.0 also supported!)
+* ruby >= 2.2.1
+* cairo >= 1.2.0
 
 == Install
 
@@ -27,56 +27,27 @@ This way is recommended.
 
 For experimental users.
 
-Download rcairo-X.Y.Z.tar.gz from http://cairographics.org/releases/
+Add the following to your Gemfile:
 
-Extracting:
-  % tar xvzf rcairo-X.Y.Z.tar.gz
+  gem "cairo", github: "rcairo/rcairo"
 
-Compiling:
-  % cd rcairo-X.Y.Z
-  % ruby extconf.rb    # to check for dependencies and create Makefiles
-  % make               # to compile
+Then run the following command:
 
-  # make install       # to install the cairo extension.
-                       # The samples in the samples folder should be able
-                       # to run before installation except text-on-path.rb
-                       # and text2.rb. They uses Ruby/Pango with rcairo
-                       # support. So you need to install rcairo and build
-                       # Ruby/Pango with it before you run them.
-
-Options to extconf.rb:
-
-  * --without-vendor-override: Use system libraries instead of those found in
-                               vendor/local for compiling
-
-== Windows
-
-cairo-X.Y.Z-x86-mingw32.gem includes cairo related binaries.
-
-* cairo related binaries:
-  http://ftp.gnome.org/pub/gnome/binaries/win32/dependencies/
-
-  * cairo-X.Y.Z-a_win32.zip
-  * cairo-dev-X.Y.Z-a_win32.zip
-  * libpng-X.Y.Z-a_win32.zip
-  * zlib-X.Y.Z-a_win32.zip
-  * expat_X.Y.Z-a_win32.zip
-  * fontconfig_X.Y.Z-a_win32.zip
-  * freetype_X.Y.Z-a_win32.zip
+  % bundle install
 
 == Documents
 
 * Reference manual:
-  http://rcairo.github.io/doc/
+  https://rcairo.github.io/doc/
 * Repository of the reference manual:
-  http://github.com/rcairo/doc
+  https://github.com/rcairo/doc
 * An article for rcairo on Rubyst Magazine a.k.a. RubiMa (in Japanese):
-  http://jp.rubyist.net/magazine/?0019-cairo
+  https://magazine.rubyist.net/articles/0019/0019-cairo.html
 
 == Source
 
 There is the rcairo repository at GitHub:
-http://github.com/rcairo/rcairo
+https://github.com/rcairo/rcairo
 
 == Mailing list
 
