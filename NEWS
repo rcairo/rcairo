@@ -1,3 +1,27 @@
+Release 1.15.14 (2018-08-20) Kouhei Sutou <kou@cozmixng.org>
+============================================================
+
+Improvements
+------------
+
+  * Added Cairo::Surface.create {}. Cairo::Surface.new {} is deprecated.
+
+  * Added Cairo::Context.create {}. Cairo::Context.new {} is deprecated.
+
+  * Windows: Added support for installing a normal gem (not fat gem)
+    by "gem install --platform ruby". If you use Bundler, use "bundle
+    config --local force_ruby_platform true" and "bundle exec ruby -rdevkit".
+
+  * Changed to use SPDX license ID in gemspec.
+
+Fixes
+-----
+
+  * Fixed a bug that CRFONTOPTIOSN2RVAL() doesn't copy the target
+    options.
+    * Other CR*2RVAL() copy or refer the target objects. So
+      CRFONTOPTIONS2RVAL() must copy for consistency.
+
 Release 1.15.13 (2018-05-01) Kouhei Sutou <kou@cozmixng.org>
 ============================================================
 
