@@ -50,8 +50,11 @@ rb_cairo_font_options_to_ruby_object (cairo_font_options_t *options)
 {
   if (options)
     {
+      cairo_font_options_t *copied_options;
+      copied_options = cairo_font_options_copy (options);
+      cr_options_check_status (copied_options);
       return Data_Wrap_Struct (rb_cCairo_FontOptions, NULL,
-                               cr_options_free, options);
+                               cr_options_free, copied_options);
     }
   else
     {
@@ -79,11 +82,7 @@ cr_options_create (VALUE self)
 static VALUE
 cr_options_copy (VALUE self)
 {
-  cairo_font_options_t *options;
-
-  options = cairo_font_options_copy (_SELF (self));
-  cr_options_check_status (options);
-  return CRFONTOPTIONS2RVAL (options);
+  return CRFONTOPTIONS2RVAL (_SELF (self));
 }
 
 static VALUE

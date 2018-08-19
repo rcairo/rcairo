@@ -809,11 +809,22 @@ cr_surface_supported_mime_type_p (VALUE self, VALUE rb_mime_type)
 static VALUE
 cr_surface_get_font_options (VALUE self)
 {
-  cairo_font_options_t *options = cairo_font_options_create();
+  cairo_font_options_t *options;
+  VALUE rb_options;
+
+  options = cairo_font_options_create ();
+  rb_cairo_check_status (cairo_font_options_status (options));
+
+  /* TODO: Use rb_ensure() */
+  rb_options = CRFONTOPTIONS2RVAL (options);
+  cairo_font_options_destroy (options);
+
+  options = RVAL2CRFONTOPTIONS (rb_options);
   cairo_surface_get_font_options (_SELF, options);
   rb_cairo_surface_check_status (_SELF);
   rb_cairo_check_status (cairo_font_options_status (options));
-  return CRFONTOPTIONS2RVAL (options);
+
+  return rb_options;
 }
 
 static VALUE
