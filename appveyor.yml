@@ -17,13 +17,11 @@ install:
   - bundler --version
   - ridk exec pacman -Syu --noconfirm
   - bundle config --local force_ruby_platform true
+
+build_script:
   - gem build cairo.gemspec
   - gem install *.gem
   - bundle install
 
-build_script:
-  - bundle exec ruby -rdevkit extconf.rb
-  - ridk exec make
-
 test_script:
-  - bundle exec rake
+  - bundle exec test/run-test.rb
