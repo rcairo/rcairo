@@ -1,5 +1,5 @@
 class ContextTest < Test::Unit::TestCase
-  include CairoTestUtils
+  include Helper
 
   def setup
     @output = StringIO.new

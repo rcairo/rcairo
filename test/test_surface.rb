@@ -2,7 +2,7 @@ require 'cairo'
 require 'stringio'
 
 class SurfaceTest < Test::Unit::TestCase
-  include CairoTestUtils
+  include Helper
 
   def test_new
     output = StringIO.new

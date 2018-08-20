@@ -2,7 +2,7 @@ require 'cairo'
 require 'stringio'
 
 class ScaledFontTest < Test::Unit::TestCase
-  include CairoTestUtils
+  include Helper
 
   def test_scale_matrix
     only_cairo_version(1, 7, 2)

@@ -1,7 +1,7 @@
 require 'cairo'
 
 class FontExtentsTest < Test::Unit::TestCase
-  include CairoTestUtils
+  include Helper
 
   def test_new
     extents = Cairo::FontExtents.new

@@ -2,7 +2,7 @@ require 'cairo'
 require 'stringio'
 
 class ScriptDeviceTest < Test::Unit::TestCase
-  include CairoTestUtils
+  include Helper
 
   def setup
     only_device("Script")

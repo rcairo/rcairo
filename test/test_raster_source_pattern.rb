@@ -2,7 +2,7 @@ require "cairo"
 require "tempfile"
 
 class RasterSourcePatternTest < Test::Unit::TestCase
-  include CairoTestUtils
+  include Helper
 
   def setup
     only_pattern("RasterSource")

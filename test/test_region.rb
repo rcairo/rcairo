@@ -1,5 +1,5 @@
 class RegionTest < Test::Unit::TestCase
-  include CairoTestUtils
+  include Helper
 
   def setup
     only_cairo_version(1, 10, 0)

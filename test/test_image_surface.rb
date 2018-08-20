@@ -1,7 +1,7 @@
 require 'cairo'
 
 class ImageSurfaceTest < Test::Unit::TestCase
-  include CairoTestUtils
+  include Helper
 
   def test_cloned_data
     width = 10

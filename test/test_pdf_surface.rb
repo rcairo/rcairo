@@ -1,5 +1,5 @@
 class PDFSurfaceTest < Test::Unit::TestCase
-  include CairoTestUtils
+  include Helper
 
   def create_pdf
     pdf = StringIO.new

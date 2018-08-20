@@ -1,7 +1,7 @@
 require 'cairo'
 
 class TextClusterTest < Test::Unit::TestCase
-  include CairoTestUtils
+  include Helper
 
   def test_new
     only_cairo_version(1, 7, 2)

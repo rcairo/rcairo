@@ -1,5 +1,5 @@
 class ScriptSurfaceTest < Test::Unit::TestCase
-  include CairoTestUtils
+  include Helper
 
   def setup
     only_surface("Script")

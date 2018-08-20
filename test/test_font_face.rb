@@ -1,7 +1,7 @@
 require 'cairo'
 
 class FontFaceTest < Test::Unit::TestCase
-  include CairoTestUtils
+  include Helper
 
   sub_test_case("FreeTypeFontFace") do
     setup do

@@ -17,8 +17,7 @@ $LOAD_PATH.unshift(base_dir)
 $LOAD_PATH.unshift(ext_dir)
 $LOAD_PATH.unshift(lib_dir)
 
-$LOAD_PATH.unshift(test_dir)
-require "cairo-test-utils"
+require_relative "helper"
 
 Dir.glob("test/**/test_*.rb") do |file|
   require file.sub(/\.rb$/, "")

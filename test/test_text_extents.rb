@@ -1,7 +1,7 @@
 require 'cairo'
 
 class TextExtentsTest < Test::Unit::TestCase
-  include CairoTestUtils
+  include Helper
 
   def test_new
     extents = Cairo::TextExtents.new

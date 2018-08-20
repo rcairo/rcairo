@@ -1,7 +1,7 @@
 require 'cairo'
 
 class FontOptionsTest < Test::Unit::TestCase
-  include CairoTestUtils
+  include Helper
 
   def setup
     @options = Cairo::FontOptions.new

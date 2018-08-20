@@ -3,7 +3,7 @@ require 'poppler'
 require 'stringio'
 require 'test/unit/notify'
 
-module CairoTestUtils
+module Helper
   private
   def only_cairo_version(major, minor, micro=nil)
     unless Cairo.satisfied_version?(major, minor, micro)
