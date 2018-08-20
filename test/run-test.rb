@@ -11,17 +11,17 @@ if system("which make >/dev/null 2>&1")
   end
 end
 
-require 'test-unit'
+require "test-unit"
 
 $LOAD_PATH.unshift(base_dir)
 $LOAD_PATH.unshift(ext_dir)
 $LOAD_PATH.unshift(lib_dir)
 
 $LOAD_PATH.unshift(test_dir)
-require 'cairo-test-utils'
+require "cairo-test-utils"
 
 Dir.glob("test/**/test_*.rb") do |file|
-  require file.sub(/\.rb$/, '')
+  require file.sub(/\.rb$/, "")
 end
 
 exit Test::Unit::AutoRunner.run(false)
