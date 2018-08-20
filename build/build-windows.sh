@@ -23,7 +23,10 @@ run()
 if [ ! -f ~/setup.timestamp ]; then
   run sudo systemctl stop apt-daily.service apt-daily.timer
 
-  run sudo sed -i'' -e 's,http://us,http://jp,g' /etc/apt/sources.list
+  run sudo sed \
+      -i'' \
+      -e 's,archive.ubuntu.com/ubuntu,ftp.iij.ad.jp/pub/linux/ubuntu/archive/,g' \
+      /etc/apt/sources.list
   run sudo dpkg --add-architecture i386
   run sudo apt update
 
