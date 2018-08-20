@@ -19,8 +19,4 @@ $LOAD_PATH.unshift(lib_dir)
 
 require_relative "helper"
 
-Dir.glob("test/**/test_*.rb") do |file|
-  require file.sub(/\.rb$/, "")
-end
-
-exit Test::Unit::AutoRunner.run(false)
+exit Test::Unit::AutoRunner.run(true, test_dir)
