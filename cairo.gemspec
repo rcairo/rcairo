@@ -38,6 +38,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency("pkg-config", ">= 1.2.2")
   s.add_runtime_dependency("native-package-installer", ">= 1.0.3")
   s.add_development_dependency("bundler")
+  s.add_development_dependency("test-unit")
   s.add_development_dependency("rake-compiler")
   s.add_development_dependency("packnga")
   s.add_development_dependency("poppler", ">= 3.1.1")
