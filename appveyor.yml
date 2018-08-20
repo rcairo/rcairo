@@ -19,9 +19,9 @@ install:
   - bundle config --local force_ruby_platform true
 
 build_script:
-  - gem build cairo.gemspec
-  - gem install *.gem
   - bundle install
+  - bundle exec ruby -rdevkit extconf.rb
+  - ridk exec make
 
 test_script:
   - bundle exec ruby test/run-test.rb
