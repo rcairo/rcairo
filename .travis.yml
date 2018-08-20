@@ -14,4 +14,4 @@ rvm:
   - ruby-head
 before_install:
   - gem update bundler
-  - gem install cairo
+  - bundle install
