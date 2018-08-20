@@ -442,8 +442,8 @@ end
 
 windows_task = WindowsTask.new(spec) do |task|
   zlib_version = "1.2.11"
-  libpng_version = "1.6.34"
-  freetype_version = "2.8.1"
+  libpng_version = "1.6.35"
+  freetype_version = "2.9.1"
   task.packages = [
     {
       # We should use the same version as Ruby Installer.
