@@ -14,4 +14,8 @@ rvm:
   - ruby-head
 before_install:
   - gem update bundler
+  # Need to install cairo gem as a normal gem to find rb_cairo.h by
+  # other gems cairo-gobject gem and so on.
+  - gem build cairo.gemspec
+  - gem install *.gem
   - bundle install
