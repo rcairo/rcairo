@@ -1,6 +1,6 @@
-require 'cairo'
-require 'poppler'
-require 'stringio'
+require "cairo"
+require "poppler"
+require "stringio"
 
 module Helper
   private
