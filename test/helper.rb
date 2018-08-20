@@ -1,7 +1,6 @@
 require 'cairo'
 require 'poppler'
 require 'stringio'
-require 'test/unit/notify'
 
 module Helper
   private
