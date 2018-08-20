@@ -11,8 +11,6 @@ if system("which make >/dev/null 2>&1")
   end
 end
 
-require 'rubygems'
-require 'bundler/setup'
 require 'test-unit'
 
 $LOAD_PATH.unshift(base_dir)
