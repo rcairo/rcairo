@@ -487,7 +487,7 @@ windows_task = WindowsTask.new(spec) do |task|
     },
     {
       :name => "fontconfig",
-      :version => "2.13.1",
+      :version => "2.13.0",
       :download_base_url => "https://www.freedesktop.org/software/fontconfig/release",
       :compression_method => "bz2",
       :windows => {
