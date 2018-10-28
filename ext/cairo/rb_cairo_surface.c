@@ -86,7 +86,6 @@ VALUE rb_cCairo_GLTextureSurface = Qnil;
 VALUE rb_cCairo_DRMSurface = Qnil;
 VALUE rb_cCairo_TeeSurface = Qnil;
 VALUE rb_cCairo_XMLSurface = Qnil;
-VALUE rb_cCairo_SkiaSurface = Qnil;
 VALUE rb_cCairo_SubSurface = Qnil;
 VALUE rb_cCairo_CoglSurface = Qnil;
 
@@ -194,9 +193,6 @@ cr_surface_get_klass (cairo_surface_t *surface)
       break;
     case CAIRO_SURFACE_TYPE_XML:
       klass = rb_cCairo_XMLSurface;
-      break;
-    case CAIRO_SURFACE_TYPE_SKIA:
-      klass = rb_cCairo_SkiaSurface;
       break;
     case CAIRO_SURFACE_TYPE_SUBSURFACE:
       klass = rb_cCairo_SubSurface;
@@ -2357,10 +2353,6 @@ Init_cairo_surface (void)
 
   RB_CAIRO_DEF_SETTERS (rb_cCairo_XMLSurface);
 #endif
-
-  /* Skia surface */
-  rb_cCairo_SkiaSurface =
-    rb_define_class_under (rb_mCairo, "SkiaSurface", rb_cCairo_Surface);
 
   /* sub surface */
   rb_cCairo_SubSurface =
