@@ -475,7 +475,7 @@ windows_task = WindowsTask.new(spec) do |task|
     },
     {
       :name => "libxml2",
-      :version => "2.9.7",
+      :version => "2.9.8",
       :download_base_url => "ftp://xmlsoft.org/libxml2",
       :compression_method => "gz",
       :windows => {
@@ -487,7 +487,7 @@ windows_task = WindowsTask.new(spec) do |task|
     },
     {
       :name => "fontconfig",
-      :version => "2.13.0",
+      :version => "2.13.1",
       :download_base_url => "https://www.freedesktop.org/software/fontconfig/release",
       :compression_method => "bz2",
       :windows => {
@@ -509,7 +509,7 @@ windows_task = WindowsTask.new(spec) do |task|
     },
     {
       :name => "cairo",
-      :version => "1.15.12",
+      :version => "1.16.0",
       :download_site => :cairo_snapshots,
       :windows => {
         :built_file => "bin/libcairo-2.dll",
