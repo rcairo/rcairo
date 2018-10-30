@@ -10,7 +10,9 @@ class ContextTest < Test::Unit::TestCase
     context = Cairo::Context.new(@surface)
     @surface.destroy
     assert_not_equal("%%EOF\n", @output.string[-6..-1])
+    assert {not context.destroyed?}
     context.destroy
+    assert {context.destroyed?}
     assert_equal("%%EOF\n", @output.string[-6..-1])
   end
 

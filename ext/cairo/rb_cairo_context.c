@@ -123,6 +123,12 @@ cr_destroy (VALUE self)
 }
 
 static VALUE
+cr_destroyed (VALUE self)
+{
+  return CBOOL2RVAL (DATA_PTR (self) == NULL);
+}
+
+static VALUE
 cr_destroy_with_destroy_check (VALUE self)
 {
   if (DATA_PTR (self))
@@ -1717,6 +1723,7 @@ Init_cairo_context (void)
   /* Functions for manipulating state objects */
   rb_define_method (rb_cCairo_Context, "initialize", cr_initialize, 1);
   rb_define_method (rb_cCairo_Context, "destroy", cr_destroy, 0);
+  rb_define_method (rb_cCairo_Context, "destroyed?", cr_destroyed, 0);
   rb_define_method (rb_cCairo_Context, "reference_count",
                     cr_get_reference_count, 0);
 
