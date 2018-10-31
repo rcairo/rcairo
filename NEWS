@@ -1,3 +1,12 @@
+Release 1.16.2 (2018-10-31) Kouhei Sutou <kou@cozmixng.org>
+============================================================
+
+Improvements
+------------
+
+  * Stopped to provide fat gem for Windows. Windows users should use
+    MSYS2 packages.
+
 Release 1.16.1 (2018-10-31) Kouhei Sutou <kou@cozmixng.org>
 ============================================================
 
