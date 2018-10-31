@@ -1,3 +1,11 @@
+Release 1.16.1 (2018-10-31) Kouhei Sutou <kou@cozmixng.org>
+============================================================
+
+Improvements
+------------
+
+  * Added Cairo::Context#destroyed?.
+
 Release 1.16.0 (2018-10-28) Kouhei Sutou <kou@cozmixng.org>
 ============================================================
 
