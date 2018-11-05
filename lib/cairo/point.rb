@@ -1,7 +1,7 @@
 module Cairo
   class Point
     def distance(other)
-      Math.sqrt((other.x - x) ** 2 + (other.y - y) ** 2)
+      Math.hypot(other.x - x, other.y - y)
     end
   end
 end
