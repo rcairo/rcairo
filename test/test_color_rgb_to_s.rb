@@ -1,6 +1,6 @@
 require 'cairo'
 
-class ColorTest < Test::Unit::TestCase
+class ColorRgbTest < Test::Unit::TestCase
   def test_rgb_001 ; assert_equal(Cairo::Color.parse(:ALICE_BLUE).to_s,                      "#F0F8FFFF") ; end
   def test_rgb_002 ; assert_equal(Cairo::Color.parse(:ALIZARIN_CRIMSON).to_s,                "#E32636FF") ; end
   def test_rgb_003 ; assert_equal(Cairo::Color.parse(:AMARANTH).to_s,                        "#E52B50FF") ; end

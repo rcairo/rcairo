@@ -106,7 +106,7 @@ module Cairo
       alias_method :to_ary, :to_a
 
       def to_s
-        "#%02X%02X%02X%02X" % to_a.collect {|v| (v * 255).round}
+        "#%02X%02X%02X%02X" % to_a.collect {|v| (v * 255).round(1)}
       end
 
       def to_rgb
