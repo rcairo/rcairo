@@ -22,27 +22,6 @@ package = "cairo"
 module_name = "cairo"
 major, minor, micro = 1, 2, 0
 
-base_dir = Pathname(__FILE__).dirname.parent.parent
-checking_for(checking_message("Win32 OS")) do
-  case RUBY_PLATFORM
-  when /mingw|mswin32/
-    $defs << "-DRUBY_CAIRO_PLATFORM_WIN32"
-    import_library_name = "libruby-#{module_name}.a"
-    $DLDFLAGS << " -Wl,--out-implib=#{import_library_name}"
-    $cleanfiles << import_library_name
-    binary_base_dir = base_dir + "vendor" + "local"
-    if with_config('vendor-override', binary_base_dir.exist?)
-      $CFLAGS += " -I#{binary_base_dir}/include"
-      pkg_config_dir = binary_base_dir + "lib" + "pkgconfig"
-      PKGConfig.add_path(pkg_config_dir.to_s)
-      PKGConfig.set_override_variable("prefix", binary_base_dir.to_s)
-    end
-    true
-  else
-    false
-  end
-end
-
 def required_pkg_config_package(package_info, native_package_info=nil)
   if package_info.is_a?(Array)
     required_package_info = package_info
