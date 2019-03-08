@@ -22,6 +22,17 @@ package = "cairo"
 module_name = "cairo"
 major, minor, micro = 1, 2, 0
 
+checking_for(checking_message("Homebrew")) do
+  platform = NativePackageInstaller::Platform.detect
+  if platform.is_a?(NativePackageInstaller::Platform::Homebrew)
+    libffi_prefix = `brew --prefix libffi`.chomp
+    PKGConfig.add_path("#{libffi_prefix}/lib/pkgconfig")
+    true
+  else
+    false
+  end
+end
+
 def required_pkg_config_package(package_info, native_package_info=nil)
   if package_info.is_a?(Array)
     required_package_info = package_info
@@ -47,7 +58,7 @@ end
 
 PKGConfig.have_package("cairo-ft")
 
-checking_for(checking_message("Mac OS X")) do
+checking_for(checking_message("macOS")) do
   case RUBY_PLATFORM
   when /darwin/
     if have_macro("CAIRO_HAS_QUARTZ_SURFACE", ["cairo.h"])
