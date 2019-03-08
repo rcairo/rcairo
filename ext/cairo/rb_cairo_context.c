@@ -5,7 +5,7 @@
  * $Author: kou $
  * $Date: 2008-09-26 13:52:08 $
  *
- * Copyright 2005-2018 Kouhei Sutou <kou@cozmixng.org>
+ * Copyright 2005-2019 Kouhei Sutou <kou@cozmixng.org>
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
  *
@@ -351,7 +351,7 @@ cr_set_source_rgb (int argc, VALUE *argv, VALUE self)
   if (n == 1 && rb_cairo__is_kind_of (red, rb_cArray))
     {
       VALUE ary = red;
-      n = RARRAY_LEN (ary);
+      n = (int) RARRAY_LEN (ary);
       red = rb_ary_entry (ary, 0);
       green = rb_ary_entry (ary, 1);
       blue = rb_ary_entry (ary, 2);
@@ -388,7 +388,7 @@ cr_set_source_rgba (int argc, VALUE *argv, VALUE self)
   if (n == 1 && rb_cairo__is_kind_of (red, rb_cArray))
     {
       VALUE ary = red;
-      n = RARRAY_LEN (ary);
+      n = (int) RARRAY_LEN (ary);
       red = rb_ary_entry (ary, 0);
       green = rb_ary_entry (ary, 1);
       blue = rb_ary_entry (ary, 2);
@@ -567,7 +567,7 @@ cr_set_dash (int argc, VALUE *argv, VALUE self)
     {
       int i, length;
       double *values;
-      length = RARRAY_LEN (dash_array);
+      length = (int) RARRAY_LEN (dash_array);
       values = ALLOCA_N (double, length);
       if (!values)
         {
@@ -1323,7 +1323,7 @@ cr_show_text_glyphs (VALUE self, VALUE rb_utf8, VALUE rb_glyphs,
 
   cr = _SELF;
   utf8 = RSTRING_PTR (rb_utf8);
-  utf8_len = RSTRING_LEN (rb_utf8);
+  utf8_len = (int) RSTRING_LEN (rb_utf8);
   rb_cairo__glyphs_from_ruby_object (rb_glyphs, &glyphs, &num_glyphs);
   rb_cairo__text_clusters_from_ruby_object (rb_clusters,
                                             &clusters, &num_clusters);

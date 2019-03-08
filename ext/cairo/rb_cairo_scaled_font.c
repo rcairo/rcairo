@@ -5,7 +5,7 @@
  * $Author: kou $
  * $Date: 2008-09-19 12:56:27 $
  *
- * Copyright 2005-2008 Kouhei Sutou <kou@cozmixng.org>
+ * Copyright 2005-2019 Kouhei Sutou <kou@cozmixng.org>
  *
  * This file is made available under the same terms as Ruby
  *
@@ -132,7 +132,7 @@ cr_scaled_font_text_to_glyphs (VALUE self, VALUE rb_x, VALUE rb_y, VALUE rb_utf8
   x = NUM2DBL (rb_x);
   y = NUM2DBL (rb_y);
   utf8 = RSTRING_PTR (rb_utf8);
-  utf8_len = RSTRING_LEN (rb_utf8);
+  utf8_len = (int) RSTRING_LEN (rb_utf8);
 
   status = cairo_scaled_font_text_to_glyphs (_SELF (self),
                                              x, y, utf8, utf8_len,

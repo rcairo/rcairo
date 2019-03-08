@@ -2,7 +2,7 @@
 /*
  * Ruby Cairo Binding
  *
- * Copyright 2005-2010 Kouhei Sutou <kou@cozmixng.org>
+ * Copyright 2005-2019 Kouhei Sutou <kou@cozmixng.org>
  *
  * This file is made available under the same terms as Ruby
  *
@@ -70,7 +70,7 @@ rb_cairo__io_write_func_invoke (VALUE write_closure)
   VALUE output, data;
   long written_bytes;
   rb_cairo__io_callback_closure_t *closure;
-  unsigned int length;
+  long length;
 
   closure = (rb_cairo__io_callback_closure_t *)write_closure;
 
@@ -118,7 +118,7 @@ rb_cairo__io_read_func_invoke (VALUE read_closure)
 {
   VALUE input, result;
   rb_cairo__io_callback_closure_t *closure;
-  unsigned int length, rest;
+  long length, rest;
 
   closure = (rb_cairo__io_callback_closure_t *)read_closure;
   input = closure->target;
@@ -133,7 +133,7 @@ rb_cairo__io_read_func_invoke (VALUE read_closure)
                                  rb_cairo__io_id_read, 1, INT2NUM (rest)));
     }
 
-  memcpy ((void *)closure->data, (const void *)StringValuePtr (result), length);
+  memcpy ((void *)closure->data, (const void *) StringValuePtr (result), length);
 
   return Qnil;
 }

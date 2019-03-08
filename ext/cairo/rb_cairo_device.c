@@ -2,7 +2,7 @@
 /*
  * Ruby Cairo Binding
  *
- * Copyright 2010-2012 Kouhei Sutou <kou@cozmixng.org>
+ * Copyright 2010-2019 Kouhei Sutou <kou@cozmixng.org>
  *
  * This file is made available under the same terms as Ruby
  *
@@ -343,7 +343,7 @@ cr_script_device_write_comment (VALUE self, VALUE comment)
   device = _SELF;
   cairo_script_write_comment (device,
                               StringValuePtr (comment),
-                              RSTRING_LEN (comment));
+                              (int) RSTRING_LEN (comment));
   cr_device_check_status (device);
   return Qnil;
 }

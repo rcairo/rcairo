@@ -5,7 +5,7 @@
  * $Author: kou $
  * $Date: 2008-06-12 10:59:54 $
  *
- * Copyright 2012 Kouhei Sutou <kou@cozmixng.org>
+ * Copyright 2012-2019 Kouhei Sutou <kou@cozmixng.org>
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
  *
@@ -208,7 +208,7 @@ cr_solid_pattern_initialize (int argc, VALUE *argv, VALUE self)
       (RARRAY_LEN (red) == 3 || RARRAY_LEN (red) == 4))
     {
       VALUE ary = red;
-      n = RARRAY_LEN (ary);
+      n = (int) RARRAY_LEN (ary);
 
       red = rb_ary_entry (ary, 0);
       green = rb_ary_entry (ary, 1);
@@ -315,7 +315,7 @@ cr_gradient_pattern_add_color_stop_generic (int argc, VALUE *argv, VALUE self)
   if (n == 2 && rb_cairo__is_kind_of (red, rb_cArray))
     {
       VALUE ary = red;
-      n = RARRAY_LEN (ary) + 1;
+      n = (int) RARRAY_LEN (ary) + 1;
 
       red = rb_ary_entry (ary, 0);
       green = rb_ary_entry (ary, 1);

@@ -5,7 +5,7 @@
  * $Author: kou $
  * $Date: 2008-08-17 07:21:42 $
  *
- * Copyright 2005-2018 Kouhei Sutou <kou@cozmixng.org>
+ * Copyright 2005-2019 Kouhei Sutou <kou@cozmixng.org>
  *
  * This file is made available under the same terms as Ruby
  *
@@ -78,7 +78,7 @@ extern void Init_cairo_text_cluster (void);
 do                                                              \
   {                                                             \
     Check_Type (rb_array, T_ARRAY);                             \
-    length = RARRAY_LEN (rb_array);                             \
+    length = (int) RARRAY_LEN (rb_array);                       \
     glyphs = ALLOCA_N (cairo_glyph_t, length);                  \
                                                                 \
     if (!glyphs)                                                \

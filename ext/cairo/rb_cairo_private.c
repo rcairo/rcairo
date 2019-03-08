@@ -5,7 +5,7 @@
  * $Author: kou $
  * $Date: 2008-08-17 07:21:42 $
  *
- * Copyright 2005-2014 Kouhei Sutou <kou@cozmixng.org>
+ * Copyright 2005-2019 Kouhei Sutou <kou@cozmixng.org>
  *
  * This file is made available under the same terms as Ruby
  *
@@ -160,7 +160,7 @@ rb_cairo__glyphs_from_ruby_object (VALUE rb_glyphs,
       return;
     }
 
-  len = RARRAY_LEN (rb_glyphs);
+  len = (int) RARRAY_LEN (rb_glyphs);
   if (*num_glyphs < len)
     *glyphs = cairo_glyph_allocate (len);
   *num_glyphs = len;
@@ -202,7 +202,7 @@ rb_cairo__text_clusters_from_ruby_object (VALUE rb_clusters,
       return;
     }
 
-  len = RARRAY_LEN (rb_clusters);
+  len = (int) RARRAY_LEN (rb_clusters);
   if (*num_clusters < len)
     *clusters = cairo_text_cluster_allocate (len);
   *num_clusters = len;
