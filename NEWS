@@ -1,3 +1,28 @@
+Release 1.16.3 (2019-03-09) Kouhei Sutou <kou@cozmixng.org>
+============================================================
+
+Improvements
+------------
+
+  * Improved Cairo::Poinst#distance performance.
+    [GitHub#53][Patch by scivola]
+
+  * Added support for building with cairo and GLib 2.60 installed by
+    Homebrew.
+
+Fixes
+-----
+
+  * Fixed Cairo::Color::RGB#to_s.
+    [GitHub#55][Patch by spoolkitamura]
+
+Thanks
+------
+
+  * scivola
+
+  * spoolkitamura.
+
 Release 1.16.2 (2018-10-31) Kouhei Sutou <kou@cozmixng.org>
 ============================================================
 
