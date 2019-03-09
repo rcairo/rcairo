@@ -50,7 +50,6 @@ EXPORTS
     rb_cCairo_DRMSurface      DATA
     rb_cCairo_TeeSurface      DATA
     rb_cCairo_XMLSurface      DATA
-    rb_cCairo_SkiaSurface     DATA
     rb_cCairo_SubSurface      DATA
     rb_cCairo_CoglSurface     DATA
 
