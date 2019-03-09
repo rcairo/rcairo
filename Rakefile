@@ -1,13 +1,6 @@
 # -*- coding: utf-8; mode: ruby -*-
 
-require "English"
-
-require "find"
-require "fileutils"
-require "open-uri"
 require "rubygems"
-require "rubygems/package_task"
-require "yard"
 require "bundler/gem_helper"
 require "packnga"
 
