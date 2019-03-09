@@ -5,7 +5,7 @@
  * $Author: kou $
  * $Date: 2008-09-19 12:56:27 $
  *
- * Copyright 2006-2018 Kouhei Sutou <kou@cozmixng.org>
+ * Copyright 2006-2019 Kouhei Sutou <kou@cozmixng.org>
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
  *
@@ -53,15 +53,7 @@
 
 RB_CAIRO_BEGIN_DECLS
 
-#if defined(RUBY_CAIRO_PLATFORM_WIN32) && !defined(RB_CAIRO_PLATFORM_WIN32)
-#  define RB_CAIRO_PLATFORM_WIN32 RUBY_CAIRO_PLATFORM_WIN32
-#endif
-
-#if defined(RUBY_CAIRO_STATIC_COMPILATION) && !defined(RB_CAIRO_STATIC_COMPILATION)
-#  define RB_CAIRO_STATIC_COMPILATION RUBY_CAIRO_STATIC_COMPILATION
-#endif
-
-#if defined(RB_CAIRO_PLATFORM_WIN32) && !defined(RB_CAIRO_STATIC_COMPILATION)
+#ifdef __WIN32__
 #  ifdef RB_CAIRO_COMPILATION
 #    define RB_CAIRO_VAR __declspec(dllexport)
 #  else
