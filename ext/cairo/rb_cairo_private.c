@@ -64,9 +64,8 @@ rb_cairo__const_get (VALUE name, const char *prefix)
   normalized_name_len = strlen (normalized_name);
 
   const_name = ALLOCA_N (char, prefix_len + normalized_name_len + 1);
-  strncpy (const_name, prefix, prefix_len);
-  strncpy (const_name + prefix_len, normalized_name, normalized_name_len);
-  const_name[prefix_len + normalized_name_len] = '\0';
+  strcpy (const_name, prefix);
+  strcpy (const_name + prefix_len, normalized_name);
 
   return rb_const_get (rb_mCairo, rb_intern (const_name));
 }
