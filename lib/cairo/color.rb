@@ -14,7 +14,7 @@ module Cairo
           _, *value = value if [:rgb, :rgba].include?(value.first)
           RGB.new(*value)
         end
-      when /\A#/ #
+      when /\A\#/
         parse_hex_color(value)
       when String, Symbol
         name = Cairo.normalize_const_name(value)
@@ -34,16 +34,16 @@ module Cairo
     HEX_RE = "(?i:[a-f\\d])"
     def parse_hex_color(value)
       case value
-      when /\A#((?:#{HEX_RE}){3,4})\z/ #
+      when /\A\#((?:#{HEX_RE}){3,4})\z/
         RGB.new(*$1.scan(/./).collect {|part| part.hex / 15.0})
-      when /\A#((?:#{HEX_RE}{2,2}){3,4})\z/ #
+      when /\A\#((?:#{HEX_RE}{2,2}){3,4})\z/
         RGB.new(*$1.scan(/.{2,2}/).collect {|part| part.hex / 255.0})
-      when /\A#((?:#{HEX_RE}{4,4}){3,4})\z/ #
+      when /\A\#((?:#{HEX_RE}{4,4}){3,4})\z/
         RGB.new(*$1.scan(/.{4,4}/).collect {|part| part.hex / 65535.0})
       else
         message = "invalid hex color format: #{value} should be "
-        message << "#RGB, #RGBA, #RRGGBB, #RRGGBBAA, #RRRRGGGGBBBB "
-        message << "or #RRRRGGGGBBBBAAAA"
+        message << "\#RGB, \#RGBA, \#RRGGBB, \#RRGGBBAA, \#RRRRGGGGBBBB "
+        message << "or \#RRRRGGGGBBBBAAAA"
         raise ArgumentError, message
       end
     end
