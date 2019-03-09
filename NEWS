@@ -10,6 +10,8 @@ Improvements
   * Added support for building with cairo and GLib 2.60 installed by
     Homebrew.
 
+  * Updated colors. There are some backward incompatibility. Sorry.
+
 Fixes
 -----
 
