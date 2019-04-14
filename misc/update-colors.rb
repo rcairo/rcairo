@@ -116,8 +116,12 @@ def constanize_color_name(name)
   when "Tenné (tawny)"
     "TAWNY"
   else
+    normalized_chars = name.chars.collect do |char|
+      char.unicode_normalize(:nfkd)[0]
+    end
+    name = normalized_chars.join("")
     name = name.gsub(/&eacute;/, "e")
-    name = name.gsub(/['().]/, "")
+    name = name.gsub(/['().’]/, "")
     name = name.gsub(/\s+\#(\d+)/, "\\1")
     name = name.gsub(/[ \-\/]/, "_")
     name.upcase

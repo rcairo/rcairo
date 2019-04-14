@@ -263,12 +263,6 @@ class ColorsTest < Test::Unit::TestCase
                  Cairo::Color::AVOCADO.to_s)
   end
 
-  # Awesome: #FF2052: (255, 32, 82)
-  test("Awesome") do
-    assert_equal("\#%02X%02X%02XFF" % [255, 32, 82],
-                 Cairo::Color::AWESOME.to_s)
-  end
-
   # Axolotl: #63775B: (99, 119, 91)
   test("Axolotl") do
     assert_equal("\#%02X%02X%02XFF" % [99, 119, 91],
@@ -416,7 +410,7 @@ class ColorsTest < Test::Unit::TestCase
   # Big dip o’ruby: #9C2542: (156, 37, 66)
   test("Big dip o\u2019ruby") do
     assert_equal("\#%02X%02X%02XFF" % [156, 37, 66],
-                 Cairo::Color::BIG_DIP_O’RUBY.to_s)
+                 Cairo::Color::BIG_DIP_ORUBY.to_s)
   end
 
   # Big Foot Feet: #E88E5A: (232, 142, 90)
@@ -1112,13 +1106,13 @@ class ColorsTest < Test::Unit::TestCase
   # Café au lait: #A67B5B: (166, 123, 91)
   test("Caf\u00E9 au lait") do
     assert_equal("\#%02X%02X%02XFF" % [166, 123, 91],
-                 Cairo::Color::CAFÉ_AU_LAIT.to_s)
+                 Cairo::Color::CAFE_AU_LAIT.to_s)
   end
 
   # Café noir: #4B3621: (75, 54, 33)
   test("Caf\u00E9 noir") do
     assert_equal("\#%02X%02X%02XFF" % [75, 54, 33],
-                 Cairo::Color::CAFÉ_NOIR.to_s)
+                 Cairo::Color::CAFE_NOIR.to_s)
   end
 
   # Cal Poly Pomona green: #1E4D2B: (30, 77, 43)
@@ -3638,7 +3632,7 @@ class ColorsTest < Test::Unit::TestCase
   # Halayà úbe: #663854: (102, 55, 84)
   test("Halay\u00E0 \u00FAbe") do
     assert_equal("\#%02X%02X%02XFF" % [102, 55, 84],
-                 Cairo::Color::HALAYÀ_ÚBE.to_s)
+                 Cairo::Color::HALAYA_UBE.to_s)
   end
 
   # Halloween orange: #EB6123: (235, 97, 35)
@@ -6345,6 +6339,12 @@ class ColorsTest < Test::Unit::TestCase
   test("Peach") do
     assert_equal("\#%02X%02X%02XFF" % [255, 229, 180],
                  Cairo::Color::PEACH.to_s)
+  end
+
+  # Peach (Crayola): #FFCBA4: (255, 203, 164)
+  test("Peach (Crayola)") do
+    assert_equal("\#%02X%02X%02XFF" % [255, 203, 164],
+                 Cairo::Color::PEACH_CRAYOLA.to_s)
   end
 
   # Peach-orange: #FFCC99: (255, 204, 153)
