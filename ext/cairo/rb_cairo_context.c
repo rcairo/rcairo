@@ -234,7 +234,11 @@ static VALUE
 cr_to_ptr (VALUE self)
 {
   if (NIL_P (rb_cairo__cFFIPointer))
-    return Qnil;
+  {
+    rb_raise (rb_eNotImpError,
+              "%s: ffi gem is required",
+              rb_id2name (rb_frame_this_func ()));
+  }
 
   return rb_funcall (rb_cairo__cFFIPointer, rb_intern ("new"),
                      1, PTR2NUM (_SELF));
