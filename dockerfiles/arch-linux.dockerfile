@@ -10,7 +10,9 @@ RUN \
     which
 
 RUN \
-  gem install --no-user-install bundler
+  gem install --no-user-install \
+    bundler \
+    rake
 
 RUN \
   useradd --user-group --create-home rcairo
@@ -27,8 +29,8 @@ WORKDIR /home/rcairo/rcairo
 
 RUN \
   gem build cairo.gemspec && \
-  sudo -H gem install *.gem && \
-  sudo -H gem install poppler && \
+  sudo -H gem install --no-user-install *.gem && \
+  sudo -H gem install --no-user-install poppler && \
   bundle install
 
-CMD bundle exec rake
+CMD bundle exec test/run-test.rb

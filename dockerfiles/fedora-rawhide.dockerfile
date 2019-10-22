@@ -11,7 +11,9 @@ RUN \
     which
 
 RUN \
-  gem install bundler
+  gem install \
+    bundler \
+    rake
 
 RUN \
   useradd --user-group --create-home rcairo
@@ -32,4 +34,4 @@ RUN \
   sudo -H gem install poppler && \
   bundle install
 
-CMD bundle exec rake
+CMD bundle exec test/run-test.rb

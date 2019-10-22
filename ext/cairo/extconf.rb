@@ -48,11 +48,12 @@ def required_pkg_config_package(package_info, native_package_info=nil)
 end
 
 unless required_pkg_config_package([package, major, minor, micro],
+                                   :arch_linux => "cairo",
                                    :debian => "libcairo2-dev",
-                                   :redhat => "cairo-devel",
                                    :homebrew => "cairo",
                                    :macports => "cairo",
-                                   :msys2 => "cairo")
+                                   :msys2 => "cairo",
+                                   :redhat => "cairo-devel")
   exit(false)
 end
 

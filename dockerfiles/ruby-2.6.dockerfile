@@ -28,4 +28,4 @@ RUN \
   gem install *.gem && \
   bundle install
 
-CMD bundle exec rake
+CMD bundle exec test/run-test.rb

@@ -571,8 +571,8 @@ Init_cairo_constants (void)
 #if CAIRO_CHECK_VERSION(1, 17, 2)
   rb_define_const (rb_mCairo_Format,    "RGB96F",
                    INT2FIX (CAIRO_FORMAT_RGB96F));
-  rb_define_const (rb_mCairo_Format,    "RGB128F",
-                   INT2FIX (CAIRO_FORMAT_RGB128F));
+  rb_define_const (rb_mCairo_Format,    "RGBA128F",
+                   INT2FIX (CAIRO_FORMAT_RGBA128F));
 #endif
 
 #if CAIRO_CHECK_VERSION(1, 5, 8)
