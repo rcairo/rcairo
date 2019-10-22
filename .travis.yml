@@ -38,7 +38,7 @@ matrix:
         - gem install *.gem
         - bundle install --jobs=3 --retry=3
       script:
-        - bundle exec
+        - bundle exec rake
 
 install:
   - docker build
