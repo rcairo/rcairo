@@ -2,27 +2,52 @@ notifications:
   webhooks:
     - https://webhook.commit-email.info/
 
-addons:
-  apt:
-    update: true
+services:
+  - docker
 
 matrix:
   include:
-    - name: 2.3
-      rvm: 2.3
-    - name: 2.4
-      rvm: 2.4
-    - name: 2.5
-      rvm: 2.5
-    - name: 2.6
-      rvm: 2.6
-    - name: master
-      rvm: ruby-head
-    - name: macOS
+    - name: Ruby 2.4
+      env: TYPE=ruby-2.4
+    - name: Ruby 2.5
+      env: TYPE=ruby-2.5
+    - name: Ruby 2.6
+      env: TYPE=ruby-2.6
+    - name: Ruby 2.7
+      env: TYPE=ruby-2.7
+    - name: Debian GNU/Linux 10
+      env: TYPE=debian-10
+    - name: Ubuntu 16.04
+      env: TYPE=ubuntu-16.04
+    - name: Ubuntu 18.04
+      env: TYPE=ubuntu-18.04
+    - name: CentOS 8
+      env: TYPE=centos-8
+    - name: Fedora Rawhide
+      env: TYPE=fedora-rawhide
+    - name: Arch Linux
+      env: TYPE=arch-linux
+    - name: macOS 10.14
       os: osx
+      osx_image: xcode11.2
+      rvm: 2.6
+      install:
+        # Need to install cairo gem as a normal gem to find rb_cairo.h by
+        # other gems cairo-gobject gem and so on.
+        - gem build cairo.gemspec
+        - gem install *.gem
+        - bundle install --jobs=3 --retry=3
+      script:
+        - bundle exec
 
-before_install:
-  # Need to install cairo gem as a normal gem to find rb_cairo.h by
-  # other gems cairo-gobject gem and so on.
-  - gem build cairo.gemspec
-  - gem install *.gem
+install:
+  - docker build
+      -t rcairo/rcairo-${TYPE}
+      -f dockerfiles/${TYPE}.dockerfile
+      .
+
+script:
+  - docker run
+      --interactive
+      --tty
+      rcairo/rcairo-${TYPE}
