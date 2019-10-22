@@ -5,6 +5,7 @@
  * $Author: kou $
  * $Date: 2008-09-26 14:13:58 $
  *
+ * Copyright 2003-2019 Sutou Kouhei <kou@cozmixng.org>
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
  *
@@ -148,7 +149,11 @@ cr_font_face_freetype_supported_p (VALUE klass)
 
 #ifdef CAIRO_HAS_FT_FONT
 static VALUE
-cr_freetype_done_library (VALUE data)
+cr_freetype_done_library (VALUE yielded_arg,
+                          VALUE callback_arg,
+                          int argc,
+                          const VALUE *argv,
+                          VALUE block_arg)
 {
   cr_freetype_finishing = CR_TRUE;
   if (cr_freetype_n_faces == 0)

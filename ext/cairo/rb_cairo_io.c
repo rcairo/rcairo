@@ -44,11 +44,11 @@ rb_cairo__io_closure_free (void *closure)
 }
 
 static VALUE
-rb_cairo__io_func_rescue (VALUE io_closure)
+rb_cairo__io_func_rescue (VALUE io_closure, VALUE error)
 {
   rb_cairo__io_callback_closure_t *closure;
   closure = (rb_cairo__io_callback_closure_t *)io_closure;
-  closure->error = RB_ERRINFO;
+  closure->error = error;
   return Qnil;
 }
 
