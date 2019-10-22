@@ -41,4 +41,4 @@ RUN \
   sudo -H gem install poppler && \
   bundle install
 
-CMD bundle exec test/run-test.rb
+CMD bundle exec rake
