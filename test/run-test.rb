@@ -7,7 +7,9 @@ test_dir = File.join(base_dir, "test")
 
 if system("which make >/dev/null 2>&1")
   Dir.chdir(base_dir) do
-    system("make > /dev/null") or exit(1)
+    if File.exist?("Makefile")
+      system("make > /dev/null") or exit(1)
+    end
   end
 end
 
