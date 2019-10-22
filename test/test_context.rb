@@ -122,4 +122,11 @@ class ContextTest < Test::Unit::TestCase
                    uris)
     end
   end
+
+  def test_raw_address
+    context = Cairo::Context.new(@surface)
+    assert do
+      context.raw_address > 0
+    end
+  end
 end

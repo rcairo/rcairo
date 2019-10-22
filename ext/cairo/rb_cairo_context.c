@@ -240,6 +240,12 @@ cr_to_ptr (VALUE self)
                      1, PTR2NUM (_SELF));
 }
 
+static VALUE
+cr_raw_address (VALUE self)
+{
+  return PTR2NUM (_SELF);
+}
+
 
 static VALUE
 cr_restore (VALUE self)
@@ -1873,6 +1879,8 @@ Init_cairo_context (void)
   rb_define_method (rb_cCairo_Context, "append_path", cr_copy_append_path, 1);
 
   rb_define_method (rb_cCairo_Context, "to_ptr", cr_to_ptr, 0);
+
+  rb_define_method (rb_cCairo_Context, "raw_address", cr_raw_address, 0);
 
 #if CAIRO_CHECK_VERSION(1, 15, 4)
   /* Logical structure tagging functions */
