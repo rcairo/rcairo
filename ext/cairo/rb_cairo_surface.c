@@ -2,7 +2,7 @@
 /*
  * Ruby Cairo Binding
  *
- * Copyright 2005-2018 Kouhei Sutou <kou@cozmixng.org>
+ * Copyright 2005-2019 Kouhei Sutou <kou@cozmixng.org>
  * Copyright 2014 Patrick Hanevold <patrick.hanevold@gmail.com>
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -2107,9 +2107,9 @@ Init_cairo_surface (void)
 #endif
 #if CAIRO_CHECK_VERSION(1, 5, 2)
   rb_define_method (rb_cCairo_Surface, "copy_page",
-                    cr_surface_copy_page, 2);
+                    cr_surface_copy_page, 0);
   rb_define_method (rb_cCairo_Surface, "show_page",
-                    cr_surface_show_page, 2);
+                    cr_surface_show_page, 0);
 #endif
 
 #ifdef CAIRO_HAS_PNG_FUNCTIONS
