@@ -5,7 +5,7 @@
  * $Author: kou $
  * $Date: 2008-09-19 12:56:27 $
  *
- * Copyright 2005-2017 Kouhei Sutou <kou@cozmixng.org>
+ * Copyright 2005-2019 Kouhei Sutou <kou@cozmixng.org>
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
  *
@@ -92,7 +92,9 @@ VALUE rb_mCairo_SVGUnit = Qnil;
 #else
 #  define CAIRO_FORMAT_MIN CAIRO_FORMAT_ARGB32
 #endif
-#if CAIRO_CHECK_VERSION(1, 11, 4)
+#if CAIRO_CHECK_VERSION(1, 17, 2)
+#  define CAIRO_FORMAT_MAX CAIRO_FORMAT_RGBA128F
+#elif CAIRO_CHECK_VERSION(1, 11, 4)
 #  define CAIRO_FORMAT_MAX CAIRO_FORMAT_RGB30
 #else
 #  define CAIRO_FORMAT_MAX CAIRO_FORMAT_RGB16_565
@@ -565,6 +567,12 @@ Init_cairo_constants (void)
 #if CAIRO_CHECK_VERSION(1, 11, 4)
   rb_define_const (rb_mCairo_Format,    "RGB30",
                    INT2FIX (CAIRO_FORMAT_RGB30));
+#endif
+#if CAIRO_CHECK_VERSION(1, 17, 2)
+  rb_define_const (rb_mCairo_Format,    "RGB96F",
+                   INT2FIX (CAIRO_FORMAT_RGB96F));
+  rb_define_const (rb_mCairo_Format,    "RGB128F",
+                   INT2FIX (CAIRO_FORMAT_RGB128F));
 #endif
 
 #if CAIRO_CHECK_VERSION(1, 5, 8)
