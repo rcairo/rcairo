@@ -25,6 +25,7 @@ Packnga::ReleaseTask.new(spec) do |task|
 end
 
 # for releasing
+desc "Release to cairographics.org"
 task :dist do
   sh "./dist.sh", spec.version.to_s
 end
