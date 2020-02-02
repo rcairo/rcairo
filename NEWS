@@ -1,3 +1,32 @@
+Release 1.16.5 (2020-02-03) Sutou Kouhei <kou@cozmixng.org>
+============================================================
+
+Improvements
+------------
+
+  * Added Cairo::Context#raw_address for integration with other
+    libraries.
+    [GitHub#59][Reported by kojix2]
+
+Fixes
+-----
+
+  * Changed to use only ASCII for color name.
+    [GitHub#57][Reported by spoolkitamura]
+
+  * Fixed the number of arguments of the following methods:
+
+    * Cairo::Surface#copy_page
+
+    * Cairo::Surface#show_page
+
+Thanks
+------
+
+  * spoolkitamura
+
+  * kojix2
+
 Release 1.16.4 (2019-03-09) Kouhei Sutou <kou@cozmixng.org>
 ============================================================
 
