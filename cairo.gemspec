@@ -24,7 +24,7 @@ Gem::Specification.new do |s|
   s.summary = "Ruby bindings for cairo"
   s.description = "Ruby bindings for cairo"
   s.homepage = "https://rcairo.github.io/"
-  s.licenses = ["Ruby"]
+  s.licenses = ["Ruby", "GPL-2.0-or-later"]
   s.require_paths = ["lib"]
   s.extensions = ["ext/cairo/extconf.rb"]
 
