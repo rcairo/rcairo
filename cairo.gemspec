@@ -27,6 +27,15 @@ Gem::Specification.new do |s|
   s.licenses = ["Ruby", "GPL-2.0-or-later"]
   s.require_paths = ["lib"]
   s.extensions = ["ext/cairo/extconf.rb"]
+  s.metadata = {
+    "bug_tracker_uri" => "https://github.com/rcairo/rcairo/issues",
+    "changelog_uri" => "https://github.com/rcairo/rcairo/blob/master/NEWS",
+    "documentation_uri" => "https://rcairo.github.io/doc/",
+    "mailing_list_uri" => "https://cairographics.org/cgi-bin/mailman/listinfo/cairo",
+    "source_code_uri" => "https://github.com/rcairo/rcairo",
+  }
+  s.required_ruby_version = ">= 2.2.1"
+  s.requirements << "cairo >= 1.2.0"
 
   s.files = ["AUTHORS", "COPYING", "GPL", "Gemfile", "NEWS", "README.rdoc"]
   s.files += ["Rakefile"]
