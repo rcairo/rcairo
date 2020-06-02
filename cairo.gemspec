@@ -30,8 +30,8 @@ Gem::Specification.new do |s|
   s.metadata = {
     "bug_tracker_uri" => "https://github.com/rcairo/rcairo/issues",
     "changelog_uri" => "https://github.com/rcairo/rcairo/blob/master/NEWS",
-    "documentation_uri" => "http://rcairo.github.io/doc/",
-    "mailing_list_uri" => "http://cairographics.org/cgi-bin/mailman/listinfo/cairo",
+    "documentation_uri" => "https://rcairo.github.io/doc/",
+    "mailing_list_uri" => "https://cairographics.org/cgi-bin/mailman/listinfo/cairo",
     "source_code_uri" => "https://github.com/rcairo/rcairo",
   }
   s.required_ruby_version = ">= 2.2.1"
