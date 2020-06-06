@@ -16,7 +16,6 @@ jobs:
           - ruby-2.5
           - ruby-2.6
           - ruby-2.7
-          - ubuntu-16.04
           - ubuntu-18.04
           - ubuntu-20.04
     runs-on: ubuntu-latest
