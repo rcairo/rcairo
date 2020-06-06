@@ -1,0 +1,42 @@
+name: Windows
+on:
+  - push
+  - pull_request
+jobs:
+  test:
+    name: Test
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby-version:
+          - "2.4"
+          - "2.5"
+          - "2.6"
+          - "2.7"
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby-version }}
+      - name: Update MSYS2
+        run: |
+          ridk exec pacman --sync --refresh --noconfirm
+      - name: Install Bundler
+        run: |
+          gem install bundler
+          bundle config --local force_ruby_platform true
+      - name: Install
+        run: |
+          # Need to install cairo gem as a normal gem to find rb_cairo.h by
+          # other gems cairo-gobject gem and so on.
+          gem build cairo.gemspec
+          gem install *.gem
+          bundle install
+      - name: Build
+        run: |
+          bundle exec ruby -rdevkit extconf.rb
+          ridk exec make
+      - name: Test
+        run: |
+          bundle exec ruby test/run-test.rb

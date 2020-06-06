@@ -1,4 +1,5 @@
-FROM ubuntu:16.04
+ARG DEBIAN_VERSION
+FROM debian:${DEBIAN_VERSION}
 
 RUN \
   apt update && \
@@ -21,16 +22,12 @@ RUN \
   echo "rcairo ALL=(ALL:ALL) NOPASSWD:ALL" | \
     EDITOR=tee visudo -f /etc/sudoers.d/rcairo
 
-COPY . /home/rcairo/rcairo
-RUN chown -R rcairo:rcairo /home/rcairo/rcairo
+RUN \
+  gem install cairo && \
+  gem install \
+    packnga \
+    poppler \
+    test-unit
 
 USER rcairo
-WORKDIR /home/rcairo/rcairo
-
-RUN \
-  gem build cairo.gemspec && \
-  sudo -H gem install *.gem && \
-  sudo -H gem install poppler && \
-  bundle install
-
-CMD bundle exec rake
+WORKDIR /home/rcairo

@@ -1,0 +1,21 @@
+name: macOS
+on:
+  - push
+  - pull_request
+jobs:
+  test:
+    name: Test
+    runs-on: macOS-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-ruby@v1
+      - name: Install
+        run: |
+          # Need to install cairo gem as a normal gem to find rb_cairo.h by
+          # other gems cairo-gobject gem and so on.
+          gem build cairo.gemspec
+          gem install *.gem
+          bundle install
+      - name: Test
+        run: |
+          bundle exec rake

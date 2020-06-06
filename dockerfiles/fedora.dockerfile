@@ -1,16 +1,18 @@
-FROM archlinux/base
+ARG FEDORA_VERSION
+FROM fedora:${FEDORA_VERSION}
 
 RUN \
-  pacman --sync --noconfirm --refresh && \
-  pacman --sync --noconfirm \
+  dnf install -y \
     gcc \
+    gcc-c++ \
     make \
-    ruby \
+    redhat-rpm-config \
+    ruby-devel \
     sudo \
     which
 
 RUN \
-  gem install --no-user-install \
+  gem install \
     bundler \
     rake
 
@@ -22,8 +24,8 @@ RUN \
     EDITOR=tee visudo -f /etc/sudoers.d/rcairo
 
 RUN \
-  gem install --no-user-install cairo && \
-  gem install --no-user-install \
+  gem install cairo && \
+  gem install \
     packnga \
     poppler \
     test-unit

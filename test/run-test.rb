@@ -1,12 +1,13 @@
 #!/usr/bin/env ruby
 
-base_dir = File.expand_path(File.join(File.dirname(__FILE__), ".."))
-ext_dir = File.join(base_dir, "ext", "cairo")
-lib_dir = File.join(base_dir, "lib")
-test_dir = File.join(base_dir, "test")
+source_dir = File.expand_path(File.join(__dir__, ".."))
+build_dir = File.expand_path(".")
+ext_dir = File.join(build_dir, "ext", "cairo")
+lib_dir = File.join(source_dir, "lib")
+test_dir = File.join(source_dir, "test")
 
 if system("which make >/dev/null 2>&1")
-  Dir.chdir(base_dir) do
+  Dir.chdir(build_dir) do
     if File.exist?("Makefile")
       system("make > /dev/null") or exit(1)
     end
@@ -15,10 +16,9 @@ end
 
 require "test-unit"
 
-$LOAD_PATH.unshift(base_dir)
 $LOAD_PATH.unshift(ext_dir)
 $LOAD_PATH.unshift(lib_dir)
 
 require_relative "helper"
 
-exit Test::Unit::AutoRunner.run(true, test_dir)
+exit(Test::Unit::AutoRunner.run(true, test_dir))

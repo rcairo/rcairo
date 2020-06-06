@@ -1,13 +1,1 @@
-/*.tar.gz
-/*.tar.gz*
-/.git
-/Gemfile.lock
-/Makefile
-/Makefile.lib
-/dockerfiles/
-/ext/cairo/*.a
-/ext/cairo/*.bundle
-/ext/cairo/*.o
-/ext/cairo/*.so
-/ext/cairo/Makefile
-/pkg/
+*

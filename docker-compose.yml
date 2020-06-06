@@ -1,0 +1,110 @@
+version: "3.5"
+
+services:
+  arch-linux:
+    build:
+      context: .
+      dockerfile: dockerfiles/arch-linux.dockerfile
+    volumes:
+      - .:/rcairo:delegated
+    command:
+      /rcairo/dockerfiles/run-test.sh
+
+  centos-8:
+    build:
+      context: .
+      dockerfile: dockerfiles/centos.dockerfile
+      args:
+        CENTOS_VERSION: "8"
+    volumes:
+      - .:/rcairo:delegated
+    command:
+      /rcairo/dockerfiles/run-test.sh
+
+  debian-10:
+    build:
+      context: .
+      dockerfile: dockerfiles/debian.dockerfile
+      args:
+        DEBIAN_VERSION: "10"
+    volumes:
+      - .:/rcairo:delegated
+    command:
+      /rcairo/dockerfiles/run-test.sh
+
+  fedora-rawhide:
+    build:
+      context: .
+      dockerfile: dockerfiles/fedora.dockerfile
+      args:
+        FEDORA_VERSION: rawhide
+    volumes:
+      - .:/rcairo:delegated
+    command:
+      /rcairo/dockerfiles/run-test.sh
+
+  ruby-2.5:
+    build:
+      context: .
+      dockerfile: dockerfiles/ruby.dockerfile
+      args:
+        RUBY_VERSION: "2.5"
+    volumes:
+      - .:/rcairo:delegated
+    command:
+      /rcairo/dockerfiles/run-test.sh
+
+  ruby-2.6:
+    build:
+      context: .
+      dockerfile: dockerfiles/ruby.dockerfile
+      args:
+        RUBY_VERSION: "2.6"
+    volumes:
+      - .:/rcairo:delegated
+    command:
+      /rcairo/dockerfiles/run-test.sh
+
+  ruby-2.7:
+    build:
+      context: .
+      dockerfile: dockerfiles/ruby.dockerfile
+      args:
+        RUBY_VERSION: "2.7"
+    volumes:
+      - .:/rcairo:delegated
+    command:
+      /rcairo/dockerfiles/run-test.sh
+
+  ubuntu-16.04:
+    build:
+      context: .
+      dockerfile: dockerfiles/ubuntu.dockerfile
+      args:
+        UBUNTU_VERSION: "16.04"
+    volumes:
+      - .:/rcairo:delegated
+    command:
+      /rcairo/dockerfiles/run-test.sh
+
+  ubuntu-18.04:
+    build:
+      context: .
+      dockerfile: dockerfiles/ubuntu.dockerfile
+      args:
+        UBUNTU_VERSION: "18.04"
+    volumes:
+      - .:/rcairo:delegated
+    command:
+      /rcairo/dockerfiles/run-test.sh
+
+  ubuntu-20.04:
+    build:
+      context: .
+      dockerfile: dockerfiles/ubuntu.dockerfile
+      args:
+        UBUNTU_VERSION: "20.04"
+    volumes:
+      - .:/rcairo:delegated
+    command:
+      /rcairo/dockerfiles/run-test.sh

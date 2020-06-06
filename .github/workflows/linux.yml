@@ -1,0 +1,30 @@
+name: Linux
+on:
+  - push
+  - pull_request
+jobs:
+  test:
+    name: Test
+    strategy:
+      fail-fast: false
+      matrix:
+        service:
+          - arch-linux
+          - centos-8
+          - debian-10
+          - fedora-rawhide
+          - ruby-2.5
+          - ruby-2.6
+          - ruby-2.7
+          - ubuntu-16.04
+          - ubuntu-18.04
+          - ubuntu-20.04
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build Docker image
+        run: |
+          docker-compose build ${{ matrix.service }}
+      - name: Run
+        run: |
+          docker-compose run ${{ matrix.service }}
