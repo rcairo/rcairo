@@ -9,7 +9,6 @@ jobs:
       fail-fast: false
       matrix:
         ruby-version:
-          - "2.4"
           - "2.5"
           - "2.6"
           - "2.7"
@@ -21,7 +20,7 @@ jobs:
           ruby-version: ${{ matrix.ruby-version }}
       - name: Update MSYS2
         run: |
-          ridk exec pacman --sync --refresh --noconfirm
+          ridk exec pacman --sync --refresh --sysupgrade --noconfirm
       - name: Install Bundler
         run: |
           gem install bundler
