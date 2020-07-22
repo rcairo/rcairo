@@ -1,3 +1,28 @@
+Release 1.16.6 (2020-07-23) Sutou Kouhei <kou@cozmixng.org>
+============================================================
+
+Improvements
+------------
+
+  * Specified GPL 2.0 or later explicitly in gemspec.
+    [GitHub#62][Reported by Gabriel Mazetto]
+
+  * Added more metadata to gem.
+    [GitHub#63][Patch by Gabriel Mazetto]
+
+Fixes
+-----
+
+  * Windows: Fixed a link error.
+    [GitHub#ruby-gnome/ruby-gnome#1402][Reported by dsisnero]
+
+Thanks
+------
+
+  * Gabriel Mazetto
+
+  * dsisnero
+
 Release 1.16.5 (2020-02-03) Sutou Kouhei <kou@cozmixng.org>
 ============================================================
 
