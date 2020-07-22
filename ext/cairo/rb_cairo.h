@@ -55,7 +55,7 @@ RB_CAIRO_BEGIN_DECLS
 
 #ifdef __WIN32__
 #  ifdef RB_CAIRO_COMPILATION
-#    define RB_CAIRO_VAR __declspec(dllexport)
+#    define RB_CAIRO_VAR extern __declspec(dllexport)
 #  else
 #    define RB_CAIRO_VAR extern __declspec(dllimport)
 #  endif
