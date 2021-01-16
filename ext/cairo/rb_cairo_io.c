@@ -2,7 +2,7 @@
 /*
  * Ruby Cairo Binding
  *
- * Copyright 2005-2019 Kouhei Sutou <kou@cozmixng.org>
+ * Copyright 2005-2021 Sutou Kouhei <kou@cozmixng.org>
  *
  * This file is made available under the same terms as Ruby
  *
@@ -130,7 +130,7 @@ rb_cairo__io_read_func_invoke (VALUE read_closure)
     {
       rb_str_concat (result,
                      rb_funcall (input,
-                                 rb_cairo__io_id_read, 1, INT2NUM (rest)));
+                                 rb_cairo__io_id_read, 1, LONG2NUM (rest)));
     }
 
   memcpy ((void *)closure->data, (const void *) StringValuePtr (result), length);
