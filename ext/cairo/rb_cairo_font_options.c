@@ -5,7 +5,7 @@
  * $Author: kou $
  * $Date: 2008-09-19 12:56:27 $
  *
- * Copyright 2005-2018 Kouhei Sutou <kou@cozmixng.org>
+ * Copyright 2005-2021 Sutou Kouhei <kou@cozmixng.org>
  *
  * This file is made available under the same terms as Ruby
  *
@@ -104,7 +104,7 @@ cr_options_equal (VALUE self, VALUE other)
 static VALUE
 cr_options_hash (VALUE self)
 {
-  return INT2NUM (cairo_font_options_hash (_SELF (self)));
+  return ULONG2NUM (cairo_font_options_hash (_SELF (self)));
 }
 
 static VALUE
