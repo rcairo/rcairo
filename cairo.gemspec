@@ -44,8 +44,9 @@ Gem::Specification.new do |s|
   s.test_files = Dir.glob("test/**/*.rb")
   s.extra_rdoc_files = ["README.rdoc"]
 
-  s.add_runtime_dependency("pkg-config", ">= 1.2.2")
   s.add_runtime_dependency("native-package-installer", ">= 1.0.3")
+  s.add_runtime_dependency("pkg-config", ">= 1.2.2")
+  s.add_runtime_dependency("red-colors")
   s.add_development_dependency("bundler")
   s.add_development_dependency("test-unit")
   s.add_development_dependency("packnga")

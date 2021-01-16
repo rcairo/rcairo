@@ -1,3 +1,5 @@
+require "colors"
+
 module Cairo
   module Color
     module_function
@@ -21,8 +23,14 @@ module Cairo
         begin
           const_get(name).dup
         rescue NameError
-          raise ArgumentError, "unknown color name: #{value}"
+          color = Colors[value]
+          if color == value.to_s
+            raise ArgumentError, "unknown color name: #{value}"
+          end
+          RGB.new(*color.to_rgba.components)
         end
+      when Colors::AbstractColor
+        RGB.new(*value.to_rgba.components)
       else
         if robust
           raise ArgumentError, "can't parse as color name: #{value.inspect}"
