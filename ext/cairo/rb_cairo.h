@@ -5,7 +5,7 @@
  * $Author: kou $
  * $Date: 2008-09-19 12:56:27 $
  *
- * Copyright 2006-2020 Sutou Kouhei <kou@cozmixng.org>
+ * Copyright 2006-2021 Sutou Kouhei <kou@cozmixng.org>
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
  *
@@ -64,8 +64,8 @@ RB_CAIRO_BEGIN_DECLS
 #endif
 
 #define RB_CAIRO_VERSION_MAJOR 1
-#define RB_CAIRO_VERSION_MINOR 16
-#define RB_CAIRO_VERSION_MICRO 7
+#define RB_CAIRO_VERSION_MINOR 17
+#define RB_CAIRO_VERSION_MICRO 4
 
 RB_CAIRO_VAR VALUE rb_mCairo;
 RB_CAIRO_VAR VALUE rb_cCairo_Context;
