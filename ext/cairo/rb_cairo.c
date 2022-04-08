@@ -46,7 +46,7 @@ rb_cairo_satisfied_version (int argc, VALUE *argv, VALUE self)
 }
 
 void
-Init_cairo ()
+Init_cairo (void)
 {
   int major, minor, micro;
 

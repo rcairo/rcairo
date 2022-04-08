@@ -333,7 +333,7 @@ rb_cairo__exception_to_status (VALUE exception)
 }
 
 void
-Init_cairo_exception ()
+Init_cairo_exception (void)
 {
   VALUE rb_eCairo_Error;
   rb_eCairo_Error =
