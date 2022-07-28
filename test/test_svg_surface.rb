@@ -10,7 +10,11 @@ class SVGSurfaceTest < Test::Unit::TestCase
     only_cairo_version(1, 15, 10)
     output = StringIO.new
     surface = Cairo::SVGSurface.new(output, 10, 20)
-    assert_equal(Cairo::SVGUnit::PT, surface.document_unit)
+    if Cairo.satisfied_version?(1, 17, 6)
+      assert_equal(Cairo::SVGUnit::USER, surface.document_unit)
+    else
+      assert_equal(Cairo::SVGUnit::PT, surface.document_unit)
+    end
     surface.document_unit = Cairo::SVGUnit::CM
     assert_equal(Cairo::SVGUnit::CM, surface.document_unit)
   end
