@@ -1,7 +1,7 @@
-FROM archlinux/base
+FROM archlinux
 
 RUN \
-  pacman --sync --noconfirm --refresh && \
+  pacman --sync --noconfirm --refresh --sysupgrade && \
   pacman --sync --noconfirm \
     gcc \
     make \
