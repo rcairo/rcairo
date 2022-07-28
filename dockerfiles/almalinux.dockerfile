@@ -1,5 +1,5 @@
-ARG CENTOS_VERSION
-FROM centos:${CENTOS_VERSION}
+ARG VERSION
+FROM almalinux:${VERSION}
 
 RUN \
   dnf install -y \

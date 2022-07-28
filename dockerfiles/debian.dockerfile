@@ -1,5 +1,5 @@
-ARG DEBIAN_VERSION
-FROM debian:${DEBIAN_VERSION}
+ARG VERSION
+FROM debian:${VERSION}
 
 RUN \
   echo "debconf debconf/frontend select Noninteractive" | \

@@ -10,15 +10,16 @@ jobs:
       matrix:
         service:
           - arch-linux
-          - centos-8
+          - almalinux-8
+          - almalinux-9
           - debian-10
           - fedora-rawhide
-          - ruby-2.5
-          - ruby-2.6
           - ruby-2.7
           - ruby-3.0
+          - ruby-3.1
           - ubuntu-18.04
           - ubuntu-20.04
+          - ubuntu-22.04
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
