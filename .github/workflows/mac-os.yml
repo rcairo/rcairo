@@ -7,8 +7,8 @@ jobs:
     name: Test
     runs-on: macOS-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-ruby@v1
+      - uses: actions/checkout@v3
+      - uses: ruby/setup-ruby@v1
       - name: Install
         run: |
           # Need to install cairo gem as a normal gem to find rb_cairo.h by
