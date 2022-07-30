@@ -17,6 +17,8 @@
 #endif
 
 #ifdef CAIRO_HAS_QUARTZ_SURFACE
+static ID cr_id_image_surface;
+
 #  ifndef HAVE_TYPE_ENUM_RUBY_VALUE_TYPE
 enum ruby_value_type {
   RUBY_T_DATA = T_DATA
@@ -168,6 +170,7 @@ cr_quartz_image_surface_initialize (VALUE self, VALUE image_surface)
   surface = cairo_quartz_image_surface_create (RVAL2CRSURFACE (image_surface));
   rb_cairo_surface_check_status (surface);
   DATA_PTR (self) = surface;
+  rb_ivar_set (self, cr_id_image_surface, image_surface);
   if (rb_block_given_p ())
     rb_cairo__surface_yield_and_finish (self);
   return Qnil;
@@ -199,6 +202,8 @@ Init_cairo_quartz_surface (void)
 
   /* Quartz image surface */
 #ifdef RB_CAIRO_HAS_QUARTZ_IMAGE_SURFACE
+  cr_id_image_surface = rb_intern ("image_surface");
+
   rb_define_method (rb_cCairo_QuartzImageSurface, "initialize",
                     cr_quartz_image_surface_initialize, 1);
   rb_define_method (rb_cCairo_QuartzImageSurface, "image",
