@@ -488,7 +488,7 @@ cr_user_font_face_render_glyph_func_internal (cairo_scaled_font_t *scaled_font,
 
   face = cairo_scaled_font_get_font_face (scaled_font);
   self = (VALUE)cairo_font_face_get_user_data (face, &ruby_object_key);
-  receiver = rb_ivar_get (self, cr_id_render_glyph);
+  receiver = rb_ivar_get (self, id_registered_method_name);
   if (NIL_P (receiver) &&
       rb_obj_respond_to (self, id_registered_method_name, Qtrue))
     {
