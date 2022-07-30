@@ -20,17 +20,11 @@ VALUE rb_cCairo_FontExtents;
 
 #define _SELF(self)  (RVAL2CRFONTEXTENTS(self))
 
-static void
-cr_font_extents_free (void *extents)
-{
-  ruby_xfree(extents);
-}
-
 static const rb_data_type_t cr_font_extents_type = {
   "Cairo::FontExtents",
   {
     NULL,
-    cr_font_extents_free,
+    ruby_xfree,
   },
   NULL,
   NULL,
