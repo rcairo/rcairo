@@ -5,7 +5,7 @@
  * $Author: kou $
  * $Date: 2008-09-19 12:56:27 $
  *
- * Copyright 2005-2019 Kouhei Sutou <kou@cozmixng.org>
+ * Copyright 2005-2022 Sutou Kouhei <kou@cozmixng.org>
  *
  * This file is made available under the same terms as Ruby
  *
@@ -18,6 +18,23 @@
 VALUE rb_cCairo_ScaledFont;
 
 #define _SELF(self)  (RVAL2CRSCALEDFONT(self))
+
+static void
+cr_scaled_font_free (void *ptr)
+{
+  cairo_scaled_font_destroy ((cairo_scaled_font_t *) ptr);
+}
+
+static const rb_data_type_t cr_scaled_font_type = {
+  "Cairo::ScaledFont",
+  {
+    NULL,
+    cr_scaled_font_free,
+  },
+  NULL,
+  NULL,
+  RUBY_TYPED_FREE_IMMEDIATELY,
+};
 
 static inline void
 cr_scaled_font_check_status (cairo_scaled_font_t *font)
@@ -33,17 +50,8 @@ rb_cairo_scaled_font_from_ruby_object (VALUE obj)
     {
       rb_raise (rb_eTypeError, "not a cairo scaled font");
     }
-  Data_Get_Struct (obj, cairo_scaled_font_t, font);
+  TypedData_Get_Struct (obj, cairo_scaled_font_t, &cr_scaled_font_type, font);
   return font;
-}
-
-static void
-cr_scaled_font_free (void *ptr)
-{
-  if (ptr)
-    {
-      cairo_scaled_font_destroy ((cairo_scaled_font_t *) ptr);
-    }
 }
 
 VALUE
@@ -52,8 +60,9 @@ rb_cairo_scaled_font_to_ruby_object (cairo_scaled_font_t *font)
   if (font)
     {
       cairo_scaled_font_reference (font);
-      return Data_Wrap_Struct (rb_cCairo_ScaledFont, NULL,
-                               cr_scaled_font_free, font);
+      return TypedData_Wrap_Struct (rb_cCairo_ScaledFont,
+                                    &cr_scaled_font_type,
+                                    font);
     }
   else
     {
@@ -64,7 +73,7 @@ rb_cairo_scaled_font_to_ruby_object (cairo_scaled_font_t *font)
 static VALUE
 cr_scaled_font_allocate (VALUE klass)
 {
-  return Data_Wrap_Struct (klass, NULL, cr_scaled_font_free, NULL);
+  return TypedData_Wrap_Struct (klass, &cr_scaled_font_type, NULL);
 }
 
 static VALUE
