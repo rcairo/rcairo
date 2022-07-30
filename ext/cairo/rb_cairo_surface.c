@@ -103,6 +103,18 @@ static cairo_user_data_key_t cr_finished_key;
 
 #define _SELF  (RVAL2CRSURFACE(self))
 
+static void cr_surface_free (void *ptr);
+static const rb_data_type_t cr_surface_type = {
+  "Cairo::Surface",
+  {
+    NULL,
+    cr_surface_free,
+  },
+  NULL,
+  NULL,
+  RUBY_TYPED_FREE_IMMEDIATELY,
+};
+
 static VALUE
 cr_paper_parse (VALUE paper_description)
 {
@@ -240,7 +252,7 @@ rb_cairo_surface_from_ruby_object_without_null_check (VALUE obj)
     {
       rb_raise (rb_eTypeError, "not a cairo surface");
     }
-  Data_Get_Struct (obj, cairo_surface_t, surface);
+  TypedData_Get_Struct (obj, cairo_surface_t, &cr_surface_type, surface);
   return surface;
 }
 
@@ -461,7 +473,7 @@ rb_cairo_surface_to_ruby_object (cairo_surface_t *surface)
       klass = cr_surface_get_klass (surface);
       cairo_surface_reference (surface);
       rb_cairo_surface_adjust_memory_usage (surface, CR_TRUE);
-      return Data_Wrap_Struct (klass, NULL, cr_surface_free, surface);
+      return TypedData_Wrap_Struct (klass, &cr_surface_type, surface);
     }
   else
     {
@@ -484,7 +496,7 @@ rb_cairo_surface_to_ruby_object_with_destroy (cairo_surface_t *surface)
 static VALUE
 cr_surface_allocate (VALUE klass)
 {
-  return Data_Wrap_Struct (klass, NULL, cr_surface_free, NULL);
+  return TypedData_Wrap_Struct (klass, &cr_surface_type, NULL);
 }
 
 static VALUE
