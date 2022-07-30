@@ -5,7 +5,7 @@
  * $Author: kou $
  * $Date: 2008-08-14 12:37:50 $
  *
- * Copyright 2006-2008 Kouhei Sutou <kou@cozmixng.org>
+ * Copyright 2006-2022 Sutou Kouhei <kou@cozmixng.org>
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
  *
@@ -23,6 +23,17 @@ static ID cr_id_equal;
 
 #define _SELF  (RVAL2CRMATRIX(self))
 
+static const rb_data_type_t cr_matrix_type = {
+  "Cairo::Matrix",
+  {
+    NULL,
+    ruby_xfree,
+  },
+  NULL,
+  NULL,
+  RUBY_TYPED_FREE_IMMEDIATELY,
+};
+
 cairo_matrix_t *
 rb_cairo_matrix_from_ruby_object (VALUE obj)
 {
@@ -31,17 +42,8 @@ rb_cairo_matrix_from_ruby_object (VALUE obj)
     {
       rb_raise (rb_eTypeError, "not a cairo matrix");
     }
-  Data_Get_Struct (obj, cairo_matrix_t, matrix);
+  TypedData_Get_Struct (obj, cairo_matrix_t, &cr_matrix_type, matrix);
   return matrix;
-}
-
-static void
-cr_matrix_free (void *ptr)
-{
-  if (ptr)
-    {
-      xfree ((cairo_matrix_t *) ptr);
-    }
 }
 
 VALUE
@@ -51,8 +53,9 @@ rb_cairo_matrix_to_ruby_object (cairo_matrix_t *matrix)
     {
       cairo_matrix_t *new_matrix = ALLOC (cairo_matrix_t);
       *new_matrix = *matrix;
-      return Data_Wrap_Struct (rb_cCairo_Matrix, NULL,
-                               cr_matrix_free, new_matrix);
+      return TypedData_Wrap_Struct (rb_cCairo_Matrix,
+                                    &cr_matrix_type,
+                                    new_matrix);
     }
   else
     {
@@ -63,7 +66,7 @@ rb_cairo_matrix_to_ruby_object (cairo_matrix_t *matrix)
 static VALUE
 cr_matrix_allocate (VALUE klass)
 {
-  return Data_Wrap_Struct (klass, NULL, cr_matrix_free, NULL);
+  return TypedData_Wrap_Struct (klass, &cr_matrix_type, NULL);
 }
 
 static VALUE
