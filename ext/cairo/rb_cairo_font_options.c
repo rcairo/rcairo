@@ -5,7 +5,7 @@
  * $Author: kou $
  * $Date: 2008-09-19 12:56:27 $
  *
- * Copyright 2005-2021 Sutou Kouhei <kou@cozmixng.org>
+ * Copyright 2005-2022 Sutou Kouhei <kou@cozmixng.org>
  *
  * This file is made available under the same terms as Ruby
  *
@@ -17,6 +17,23 @@
 #define _SELF(self) (RVAL2CRFONTOPTIONS(self))
 
 VALUE rb_cCairo_FontOptions;
+
+static void
+cr_options_free (void *ptr)
+{
+  cairo_font_options_destroy ((cairo_font_options_t *) ptr);
+}
+
+static const rb_data_type_t cr_font_options_type = {
+  "Cairo::FontOptions",
+  {
+    NULL,
+    cr_options_free,
+  },
+  NULL,
+  NULL,
+  RUBY_TYPED_FREE_IMMEDIATELY,
+};
 
 static inline void
 cr_options_check_status (cairo_font_options_t *options)
@@ -32,17 +49,11 @@ rb_cairo_font_options_from_ruby_object (VALUE obj)
     {
       rb_raise (rb_eTypeError, "not a cairo font options");
     }
-  Data_Get_Struct (obj, cairo_font_options_t, options);
+  TypedData_Get_Struct (obj,
+                        cairo_font_options_t,
+                        &cr_font_options_type,
+                        options);
   return options;
-}
-
-static void
-cr_options_free (void *ptr)
-{
-  if (ptr)
-    {
-      cairo_font_options_destroy ((cairo_font_options_t *) ptr);
-    }
 }
 
 VALUE
@@ -53,8 +64,9 @@ rb_cairo_font_options_to_ruby_object (cairo_font_options_t *options)
       cairo_font_options_t *copied_options;
       copied_options = cairo_font_options_copy (options);
       cr_options_check_status (copied_options);
-      return Data_Wrap_Struct (rb_cCairo_FontOptions, NULL,
-                               cr_options_free, copied_options);
+      return TypedData_Wrap_Struct (rb_cCairo_FontOptions,
+                                    &cr_font_options_type,
+                                    copied_options);
     }
   else
     {
@@ -65,7 +77,7 @@ rb_cairo_font_options_to_ruby_object (cairo_font_options_t *options)
 static VALUE
 cr_options_allocate (VALUE klass)
 {
-  return Data_Wrap_Struct (klass, NULL, cr_options_free, NULL);
+  return TypedData_Wrap_Struct (klass, &cr_font_options_type, NULL);
 }
 
 static VALUE
