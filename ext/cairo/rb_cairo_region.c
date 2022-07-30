@@ -2,7 +2,7 @@
 /*
  * Ruby Cairo Binding
  *
- * Copyright 2010 Kouhei Sutou <kou@cozmixng.org>
+ * Copyright 2010-2022 Sutou Kouhei <kou@cozmixng.org>
  *
  * This file is made available under the same terms as Ruby
  *
@@ -18,6 +18,23 @@ VALUE rb_cCairo_Region = Qnil;
 
 #define _SELF  (RVAL2CRREGION(self))
 
+static void
+cr_region_free (void *ptr)
+{
+  cairo_region_destroy ((cairo_region_t *) ptr);
+}
+
+static const rb_data_type_t cr_region_type = {
+  "Cairo::Region",
+  {
+    NULL,
+    cr_region_free,
+  },
+  NULL,
+  NULL,
+  RUBY_TYPED_FREE_IMMEDIATELY,
+};
+
 static inline void
 cr_region_check_status (cairo_region_t *region)
 {
@@ -32,17 +49,8 @@ rb_cairo_region_from_ruby_object (VALUE obj)
     {
       rb_raise (rb_eTypeError, "not a cairo region");
     }
-  Data_Get_Struct (obj, cairo_region_t, region);
+  TypedData_Get_Struct (obj, cairo_region_t, &cr_region_type, region);
   return region;
-}
-
-static void
-cr_region_free (void *ptr)
-{
-  if (ptr)
-    {
-      cairo_region_destroy ((cairo_region_t *) ptr);
-    }
 }
 
 VALUE
@@ -51,7 +59,7 @@ rb_cairo_region_to_ruby_object (cairo_region_t *region)
   if (region)
     {
       cairo_region_reference (region);
-      return Data_Wrap_Struct (rb_cCairo_Region, NULL, cr_region_free, region);
+      return TypedData_Wrap_Struct (rb_cCairo_Region, &cr_region_type, region);
     }
   else
     {
@@ -62,7 +70,7 @@ rb_cairo_region_to_ruby_object (cairo_region_t *region)
 static VALUE
 cr_region_allocate (VALUE klass)
 {
-  return Data_Wrap_Struct (klass, NULL, cr_region_free, NULL);
+  return TypedData_Wrap_Struct (klass, &cr_region_type, NULL);
 }
 
 static VALUE
