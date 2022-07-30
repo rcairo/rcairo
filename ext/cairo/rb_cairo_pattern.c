@@ -5,7 +5,7 @@
  * $Author: kou $
  * $Date: 2008-06-12 10:59:54 $
  *
- * Copyright 2012-2019 Kouhei Sutou <kou@cozmixng.org>
+ * Copyright 2012-2022 Sutou Kouhei <kou@cozmixng.org>
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
  *
@@ -133,6 +133,23 @@ cr_pattern_raster_source_supported_p (VALUE klass)
 #endif
 }
 
+static void
+cr_pattern_free (void *ptr)
+{
+  cairo_pattern_destroy ((cairo_pattern_t *) ptr);
+}
+
+static const rb_data_type_t cr_pattern_type = {
+  "Cairo::Pattern",
+  {
+    NULL,
+    cr_pattern_free,
+  },
+  NULL,
+  NULL,
+  RUBY_TYPED_FREE_IMMEDIATELY,
+};
+
 cairo_pattern_t *
 rb_cairo_pattern_from_ruby_object (VALUE obj)
 {
@@ -141,17 +158,8 @@ rb_cairo_pattern_from_ruby_object (VALUE obj)
     {
       rb_raise (rb_eTypeError, "not a cairo pattern");
     }
-  Data_Get_Struct (obj, cairo_pattern_t, pattern);
+  TypedData_Get_Struct (obj, cairo_pattern_t, &cr_pattern_type, pattern);
   return pattern;
-}
-
-static void
-cr_pattern_free (void *ptr)
-{
-  if (ptr)
-    {
-      cairo_pattern_destroy ((cairo_pattern_t *) ptr);
-    }
 }
 
 VALUE
@@ -162,7 +170,7 @@ rb_cairo_pattern_to_ruby_object (cairo_pattern_t *pattern)
       VALUE klass;
       klass = cr_pattern_get_klass (pattern);
       cairo_pattern_reference (pattern);
-      return Data_Wrap_Struct (klass, NULL, cr_pattern_free, pattern);
+      return TypedData_Wrap_Struct (klass, &cr_pattern_type, pattern);
     }
   else
     {
@@ -173,7 +181,7 @@ rb_cairo_pattern_to_ruby_object (cairo_pattern_t *pattern)
 static VALUE
 cr_pattern_allocate (VALUE klass)
 {
-  return Data_Wrap_Struct (klass, NULL, cr_pattern_free, NULL);
+  return TypedData_Wrap_Struct (klass, &cr_pattern_type, NULL);
 }
 
 static VALUE
