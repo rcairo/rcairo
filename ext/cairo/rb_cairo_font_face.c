@@ -55,6 +55,24 @@ static ID cr_id_at_need_cluster_flags;
 
 #define _SELF  (RVAL2CRFONTFACE(self))
 
+static void
+cr_font_face_free (void *ptr)
+{
+  cairo_font_face_t *face = ptr;
+  cairo_font_face_destroy (face);
+}
+
+static const rb_data_type_t cr_font_face_type = {
+  "Cairo::FontFace",
+  {
+    NULL,
+    cr_font_face_free,
+  },
+  NULL,
+  NULL,
+  RUBY_TYPED_FREE_IMMEDIATELY,
+};
+
 static inline void
 cr_font_face_check_status (cairo_font_face_t *face)
 {
@@ -72,21 +90,11 @@ rb_cairo_font_face_from_ruby_object (VALUE obj)
                 "not a cairo font face: %s",
                 rb_cairo__inspect (obj));
     }
-  Data_Get_Struct (obj, cairo_font_face_t, face);
+  TypedData_Get_Struct (obj, cairo_font_face_t, &cr_font_face_type, face);
   if (!face)
     rb_cairo_check_status (CAIRO_STATUS_NULL_POINTER);
   cr_font_face_check_status (face);
   return face;
-}
-
-static void
-cr_font_face_free (void *ptr)
-{
-  if (ptr)
-    {
-      cairo_font_face_t *face = ptr;
-      cairo_font_face_destroy (face);
-    }
 }
 
 VALUE
@@ -116,7 +124,7 @@ rb_cairo_font_face_to_ruby_object (cairo_font_face_t *face)
           break;
         }
       cairo_font_face_reference (face);
-      return Data_Wrap_Struct (klass, NULL, cr_font_face_free, face);
+      return TypedData_Wrap_Struct (klass, &cr_font_face_type, face);
     }
   else
     {
@@ -127,7 +135,7 @@ rb_cairo_font_face_to_ruby_object (cairo_font_face_t *face)
 static VALUE
 cr_font_face_allocate (VALUE klass)
 {
-  return Data_Wrap_Struct (klass, NULL, cr_font_face_free, NULL);
+  return TypedData_Wrap_Struct (klass, &cr_font_face_type, NULL);
 }
 
 static VALUE
