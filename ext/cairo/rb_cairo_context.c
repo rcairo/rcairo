@@ -1603,20 +1603,26 @@ static VALUE
 cr_copy_path (VALUE self)
 {
   cairo_path_t *path;
+  VALUE rb_path;
 
   path = cairo_copy_path (_SELF);
   rb_cairo_check_status (path->status);
-  return CRPATH2RVAL (path);
+  rb_path = CRPATH2RVAL (path);
+  cairo_path_destroy (path);
+  return rb_path;
 }
 
 static VALUE
 cr_copy_path_flat (VALUE self)
 {
   cairo_path_t *path;
+  VALUE rb_path;
 
-  path =  cairo_copy_path_flat (_SELF);
+  path = cairo_copy_path_flat (_SELF);
   rb_cairo_check_status (path->status);
-  return CRPATH2RVAL (path);
+  rb_path = CRPATH2RVAL (path);
+  cairo_path_destroy (path);
+  return rb_path;
 }
 
 static VALUE

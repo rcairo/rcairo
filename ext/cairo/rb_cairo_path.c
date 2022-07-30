@@ -5,7 +5,7 @@
  * $Author: kou $
  * $Date: 2008-04-04 03:52:31 $
  *
- * Copyright 2005 Kouhei Sutou <kou@cozmixng.org>
+ * Copyright 2005-2022 Sutou Kouhei <kou@cozmixng.org>
  *
  * This file is made available under the same terms as Ruby
  *
@@ -223,54 +223,34 @@ cr_path_close_path_initialize (VALUE self)
 static void
 cr_path_free (void *ptr)
 {
-  if (ptr)
-    {
-      cairo_path_destroy ((cairo_path_t *)ptr);
-    }
+  cairo_path_t *path = ptr;
+  ruby_xfree (path->data);
+  ruby_xfree (path);
 }
+
+static const rb_data_type_t cr_path_type = {
+  "Cairo::Path",
+  {
+    NULL,
+    cr_path_free,
+  },
+  NULL,
+  NULL,
+  RUBY_TYPED_FREE_IMMEDIATELY,
+};
 
 cairo_path_t *
 rb_cairo_path_from_ruby_object (VALUE obj)
 {
-  VALUE context;
-  cairo_t *cr;
-  cairo_path_t *path, *copied_path;
+  cairo_path_t *path;
 
   if (!rb_cairo__is_kind_of (obj, rb_cCairo_Path))
     {
       rb_raise (rb_eTypeError, "not a cairo path");
     }
-  Data_Get_Struct (obj, cairo_path_t, path);
+  TypedData_Get_Struct (obj, cairo_path_t, &cr_path_type, path);
 
-  context = rb_ivar_get (obj, id_at_context);
-  if (NIL_P (context))
-    return path;
-
-  cr = RVAL2CRCONTEXT (context);
-  if (cairo_status (cr) != CAIRO_STATUS_SUCCESS)
-    return path;
-
-  copied_path = cairo_copy_path (cr);
-  rb_ivar_set (obj, id_current_path, CRPATH2RVAL (copied_path));
-  return copied_path;
-}
-
-static void
-cr_path_ensure_internal_context (VALUE rb_path, cairo_path_t *path)
-{
-  cairo_surface_t *surface;
-  cairo_t *cr;
-
-  if (!NIL_P (rb_ivar_get (rb_path, id_at_context)))
-    return;
-
-  surface = cairo_image_surface_create (CAIRO_FORMAT_A1, 1, 1);
-  cr = cairo_create (surface);
-  if (path->num_data > 0)
-    cairo_append_path (cr, path);
-  rb_cairo_check_status (cairo_status (cr));
-  rb_ivar_set (rb_path, id_at_context, CRCONTEXT2RVAL (cr));
-  cairo_destroy (cr);
+  return path;
 }
 
 VALUE
@@ -279,8 +259,15 @@ rb_cairo_path_to_ruby_object (cairo_path_t *path)
   if (path)
     {
       VALUE rb_path;
-      rb_path = Data_Wrap_Struct (rb_cCairo_Path, NULL, cr_path_free, path);
-      cr_path_ensure_internal_context (rb_path, path);
+      cairo_path_t *copied_path;
+      copied_path = RB_ALLOC (cairo_path_t);
+      copied_path->data = RB_ALLOC_N (cairo_path_data_t, path->num_data);
+      memcpy(copied_path->data,
+             path->data,
+             sizeof (cairo_path_data_t) * path->num_data);
+      rb_path = TypedData_Wrap_Struct (rb_cCairo_Path,
+                                       &cr_path_type,
+                                       copied_path);
       return rb_path;
     }
   else
@@ -292,7 +279,7 @@ rb_cairo_path_to_ruby_object (cairo_path_t *path)
 static VALUE
 cr_path_allocate (VALUE klass)
 {
-  return Data_Wrap_Struct (klass, NULL, cr_path_free, NULL);
+  return TypedData_Wrap_Struct (klass, &cr_path_type, NULL);
 }
 
 static VALUE
@@ -300,13 +287,11 @@ cr_path_initialize (VALUE self)
 {
   cairo_path_t *path;
 
-  path = ALLOC(cairo_path_t);
+  path = RB_ALLOC (cairo_path_t);
   path->status = CAIRO_STATUS_SUCCESS;
   path->data = NULL;
   path->num_data = 0;
-
   DATA_PTR (self) = path;
-  cr_path_ensure_internal_context (self, path);
 
   return Qnil;
 }
