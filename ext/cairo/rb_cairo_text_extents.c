@@ -5,6 +5,7 @@
  * $Author: kou $
  * $Date: 2008-08-17 05:41:28 $
  *
+ * Copyright 2022 Sutou Kouhei <kou@cozmixng.org>
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
  *
@@ -19,6 +20,17 @@ VALUE rb_cCairo_TextExtents;
 
 #define _SELF(self)  (RVAL2CRTEXTEXTENTS(self))
 
+static const rb_data_type_t cr_text_extents_type = {
+  "Cairo::TextExtents",
+  {
+    NULL,
+    ruby_xfree,
+  },
+  NULL,
+  NULL,
+  RUBY_TYPED_FREE_IMMEDIATELY,
+};
+
 cairo_text_extents_t *
 rb_cairo_text_extents_from_ruby_object (VALUE obj)
 {
@@ -27,7 +39,10 @@ rb_cairo_text_extents_from_ruby_object (VALUE obj)
     {
       rb_raise (rb_eTypeError, "not a cairo text_extents");
     }
-  Data_Get_Struct (obj, cairo_text_extents_t, extents);
+  TypedData_Get_Struct (obj,
+                        cairo_text_extents_t,
+                        &cr_text_extents_type,
+                        extents);
   return extents;
 }
 
@@ -38,7 +53,9 @@ rb_cairo_text_extents_to_ruby_object (cairo_text_extents_t *extents)
     {
       cairo_text_extents_t *new_extents = ALLOC (cairo_text_extents_t);
       *new_extents = *extents;
-      return Data_Wrap_Struct (rb_cCairo_TextExtents, NULL, -1, new_extents);
+      return TypedData_Wrap_Struct (rb_cCairo_TextExtents,
+                                    &cr_text_extents_type,
+                                    new_extents);
     }
   else
     {
@@ -49,7 +66,7 @@ rb_cairo_text_extents_to_ruby_object (cairo_text_extents_t *extents)
 static VALUE
 cr_text_extents_allocate (VALUE klass)
 {
-  return Data_Wrap_Struct (klass, NULL, -1, NULL);
+  return TypedData_Wrap_Struct (klass, &cr_text_extents_type, NULL);
 }
 
 static VALUE
