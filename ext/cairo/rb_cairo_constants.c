@@ -5,7 +5,7 @@
  * $Author: kou $
  * $Date: 2008-09-19 12:56:27 $
  *
- * Copyright 2005-2019 Kouhei Sutou <kou@cozmixng.org>
+ * Copyright 2005-2022 Sutou Kouhei <kou@cozmixng.org>
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
  *
@@ -113,7 +113,11 @@ VALUE rb_mCairo_SVGUnit = Qnil;
 #define CAIRO_PS_LEVEL_MAX CAIRO_PS_LEVEL_3
 
 #define CAIRO_PDF_VERSION_MIN CAIRO_PDF_VERSION_1_4
-#define CAIRO_PDF_VERSION_MAX CAIRO_PDF_VERSION_1_5
+#if CAIRO_CHECK_VERSION(1, 17, 6)
+#  define CAIRO_PDF_VERSION_MAX CAIRO_PDF_VERSION_1_7
+#else
+#  define CAIRO_PDF_VERSION_MAX CAIRO_PDF_VERSION_1_5
+#endif
 
 #define CAIRO_TEXT_CLUSTER_FLAG_MIN 0
 #define CAIRO_TEXT_CLUSTER_FLAG_MAX CAIRO_TEXT_CLUSTER_FLAG_BACKWARD
@@ -644,6 +648,12 @@ Init_cairo_constants (void)
                    INT2FIX (CAIRO_PDF_VERSION_1_4));
   rb_define_const (rb_mCairo_PDFVersion, "VERSION_1_5",
                    INT2FIX (CAIRO_PDF_VERSION_1_5));
+#    if CAIRO_CHECK_VERSION(1, 17, 6)
+  rb_define_const (rb_mCairo_PDFVersion, "VERSION_1_6",
+                   INT2FIX (CAIRO_PDF_VERSION_1_6));
+  rb_define_const (rb_mCairo_PDFVersion, "VERSION_1_7",
+                   INT2FIX (CAIRO_PDF_VERSION_1_7));
+#    endif
 
   rb_define_singleton_method (rb_mCairo_PDFVersion, "list",
                               cr_pdf_get_versions, 0);
