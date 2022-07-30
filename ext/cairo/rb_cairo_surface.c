@@ -1336,6 +1336,26 @@ cr_pdf_surface_set_thumbnail_size (VALUE self,
   return Qnil;
 }
 #  endif
+
+#  if CAIRO_CHECK_VERSION(1, 17, 6)
+static VALUE
+cr_pdf_surface_set_custom_metadata (VALUE self,
+                                    VALUE rb_name,
+                                    VALUE rb_value)
+{
+  cairo_surface_t *surface;
+  const char *name;
+  const char *value;
+
+  surface = _SELF;
+  name = RVAL2CSTR (rb_name);
+  value = RVAL2CSTR (rb_value);
+  cairo_pdf_surface_set_custom_metadata (surface, name, value);
+  rb_cairo_surface_check_status (surface);
+
+  return Qnil;
+}
+#  endif
 #endif
 
 #ifdef CAIRO_HAS_PS_SURFACE
@@ -2183,6 +2203,11 @@ Init_cairo_surface (void)
     rb_define_method (rb_cCairo_PDFSurface, "set_thumbnail_size",
                       cr_pdf_surface_set_thumbnail_size, 2);
   }
+#  endif
+
+#  if CAIRO_CHECK_VERSION(1, 17, 6)
+  rb_define_method (rb_cCairo_PDFSurface, "set_custom_metadata",
+                    cr_pdf_surface_set_custom_metadata, 2);
 #  endif
 
   RB_CAIRO_DEF_SETTERS (rb_cCairo_PDFSurface);
