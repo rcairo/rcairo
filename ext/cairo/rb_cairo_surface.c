@@ -515,6 +515,7 @@ cr_surface_finish (VALUE self)
   cairo_surface_finish (surface);
   cairo_surface_set_user_data (surface, &cr_finished_key, (void *)CR_TRUE, NULL);
   cairo_surface_set_user_data (surface, &cr_object_holder_key, NULL, NULL);
+  DATA_PTR (self) = NULL;
 
   if (closure && !NIL_P (closure->error))
     rb_exc_raise (closure->error);
