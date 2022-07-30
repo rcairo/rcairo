@@ -2,7 +2,7 @@
 /*
  * Ruby Cairo Binding
  *
- * Copyright 2005-2019 Kouhei Sutou <kou@cozmixng.org>
+ * Copyright 2005-2022 Sutou Kouhei <kou@cozmixng.org>
  * Copyright 2014 Patrick Hanevold <patrick.hanevold@gmail.com>
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
@@ -232,6 +232,28 @@ rb_cairo_surface_adjust_memory_usage (cairo_surface_t *surface,
 #endif
 }
 
+static cairo_surface_t *
+rb_cairo_surface_from_ruby_object_without_null_check (VALUE obj)
+{
+  cairo_surface_t *surface;
+  if (!rb_cairo__is_kind_of (obj, rb_cCairo_Surface))
+    {
+      rb_raise (rb_eTypeError, "not a cairo surface");
+    }
+  Data_Get_Struct (obj, cairo_surface_t, surface);
+  return surface;
+}
+
+cairo_surface_t *
+rb_cairo_surface_from_ruby_object (VALUE obj)
+{
+  cairo_surface_t *surface =
+    rb_cairo_surface_from_ruby_object_without_null_check (obj);
+  if (!surface)
+    rb_cairo_check_status (CAIRO_STATUS_NULL_POINTER);
+  return surface;
+}
+
 static void
 cr_surface_destroy_raw (cairo_surface_t *surface)
 {
@@ -254,7 +276,7 @@ cr_surface_destroy (VALUE self)
 static VALUE
 cr_surface_destroy_with_destroy_check (VALUE self)
 {
-  if (_SELF)
+  if (rb_cairo_surface_from_ruby_object_without_null_check (self))
     cr_surface_destroy (self);
   return Qnil;
 }
@@ -407,21 +429,6 @@ cr_surface_xml_supported_p (VALUE klass)
 #endif
 }
 
-/* constructor/de-constructor */
-cairo_surface_t *
-rb_cairo_surface_from_ruby_object (VALUE obj)
-{
-  cairo_surface_t *surface;
-  if (!rb_cairo__is_kind_of (obj, rb_cCairo_Surface))
-    {
-      rb_raise (rb_eTypeError, "not a cairo surface");
-    }
-  Data_Get_Struct (obj, cairo_surface_t, surface);
-  if (!surface)
-    rb_cairo_check_status (CAIRO_STATUS_NULL_POINTER);
-  return surface;
-}
-
 static rb_cairo__object_holder_t *
 cr_object_holder_new (VALUE object)
 {
@@ -532,7 +539,7 @@ rb_cairo__surface_yield_and_finish (VALUE self)
 
   rb_result = rb_yield (self);
 
-  surface = _SELF;
+  surface = rb_cairo_surface_from_ruby_object_without_null_check (self);
   if (!surface)
     return rb_result;
   if (cairo_surface_status (surface) != CAIRO_STATUS_SUCCESS)
