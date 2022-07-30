@@ -5,7 +5,7 @@
  * $Author: kou $
  * $Date: 2008-09-26 13:52:08 $
  *
- * Copyright 2005-2019 Kouhei Sutou <kou@cozmixng.org>
+ * Copyright 2005-2022 Sutou Kouhei <kou@cozmixng.org>
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
  *
@@ -40,6 +40,23 @@ cr_check_status (cairo_t *context)
   rb_cairo_check_status (cairo_status (context));
 }
 
+static void
+cr_context_free (void *ptr)
+{
+  cairo_destroy ((cairo_t *) ptr);
+}
+
+static const rb_data_type_t cr_context_type = {
+  "Cairo::Context",
+  {
+    NULL,
+    cr_context_free,
+  },
+  NULL,
+  NULL,
+  RUBY_TYPED_FREE_IMMEDIATELY,
+};
+
 /* Functions for manipulating state objects */
 cairo_t *
 rb_cairo_context_from_ruby_object (VALUE obj)
@@ -49,7 +66,7 @@ rb_cairo_context_from_ruby_object (VALUE obj)
     {
       rb_raise (rb_eTypeError, "not a cairo graphics context");
     }
-  Data_Get_Struct (obj, cairo_t, context);
+  TypedData_Get_Struct (obj, cairo_t, &cr_context_type, context);
   if (!context)
     rb_cairo_check_status (CAIRO_STATUS_NULL_POINTER);
   return context;
@@ -67,22 +84,13 @@ cr_object_holder_free (void *ptr)
   rb_cairo__object_holder_free (rb_cCairo_Context, ptr);
 }
 
-static void
-cr_context_free (void *ptr)
-{
-  if (ptr)
-    {
-      cairo_destroy ((cairo_t *) ptr);
-    }
-}
-
 VALUE
 rb_cairo_context_to_ruby_object (cairo_t *cr)
 {
   if (cr)
     {
       cairo_reference (cr);
-      return Data_Wrap_Struct (rb_cCairo_Context, NULL, cr_context_free, cr);
+      return TypedData_Wrap_Struct (rb_cCairo_Context, &cr_context_type, cr);
     }
   else
     {
@@ -93,7 +101,7 @@ rb_cairo_context_to_ruby_object (cairo_t *cr)
 static VALUE
 cr_allocate (VALUE klass)
 {
-  return Data_Wrap_Struct (klass, NULL, cr_context_free, NULL);
+  return TypedData_Wrap_Struct (klass, &cr_context_type, NULL);
 }
 
 static void
