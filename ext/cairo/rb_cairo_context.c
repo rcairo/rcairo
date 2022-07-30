@@ -523,6 +523,16 @@ cr_set_line_width (VALUE self, VALUE width)
   return self;
 }
 
+#if CAIRO_CHECK_VERSION(1, 17, 6)
+static VALUE
+cr_set_hairline (VALUE self, VALUE hairline)
+{
+  cairo_set_hairline (_SELF, RTEST (hairline));
+  cr_check_status (_SELF);
+  return self;
+}
+#endif
+
 static VALUE
 cr_set_line_cap (VALUE self, VALUE cap)
 {
@@ -1490,6 +1500,14 @@ cr_get_line_width (VALUE self)
   return rb_float_new (cairo_get_line_width (_SELF));
 }
 
+#if CAIRO_CHECK_VERSION(1, 17, 6)
+static VALUE
+cr_get_hairline (VALUE self)
+{
+  return CBOOL2RVAL (cairo_get_hairline (_SELF));
+}
+#endif
+
 static VALUE
 cr_get_line_cap (VALUE self)
 {
@@ -1751,6 +1769,9 @@ Init_cairo_context (void)
   rb_define_method (rb_cCairo_Context, "set_antialias", cr_set_antialias, 1);
   rb_define_method (rb_cCairo_Context, "set_fill_rule", cr_set_fill_rule, 1);
   rb_define_method (rb_cCairo_Context, "set_line_width", cr_set_line_width, 1);
+#if CAIRO_CHECK_VERSION(1, 17, 6)
+  rb_define_method (rb_cCairo_Context, "set_hairline", cr_set_hairline, 1);
+#endif
   rb_define_method (rb_cCairo_Context, "set_line_cap", cr_set_line_cap, 1);
   rb_define_method (rb_cCairo_Context, "set_line_join", cr_set_line_join, 1);
   rb_define_method (rb_cCairo_Context, "set_dash", cr_set_dash, -1);
@@ -1862,6 +1883,9 @@ Init_cairo_context (void)
                     cr_get_current_point, 0);
   rb_define_method (rb_cCairo_Context, "fill_rule", cr_get_fill_rule, 0);
   rb_define_method (rb_cCairo_Context, "line_width", cr_get_line_width, 0);
+#if CAIRO_CHECK_VERSION(1, 17, 6)
+  rb_define_method (rb_cCairo_Context, "hairline?", cr_get_hairline, 0);
+#endif
   rb_define_method (rb_cCairo_Context, "line_cap", cr_get_line_cap, 0);
   rb_define_method (rb_cCairo_Context, "line_join", cr_get_line_join, 0);
   rb_define_method (rb_cCairo_Context, "miter_limit", cr_get_miter_limit, 0);

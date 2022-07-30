@@ -129,4 +129,18 @@ class ContextTest < Test::Unit::TestCase
       context.raw_address > 0
     end
   end
+
+  def test_hairline
+    only_cairo_version(1, 17, 6)
+
+    Cairo::Context.create(@surface) do |context|
+      assert do
+        not context.hairline?
+      end
+      context.hairline = true
+      assert do
+        context.hairline?
+      end
+    end
+  end
 end
