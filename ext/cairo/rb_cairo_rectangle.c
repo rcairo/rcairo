@@ -2,7 +2,7 @@
 /*
  * Ruby Cairo Binding
  *
- * Copyright 2005-2014 Kouhei Sutou <kou@cozmixng.org>
+ * Copyright 2005-2022 Sutou Kouhei <kou@cozmixng.org>
  *
  * This file is made available under the same terms as Ruby
  *
@@ -15,10 +15,21 @@ VALUE rb_cCairo_Rectangle;
 #define _SELF  ((cairo_rectangle_int_t *)DATA_PTR (self))
 
 #if CAIRO_CHECK_VERSION(1, 10, 0)
+static const rb_data_type_t cr_rectangle_type = {
+  "Cairo::Rectangle",
+  {
+    NULL,
+    ruby_xfree,
+  },
+  NULL,
+  NULL,
+  RUBY_TYPED_FREE_IMMEDIATELY,
+};
+
 static VALUE
 cr_rectangle_allocate (VALUE klass)
 {
-  return Data_Wrap_Struct (klass, NULL, xfree, NULL);
+  return TypedData_Wrap_Struct (klass, &cr_rectangle_type, NULL);
 }
 
 static VALUE
