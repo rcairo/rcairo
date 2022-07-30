@@ -6,8 +6,10 @@ class QuartzImageSurfaceTest < Test::Unit::TestCase
   end
 
   def test_quartz_image_surface
-    surface = Cairo::ImageSurface.new(100, 100)
-    quartz_surface = Cairo::QuartzImageSurface.new(surface)
-    assert_kind_of(Cairo::QuartzImageSurface, quartz_surface)
+    Cairo::ImageSurface.create(100, 100) do |surface|
+      Cairo::QuartzImageSurface.create(surface) do |quartz_surface|
+        assert_kind_of(Cairo::QuartzImageSurface, quartz_surface)
+      end
+    end
   end
 end
