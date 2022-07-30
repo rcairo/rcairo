@@ -5,7 +5,7 @@
  * $Author: kou $
  * $Date: 2008-08-16 08:16:40 $
  *
- * Copyright 2008 Kouhei Sutou <kou@cozmixng.org>
+ * Copyright 2008-2022 Sutou Kouhei <kou@cozmixng.org>
  *
  * This file is made available under the same terms as Ruby
  *
@@ -20,6 +20,17 @@ VALUE rb_cCairo_TextCluster = Qnil;
 #if CAIRO_CHECK_VERSION(1, 7, 2)
 #define _SELF(self)  (RVAL2CRTEXTCLUSTER(self))
 
+static const rb_data_type_t cr_text_cluster_type = {
+  "Cairo::TextCluster",
+  {
+    NULL,
+    ruby_xfree,
+  },
+  NULL,
+  NULL,
+  RUBY_TYPED_FREE_IMMEDIATELY,
+};
+
 cairo_text_cluster_t *
 rb_cairo_text_cluster_from_ruby_object (VALUE obj)
 {
@@ -29,17 +40,11 @@ rb_cairo_text_cluster_from_ruby_object (VALUE obj)
       rb_raise (rb_eTypeError,
                 "not a cairo cluster: %s", rb_cairo__inspect (obj));
     }
-  Data_Get_Struct (obj, cairo_text_cluster_t, cluster);
+  TypedData_Get_Struct (obj,
+                        cairo_text_cluster_t,
+                        &cr_text_cluster_type,
+                        cluster);
   return cluster;
-}
-
-static void
-cr_text_cluster_free (void *ptr)
-{
-  if (ptr)
-    {
-      xfree (ptr);
-    }
 }
 
 VALUE
@@ -51,8 +56,9 @@ rb_cairo_text_cluster_to_ruby_object (cairo_text_cluster_t *cluster)
 
       new_cluster = ALLOC (cairo_text_cluster_t);
       *new_cluster = *cluster;
-      return Data_Wrap_Struct (rb_cCairo_TextCluster, NULL,
-                               cr_text_cluster_free, new_cluster);
+      return TypedData_Wrap_Struct (rb_cCairo_TextCluster,
+                                    &cr_text_cluster_type,
+                                    new_cluster);
     }
   else
     {
@@ -63,7 +69,7 @@ rb_cairo_text_cluster_to_ruby_object (cairo_text_cluster_t *cluster)
 static VALUE
 cr_text_cluster_allocate (VALUE klass)
 {
-  return Data_Wrap_Struct (klass, NULL, cr_text_cluster_free, NULL);
+  return TypedData_Wrap_Struct (klass, &cr_text_cluster_type, NULL);
 }
 
 static VALUE
