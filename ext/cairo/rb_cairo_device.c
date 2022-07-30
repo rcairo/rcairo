@@ -2,7 +2,7 @@
 /*
  * Ruby Cairo Binding
  *
- * Copyright 2010-2019 Kouhei Sutou <kou@cozmixng.org>
+ * Copyright 2010-2022 Sutou Kouhei <kou@cozmixng.org>
  *
  * This file is made available under the same terms as Ruby
  *
@@ -117,6 +117,24 @@ cr_device_xml_supported_p (VALUE klass)
 }
 
 /* constructor/de-constructor */
+static void
+cr_device_free (void *ptr)
+{
+  cairo_device_t *device = ptr;
+  cairo_device_destroy (device);
+}
+
+static const rb_data_type_t cr_device_type = {
+  "Cairo::Device",
+  {
+    NULL,
+    cr_device_free,
+  },
+  NULL,
+  NULL,
+  RUBY_TYPED_FREE_IMMEDIATELY,
+};
+
 cairo_device_t *
 rb_cairo_device_from_ruby_object (VALUE obj)
 {
@@ -125,7 +143,7 @@ rb_cairo_device_from_ruby_object (VALUE obj)
     {
       rb_raise (rb_eTypeError, "not a cairo device");
     }
-  Data_Get_Struct (obj, cairo_device_t, device);
+  TypedData_Get_Struct (obj, cairo_device_t, &cr_device_type, device);
   if (!device)
     rb_cairo_check_status (CAIRO_STATUS_NULL_POINTER);
   return device;
@@ -145,15 +163,6 @@ cr_object_holder_free (void *ptr)
 }
 #endif
 
-static void
-cr_device_free (void *ptr)
-{
-  cairo_device_t *device = ptr;
-
-  if (device)
-    cairo_device_destroy (device);
-}
-
 VALUE
 rb_cairo_device_to_ruby_object (cairo_device_t *device)
 {
@@ -162,7 +171,7 @@ rb_cairo_device_to_ruby_object (cairo_device_t *device)
       VALUE klass;
       klass = cr_device_get_klass (device);
       cairo_device_reference (device);
-      return Data_Wrap_Struct (klass, NULL, cr_device_free, device);
+      return TypedData_Wrap_Struct (klass, &cr_device_type, device);
     }
   else
     {
@@ -185,7 +194,7 @@ rb_cairo_device_to_ruby_object_with_destroy (cairo_device_t *device)
 static VALUE
 cr_device_allocate (VALUE klass)
 {
-  return Data_Wrap_Struct (klass, NULL, cr_device_free, NULL);
+  return TypedData_Wrap_Struct (klass, &cr_device_type, NULL);
 }
 
 static VALUE
