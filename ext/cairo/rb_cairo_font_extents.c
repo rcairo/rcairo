@@ -27,14 +27,14 @@ cr_font_extents_free (void *extents)
 }
 
 static const rb_data_type_t cr_font_extents_type = {
-    "Cairo::FontExtents",
-    {
-        NULL,
-        cr_font_extents_free,
-    },
+  "Cairo::FontExtents",
+  {
     NULL,
-    NULL,
-    RUBY_TYPED_FREE_IMMEDIATELY,
+    cr_font_extents_free,
+  },
+  NULL,
+  NULL,
+  RUBY_TYPED_FREE_IMMEDIATELY,
 };
 
 cairo_font_extents_t *
