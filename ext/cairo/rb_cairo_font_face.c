@@ -5,7 +5,7 @@
  * $Author: kou $
  * $Date: 2008-09-26 14:13:58 $
  *
- * Copyright 2003-2019 Sutou Kouhei <kou@cozmixng.org>
+ * Copyright 2003-2022 Sutou Kouhei <kou@cozmixng.org>
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
  *
@@ -39,6 +39,9 @@ static ID cr_id_new;
 
 static ID cr_id_init;
 static ID cr_id_render_glyph;
+#  if CAIRO_CHECK_VERSION(1, 17, 6)
+static ID cr_id_render_color_glyph;
+#endif
 static ID cr_id_text_to_glyphs;
 static ID cr_id_unicode_to_glyph;
 
@@ -463,10 +466,11 @@ cr_user_font_face_render_glyph_func_after (VALUE user_data)
 }
 
 static cairo_status_t
-cr_user_font_face_render_glyph_func (cairo_scaled_font_t *scaled_font,
-                                     unsigned long glyph,
-                                     cairo_t *cr,
-                                     cairo_text_extents_t *extents)
+cr_user_font_face_render_glyph_func_internal (cairo_scaled_font_t *scaled_font,
+                                              unsigned long glyph,
+                                              cairo_t *cr,
+                                              cairo_text_extents_t *extents,
+                                              ID id_registered_method_name)
 {
   cairo_status_t status = CAIRO_STATUS_SUCCESS;
   cairo_font_face_t *face;
@@ -477,10 +481,11 @@ cr_user_font_face_render_glyph_func (cairo_scaled_font_t *scaled_font,
   face = cairo_scaled_font_get_font_face (scaled_font);
   self = (VALUE)cairo_font_face_get_user_data (face, &ruby_object_key);
   receiver = rb_ivar_get (self, cr_id_render_glyph);
-  if (NIL_P (receiver) && rb_obj_respond_to (self, cr_id_render_glyph, Qtrue))
+  if (NIL_P (receiver) &&
+      rb_obj_respond_to (self, id_registered_method_name, Qtrue))
     {
       receiver = self;
-      id_method_name = cr_id_render_glyph;
+      id_method_name = id_registered_method_name;
     }
 
   if (!NIL_P (receiver))
@@ -506,6 +511,34 @@ cr_user_font_face_render_glyph_func (cairo_scaled_font_t *scaled_font,
 
   return status;
 }
+
+static cairo_status_t
+cr_user_font_face_render_glyph_func (cairo_scaled_font_t *scaled_font,
+                                     unsigned long glyph,
+                                     cairo_t *cr,
+                                     cairo_text_extents_t *extents)
+{
+  return cr_user_font_face_render_glyph_func_internal (scaled_font,
+                                                       glyph,
+                                                       cr,
+                                                       extents,
+                                                       cr_id_render_glyph);
+}
+
+#if CAIRO_CHECK_VERSION(1, 17, 6)
+static cairo_status_t
+cr_user_font_face_render_color_glyph_func (cairo_scaled_font_t *scaled_font,
+                                           unsigned long glyph,
+                                           cairo_t *cr,
+                                           cairo_text_extents_t *extents)
+{
+  return cr_user_font_face_render_glyph_func_internal (scaled_font,
+                                                       glyph,
+                                                       cr,
+                                                       extents,
+                                                       cr_id_render_color_glyph);
+}
+#endif
 
 typedef struct _cr_text_to_glyphs_after_hook_data {
   VALUE text_to_glyphs_data;
@@ -703,6 +736,10 @@ cr_user_font_face_initialize (VALUE self)
     (face, cr_user_font_face_init_func);
   cairo_user_font_face_set_render_glyph_func
     (face, cr_user_font_face_render_glyph_func);
+#if CAIRO_CHECK_VERSION(1, 17, 6)
+  cairo_user_font_face_set_render_color_glyph_func
+    (face, cr_user_font_face_render_color_glyph_func);
+#endif
   cairo_user_font_face_set_text_to_glyphs_func
     (face, cr_user_font_face_text_to_glyphs_func);
   cairo_user_font_face_set_unicode_to_glyph_func
@@ -731,6 +768,15 @@ cr_user_font_face_on_render_glyph (VALUE self)
   rb_ivar_set (self, cr_id_render_glyph, rb_block_proc ());
   return self;
 }
+
+#if CAIRO_CHECK_VERSION(1, 17, 6)
+static VALUE
+cr_user_font_face_on_render_color_glyph (VALUE self)
+{
+  rb_ivar_set (self, cr_id_render_color_glyph, rb_block_proc ());
+  return self;
+}
+#endif
 
 static VALUE
 cr_user_font_face_on_text_to_glyphs (VALUE self)
@@ -804,6 +850,9 @@ Init_cairo_font (void)
 
   cr_id_init = rb_intern ("init");
   cr_id_render_glyph = rb_intern ("render_glyph");
+#  if CAIRO_CHECK_VERSION(1, 17, 6)
+  cr_id_render_color_glyph = rb_intern ("render_color_glyph");
+#endif
   cr_id_text_to_glyphs = rb_intern ("text_to_glyphs");
   cr_id_unicode_to_glyph = rb_intern ("unicode_to_glyph");
 
@@ -867,6 +916,10 @@ Init_cairo_font (void)
                     cr_user_font_face_on_init, 0);
   rb_define_method (rb_cCairo_UserFontFace, "on_render_glyph",
                     cr_user_font_face_on_render_glyph, 0);
+#if CAIRO_CHECK_VERSION(1, 17, 6)
+  rb_define_method (rb_cCairo_UserFontFace, "on_render_color_glyph",
+                    cr_user_font_face_on_render_color_glyph, 0);
+#endif
   rb_define_method (rb_cCairo_UserFontFace, "on_text_to_glyphs",
                     cr_user_font_face_on_text_to_glyphs, 0);
   rb_define_method (rb_cCairo_UserFontFace, "on_unicode_to_glyph",

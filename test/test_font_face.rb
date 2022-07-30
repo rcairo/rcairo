@@ -161,12 +161,16 @@ class FontFaceTest < Test::Unit::TestCase
 
   if Cairo.satisfied_version?(1, 7, 2)
     class CustomUserFontFace < Cairo::UserFontFace
-      attr_reader :init_args, :render_glyph_args
-      attr_reader :text_to_glyphs_args, :unicode_to_glyph_args
+      attr_reader :init_args
+      attr_reader :render_glyph_args
+      attr_reader :render_color_glyph_args
+      attr_reader :text_to_glyphs_args
+      attr_reader :unicode_to_glyph_args
       def initialize
         super
         @init_args = []
         @render_glyph_args = []
+        @render_color_glyph_args = []
         @text_to_glyphs_args = []
         @unicode_to_glyph_args = []
       end
@@ -177,6 +181,10 @@ class FontFaceTest < Test::Unit::TestCase
 
       def render_glyph(*args)
         @render_glyph_args << args
+      end
+
+      def render_color_glyph(*args)
+        @render_color_glyph_args << args
       end
 
       def text_to_glyphs(*args)
@@ -203,25 +211,102 @@ class FontFaceTest < Test::Unit::TestCase
                                         Cairo::Matrix.identity,
                                         Cairo::FontOptions.new)
     result = scaled_font.text_to_glyphs(0, 0, "text")
-    assert_equal([[[Cairo::ScaledFont, Cairo::Context, Cairo::FontExtents]],
-                  [[Cairo::ScaledFont, codepoint("t"),
-                    Cairo::Context, Cairo::TextExtents],
-                   [Cairo::ScaledFont, codepoint("e"),
-                    Cairo::Context, Cairo::TextExtents],
-                   [Cairo::ScaledFont, codepoint("x"),
-                    Cairo::Context, Cairo::TextExtents]],
-                  [[Cairo::ScaledFont, "text",
-                    Cairo::UserFontFace::TextToGlyphsData]],
-                  [[Cairo::ScaledFont, codepoint("t")],
-                   [Cairo::ScaledFont, codepoint("e")],
-                   [Cairo::ScaledFont, codepoint("x")],
-                   [Cairo::ScaledFont, codepoint("t")]],
-                  [[], [], Cairo::TextClusterFlag::BACKWARD]],
-                 [classify_cairo_object(face.init_args),
-                  classify_cairo_object(face.render_glyph_args),
-                  classify_cairo_object(face.text_to_glyphs_args),
-                  classify_cairo_object(face.unicode_to_glyph_args),
-                  result])
+    if Cairo.satisfied_version?(1, 17, 6)
+      assert_equal({
+                     init_args: [
+                       [Cairo::ScaledFont, Cairo::Context, Cairo::FontExtents]
+                     ],
+                     render_glyph_args: [],
+                     render_color_glyph_args: [
+                       [
+                         Cairo::ScaledFont, codepoint("t"),
+                         Cairo::Context, Cairo::TextExtents,
+                       ],
+                       [
+                         Cairo::ScaledFont, codepoint("e"),
+                         Cairo::Context, Cairo::TextExtents,
+                       ],
+                       [
+                         Cairo::ScaledFont, codepoint("x"),
+                         Cairo::Context, Cairo::TextExtents,
+                       ],
+                     ],
+                     text_to_glyphs_args: [
+                       [
+                         Cairo::ScaledFont, "text",
+                         Cairo::UserFontFace::TextToGlyphsData],
+                     ],
+                     unicode_to_glyph_args: [
+                       [Cairo::ScaledFont, codepoint("t")],
+                       [Cairo::ScaledFont, codepoint("e")],
+                       [Cairo::ScaledFont, codepoint("x")],
+                       [Cairo::ScaledFont, codepoint("t")],
+                     ],
+                     result: [
+                       [],
+                       [],
+                       Cairo::TextClusterFlag::BACKWARD,
+                     ],
+                   },
+                   {
+                     init_args: classify_cairo_object(face.init_args),
+                     render_glyph_args:
+                       classify_cairo_object(face.render_glyph_args),
+                     render_color_glyph_args:
+                       classify_cairo_object(face.render_color_glyph_args),
+                     text_to_glyphs_args:
+                       classify_cairo_object(face.text_to_glyphs_args),
+                     unicode_to_glyph_args:
+                       classify_cairo_object(face.unicode_to_glyph_args),
+                     result: result,
+                   })
+    else
+      assert_equal({
+                     init_args: [
+                       [Cairo::ScaledFont, Cairo::Context, Cairo::FontExtents]
+                     ],
+                     render_glyph_args: [
+                       [
+                         Cairo::ScaledFont, codepoint("t"),
+                         Cairo::Context, Cairo::TextExtents,
+                       ],
+                       [
+                         Cairo::ScaledFont, codepoint("e"),
+                         Cairo::Context, Cairo::TextExtents,
+                       ],
+                       [
+                         Cairo::ScaledFont, codepoint("x"),
+                         Cairo::Context, Cairo::TextExtents,
+                       ],
+                     ],
+                     text_to_glyphs_args: [
+                       [
+                         Cairo::ScaledFont, "text",
+                         Cairo::UserFontFace::TextToGlyphsData],
+                     ],
+                     unicode_to_glyph_args: [
+                       [Cairo::ScaledFont, codepoint("t")],
+                       [Cairo::ScaledFont, codepoint("e")],
+                       [Cairo::ScaledFont, codepoint("x")],
+                       [Cairo::ScaledFont, codepoint("t")],
+                     ],
+                     result: [
+                       [],
+                       [],
+                       Cairo::TextClusterFlag::BACKWARD,
+                     ],
+                   },
+                   {
+                     init_args: classify_cairo_object(face.init_args),
+                     render_glyph_args:
+                       classify_cairo_object(face.render_glyph_args),
+                     text_to_glyphs_args:
+                       classify_cairo_object(face.text_to_glyphs_args),
+                     unicode_to_glyph_args:
+                       classify_cairo_object(face.unicode_to_glyph_args),
+                     result: result,
+                   })
+    end
   end
 
   def test_user_font_face_class_and_callback
