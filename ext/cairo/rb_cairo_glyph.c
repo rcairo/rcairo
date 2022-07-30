@@ -5,6 +5,7 @@
  * $Author: kou $
  * $Date: 2008-08-16 08:16:39 $
  *
+ * Copyright 2005-2022 Sutou Kouhei <kou@cozmixng.org>
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
  *
@@ -20,6 +21,17 @@ VALUE rb_cCairo_Glyph;
 
 #define _SELF(self)  (RVAL2CRGLYPH(self))
 
+static const rb_data_type_t cr_glyph_type = {
+  "Cairo::Glyph",
+  {
+    NULL,
+    ruby_xfree,
+  },
+  NULL,
+  NULL,
+  RUBY_TYPED_FREE_IMMEDIATELY,
+};
+
 cairo_glyph_t *
 rb_cairo_glyph_from_ruby_object (VALUE obj)
 {
@@ -28,17 +40,8 @@ rb_cairo_glyph_from_ruby_object (VALUE obj)
     {
       rb_raise (rb_eTypeError, "not a cairo glyph");
     }
-  Data_Get_Struct (obj, cairo_glyph_t, glyph);
+  TypedData_Get_Struct (obj, cairo_glyph_t, &cr_glyph_type, glyph);
   return glyph;
-}
-
-static void
-cr_glyph_free (void *ptr)
-{
-  if (ptr)
-    {
-      xfree (ptr);
-    }
 }
 
 VALUE
@@ -50,7 +53,7 @@ rb_cairo_glyph_to_ruby_object (cairo_glyph_t *glyph)
 
       new_glyph = ALLOC (cairo_glyph_t);
       *new_glyph = *glyph;
-      return Data_Wrap_Struct (rb_cCairo_Glyph, NULL, cr_glyph_free, new_glyph);
+      return TypedData_Wrap_Struct (rb_cCairo_Glyph, &cr_glyph_type, new_glyph);
     }
   else
     {
@@ -61,7 +64,7 @@ rb_cairo_glyph_to_ruby_object (cairo_glyph_t *glyph)
 static VALUE
 cr_glyph_allocate (VALUE klass)
 {
-  return Data_Wrap_Struct (klass, NULL, cr_glyph_free, NULL);
+  return TypedData_Wrap_Struct (klass, &cr_glyph_type, NULL);
 }
 
 static VALUE
