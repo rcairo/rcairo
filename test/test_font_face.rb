@@ -144,25 +144,24 @@ class FontFaceTest < Test::Unit::TestCase
                                         Cairo::Matrix.identity,
                                         Cairo::Matrix.identity,
                                         Cairo::FontOptions.new)
-    result = scaled_font.text_to_glyphs(0, 0, "text")
+    result = scaled_font.text_to_glyphs(0, 0, "abc")
     expected = {
       init_args: [
         [Cairo::ScaledFont, Cairo::Context, Cairo::FontExtents],
       ],
       render_glyph_args: [
-        [Cairo::ScaledFont, codepoint("t"), Cairo::Context, Cairo::TextExtents],
-        [Cairo::ScaledFont, codepoint("e"), Cairo::Context, Cairo::TextExtents],
-        [Cairo::ScaledFont, codepoint("x"), Cairo::Context, Cairo::TextExtents],
+        [Cairo::ScaledFont, codepoint("a"), Cairo::Context, Cairo::TextExtents],
+        [Cairo::ScaledFont, codepoint("b"), Cairo::Context, Cairo::TextExtents],
+        [Cairo::ScaledFont, codepoint("c"), Cairo::Context, Cairo::TextExtents],
       ],
       render_color_glyph_args: [],
       text_to_glyphs_args: [
-        [Cairo::ScaledFont, "text", Cairo::UserFontFace::TextToGlyphsData],
+        [Cairo::ScaledFont, "abc", Cairo::UserFontFace::TextToGlyphsData],
       ],
       unicode_to_glyph_args: [
-        [Cairo::ScaledFont, codepoint("t")],
-        [Cairo::ScaledFont, codepoint("e")],
-        [Cairo::ScaledFont, codepoint("x")],
-        [Cairo::ScaledFont, codepoint("t")],
+        [Cairo::ScaledFont, codepoint("a")],
+        [Cairo::ScaledFont, codepoint("b")],
+        [Cairo::ScaledFont, codepoint("c")],
       ],
       result: [[], [], Cairo::TextClusterFlag::BACKWARD],
     }
@@ -234,19 +233,18 @@ class FontFaceTest < Test::Unit::TestCase
                                         Cairo::Matrix.identity,
                                         Cairo::Matrix.identity,
                                         Cairo::FontOptions.new)
-    result = scaled_font.text_to_glyphs(0, 0, "text")
+    result = scaled_font.text_to_glyphs(0, 0, "abc")
     expected = {
       init_args: [
         [Cairo::ScaledFont, Cairo::Context, Cairo::FontExtents]
       ],
       text_to_glyphs_args: [
-        [Cairo::ScaledFont, "text", Cairo::UserFontFace::TextToGlyphsData],
+        [Cairo::ScaledFont, "abc", Cairo::UserFontFace::TextToGlyphsData],
       ],
       unicode_to_glyph_args: [
-        [Cairo::ScaledFont, codepoint("t")],
-        [Cairo::ScaledFont, codepoint("e")],
-        [Cairo::ScaledFont, codepoint("x")],
-        [Cairo::ScaledFont, codepoint("t")],
+        [Cairo::ScaledFont, codepoint("a")],
+        [Cairo::ScaledFont, codepoint("b")],
+        [Cairo::ScaledFont, codepoint("c")],
       ],
       result: [
         [],
@@ -264,9 +262,9 @@ class FontFaceTest < Test::Unit::TestCase
     }
     if Cairo.satisfied_version?(1, 17, 6)
       expected[:render_color_glyph_args] = [
-        [Cairo::ScaledFont, codepoint("t"), Cairo::Context, Cairo::TextExtents],
-        [Cairo::ScaledFont, codepoint("e"), Cairo::Context, Cairo::TextExtents],
-        [Cairo::ScaledFont, codepoint("x"), Cairo::Context, Cairo::TextExtents],
+        [Cairo::ScaledFont, codepoint("a"), Cairo::Context, Cairo::TextExtents],
+        [Cairo::ScaledFont, codepoint("b"), Cairo::Context, Cairo::TextExtents],
+        [Cairo::ScaledFont, codepoint("c"), Cairo::Context, Cairo::TextExtents],
       ]
       actual[:render_color_glyph_args] =
         classify_cairo_object(face.render_color_glyph_args)
@@ -275,9 +273,9 @@ class FontFaceTest < Test::Unit::TestCase
         classify_cairo_object(face.render_glyph_args)
     else
       expected[:render_glyph_args] = [
-        [Cairo::ScaledFont, codepoint("t"), Cairo::Context, Cairo::TextExtents],
-        [Cairo::ScaledFont, codepoint("e"), Cairo::Context, Cairo::TextExtents],
-        [Cairo::ScaledFont, codepoint("x"), Cairo::Context, Cairo::TextExtents],
+        [Cairo::ScaledFont, codepoint("a"), Cairo::Context, Cairo::TextExtents],
+        [Cairo::ScaledFont, codepoint("b"), Cairo::Context, Cairo::TextExtents],
+        [Cairo::ScaledFont, codepoint("c"), Cairo::Context, Cairo::TextExtents],
       ]
       actual[:render_glyph_args] =
         classify_cairo_object(face.render_glyph_args)
@@ -325,7 +323,7 @@ class FontFaceTest < Test::Unit::TestCase
                                         Cairo::Matrix.identity,
                                         Cairo::Matrix.identity,
                                         Cairo::FontOptions.new)
-    result = scaled_font.text_to_glyphs(0, 0, "text")
+    result = scaled_font.text_to_glyphs(0, 0, "abc")
     expected = {
       callback_init_args: [
         [
@@ -333,23 +331,18 @@ class FontFaceTest < Test::Unit::TestCase
         ],
       ],
       callback_render_glyph_args: [
-        [Cairo::ScaledFont, codepoint("t"), Cairo::Context, Cairo::TextExtents],
-        [Cairo::ScaledFont, codepoint("e"), Cairo::Context, Cairo::TextExtents],
-        [Cairo::ScaledFont, codepoint("x"), Cairo::Context, Cairo::TextExtents],
+        [Cairo::ScaledFont, codepoint("a"), Cairo::Context, Cairo::TextExtents],
+        [Cairo::ScaledFont, codepoint("b"), Cairo::Context, Cairo::TextExtents],
+        [Cairo::ScaledFont, codepoint("c"), Cairo::Context, Cairo::TextExtents],
       ],
       callback_render_color_glyph_args: [],
       callback_text_to_glyphs_args: [
-        [
-          Cairo::ScaledFont,
-          "text",
-          Cairo::UserFontFace::TextToGlyphsData,
-        ],
+        [Cairo::ScaledFont, "abc", Cairo::UserFontFace::TextToGlyphsData],
       ],
       callback_unicode_to_glyph_args: [
-        [Cairo::ScaledFont, codepoint("t")],
-        [Cairo::ScaledFont, codepoint("e")],
-        [Cairo::ScaledFont, codepoint("x")],
-        [Cairo::ScaledFont, codepoint("t")],
+        [Cairo::ScaledFont, codepoint("a")],
+        [Cairo::ScaledFont, codepoint("b")],
+        [Cairo::ScaledFont, codepoint("c")],
       ],
       object_init_args: [],
       object_render_glyph_args: [],

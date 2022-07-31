@@ -678,7 +678,6 @@ cr_user_font_face_unicode_to_glyph_func_after (VALUE user_data)
   glyph_index = data->after_hook_data;
 
   *glyph_index = NUM2ULONG (data->result);
-  printf("glyph_index: %lu\n", *glyph_index);
 
   return data->result;
 }
