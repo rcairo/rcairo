@@ -81,7 +81,7 @@ cr_matrix_initialize (VALUE self,
                      NUM2DBL (xx), NUM2DBL (yx),
                      NUM2DBL (xy), NUM2DBL (yy),
                      NUM2DBL (x0), NUM2DBL (y0));
-  DATA_PTR (self) = matrix;
+  RTYPEDDATA_DATA (self) = matrix;
   return Qnil;
 }
 

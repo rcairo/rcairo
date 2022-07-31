@@ -87,7 +87,7 @@ cr_scaled_font_initialize (VALUE self, VALUE face, VALUE matrix,
                                    RVAL2CRMATRIX (ctm),
                                    RVAL2CRFONTOPTIONS (options));
   cr_scaled_font_check_status (font);
-  DATA_PTR (self) = font;
+  RTYPEDDATA_DATA (self) = font;
   return Qnil;
 }
 

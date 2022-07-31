@@ -12,7 +12,7 @@
 
 VALUE rb_cCairo_Rectangle;
 
-#define _SELF  ((cairo_rectangle_int_t *)DATA_PTR (self))
+#define _SELF  ((cairo_rectangle_int_t *)RTYPEDDATA_DATA (self))
 
 #if CAIRO_CHECK_VERSION(1, 10, 0)
 static const rb_data_type_t cr_rectangle_type = {
@@ -39,7 +39,7 @@ cr_rectangle_initialize (VALUE self, VALUE x, VALUE y,
   cairo_rectangle_int_t *rectangle;
 
   rectangle = ALLOC (cairo_rectangle_int_t);
-  DATA_PTR (self) = rectangle;
+  RTYPEDDATA_DATA (self) = rectangle;
 
   rectangle->x = NUM2INT (x);
   rectangle->y = NUM2INT (y);

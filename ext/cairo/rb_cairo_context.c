@@ -126,20 +126,20 @@ cr_destroy (VALUE self)
   cr_set_user_data (cr, &cr_object_holder_key, NULL, NULL);
   cairo_destroy (cr);
 
-  DATA_PTR (self) = NULL;
+  RTYPEDDATA_DATA (self) = NULL;
   return Qnil;
 }
 
 static VALUE
 cr_destroyed (VALUE self)
 {
-  return CBOOL2RVAL (DATA_PTR (self) == NULL);
+  return CBOOL2RVAL (RTYPEDDATA_DATA (self) == NULL);
 }
 
 static VALUE
 cr_destroy_with_destroy_check (VALUE self)
 {
-  if (DATA_PTR (self))
+  if (RTYPEDDATA_DATA (self))
     cr_destroy (self);
   return Qnil;
 }
@@ -202,7 +202,7 @@ cr_s_wrap (VALUE self, VALUE pointer)
 
   rb_cr = rb_obj_alloc (self);
   cairo_reference (cr);
-  DATA_PTR (rb_cr) = cr;
+  RTYPEDDATA_DATA (rb_cr) = cr;
   rb_ivar_set (rb_cr, cr_id_surface, Qnil);
 
   if (rb_block_given_p ())
@@ -232,7 +232,7 @@ cr_initialize (VALUE self, VALUE target)
                       &cr_object_holder_key,
                       cr_object_holder_new (self),
                       cr_object_holder_free);
-  DATA_PTR (self) = cr;
+  RTYPEDDATA_DATA (self) = cr;
   if (rb_block_given_p ())
     result = rb_ensure (rb_yield, self, cr_destroy_with_destroy_check, self);
   return result;

@@ -106,7 +106,7 @@ cr_region_initialize (int argc, VALUE *argv, VALUE self)
       region = cairo_region_create_rectangles (rectangles, argc);
     }
   cr_region_check_status (region);
-  DATA_PTR (self) = region;
+  RTYPEDDATA_DATA (self) = region;
   return Qnil;
 }
 

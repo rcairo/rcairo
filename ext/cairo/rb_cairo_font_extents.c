@@ -81,7 +81,7 @@ cr_font_extents_initialize (VALUE self)
   extents->max_x_advance = 1.0;
   extents->max_y_advance = 0.0;
 
-  DATA_PTR (self) = extents;
+  RTYPEDDATA_DATA (self) = extents;
 
   return Qnil;
 }

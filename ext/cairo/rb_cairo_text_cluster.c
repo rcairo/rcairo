@@ -81,7 +81,7 @@ cr_text_cluster_initialize (VALUE self, VALUE num_bytes, VALUE num_glyphs)
   cluster->num_bytes = NUM2INT (num_bytes);
   cluster->num_glyphs = NUM2INT (num_glyphs);
 
-  DATA_PTR (self) = cluster;
+  RTYPEDDATA_DATA (self) = cluster;
   return Qnil;
 }
 

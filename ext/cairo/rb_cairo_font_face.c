@@ -283,7 +283,7 @@ cr_freetype_font_face_initialize (VALUE self, VALUE path)
     rb_cairo_check_status (status);
   }
 
-  DATA_PTR (self) = face;
+  RTYPEDDATA_DATA (self) = face;
 
   return Qnil;
 }
@@ -332,7 +332,7 @@ cr_toy_font_face_initialize (int argc, VALUE *argv, VALUE self)
 
   face = cairo_toy_font_face_create (family, slant, weight);
   cr_font_face_check_status (face);
-  DATA_PTR (self) = face;
+  RTYPEDDATA_DATA (self) = face;
 
   return Qnil;
 }
@@ -758,7 +758,7 @@ cr_user_font_face_initialize (VALUE self)
   rb_ivar_set (self, cr_id_text_to_glyphs, Qnil);
   rb_ivar_set (self, cr_id_unicode_to_glyph, Qnil);
 
-  DATA_PTR (self) = face;
+  RTYPEDDATA_DATA (self) = face;
 
   return Qnil;
 }

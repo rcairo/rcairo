@@ -87,7 +87,7 @@ cr_options_create (VALUE self)
 
   options = cairo_font_options_create ();
   cr_options_check_status (options);
-  DATA_PTR (self) = options;
+  RTYPEDDATA_DATA (self) = options;
   return Qnil;
 }
 

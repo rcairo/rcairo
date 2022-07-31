@@ -77,7 +77,7 @@ cr_glyph_initialize (VALUE self, VALUE index, VALUE x, VALUE y)
   glyph->x = NUM2DBL (x);
   glyph->y = NUM2DBL (y);
 
-  DATA_PTR (self) = glyph;
+  RTYPEDDATA_DATA (self) = glyph;
   return Qnil;
 }
 

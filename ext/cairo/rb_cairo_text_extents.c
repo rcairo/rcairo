@@ -82,7 +82,7 @@ cr_text_extents_initialize (VALUE self)
   extents->x_advance = 1.0;
   extents->y_advance = 0.0;
 
-  DATA_PTR (self) = extents;
+  RTYPEDDATA_DATA (self) = extents;
 
   return Qnil;
 }

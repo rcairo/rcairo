@@ -259,7 +259,7 @@ cr_solid_pattern_initialize (int argc, VALUE *argv, VALUE self)
     }
 
   cr_pattern_check_status (pattern);
-  DATA_PTR (self) = pattern;
+  RTYPEDDATA_DATA (self) = pattern;
   return Qnil;
 }
 
@@ -270,7 +270,7 @@ cr_surface_pattern_initialize (VALUE self, VALUE surface)
 
   pattern = cairo_pattern_create_for_surface (RVAL2CRSURFACE (surface));
   cr_pattern_check_status (pattern);
-  DATA_PTR (self) = pattern;
+  RTYPEDDATA_DATA (self) = pattern;
   return Qnil;
 }
 
@@ -283,7 +283,7 @@ cr_linear_pattern_initialize (VALUE self, VALUE x0, VALUE y0,
   pattern = cairo_pattern_create_linear (NUM2DBL (x0), NUM2DBL (y0),
                                          NUM2DBL (x1), NUM2DBL (y1));
   cr_pattern_check_status (pattern);
-  DATA_PTR (self) = pattern;
+  RTYPEDDATA_DATA (self) = pattern;
   return Qnil;
 }
 
@@ -298,7 +298,7 @@ cr_radial_pattern_initialize (VALUE self, VALUE cx0, VALUE cy0, VALUE radius0,
                                          NUM2DBL (cx1), NUM2DBL (cy1),
                                          NUM2DBL (radius1));
   cr_pattern_check_status (pattern);
-  DATA_PTR (self) = pattern;
+  RTYPEDDATA_DATA (self) = pattern;
   return Qnil;
 }
 
@@ -526,7 +526,7 @@ cr_mesh_pattern_initialize (VALUE self)
 
   pattern = cairo_pattern_create_mesh ();
   cr_pattern_check_status (pattern);
-  DATA_PTR (self) = pattern;
+  RTYPEDDATA_DATA (self) = pattern;
   return Qnil;
 }
 
@@ -924,7 +924,7 @@ cr_raster_source_pattern_initialize (int argc, VALUE *argv, VALUE self)
                                                 content, width, height);
   cr_pattern_check_status (pattern);
 
-  DATA_PTR (self) = pattern;
+  RTYPEDDATA_DATA (self) = pattern;
   rb_iv_set (self, "@acquire", Qnil);
   rb_iv_set (self, "@release", Qnil);
   rb_iv_set (self, "@snapshot", Qnil);

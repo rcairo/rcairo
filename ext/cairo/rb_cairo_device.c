@@ -215,7 +215,7 @@ cr_device_destroy (VALUE self)
 
   device = _SELF;
   cairo_device_destroy (device);
-  DATA_PTR (self) = NULL;
+  RTYPEDDATA_DATA (self) = NULL;
 
   return self;
 }
@@ -335,7 +335,7 @@ cr_ ## type ## _device_initialize (VALUE self,                          \
     }                                                                   \
                                                                         \
   cr_device_check_status (device);                                      \
-  DATA_PTR (self) = device;                                             \
+  RTYPEDDATA_DATA (self) = device;                                             \
   if (rb_block_given_p ())                                              \
     yield_and_finish (self);                                            \
   return Qnil;                                                          \

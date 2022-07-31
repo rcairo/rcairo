@@ -291,7 +291,7 @@ cr_path_initialize (VALUE self)
   path->status = CAIRO_STATUS_SUCCESS;
   path->data = NULL;
   path->num_data = 0;
-  DATA_PTR (self) = path;
+  RTYPEDDATA_DATA (self) = path;
 
   return Qnil;
 }

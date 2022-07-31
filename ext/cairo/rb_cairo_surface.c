@@ -280,7 +280,7 @@ cr_surface_destroy (VALUE self)
 
   surface = _SELF;
   cr_surface_destroy_raw (surface);
-  DATA_PTR (self) = NULL;
+  RTYPEDDATA_DATA (self) = NULL;
 
   return self;
 }
@@ -534,7 +534,7 @@ cr_surface_finish (VALUE self)
   cairo_surface_finish (surface);
   cairo_surface_set_user_data (surface, &cr_finished_key, (void *)CR_TRUE, NULL);
   cairo_surface_set_user_data (surface, &cr_object_holder_key, NULL, NULL);
-  DATA_PTR (self) = NULL;
+  RTYPEDDATA_DATA (self) = NULL;
 
   if (closure && !NIL_P (closure->error))
     rb_exc_raise (closure->error);
@@ -1015,7 +1015,7 @@ cr_image_surface_create_from_png_generic (VALUE klass, VALUE target)
 
   rb_cairo_surface_check_status (surface);
   rb_surface = cr_surface_allocate (klass);
-  DATA_PTR (rb_surface) = surface;
+  RTYPEDDATA_DATA (rb_surface) = surface;
   return rb_surface;
 }
 #endif
@@ -1072,7 +1072,7 @@ cr_image_surface_initialize (int argc, VALUE *argv, VALUE self)
               rb_cairo__inspect (rb_ary_new3 (4, arg1, arg2, arg3, arg4)));
 
   rb_cairo_surface_check_status (surface);
-  DATA_PTR (self) = surface;
+  RTYPEDDATA_DATA (self) = surface;
   rb_cairo_surface_adjust_memory_usage (surface, CR_TRUE);
   if (rb_block_given_p ())
     rb_cairo__surface_yield_and_finish (self);
@@ -1193,7 +1193,7 @@ cr_ ## type ## _surface_initialize (int argc, VALUE *argv, VALUE self)  \
     }                                                                   \
                                                                         \
   rb_cairo_surface_check_status (surface);                              \
-  DATA_PTR (self) = surface;                                            \
+  RTYPEDDATA_DATA (self) = surface;                                            \
   if (rb_block_given_p ())                                              \
     rb_cairo__surface_yield_and_finish (self);                          \
   return Qnil;                                                          \
@@ -1534,7 +1534,7 @@ cr_win32_surface_initialize (int argc, VALUE *argv, VALUE self)
   if (!surface)
     rb_cairo_check_status (CAIRO_STATUS_INVALID_FORMAT);
   rb_cairo_surface_check_status (surface);
-  DATA_PTR (self) = surface;
+  RTYPEDDATA_DATA (self) = surface;
   if (rb_block_given_p ())
     rb_cairo__surface_yield_and_finish (self);
   return Qnil;
@@ -1610,7 +1610,7 @@ cr_win32_printing_surface_initialize (VALUE self, VALUE hdc)
 
   surface = cairo_win32_printing_surface_create (NUM2PTR (hdc));
   rb_cairo_surface_check_status (surface);
-  DATA_PTR (self) = surface;
+  RTYPEDDATA_DATA (self) = surface;
   if (rb_block_given_p ())
     rb_cairo__surface_yield_and_finish (self);
   return Qnil;
@@ -1665,7 +1665,7 @@ cr_script_surface_initialize (int argc, VALUE *argv, VALUE self)
     surface = cairo_script_surface_create (device, content, width, height);
 
   rb_cairo_surface_check_status (surface);
-  DATA_PTR (self) = surface;
+  RTYPEDDATA_DATA (self) = surface;
   if (rb_block_given_p ())
     rb_cairo__surface_yield_and_finish (self);
   return Qnil;
@@ -1720,7 +1720,7 @@ cr_recording_surface_initialize (int argc, VALUE *argv, VALUE self)
 
   surface = cairo_recording_surface_create (content, &extents);
   rb_cairo_surface_check_status (surface);
-  DATA_PTR (self) = surface;
+  RTYPEDDATA_DATA (self) = surface;
   if (rb_block_given_p ())
     rb_cairo__surface_yield_and_finish (self);
   return Qnil;
@@ -1797,7 +1797,7 @@ cr_gl_surface_initialize (int argc, VALUE *argv, VALUE self)
   surface = cairo_gl_surface_create (device, content, width, height);
 
   rb_cairo_surface_check_status (surface);
-  DATA_PTR (self) = surface;
+  RTYPEDDATA_DATA (self) = surface;
   if (rb_block_given_p ())
     rb_cairo__surface_yield_and_finish (self);
   return Qnil;
@@ -1844,7 +1844,7 @@ cr_gl_texture_surface_initialize (int argc, VALUE *argv, VALUE self)
                                                  height);
 
   rb_cairo_surface_check_status (surface);
-  DATA_PTR (self) = surface;
+  RTYPEDDATA_DATA (self) = surface;
   if (rb_block_given_p ())
     rb_cairo__surface_yield_and_finish (self);
   return Qnil;
@@ -1894,7 +1894,7 @@ cr_tee_surface_initialize (VALUE self, VALUE master)
 
   surface = cairo_tee_surface_create (RVAL2CRSURFACE (master));
   rb_cairo_surface_check_status (surface);
-  DATA_PTR (self) = surface;
+  RTYPEDDATA_DATA (self) = surface;
   rb_iv_set (self, "surfaces", rb_ary_new3 (1, master));
   if (rb_block_given_p ())
     rb_cairo__surface_yield_and_finish (self);
@@ -2016,7 +2016,7 @@ cr_xml_surface_initialize (int argc, VALUE *argv, VALUE self)
   surface = cairo_xml_surface_create (device, content, width, height);
 
   rb_cairo_surface_check_status (surface);
-  DATA_PTR (self) = surface;
+  RTYPEDDATA_DATA (self) = surface;
   if (rb_block_given_p ())
     rb_cairo__surface_yield_and_finish (self);
   return Qnil;
