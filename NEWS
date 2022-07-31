@@ -1,3 +1,12 @@
+Release 1.17.7 (2022-07-31) Sutou Kouhei <kou@cozmixng.org>
+===========================================================
+
+Fixes
+-----
+
+  * Fixed a bug that Cairo::UserFontFace#on_render_color_glyph isn't
+    called.
+
 Release 1.17.6 (2022-07-30) Sutou Kouhei <kou@cozmixng.org>
 ===========================================================
 
