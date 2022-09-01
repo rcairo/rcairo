@@ -750,6 +750,11 @@ cr_surface_write_to_png (VALUE self, VALUE filename)
 static VALUE
 cr_surface_write_to_png_generic (VALUE self, VALUE target)
 {
+  if (rb_respond_to (target, rb_cairo__io_id_to_path) &&
+      !rb_respond_to (target, rb_cairo__io_id_to_io))
+    {
+      target = rb_funcall (target, rb_cairo__io_id_to_path, 0);
+    }
   if (rb_respond_to (target, rb_cairo__io_id_write))
     return cr_surface_write_to_png_stream (self, target);
   else
