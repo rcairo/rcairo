@@ -1,28 +1,3 @@
-# vim: filetype=ruby:expandtab:shiftwidth=2:tabstop=8:softtabstop=2 :
-
-if /mingw|mswin|mswin32/ =~ RUBY_PLATFORM
-  require "pathname"
-  base_dir = Pathname(File.dirname(__FILE__))
-  base_dir = base_dir.parent + "vendor" + "local"
-  if base_dir.exist?
-    base_dir = base_dir.to_s.gsub(/\//, "\\")
-    begin
-      require "ruby_installer/runtime"
-    rescue LoadError
-    else
-      RubyInstaller::Runtime.add_dll_directory("#{base_dir}\\bin")
-    end
-    ENV["PATH"] = %w(bin lib).collect do |dir|
-      "#{base_dir}\\#{dir};"
-    end.join("") + ENV["PATH"]
-  else
-    require "rbconfig"
-    ENV["PATH"] = %w(bin lib).collect do |dir|
-      "#{RbConfig::CONFIG["prefix"]}\\lib\\GTK\\#{dir};"
-    end.join("") + ENV["PATH"]
-  end
-end
-
 require "time"
 
 module Cairo
