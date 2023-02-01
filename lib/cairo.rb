@@ -46,13 +46,7 @@ end
 
 require "cairo/color"
 require "cairo/paper"
-
-begin
-  major, minor, _ = RUBY_VERSION.split(/\./)
-  require "#{major}.#{minor}/cairo.so"
-rescue LoadError
-  require "cairo.so"
-end
+require "cairo.so"
 require "cairo/constants"
 
 module Cairo
