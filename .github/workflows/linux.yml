@@ -14,10 +14,9 @@ jobs:
           - almalinux-9
           - debian-11
           - fedora-rawhide
-          - ruby-2.7
           - ruby-3.0
           - ruby-3.1
-          - ubuntu-18.04
+          - ruby-3.2
           - ubuntu-20.04
           - ubuntu-22.04
     runs-on: ubuntu-latest

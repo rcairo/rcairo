@@ -54,17 +54,6 @@ services:
     command:
       /rcairo/dockerfiles/run-test.sh
 
-  ruby-2.7:
-    build:
-      context: .
-      dockerfile: dockerfiles/ruby.dockerfile
-      args:
-        RUBY_VERSION: "2.7"
-    volumes:
-      - .:/rcairo:delegated
-    command:
-      /rcairo/dockerfiles/run-test.sh
-
   ruby-3.0:
     build:
       context: .
@@ -87,12 +76,12 @@ services:
     command:
       /rcairo/dockerfiles/run-test.sh
 
-  ubuntu-18.04:
+  ruby-3.2:
     build:
       context: .
-      dockerfile: dockerfiles/ubuntu.dockerfile
+      dockerfile: dockerfiles/ruby.dockerfile
       args:
-        UBUNTU_VERSION: "18.04"
+        RUBY_VERSION: "3.2"
     volumes:
       - .:/rcairo:delegated
     command:
