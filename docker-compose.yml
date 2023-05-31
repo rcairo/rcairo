@@ -10,17 +10,6 @@ services:
     command:
       /rcairo/dockerfiles/run-test.sh
 
-  almalinux-8:
-    build:
-      context: .
-      dockerfile: dockerfiles/almalinux.dockerfile
-      args:
-        VERSION: "8"
-    volumes:
-      - .:/rcairo:delegated
-    command:
-      /rcairo/dockerfiles/run-test.sh
-
   almalinux-9:
     build:
       context: .

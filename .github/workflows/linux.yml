@@ -10,7 +10,6 @@ jobs:
       matrix:
         service:
           - arch-linux
-          - almalinux-8
           - almalinux-9
           - debian-11
           - fedora-rawhide
