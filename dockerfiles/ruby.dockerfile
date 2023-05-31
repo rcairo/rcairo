@@ -13,12 +13,5 @@ RUN \
   echo "rcairo ALL=(ALL:ALL) NOPASSWD:ALL" | \
     EDITOR=tee visudo -f /etc/sudoers.d/rcairo
 
-RUN \
-  gem install cairo && \
-  gem install \
-    packnga \
-    poppler \
-    test-unit
-
 USER rcairo
 WORKDIR /home/rcairo
