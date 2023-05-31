@@ -105,6 +105,7 @@ class ContextTest < Test::Unit::TestCase
   sub_test_case("#tag") do
     setup do
       only_cairo_version(1, 15, 4)
+      only_not_windows
     end
 
     test("LINK") do
