@@ -14,11 +14,11 @@ RCAIRO_SOURCE_DIR=$PWD bundle install
 echo "::endgroup::"
 
 echo "::group::Configure"
-ruby ext/rcairo/extconf.rb --enable-debug-build
+bundle exec ext/cairo/extconf.rb --enable-debug-build
 echo "::endgroup::"
 echo "::group::Build"
-make -j$(nproc)
+bundle exec make -j$(nproc)
 echo "::endgroup::"
 echo "::group::Test"
-test/run-test.rb "$@"
+bundle exec test/run-test.rb "$@"
 echo "::endgroup::"
