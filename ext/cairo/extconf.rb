@@ -49,6 +49,7 @@ end
 
 unless required_pkg_config_package([package, major, minor, micro],
                                    :arch_linux => "cairo",
+                                   :conda => "cairo",
                                    :debian => "libcairo2-dev",
                                    :homebrew => "cairo",
                                    :macports => "cairo",
