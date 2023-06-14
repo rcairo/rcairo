@@ -5,7 +5,7 @@
  * $Author: kou $
  * $Date: 2008-08-16 12:52:16 $
  *
- * Copyright 2010-2022 Sutou Kouhei <kou@cozmixng.org>
+ * Copyright 2010-2023 Sutou Kouhei <kou@cozmixng.org>
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
  *
@@ -73,6 +73,9 @@ static VALUE rb_eCairo_TagError;
 #endif
 #if CAIRO_CHECK_VERSION(1, 17, 6)
 static VALUE rb_eCairo_DirectWriteError;
+#endif
+#if CAIRO_CHECK_VERSION(1, 17, 8)
+static VALUE rb_eCairo_SVGFontError;
 #endif
 
 void
@@ -229,6 +232,11 @@ rb_cairo_check_status (cairo_status_t status)
       rb_raise (rb_eCairo_DirectWriteError, "%s", string);
       break;
 #endif
+#if CAIRO_CHECK_VERSION(1, 17, 8)
+    case CAIRO_STATUS_SVG_FONT_ERROR:
+      rb_raise (rb_eCairo_SVGFontError, "%s", string);
+      break;
+#endif
 #if CAIRO_CHECK_VERSION(1, 10, 0)
     case CAIRO_STATUS_LAST_STATUS:
 #else
@@ -339,6 +347,10 @@ rb_cairo__exception_to_status (VALUE exception)
 #if CAIRO_CHECK_VERSION(1, 17, 6)
   else if (rb_cairo__is_kind_of (exception, rb_eCairo_DirectWriteError))
     return CAIRO_STATUS_DWRITE_ERROR;
+#endif
+#if CAIRO_CHECK_VERSION(1, 17, 8)
+  else if (rb_cairo__is_kind_of (exception, rb_eCairo_SVGFontError))
+    return CAIRO_STATUS_SVG_FONT_ERROR;
 #endif
 
   return -1;
@@ -504,6 +516,12 @@ Init_cairo_exception (void)
 #if CAIRO_CHECK_VERSION(1, 17, 6)
   rb_eCairo_DirectWriteError =
     rb_define_class_under (rb_mCairo, "DirectWriteError",
+                           rb_eCairo_Error);
+#endif
+
+#if CAIRO_CHECK_VERSION(1, 17, 8)
+  rb_eCairo_SVGFontError =
+    rb_define_class_under (rb_mCairo, "SVGFontError",
                            rb_eCairo_Error);
 #endif
 }
