@@ -69,4 +69,16 @@ class FontOptionsTest < Test::Unit::TestCase
     @options.color_mode = Cairo::ColorMode::COLOR
     assert_equal(Cairo::ColorMode::COLOR, @options.color_mode)
   end
+
+  test "color palette" do
+    only_cairo_version(1, 17, 8)
+    assert_equal(Cairo::ColorPalette::DEFAULT, @options.color_palette)
+    @options.set_custom_palette_color(1,
+                                      1.0,
+                                      0.2,
+                                      0.0,
+                                      0.8)
+    @options.color_palette = 1
+    assert_equal(1, @options.color_palette)
+  end
 end

@@ -137,6 +137,7 @@ RB_CAIRO_VAR VALUE rb_mCairo_SubpixelOrder;
 RB_CAIRO_VAR VALUE rb_mCairo_HintStyle;
 RB_CAIRO_VAR VALUE rb_mCairo_HintMetrics;
 RB_CAIRO_VAR VALUE rb_mCairo_ColorMode;
+RB_CAIRO_VAR VALUE rb_mCairo_ColorPalette;
 RB_CAIRO_VAR VALUE rb_mCairo_FontType;
 RB_CAIRO_VAR VALUE rb_mCairo_PathDataType;
 RB_CAIRO_VAR VALUE rb_mCairo_Content;

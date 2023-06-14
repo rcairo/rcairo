@@ -30,8 +30,10 @@ class ConstantsTest < Test::Unit::TestCase
       assert_const_defined(Cairo::ColorMode, :DEFAULT)
       assert_const_defined(Cairo::ColorMode, :COLOR)
       assert_const_defined(Cairo::ColorMode, :NO_COLOR)
+      assert_const_defined(Cairo::ColorPalette, :DEFAULT)
     else
       assert_not_const_defined(Cairo, :ColorMode)
+      assert_not_const_defined(Cairo, :ColorPalette)
     end
   end
 end

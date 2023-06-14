@@ -208,7 +208,38 @@ cr_options_set_color_mode (VALUE self, VALUE mode)
 static VALUE
 cr_options_get_color_mode (VALUE self)
 {
-  return INT2NUM( cairo_font_options_get_color_mode (_SELF (self)));
+  return INT2NUM (cairo_font_options_get_color_mode (_SELF (self)));
+}
+
+static VALUE
+cr_options_set_color_palette (VALUE self, VALUE index)
+{
+  cairo_font_options_set_color_palette (_SELF (self),
+                                        NUM2UINT (index));
+  return self;
+}
+
+static VALUE
+cr_options_get_color_palette (VALUE self)
+{
+  return UINT2NUM (cairo_font_options_get_color_palette (_SELF (self)));
+}
+
+static VALUE
+cr_options_set_custom_palette_color (VALUE self,
+                                     VALUE index,
+                                     VALUE red,
+                                     VALUE green,
+                                     VALUE blue,
+                                     VALUE alpha)
+{
+  cairo_font_options_set_custom_palette_color (_SELF (self),
+                                               NUM2UINT (index),
+                                               NUM2DBL (red),
+                                               NUM2DBL (green),
+                                               NUM2DBL (blue),
+                                               NUM2DBL (alpha));
+  return self;
 }
 #endif
 
@@ -255,6 +286,12 @@ Init_cairo_font_options (void)
                     cr_options_set_color_mode, 1);
   rb_define_method (rb_cCairo_FontOptions, "color_mode",
                     cr_options_get_color_mode, 0);
+  rb_define_method (rb_cCairo_FontOptions, "set_color_palette",
+                    cr_options_set_color_palette, 1);
+  rb_define_method (rb_cCairo_FontOptions, "color_palette",
+                    cr_options_get_color_palette, 0);
+  rb_define_method (rb_cCairo_FontOptions, "set_custom_palette_color",
+                    cr_options_set_custom_palette_color, 5);
 #endif
 
   RB_CAIRO_DEF_SETTERS (rb_cCairo_FontOptions);

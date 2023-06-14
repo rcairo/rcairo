@@ -28,6 +28,7 @@ VALUE rb_mCairo_SubpixelOrder;
 VALUE rb_mCairo_HintStyle;
 VALUE rb_mCairo_HintMetrics;
 VALUE rb_mCairo_ColorMode;
+VALUE rb_mCairo_ColorPalette;
 VALUE rb_mCairo_PathDataType;
 VALUE rb_mCairo_Content;
 VALUE rb_mCairo_Format;
@@ -545,6 +546,10 @@ Init_cairo_constants (void)
                    INT2FIX (CAIRO_COLOR_MODE_NO_COLOR));
   rb_define_const (rb_mCairo_ColorMode,     "COLOR",
                    INT2FIX (CAIRO_COLOR_MODE_COLOR));
+
+  rb_mCairo_ColorPalette = rb_define_module_under (rb_mCairo, "ColorPalette");
+  rb_define_const (rb_mCairo_ColorPalette,     "DEFAULT",
+                   INT2FIX (CAIRO_COLOR_PALETTE_DEFAULT));
 #endif
 
   /* cairo_path_data_type_t */
