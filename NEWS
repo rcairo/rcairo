@@ -1,3 +1,48 @@
+Release 1.17.9 (2023-06-14) Sutou Kouhei <kou@cozmixng.org>
+===========================================================
+
+Improvements
+------------
+
+  * Dropped support for fat gem.
+    [GH-78][https://github.com/rcairo/rcairo/issues/78]
+    [Reported by Largo]
+
+  * Added support for auto native package installation with conda.
+
+  * Added support for cairo 1.17.8:
+
+    * Added Cairo::SVGFontError.
+
+    * Added Cairo::ColorMode.
+
+    * Added Cairo::FontOptions#color_mode.
+
+    * Added Cairo::FontOptions#color_mode=.
+
+    * Added Cairo::ColorPalette.
+
+    * Added Cairo::FontOptions#color_palette.
+
+    * Added Cairo::FontOptions#color_palette=.
+
+    * Added Cairo::FontOptions#set_custom_palette_color.
+
+Fixes
+-----
+
+  * Fixed the number of arguments of Cairo::GLSurface#initialize and
+    Cairo::GLTextureSurface#initialize.
+    [GH-79][https://github.com/rcairo/rcairo/issues/79]
+    [Patch by Dimitry Andric]
+
+Thanks
+------
+
+  * Largo
+
+  * Dimitry Andric
+
 Release 1.17.8 (2022-09-01) Sutou Kouhei <kou@cozmixng.org>
 ===========================================================
 
