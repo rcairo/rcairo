@@ -5,7 +5,7 @@
  * $Author: kou $
  * $Date: 2008-09-19 12:56:27 $
  *
- * Copyright 2005-2022 Sutou Kouhei <kou@cozmixng.org>
+ * Copyright 2005-2023 Sutou Kouhei <kou@cozmixng.org>
  *
  * This file is made available under the same terms as Ruby
  *
@@ -196,6 +196,22 @@ cr_options_get_variations (VALUE self)
 }
 #endif
 
+#if CAIRO_CHECK_VERSION(1, 17, 8)
+static VALUE
+cr_options_set_color_mode (VALUE self, VALUE mode)
+{
+  cairo_font_options_set_color_mode (_SELF (self),
+                                     RVAL2CRCOLORMODE (mode));
+  return self;
+}
+
+static VALUE
+cr_options_get_color_mode (VALUE self)
+{
+  return INT2NUM( cairo_font_options_get_color_mode (_SELF (self)));
+}
+#endif
+
 void
 Init_cairo_font_options (void)
 {
@@ -233,6 +249,12 @@ Init_cairo_font_options (void)
                     cr_options_set_variations, 1);
   rb_define_method (rb_cCairo_FontOptions, "variations",
                     cr_options_get_variations, 0);
+#endif
+#if CAIRO_CHECK_VERSION(1, 17, 8)
+  rb_define_method (rb_cCairo_FontOptions, "set_color_mode",
+                    cr_options_set_color_mode, 1);
+  rb_define_method (rb_cCairo_FontOptions, "color_mode",
+                    cr_options_get_color_mode, 0);
 #endif
 
   RB_CAIRO_DEF_SETTERS (rb_cCairo_FontOptions);

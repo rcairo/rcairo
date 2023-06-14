@@ -136,6 +136,7 @@ RB_CAIRO_VAR VALUE rb_mCairo_FontWeight;
 RB_CAIRO_VAR VALUE rb_mCairo_SubpixelOrder;
 RB_CAIRO_VAR VALUE rb_mCairo_HintStyle;
 RB_CAIRO_VAR VALUE rb_mCairo_HintMetrics;
+RB_CAIRO_VAR VALUE rb_mCairo_ColorMode;
 RB_CAIRO_VAR VALUE rb_mCairo_FontType;
 RB_CAIRO_VAR VALUE rb_mCairo_PathDataType;
 RB_CAIRO_VAR VALUE rb_mCairo_Content;
@@ -266,6 +267,9 @@ VALUE                 rb_cairo_device_to_ruby_object         (cairo_device_t *de
 #define RVAL2CRSUBPIXELORDER(obj) (rb_cairo_subpixel_order_from_ruby_object(obj))
 #define RVAL2CRHINTSTYLE(obj)     (rb_cairo_hint_style_from_ruby_object(obj))
 #define RVAL2CRHINTMETRICS(obj)   (rb_cairo_hint_metrics_from_ruby_object(obj))
+#if CAIRO_CHECK_VERSION(1, 17, 8)
+#define RVAL2CRCOLORMODE(obj)     (rb_cairo_color_mode_from_ruby_object(obj))
+#endif
 #define RVAL2CRPATHDATATYPE(obj)  (rb_cairo_path_data_type_from_ruby_object(obj))
 #define RVAL2CRCONTENT(obj)       (rb_cairo_content_from_ruby_object(obj))
 #define RVAL2CRFORMAT(obj)        (rb_cairo_format_from_ruby_object(obj))
@@ -311,6 +315,9 @@ cairo_font_weight_t    rb_cairo_font_weight_from_ruby_object    (VALUE obj);
 cairo_subpixel_order_t rb_cairo_subpixel_order_from_ruby_object (VALUE obj);
 cairo_hint_style_t     rb_cairo_hint_style_from_ruby_object     (VALUE obj);
 cairo_hint_metrics_t   rb_cairo_hint_metrics_from_ruby_object   (VALUE obj);
+#if CAIRO_CHECK_VERSION(1, 17, 8)
+cairo_color_mode_t     rb_cairo_color_mode_from_ruby_object     (VALUE obj);
+#endif
 cairo_path_data_type_t rb_cairo_path_data_type_from_ruby_object (VALUE obj);
 cairo_content_t        rb_cairo_content_from_ruby_object        (VALUE obj);
 cairo_format_t         rb_cairo_format_from_ruby_object         (VALUE obj);

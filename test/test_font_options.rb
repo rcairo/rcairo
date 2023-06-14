@@ -62,4 +62,11 @@ class FontOptionsTest < Test::Unit::TestCase
     @options.variations = "wdth=200"
     assert_equal("wdth=200", @options.variations)
   end
+
+  test "color mode" do
+    only_cairo_version(1, 17, 8)
+    assert_equal(Cairo::ColorMode::DEFAULT, @options.color_mode)
+    @options.color_mode = Cairo::ColorMode::COLOR
+    assert_equal(Cairo::ColorMode::COLOR, @options.color_mode)
+  end
 end
