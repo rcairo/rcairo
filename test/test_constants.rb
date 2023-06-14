@@ -24,4 +24,14 @@ class ConstantsTest < Test::Unit::TestCase
     send(assertion, Cairo::MimeType, :JBIG2_GLOBAL)
     send(assertion, Cairo::MimeType, :JBIG2_GLOBAL_ID)
   end
+
+  def test_new_constants_since_1_17_8
+    if Cairo.satisfied_version?(1, 17, 8)
+      assert_const_defined(Cairo::ColorMode, :DEFAULT)
+      assert_const_defined(Cairo::ColorMode, :COLOR)
+      assert_const_defined(Cairo::ColorMode, :NO_COLOR)
+    else
+      assert_not_const_defined(Cairo, :ColorMode)
+    end
+  end
 end

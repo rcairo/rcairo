@@ -5,7 +5,7 @@
  * $Author: kou $
  * $Date: 2008-09-19 12:56:27 $
  *
- * Copyright 2005-2022 Sutou Kouhei <kou@cozmixng.org>
+ * Copyright 2005-2023 Sutou Kouhei <kou@cozmixng.org>
  * Copyright 2005 Øyvind Kolås <pippin@freedesktop.org>
  * Copyright 2004-2005 MenTaLguY <mental@rydia.com>
  *
@@ -27,6 +27,7 @@ VALUE rb_mCairo_FontWeight;
 VALUE rb_mCairo_SubpixelOrder;
 VALUE rb_mCairo_HintStyle;
 VALUE rb_mCairo_HintMetrics;
+VALUE rb_mCairo_ColorMode;
 VALUE rb_mCairo_PathDataType;
 VALUE rb_mCairo_Content;
 VALUE rb_mCairo_Format;
@@ -80,6 +81,9 @@ VALUE rb_mCairo_SVGUnit = Qnil;
 
 #define CAIRO_HINT_METRICS_MIN CAIRO_HINT_METRICS_DEFAULT
 #define CAIRO_HINT_METRICS_MAX CAIRO_HINT_METRICS_ON
+
+#define CAIRO_COLOR_MODE_MIN CAIRO_CAIRO_MODE_DEFAULT
+#define CAIRO_COLOR_MODE_MAX CAIRO_CAIRO_MODE_COLOR
 
 #define CAIRO_PATH_MIN CAIRO_PATH_MOVE_TO
 #define CAIRO_PATH_MAX CAIRO_PATH_CLOSE_PATH
@@ -182,6 +186,9 @@ DEFINE_RVAL2ENUM(font_weight, FONT_WEIGHT)
 DEFINE_RVAL2ENUM(subpixel_order, SUBPIXEL_ORDER)
 DEFINE_RVAL2ENUM(hint_style, HINT_STYLE)
 DEFINE_RVAL2ENUM(hint_metrics, HINT_METRICS)
+#if CAIRO_CHECK_VERSION(1, 17, 8)
+DEFINE_RVAL2ENUM(color_mode, COLOR_MODE)
+#endif
 DEFINE_RVAL2ENUM(path_data_type, PATH)
 DEFINE_RVAL2ENUM(content, CONTENT)
 DEFINE_RVAL2ENUM(format, FORMAT)
@@ -529,6 +536,16 @@ Init_cairo_constants (void)
   rb_define_const (rb_mCairo_HintMetrics,     "OFF",
                    INT2FIX (CAIRO_HINT_METRICS_OFF));
 
+#if CAIRO_CHECK_VERSION(1, 17, 8)
+  /* cairo_color_mode_t */
+  rb_mCairo_ColorMode = rb_define_module_under (rb_mCairo, "ColorMode");
+  rb_define_const (rb_mCairo_ColorMode,     "DEFAULT",
+                   INT2FIX (CAIRO_COLOR_MODE_DEFAULT));
+  rb_define_const (rb_mCairo_ColorMode,     "NO_COLOR",
+                   INT2FIX (CAIRO_COLOR_MODE_NO_COLOR));
+  rb_define_const (rb_mCairo_ColorMode,     "COLOR",
+                   INT2FIX (CAIRO_COLOR_MODE_COLOR));
+#endif
 
   /* cairo_path_data_type_t */
   rb_mCairo_PathDataType = rb_define_module_under (rb_mCairo, "PathDataType");
