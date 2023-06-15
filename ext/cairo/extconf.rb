@@ -47,9 +47,16 @@ def required_pkg_config_package(package_info, native_package_info=nil)
   PKGConfig.have_package(*required_package_info)
 end
 
+conda_dependencies = [
+  "cairo",
+  "xorg-libxau",
+  "xorg-libxext",
+  "xorg-libxrender",
+  "xorg-xproto",
+]
 unless required_pkg_config_package([package, major, minor, micro],
                                    :arch_linux => "cairo",
-                                   :conda => "cairo",
+                                   :conda => conda_dependencies.join(" "),
                                    :debian => "libcairo2-dev",
                                    :homebrew => "cairo",
                                    :macports => "cairo",
