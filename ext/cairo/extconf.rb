@@ -48,7 +48,14 @@ def required_pkg_config_package(package_info, native_package_info=nil)
 end
 
 unless required_pkg_config_package([package, major, minor, micro],
-                                   :alt_linux => "libcairo-devel",
+                                   :alt_linux => [
+                                     "bzlib-devel",
+                                     "libXdmcp-devel",
+                                     "libbrotli-devel",
+                                     "libcairo-devel",
+                                     "libexpat-devel",
+                                     "libpixman-devel",
+                                   ],
                                    :arch_linux => "cairo",
                                    :conda => [
                                      "cairo",
