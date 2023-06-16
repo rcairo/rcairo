@@ -1,10 +1,23 @@
+Release 1.17.11 (2023-06-16) Sutou Kouhei <kou@cozmixng.org>
+============================================================
+
+Improvements
+------------
+
+  * Added support for ALT Linux.
+
+Fixes
+-----
+
+  * Fixed conda dependencies.
+
 Release 1.17.10 (2023-06-16) Sutou Kouhei <kou@cozmixng.org>
 ============================================================
 
 Improvements
 ------------
 
-  * Add missing dependency packages for conda.
+  * Added missing dependency packages for conda.
 
 Release 1.17.9 (2023-06-14) Sutou Kouhei <kou@cozmixng.org>
 ===========================================================
