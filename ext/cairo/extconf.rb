@@ -55,6 +55,7 @@ conda_dependencies = [
   "xorg-xproto",
 ]
 unless required_pkg_config_package([package, major, minor, micro],
+                                   :alt_linux => "libcairo-devel",
                                    :arch_linux => "cairo",
                                    :conda => conda_dependencies.join(" "),
                                    :debian => "libcairo2-dev",
