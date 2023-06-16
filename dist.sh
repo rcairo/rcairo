@@ -25,6 +25,7 @@ cp -rp doc tmp/$base/
 tar cvfz $tgz -C tmp $base
 md5sum $tgz > $tgz.md5
 sha1sum $tgz > $tgz.sha1
+sha256sum $tgz > $tgz.sha256
 rm -rf tmp
 
-scp $tgz $tgz.md5 $tgz.sha1 $dest
+scp $tgz $tgz.md5 $tgz.sha1 $tgz.sha256 $dest
