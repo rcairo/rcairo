@@ -1,3 +1,16 @@
+Release 1.17.12 (2023-06-17) Sutou Kouhei <kou@cozmixng.org>
+============================================================
+
+Improvements
+------------
+
+  * Added support for Gentoo Linux.
+
+Fixes
+-----
+
+  * Fixed ALT Linux dependencies.
+
 Release 1.17.11 (2023-06-16) Sutou Kouhei <kou@cozmixng.org>
 ============================================================
 
