@@ -48,6 +48,7 @@ def required_pkg_config_package(package_info, native_package_info=nil)
 end
 
 unless required_pkg_config_package([package, major, minor, micro],
+                                   :alpine_linux => "cairo-dev",
                                    :alt_linux => [
                                      "bzlib-devel",
                                      "libXdmcp-devel",
