@@ -1,3 +1,11 @@
+Release 1.17.13 (2023-12-18) Sutou Kouhei <kou@cozmixng.org>
+============================================================
+
+Improvements
+------------
+
+  * Added support for Alpine Linux.
+
 Release 1.17.12 (2023-06-17) Sutou Kouhei <kou@cozmixng.org>
 ============================================================
 
