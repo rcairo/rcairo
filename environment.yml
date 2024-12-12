@@ -1,0 +1,10 @@
+name: rcairo
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - compilers
+  - glib
+  - make
+  - pkgconf
+  - ruby

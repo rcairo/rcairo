@@ -60,6 +60,7 @@ unless required_pkg_config_package([package, major, minor, micro],
                                    :arch_linux => "cairo",
                                    :conda => [
                                      "cairo",
+                                     "expat",
                                      "xorg-kbproto",
                                      "xorg-libxau",
                                      "xorg-libxext",

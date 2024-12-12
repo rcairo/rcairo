@@ -21,6 +21,15 @@ services:
     command:
       /rcairo/dockerfiles/run-test.sh
 
+  conda:
+    build:
+      context: .
+      dockerfile: dockerfiles/conda.dockerfile
+    volumes:
+      - .:/rcairo:delegated
+    command:
+      /rcairo/dockerfiles/run-test.sh
+
   debian-11:
     build:
       context: .

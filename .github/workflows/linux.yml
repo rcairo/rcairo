@@ -11,6 +11,7 @@ jobs:
         service:
           - arch-linux
           - almalinux-9
+          - conda
           - debian-11
           - fedora-rawhide
           - ruby-3.0
