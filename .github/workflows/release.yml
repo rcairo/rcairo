@@ -34,6 +34,9 @@ jobs:
     environment: release
     steps:
       - uses: actions/checkout@v4
+      - name: Disable test group
+        run: |
+          bundle config without test
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: ruby
