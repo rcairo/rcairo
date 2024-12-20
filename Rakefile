@@ -30,6 +30,16 @@ task :dist do
   sh "./dist.sh", spec.version.to_s
 end
 
+# Use Trusted Publishing for RubyGems
+release_task = Rake.application["release"]
+release_task.prerequisites.delete("build")
+release_task.prerequisites.delete("release:rubygem_push")
+release_task_comment = release_task.comment
+if release_task_comment
+  release_task.clear_comments
+  release_task.comment = release_task_comment.gsub(/ and build.*$/, "")
+end
+
 # for documentation
 langs = [
   ["en", "English"],
