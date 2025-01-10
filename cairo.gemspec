@@ -47,6 +47,33 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency("native-package-installer", ">= 1.0.3")
   s.add_runtime_dependency("pkg-config", ">= 1.2.2")
   s.add_runtime_dependency("red-colors")
+  s.add_runtime_dependency("rubygems-requirements-system")
 
   s.metadata["msys2_mingw_dependencies"] = "cairo"
+
+  s.requirements << "system: cairo >= 1.2.0: alpine_linux: cairo-dev"
+  s.requirements << "system: cairo >= 1.2.0: alt_linux: bzlib-devel"
+  s.requirements << "system: cairo >= 1.2.0: alt_linux: libXdmcp-devel"
+  s.requirements << "system: cairo >= 1.2.0: alt_linux: libbrotli-devel"
+  s.requirements << "system: cairo >= 1.2.0: alt_linux: libcairo-devel"
+  s.requirements << "system: cairo >= 1.2.0: alt_linux: libexpat-devel"
+  s.requirements << "system: cairo >= 1.2.0: alt_linux: libffi-devel"
+  s.requirements << "system: cairo >= 1.2.0: alt_linux: libpixman-devel"
+  s.requirements << "system: cairo >= 1.2.0: arch_linux: cairo"
+  s.requirements << "system: cairo >= 1.2.0: conda: cairo"
+  s.requirements << "system: cairo >= 1.2.0: conda: expat"
+  s.requirements << "system: cairo >= 1.2.0: conda: xorg-kbproto"
+  s.requirements << "system: cairo >= 1.2.0: conda: xorg-libxau"
+  s.requirements << "system: cairo >= 1.2.0: conda: xorg-libxext"
+  s.requirements << "system: cairo >= 1.2.0: conda: xorg-libxrender"
+  s.requirements << "system: cairo >= 1.2.0: conda: xorg-renderproto"
+  s.requirements << "system: cairo >= 1.2.0: conda: xorg-xextproto"
+  s.requirements << "system: cairo >= 1.2.0: conda: xorg-xproto"
+  s.requirements << "system: cairo >= 1.2.0: conda: zlib"
+  s.requirements << "system: cairo >= 1.2.0: debian: libcairo2-dev"
+  s.requirements << "system: cairo >= 1.2.0: gentoo_linux: x11-libs/cairo"
+  s.requirements << "system: cairo >= 1.2.0: homebrew: cairo"
+  s.requirements << "system: cairo >= 1.2.0: macports: cairo"
+  s.requirements << "system: cairo >= 1.2.0: pld_linux: cairo-devel"
+  s.requirements << "system: cairo >= 1.2.0: suse: cairo-devel"
 end
