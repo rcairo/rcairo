@@ -1,8 +1,7 @@
 name: Release
 on:
-  push:
-    tags:
-      - "*"
+  - push
+  - pull_request
 jobs:
   github:
     name: GitHub
@@ -10,18 +9,22 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-      - name: Release
+      - name: Prepare
         run: |
           ruby \
             -e 'print("## "); puts(ARGF.read.split(/^## /)[1])' \
-            NEWS.md > release-note.md
+            NEWS.md | tee release-note.md
           title="$(head -n 1 release-note.md | sed -e 's/^## //')"
-          tail -n +2 release-note.md > release-note-without-version.md
+          echo "TITLE=${title}" >> "${GITHUB_ENV}"
+          tail -n +2 release-note.md | tee release-note-without-version.md
+      - name: Publish
+        if: github.ref_type == 'tag'
+        run: |
           gh release create \
             ${GITHUB_REF_NAME} \
             --discussion-category Announcements \
             --notes-file release-note-without-version.md \
-            --title "${title}"
+            --title "${TITLE}"
         env:
           GH_TOKEN: ${{ github.token }}
 
@@ -34,14 +37,22 @@ jobs:
     environment: release
     steps:
       - uses: actions/checkout@v4
-      - name: Disable test group
-        run: |
-          bundle config without test
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: ruby
-          bundler-cache: true
+      - name: Disable test group
+        run: |
+          bundle config without test
+      - name: Install dependencies
+        run: |
+          bundle install
+      - name: Build
+        if: github.ref_type != 'tag'
+        run: |
+          bundle exec rake build
       - uses: rubygems/configure-rubygems-credentials@v1.0.0
-      - name: Push gems
+        if: github.ref_type == 'tag'
+      - name: Push
+        if: github.ref_type == 'tag'
         run: |
           bundle exec rake release:rubygem_push
