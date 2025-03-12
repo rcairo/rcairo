@@ -1,6 +1,8 @@
-# -*- mode: ruby; coding: utf-8 -*-
+# -*- ruby -*-
 
 source "https://rubygems.org/"
+
+plugin "rubygems-requirements-system"
 
 gemspec
 
