@@ -9,8 +9,9 @@ jobs:
       fail-fast: false
       matrix:
         service:
-          - arch-linux
           - almalinux-9
+          - alpine-linux
+          - arch-linux
           - conda
           - debian-11
           - fedora-rawhide

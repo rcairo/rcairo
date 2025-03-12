@@ -1,19 +1,30 @@
 services:
-  arch-linux:
-    build:
-      context: .
-      dockerfile: dockerfiles/arch-linux.dockerfile
-    volumes:
-      - .:/rcairo:delegated
-    command:
-      /rcairo/dockerfiles/run-test.sh
-
   almalinux-9:
     build:
       context: .
       dockerfile: dockerfiles/almalinux.dockerfile
       args:
         VERSION: "9"
+    volumes:
+      - .:/rcairo:delegated
+    command:
+      /rcairo/dockerfiles/run-test.sh
+
+  alpine-linux:
+    build:
+      context: .
+      dockerfile: dockerfiles/alpine-linux.dockerfile
+      args:
+        VERSION: "9"
+    volumes:
+      - .:/rcairo:delegated
+    command:
+      /rcairo/dockerfiles/run-test.sh
+
+  arch-linux:
+    build:
+      context: .
+      dockerfile: dockerfiles/arch-linux.dockerfile
     volumes:
       - .:/rcairo:delegated
     command:
