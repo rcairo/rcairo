@@ -33,8 +33,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
-      id-token: write
-    environment: release
+      id-token: ${{ github.ref_type == 'tag' && 'write' || 'read' }}
+    environment: ${{ github.ref_type == 'tag' && 'release' || '' }}
     steps:
       - uses: actions/checkout@v4
       - uses: ruby/setup-ruby@v1
