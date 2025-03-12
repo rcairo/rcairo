@@ -1,4 +1,4 @@
-# -*- mode: ruby; coding: utf-8 -*-
+# -*- ruby -*-
 
 base_dir = File.dirname(__FILE__)
 cairo_ext_dir = File.join(base_dir, "ext", "cairo")
@@ -35,7 +35,6 @@ Gem::Specification.new do |s|
     "source_code_uri" => "https://github.com/rcairo/rcairo",
   }
   s.required_ruby_version = ">= 2.2.1"
-  s.requirements << "cairo >= 1.2.0"
 
   s.files = ["AUTHORS", "COPYING", "GPL", "Gemfile", "NEWS", "README.rdoc"]
   s.files += ["Rakefile"]
@@ -47,7 +46,6 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency("native-package-installer", ">= 1.0.3")
   s.add_runtime_dependency("pkg-config", ">= 1.2.2")
   s.add_runtime_dependency("red-colors")
-  s.add_runtime_dependency("rubygems-requirements-system")
 
   s.metadata["msys2_mingw_dependencies"] = "cairo"
 

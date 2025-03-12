@@ -17,23 +17,21 @@ https://cairographics.org/
 
 == Install
 
-=== Package
+=== RubyGems
 
-This way is recommended.
+If you want to install rcairo with RubyGems, you can use the following
+command line:
 
-  # gem install cairo
+  $ sudo gem install rubygems-requirements-system cairo
 
-=== Self build
+=== Bundler
 
-For experimental users.
+If you want to install rcairo with Bundler, you can add the following
+to your Gemfile:
 
-Add the following to your Gemfile:
+  plugin "rubygems-requirements-system"
 
-  gem "cairo", github: "rcairo/rcairo"
-
-Then run the following command:
-
-  % bundle install
+  gem "cairo"
 
 == Documents
 
