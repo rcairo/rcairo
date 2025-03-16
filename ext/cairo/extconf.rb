@@ -1,13 +1,10 @@
 #!/usr/bin/env ruby
 # vim: filetype=ruby:expandtab:shiftwidth=2:tabstop=8:softtabstop=2 :
 
-require 'pathname'
-require 'English'
-require 'mkmf'
-require 'fileutils'
+require "mkmf"
+require "fileutils"
 
 require "pkg-config"
-require "native-package-installer"
 
 checking_for(checking_message("GCC")) do
   if macro_defined?("__GNUC__", "")
@@ -22,61 +19,21 @@ package = "cairo"
 module_name = "cairo"
 major, minor, micro = 1, 2, 0
 
-checking_for(checking_message("Homebrew")) do
-  platform = NativePackageInstaller::Platform.detect
-  if platform.is_a?(NativePackageInstaller::Platform::Homebrew)
-    libffi_prefix = `brew --prefix libffi`.chomp
-    PKGConfig.add_path("#{libffi_prefix}/lib/pkgconfig")
-    true
-  else
-    false
-  end
+brew_path = find_executable("brew")
+if brew_path
+  # We don't use brew_path here to avoid quoting.
+  libffi_prefix = `brew --prefix libffi`.chomp
+  PKGConfig.add_path("#{libffi_prefix}/lib/pkgconfig")
 end
 
-def required_pkg_config_package(package_info, native_package_info=nil)
-  if package_info.is_a?(Array)
-    required_package_info = package_info
-  else
-    required_package_info = [package_info]
-  end
-  return true if PKGConfig.have_package(*required_package_info)
-
-  native_package_info ||= {}
-  return false unless NativePackageInstaller.install(native_package_info)
-
-  PKGConfig.have_package(*required_package_info)
-end
-
-unless required_pkg_config_package([package, major, minor, micro],
-                                   :alpine_linux => "cairo-dev",
-                                   :alt_linux => [
-                                     "bzlib-devel",
-                                     "libXdmcp-devel",
-                                     "libbrotli-devel",
-                                     "libcairo-devel",
-                                     "libexpat-devel",
-                                     "libffi-devel",
-                                     "libpixman-devel",
-                                   ],
-                                   :arch_linux => "cairo",
-                                   :conda => [
-                                     "cairo",
-                                     "expat",
-                                     "xorg-kbproto",
-                                     "xorg-libxau",
-                                     "xorg-libxext",
-                                     "xorg-libxrender",
-                                     "xorg-renderproto",
-                                     "xorg-xextproto",
-                                     "xorg-xproto",
-                                     "zlib",
-                                   ],
-                                   :debian => "libcairo2-dev",
-                                   :gentoo_linux => "x11-libs/cairo",
-                                   :homebrew => "cairo",
-                                   :macports => "cairo",
-                                   :msys2 => "cairo",
-                                   :redhat => "cairo-devel")
+unless PKGConfig.have_package(package, major, minor, micro)
+  $stderr.puts("#{package} >= #{major}.#{minor}.#{micro} doesn't exist.")
+  $stderr.puts("If you want to install " +
+               "#{package} #{major}.#{minor}.#{micro} or later automatically, " +
+               "install rubygems-requirements-system as a normal gem or " +
+               "Bundler plugin.")
+  $stderr.puts("See the following documentation for details:")
+  $stderr.puts("  https://github.com/ruby-gnome/rubygems-requirements-system/#usage-for-users")
   exit(false)
 end
 
