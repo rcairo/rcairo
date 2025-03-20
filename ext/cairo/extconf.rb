@@ -31,7 +31,7 @@ unless PKGConfig.have_package(package, major, minor, micro)
   $stderr.puts("If you want to install " +
                "#{package} #{major}.#{minor}.#{micro} or later automatically, " +
                "install rubygems-requirements-system as a normal gem or " +
-               "Bundler plugin.")
+               "a Bundler plugin.")
   $stderr.puts("See the following documentation for details:")
   $stderr.puts("  https://github.com/ruby-gnome/rubygems-requirements-system/#usage-for-users")
   exit(false)
