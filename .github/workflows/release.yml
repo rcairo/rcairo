@@ -33,7 +33,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
-      id-token: ${{ github.ref_type == 'tag' && 'write' || 'read' }}
+      # We want to use this but it doesn't work...
+      # id-token: ${{ github.ref_type == 'tag' && 'write' || 'read' }}
+      id-token: write
     environment: ${{ github.ref_type == 'tag' && 'release' || '' }}
     steps:
       - uses: actions/checkout@v4
