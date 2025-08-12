@@ -10,15 +10,16 @@ jobs:
       matrix:
         service:
           - almalinux-9
+          - almalinux-10
           - alpine-linux
           - arch-linux
           - conda
           - debian-11
+          - debian-12
           - fedora-rawhide
-          - ruby-3.0
-          - ruby-3.1
           - ruby-3.2
           - ruby-3.3
+          - ruby-3.4
           - ubuntu-22.04
           - ubuntu-24.04
     runs-on: ubuntu-latest

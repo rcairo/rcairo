@@ -10,12 +10,21 @@ services:
     command:
       /rcairo/dockerfiles/run-test.sh
 
+  almalinux-10:
+    build:
+      context: .
+      dockerfile: dockerfiles/almalinux.dockerfile
+      args:
+        VERSION: "10"
+    volumes:
+      - .:/rcairo:delegated
+    command:
+      /rcairo/dockerfiles/run-test.sh
+
   alpine-linux:
     build:
       context: .
       dockerfile: dockerfiles/alpine-linux.dockerfile
-      args:
-        VERSION: "9"
     volumes:
       - .:/rcairo:delegated
     command:
@@ -50,34 +59,23 @@ services:
     command:
       /rcairo/dockerfiles/run-test.sh
 
+  debian-12:
+    build:
+      context: .
+      dockerfile: dockerfiles/debian.dockerfile
+      args:
+        VERSION: "12"
+    volumes:
+      - .:/rcairo:delegated
+    command:
+      /rcairo/dockerfiles/run-test.sh
+
   fedora-rawhide:
     build:
       context: .
       dockerfile: dockerfiles/fedora.dockerfile
       args:
         FEDORA_VERSION: rawhide
-    volumes:
-      - .:/rcairo:delegated
-    command:
-      /rcairo/dockerfiles/run-test.sh
-
-  ruby-3.0:
-    build:
-      context: .
-      dockerfile: dockerfiles/ruby.dockerfile
-      args:
-        RUBY_VERSION: "3.0"
-    volumes:
-      - .:/rcairo:delegated
-    command:
-      /rcairo/dockerfiles/run-test.sh
-
-  ruby-3.1:
-    build:
-      context: .
-      dockerfile: dockerfiles/ruby.dockerfile
-      args:
-        RUBY_VERSION: "3.1"
     volumes:
       - .:/rcairo:delegated
     command:
@@ -100,6 +98,17 @@ services:
       dockerfile: dockerfiles/ruby.dockerfile
       args:
         RUBY_VERSION: "3.3"
+    volumes:
+      - .:/rcairo:delegated
+    command:
+      /rcairo/dockerfiles/run-test.sh
+
+  ruby-3.4:
+    build:
+      context: .
+      dockerfile: dockerfiles/ruby.dockerfile
+      args:
+        RUBY_VERSION: "3.4"
     volumes:
       - .:/rcairo:delegated
     command:
