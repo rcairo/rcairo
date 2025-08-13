@@ -56,6 +56,7 @@ Gem::Specification.new do |s|
     ["alt_linux", "libcairo-devel"],
     ["alt_linux", "libexpat-devel"],
     ["alt_linux", "libffi-devel"],
+    ["alt_linux", "libpcre2-devel"],
     ["alt_linux", "libpixman-devel"],
     ["arch_linux", "cairo"],
     ["conda", "cairo"],
