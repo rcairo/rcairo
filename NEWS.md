@@ -1,5 +1,15 @@
 # NEWS
 
+## rcairo 1.18.5: 2026-04-03
+
+### Improvements
+
+  * Stopped using `native-package-installer`.
+
+  * ALT Linux: Added newly required `libpcre2-devel` dependency.
+
+  * conda: Added newly required `freetype` dependency.
+
 ## rcairo 1.18.4: 2025-03-12
 
 ### Improvements
