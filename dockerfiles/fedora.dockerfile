@@ -5,6 +5,7 @@ RUN \
   dnf install -y \
     gcc \
     gcc-c++ \
+    libffi-devel \
     make \
     redhat-rpm-config \
     ruby-devel \
