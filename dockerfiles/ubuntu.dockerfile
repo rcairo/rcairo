@@ -10,6 +10,7 @@ RUN \
   apt install -y \
     g++ \
     gcc \
+    libffi-dev \
     make \
     ruby-dev \
     sudo
