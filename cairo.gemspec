@@ -61,6 +61,7 @@ Gem::Specification.new do |s|
     ["arch_linux", "cairo"],
     ["conda", "cairo"],
     ["conda", "expat"],
+    ["conda", "freetype"],
     ["conda", "xorg-kbproto"],
     ["conda", "xorg-libxau"],
     ["conda", "xorg-libxext"],
