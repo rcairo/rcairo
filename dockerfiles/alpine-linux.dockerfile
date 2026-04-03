@@ -7,11 +7,12 @@ RUN \
     build-base \
     gcc \
     git \
+    libffi-dev \
     make \
-    ruby-dev \
     openssl-dev \
-    zlib-dev \
+    ruby-dev \
     sudo \
+    zlib-dev \
     which
 
 RUN \
