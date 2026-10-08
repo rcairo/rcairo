@@ -69,3 +69,15 @@ have_func("rb_gc_adjust_memory_usage", "ruby.h")
 have_type("enum ruby_value_type", "ruby.h")
 
 create_makefile(module_name)
+
+if /mswin/ =~ RUBY_PLATFORM
+  # MSVC cannot link against a DLL directly. Install the import library
+  # next to cairo.so so that extensions depending on rcairo (such as
+  # cairo-gobject) can link against it.
+  File.open("Makefile", "ab") do |makefile|
+    makefile.puts
+    makefile.puts("install-so: install-import-library")
+    makefile.puts("install-import-library: $(DLLIB)")
+    makefile.puts("\t$(INSTALL_DATA) $(TARGET)-$(arch).lib $(RUBYARCHDIR)")
+  end
+end
